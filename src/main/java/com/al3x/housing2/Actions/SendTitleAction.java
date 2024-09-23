@@ -46,7 +46,6 @@ public class SendTitleAction implements Action{
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(colorize("&eSend Title Action"));
         itemMeta.setLore(Arrays.asList(
-                "",
                 colorize("&7Displays a Title and Subtitle to the player with"),
                 colorize("&7a defined &fFade In&7, &fStay&7, and &fFade Out"),
                 colorize("&7time."),

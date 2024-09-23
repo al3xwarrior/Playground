@@ -16,20 +16,32 @@ public class ActionsMenu extends Menu {
     private Player player;
     private HousingWorld house;
     private List<Action> actions;
+    private EventType event;
 
     private int currentPage = 0;
     private final int itemsPerPage = 45; // Leave room for navigation buttons
 
-    public ActionsMenu(Player player, HousingWorld house, String title, List<Action> actions) {
+    public ActionsMenu(Player player, HousingWorld house, String title, EventType event) {
         super(player, colorize(title), 54);
         this.player = player;
         this.house = house;
-        this.actions = actions;
+        this.event = event;
+        this.actions = house.getEventActions(event);
+        setupItems();
+    }
+
+    private void removeAction(Action action) {
+        actions.remove(action);
+        if (event != null) {
+            house.setEventActions(event, actions);
+        }
         setupItems();
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
+        clearItems()
+
         int start = currentPage * itemsPerPage;
         int end = Math.min((actions != null) ? actions.size() : 0, start + itemsPerPage);
 
@@ -39,9 +51,7 @@ public class ActionsMenu extends Menu {
             addItem(i - start, action.getDisplayItem(), () -> {
                 player.sendMessage("Clicked action");
             }, () -> {
-                actions.remove(action);
-                player.sendMessage("delete");
-                setupItems();
+                removeAction(event, action);
             });
         }
 

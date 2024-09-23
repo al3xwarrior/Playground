@@ -140,6 +140,9 @@ public class HousingWorld {
         }
     }
 
+    public void setEventActions(EventType type, List<Action> actions) {
+        eventActions.set(type, actions);
+    }
     public List<Action> getEventActions(EventType type) {
         return eventActions.get(type);
     }

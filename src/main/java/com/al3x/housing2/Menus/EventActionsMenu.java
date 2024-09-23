@@ -28,7 +28,7 @@ public class EventActionsMenu extends Menu {
         playerJoinMeta.setDisplayName(colorize("&aPlayer Join"));
         playerJoin.setItemMeta(playerJoinMeta);
         addItem(10, playerJoin, () -> {
-            new ActionsMenu(player, house, "&ePlayer Join Event", house.getEventActions(EventType.PLAYER_JOIN)).open();
+            new ActionsMenu(player, house, "&ePlayer Join Event", EventType.PLAYER_JOIN).open();
         });
 
         ItemStack playerQuit = new ItemStack(Material.SPRUCE_DOOR);

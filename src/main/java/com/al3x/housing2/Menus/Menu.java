@@ -13,19 +13,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Menu implements Listener {
-    protected Inventory inventory;
-    protected Map<Integer, Runnable> leftClickActions = new HashMap<>();
-    protected Map<Integer, Runnable> rightClickActions = new HashMap<>();
-    protected Player player;
+    private Inventory inventory;
+    private Map<Integer, Runnable> leftClickActions = new HashMap<>();
+    private Map<Integer, Runnable> rightClickActions = new HashMap<>();
+    private Player player;
+    private int size;
 
     public Menu(Player player, String title, int size) {
         this.player = player;
+        this.size = size;
         this.inventory = Bukkit.createInventory(null, size, title);
         setupItems();
     }
 
     // Abstract method to allow each menu to set up its own items
-    protected abstract void setupItems();
+    private abstract void setupItems();
+
+    public void clearItems() {
+        for (int i = 0; i < size-1; i++) {
+            player.getInventory().clear(i);
+        }
+    }
 
     // Opens the menu for the player
     public void open() {

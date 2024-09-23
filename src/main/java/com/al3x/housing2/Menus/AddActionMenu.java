@@ -12,16 +12,18 @@ public class AddActionMenu extends Menu{
 
     private Player player;
     private HousingWorld house;
+    private EventType event;
 
-    public AddActionMenu(Player player, HousingWorld house) {
-        super(player, colorize("&aAdd Actions"), 54);
+    public AddActionMenu(Player player, HousingWorld house, EventType event) {
+        super(player, colorize("&aAdd Action"), 54);
         this.player = player;
         this.house = house;
+        this.event = event;
         setupItems();
     }
 
     @Override
-    protected void setupItems() {
-
+    public void setupItems() {
+        
     }
 }
