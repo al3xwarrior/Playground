@@ -36,7 +36,7 @@ public class EventActionsMenu extends Menu {
         playerQuitMeta.setDisplayName(colorize("&aPlayer Quit"));
         playerQuit.setItemMeta(playerQuitMeta);
         addItem(11, playerQuit, () -> {
-            player.sendMessage("Player Quit event selected...");
+            new ActionsMenu(player, house, "&ePlayer Quit Event", EventType.PLAYER_QUIT).open();
         });
 
         ItemStack playerDeath = new ItemStack(Material.BONE);
@@ -44,7 +44,7 @@ public class EventActionsMenu extends Menu {
         playerDeathMeta.setDisplayName(colorize("&aPlayer Death"));
         playerDeath.setItemMeta(playerDeathMeta);
         addItem(12, playerDeath, () -> {
-            player.sendMessage("Player Death event selected...");
+            new ActionsMenu(player, house, "&ePlayer Death Event", EventType.PLAYER_DEATH).open();
         });
 
         ItemStack playerKill = new ItemStack(Material.DIAMOND_SWORD);
@@ -52,7 +52,7 @@ public class EventActionsMenu extends Menu {
         playerKillMeta.setDisplayName(colorize("&aPlayer Kill"));
         playerKill.setItemMeta(playerKillMeta);
         addItem(13, playerKill, () -> {
-            player.sendMessage("Player Kill event selected...");
+            new ActionsMenu(player, house, "&ePlayer Kill Event", EventType.PLAYER_KILL).open();
         });
 
         ItemStack playerRespawn = new ItemStack(Material.APPLE);
@@ -60,7 +60,7 @@ public class EventActionsMenu extends Menu {
         playerRespawnMeta.setDisplayName(colorize("&aPlayer Respawn"));
         playerRespawn.setItemMeta(playerRespawnMeta);
         addItem(14, playerRespawn, () -> {
-            player.sendMessage("Player Respawn event selected...");
+            new ActionsMenu(player, house, "&ePlayer Respawn Event", EventType.PLAYER_RESPAWN).open();
         });
 
         ItemStack groupChange = new ItemStack(Material.PAPER);
@@ -68,7 +68,7 @@ public class EventActionsMenu extends Menu {
         groupChangeMeta.setDisplayName(colorize("&aGroup Change"));
         groupChange.setItemMeta(groupChangeMeta);
         addItem(15, groupChange, () -> {
-            player.sendMessage("Group Change event selected...");
+            new ActionsMenu(player, house, "&eGroup Change Event", EventType.GROUP_CHANGE).open();
         });
 
         ItemStack pvpStateChange = new ItemStack(Material.IRON_SWORD);
@@ -76,7 +76,7 @@ public class EventActionsMenu extends Menu {
         pvpStateChangeMeta.setDisplayName(colorize("&aPvP State Change"));
         pvpStateChange.setItemMeta(pvpStateChangeMeta);
         addItem(19, pvpStateChange, () -> {
-            player.sendMessage("PvP State Change event selected...");
+            new ActionsMenu(player, house, "&ePvP State Change Event", EventType.PVP_STATE_CHANGE).open();
         });
 
         ItemStack fishCaught = new ItemStack(Material.FISHING_ROD);
@@ -84,7 +84,7 @@ public class EventActionsMenu extends Menu {
         fishCaughtMeta.setDisplayName(colorize("&aFish Caught"));
         fishCaught.setItemMeta(fishCaughtMeta);
         addItem(20, fishCaught, () -> {
-            player.sendMessage("Fish Caught event selected...");
+            new ActionsMenu(player, house, "&eFish Caught Event", EventType.FISH_CAUGHT).open();
         });
 
         ItemStack enterPortal = new ItemStack(Material.OBSIDIAN);
@@ -92,7 +92,7 @@ public class EventActionsMenu extends Menu {
         enterPortalMeta.setDisplayName(colorize("&aPlayer Enter Portal"));
         enterPortal.setItemMeta(enterPortalMeta);
         addItem(21, enterPortal, () -> {
-            player.sendMessage("Player Enter Portal event selected...");
+            new ActionsMenu(player, house, "&ePlayer Enter Portal Event", EventType.PLAYER_ENTER_PORTAL).open();
         });
 
         ItemStack playerDamage = new ItemStack(Material.LAVA_BUCKET);
@@ -100,7 +100,7 @@ public class EventActionsMenu extends Menu {
         playerDamageMeta.setDisplayName(colorize("&aPlayer Damage"));
         playerDamage.setItemMeta(playerDamageMeta);
         addItem(22, playerDamage, () -> {
-            player.sendMessage("Player Damage event selected...");
+            new ActionsMenu(player, house, "&ePlayer Damage Event", EventType.PLAYER_DAMAGE).open();
         });
 
         ItemStack blockBreak = new ItemStack(Material.GRASS_BLOCK);
@@ -108,7 +108,7 @@ public class EventActionsMenu extends Menu {
         blockBreakMeta.setDisplayName(colorize("&aPlayer Block Break"));
         blockBreak.setItemMeta(blockBreakMeta);
         addItem(23, blockBreak, () -> {
-            player.sendMessage("Player Block Break event selected...");
+            new ActionsMenu(player, house, "&ePlayer Block Break Event", EventType.PLAYER_BLOCK_BREAK).open();
         });
 
         ItemStack startParkour = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
@@ -116,7 +116,7 @@ public class EventActionsMenu extends Menu {
         startParkourMeta.setDisplayName(colorize("&aStart Parkour"));
         startParkour.setItemMeta(startParkourMeta);
         addItem(24, startParkour, () -> {
-            player.sendMessage("Start Parkour event selected...");
+            new ActionsMenu(player, house, "&eStart Parkour Event", EventType.START_PARKOUR).open();
         });
 
         ItemStack completeParkour = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
@@ -124,7 +124,7 @@ public class EventActionsMenu extends Menu {
         completeParkourMeta.setDisplayName(colorize("&aComplete Parkour"));
         completeParkour.setItemMeta(completeParkourMeta);
         addItem(25, completeParkour, () -> {
-            player.sendMessage("Complete Parkour event selected...");
+            new ActionsMenu(player, house, "&eComplete Parkour Event", EventType.COMPLETE_PARKOUR).open();
         });
 
         ItemStack dropItem = new ItemStack(Material.DROPPER);
@@ -132,7 +132,7 @@ public class EventActionsMenu extends Menu {
         dropItemMeta.setDisplayName(colorize("&aPlayer Drop Item"));
         dropItem.setItemMeta(dropItemMeta);
         addItem(28, dropItem, () -> {
-            player.sendMessage("Player Drop Item event selected...");
+            new ActionsMenu(player, house, "&ePlayer Drop Item Event", EventType.PLAYER_DROP_ITEM).open();
         });
 
         ItemStack pickUpItem = new ItemStack(Material.HOPPER);
@@ -140,7 +140,7 @@ public class EventActionsMenu extends Menu {
         pickUpItemMeta.setDisplayName(colorize("&aPlayer Pick Up Item"));
         pickUpItem.setItemMeta(pickUpItemMeta);
         addItem(29, pickUpItem, () -> {
-            player.sendMessage("Player Pick Up Item event selected...");
+            new ActionsMenu(player, house, "&ePlayer Pick Up Item Event", EventType.PLAYER_PICKUP_ITEM).open();
         });
 
         ItemStack changeHeldItem = new ItemStack(Material.BOOK);
@@ -148,7 +148,7 @@ public class EventActionsMenu extends Menu {
         changeHeldItemMeta.setDisplayName(colorize("&aPlayer Change Held Item"));
         changeHeldItem.setItemMeta(changeHeldItemMeta);
         addItem(30, changeHeldItem, () -> {
-            player.sendMessage("Player Change Held Item event selected...");
+            new ActionsMenu(player, house, "&ePlayer Change Held Item Event", EventType.PLAYER_CHANGE_HELD_ITEM).open();
         });
 
         ItemStack toggleSneak = new ItemStack(Material.HAY_BLOCK);
@@ -156,7 +156,7 @@ public class EventActionsMenu extends Menu {
         toggleSneakMeta.setDisplayName(colorize("&aPlayer Toggle Sneak"));
         toggleSneak.setItemMeta(toggleSneakMeta);
         addItem(31, toggleSneak, () -> {
-            player.sendMessage("Player Toggle Sneak event selected...");
+            new ActionsMenu(player, house, "&ePlayer Toggle Sneak Event", EventType.PLAYER_TOGGLE_SNEAK).open();
         });
 
         ItemStack toggleFlight = new ItemStack(Material.FEATHER);
@@ -164,7 +164,7 @@ public class EventActionsMenu extends Menu {
         toggleFlightMeta.setDisplayName(colorize("&aPlayer Toggle Flight"));
         toggleFlight.setItemMeta(toggleFlightMeta);
         addItem(32, toggleFlight, () -> {
-            player.sendMessage("Player Toggle Flight event selected...");
+            new ActionsMenu(player, house, "&ePlayer Toggle Flight Event", EventType.PLAYER_TOGGLE_FLIGHT).open();
         });
     }
 }

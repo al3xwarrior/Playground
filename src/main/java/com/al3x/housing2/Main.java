@@ -22,6 +22,7 @@ public final class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new leaveHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
 

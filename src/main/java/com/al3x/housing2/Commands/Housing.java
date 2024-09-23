@@ -93,6 +93,12 @@ public class Housing implements CommandExecutor {
                 player.sendMessage(colorize("&cUsage: /housing visit <player>"));
                 return true;
             }
+
+            if (strings[0].equalsIgnoreCase("hub")) {
+                World hub = Bukkit.getWorld("world");
+                player.teleport(hub.getSpawnLocation());
+                return true;
+            }
         }
 
         player.sendMessage(colorize("&7&m----------------------------------------------"));

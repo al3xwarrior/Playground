@@ -19,6 +19,14 @@ public class SendTitleAction implements Action{
     private int stay;
     private int fadeOut;
 
+    public SendTitleAction() {
+        this.title = "Title";
+        this.subtitle = "Subtitle";
+        this.fadeIn = 20;
+        this.stay = 20;
+        this.fadeOut = 20;
+    }
+
     public SendTitleAction(String title, String subtitle) {
         this.title = title;
         this.subtitle = subtitle;

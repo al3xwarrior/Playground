@@ -24,6 +24,24 @@ public class AddActionMenu extends Menu{
 
     @Override
     public void setupItems() {
-        
+        ItemStack sendTitleItem = new ItemStack(Material.BOOK);
+        ItemMeta sendTitleMeta = sendTitleItem.getItemMeta();
+        sendTitleMeta.setDisplayName(colorize("&aSend Title Action"));
+        sendTitleItem.setItemMeta(sendTitleMeta);
+        addItem(10, sendTitleItem, () -> {
+            eventActions.add(new SendTitleAction());
+            house.setEventActions(event, eventActions);
+            new ActionsMenu(player, house, event.toString(), event).open();
+        });
+
+        ItemStack chatMessageItem = new ItemStack(Material.PAPER);
+        ItemMeta chatMessageMeta = chatMessageItem.getItemMeta();
+        chatMessageItem.setDisplayName(colorize("&aSend Title Action"));
+        chatMessageItem.setItemMeta(chatMessageMeta);
+        addItem(10, chatMessageItem, () -> {
+            eventActions.add(new ChatAction());
+            house.setEventActions(event, eventActions);
+            new ActionsMenu(player, house, event.toString(), event).open();
+        });
     }
 }
