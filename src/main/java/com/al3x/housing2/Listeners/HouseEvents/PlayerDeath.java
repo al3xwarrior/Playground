@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 public class PlayerDeath implements Listener {
@@ -19,7 +20,7 @@ public class PlayerDeath implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
-        Player player = (Player) e.getEntity();
+        Player player = e.getEntity();
         World world = player.getWorld();
         if (world.getName().equals("world")) return;
 

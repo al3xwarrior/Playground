@@ -15,11 +15,11 @@ public class ChatAction implements Action{
 
     private String message;
 
-    public SendTitleAction() {
+    public ChatAction() {
         this.message = "&eHello World!";
     }
 
-    public SendTitleAction(String message) {
+    public ChatAction(String message) {
         this.message = message;
     }
 
@@ -49,6 +49,13 @@ public class ChatAction implements Action{
 
     @Override
     public void execute(Player player) {
-        player.sendMessage(message);
+        player.sendMessage(colorize(message));
+    }
+
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

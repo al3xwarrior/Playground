@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,10 +11,11 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class SystemsMenu extends Menu {
 
+    private Main main;
     private Player player;
     private HousingWorld house;
 
-    public SystemsMenu(Player player, HousingWorld house) {
+    public SystemsMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&cSystems"), 45);
         this.player = player;
         this.house = house;
@@ -21,7 +23,7 @@ public class SystemsMenu extends Menu {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         ItemStack regions = new ItemStack(Material.GRASS_BLOCK);
         ItemMeta regionsMeta = regions.getItemMeta();
         regionsMeta.setDisplayName(colorize("&aRegions"));
@@ -35,7 +37,7 @@ public class SystemsMenu extends Menu {
         eventActionsMeta.setDisplayName(colorize("&aEvent Actions"));
         eventActions.setItemMeta(eventActionsMeta);
         addItem(11, eventActions, () -> {
-            new EventActionsMenu(player, house).open();
+            new EventActionsMenu(main, player, house).open();
         });
 
         ItemStack scoreboardEditor = new ItemStack(Material.MAP);

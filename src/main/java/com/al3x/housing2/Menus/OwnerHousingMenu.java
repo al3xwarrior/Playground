@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,10 +11,11 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class OwnerHousingMenu extends Menu {
 
+    private Main main;
     private Player player;
     private HousingWorld house;
 
-    public OwnerHousingMenu(Player player, HousingWorld house) {
+    public OwnerHousingMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&dHousing Menu"), 45);
         this.player = player;
         this.house = house;
@@ -21,7 +23,7 @@ public class OwnerHousingMenu extends Menu {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         ItemStack protools = new ItemStack(Material.STICK);
         ItemMeta protoolsMeta = protools.getItemMeta();
         protoolsMeta.setDisplayName(colorize("&aPro Tools"));
@@ -59,7 +61,7 @@ public class OwnerHousingMenu extends Menu {
         systemsMeta.setDisplayName(colorize("&aSystems"));
         systems.setItemMeta(systemsMeta);
         addItem(6, systems, () -> {
-            new SystemsMenu(player, house).open();
+            new SystemsMenu(main, player, house).open();
         });
     }
 }

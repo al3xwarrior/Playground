@@ -68,7 +68,7 @@ public class HousingWorld {
         this.scoreboard.add(colorize("&fhawk tua! Ping: %player.ping%"));
         this.scoreboard.add(colorize("&fSprinting! %player.isSprinting%"));
         this.scoreboard.add(colorize("&f"));
-        this.scoreboard.add(colorize("&aPlayers: &2%house.players%"));
+        this.scoreboard.add(colorize("&aPlayers: &2%house.guests%"));
         this.scoreboard.add(colorize("&eCookies: &6%house.cookies%"));
 
         eventActions = new HashMap<>();
@@ -141,7 +141,7 @@ public class HousingWorld {
     }
 
     public void setEventActions(EventType type, List<Action> actions) {
-        eventActions.set(type, actions);
+        eventActions.put(type, actions);
     }
     public List<Action> getEventActions(EventType type) {
         return eventActions.get(type);

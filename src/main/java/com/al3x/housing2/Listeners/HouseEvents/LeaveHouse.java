@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class LeaveHouse implements Listener {
 
@@ -23,7 +24,7 @@ public class LeaveHouse implements Listener {
         HousingWorld house = housesManager.getHouse(world);
         if (house == null) return;
 
-        house.executeEventActions(EventType.PLAYER_LEAVE, player);
+        house.executeEventActions(EventType.PLAYER_QUIT, player);
     }
 
     @EventHandler

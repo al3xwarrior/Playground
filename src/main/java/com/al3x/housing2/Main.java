@@ -3,6 +3,7 @@ package com.al3x.housing2;
 import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Listeners.HouseEvents.JoinHouse;
+import com.al3x.housing2.Listeners.HouseEvents.LeaveHouse;
 import com.al3x.housing2.Listeners.HousingMenuClickEvent;
 import com.al3x.housing2.Listeners.JoinLeaveHouse;
 import com.al3x.housing2.Listeners.MenuListener;
@@ -21,8 +22,8 @@ public final class Main extends JavaPlugin {
         getCommand("housing").setExecutor(new Housing(housesManager));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
-        Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new leaveHouse(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
 

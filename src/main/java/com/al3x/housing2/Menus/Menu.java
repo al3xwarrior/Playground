@@ -26,13 +26,10 @@ public abstract class Menu implements Listener {
         setupItems();
     }
 
-    // Abstract method to allow each menu to set up its own items
-    private abstract void setupItems();
+    public abstract void setupItems();
 
     public void clearItems() {
-        for (int i = 0; i < size-1; i++) {
-            player.getInventory().clear(i);
-        }
+        inventory.clear();
     }
 
     // Opens the menu for the player

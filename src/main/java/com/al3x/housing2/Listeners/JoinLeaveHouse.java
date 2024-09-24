@@ -41,7 +41,7 @@ public class JoinLeaveHouse implements Listener {
         objective.setDisplayName(colorize("&e&lHOUSING V2"));
 
         List<String> scoreboard = house.getScoreboard();
-        for (int i = scoreboard.size()-1; i > 0; i--) {
+        for (int i = 0; i < scoreboard.size(); i++) {
             String line = scoreboard.get(i);
             objective.getScore(colorize(parsePlaceholders(player, house, line))).setScore(i);
         }

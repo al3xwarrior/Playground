@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -56,13 +57,7 @@ public class Housing implements CommandExecutor {
             }
 
             if (strings[0].equalsIgnoreCase("goto")) {
-                Player target = Bukkit.getPlayer(strings[1]);
-                if (target == null) {
-                    player.sendMessage(colorize("&cThere is no player with that username online!"));
-                    return true;
-                }
-
-                if (housesManager.playerHasHouse(target)) {
+                if (housesManager.playerHasHouse(player)) {
                     HousingWorld house = housesManager.getHouse(player);
                     house.sendPlayerToHouse(player);
                     return true;
@@ -96,6 +91,7 @@ public class Housing implements CommandExecutor {
 
             if (strings[0].equalsIgnoreCase("hub")) {
                 World hub = Bukkit.getWorld("world");
+                if (hub == null) return false;
                 player.teleport(hub.getSpawnLocation());
                 return true;
             }
