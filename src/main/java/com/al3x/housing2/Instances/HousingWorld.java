@@ -39,6 +39,9 @@ public class HousingWorld {
     // Action Stuff
     private Map<EventType, List<Action>> eventActions;
 
+    // Stats
+    private StatManager statManager;
+
     public HousingWorld(Player owner, HouseSize size) {
         // Set up the Information
         this.ownerUUID = owner.getUniqueId();
@@ -47,6 +50,7 @@ public class HousingWorld {
         this.guests = 0;
         this.cookies = 0;
         this.timeCreated = System.currentTimeMillis();
+        this.statManager = new StatManager(house);
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
         // Create the actual world

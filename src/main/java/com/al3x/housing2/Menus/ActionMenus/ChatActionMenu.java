@@ -42,7 +42,7 @@ public class ChatActionMenu extends Menu {
 
     @Override
     public void setupItems() {
-        player.sendMessage(this.action.toString());
+        // player.sendMessage(action.toString());
         ItemStack messageItem = new ItemStack(Material.BOOK);
         ItemMeta messageItemMeta = messageItem.getItemMeta();
         messageItemMeta.setDisplayName(colorize("&aMessage"));
