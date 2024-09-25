@@ -56,6 +56,30 @@ public class Housing implements CommandExecutor {
                 return true;
             }
 
+            if (strings[0].equalsIgnoreCase("name")) {
+                if (!housesManager.playerHasHouse(player)) {
+                    player.sendMessage(colorize("&cYou don't have a house!"));
+                    return true;
+                }
+
+                if (strings.length < 1) {
+                    player.sendMessage(colorize("&cYou need to supply a name!"));
+                    return;
+                }
+
+                String fullName = "";
+                for (int i = 1; i < strings.length - 2; i++) {
+                    fullName += strings[i];
+                    if (i + 1 != strings.length) fullName += " ";
+                }
+
+                HousingWorld house = housesManager.getHouse(player);
+                house.setName(fullName);
+                player.sendMessage(colorize("&aThe name of your house was set to " + fullName + "&a!"));
+                
+                return true;
+            }
+
             if (strings[0].equalsIgnoreCase("goto")) {
                 if (housesManager.playerHasHouse(player)) {
                     HousingWorld house = housesManager.getHouse(player);
@@ -101,6 +125,7 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&2&lHousing Commands:"));
         player.sendMessage(colorize("&7- &f/housing create &7&o- start the creation process"));
         player.sendMessage(colorize("&7- &f/housing delete &7&o- delete your housing"));
+        player.sendMessage(colorize("&7- &f/housing name <name> &7&o- rename your housing"));
         player.sendMessage(colorize("&7- &f/housing goto &7&o- teleport to your housing"));
         player.sendMessage(colorize("&7- &f/housing visit <player> &7&o- visit another users housing"));
         player.sendMessage(colorize("&7- &f/housing hub &7&o- go back to the lobby"));

@@ -80,7 +80,7 @@ public class HousingWorld {
     }
 
     private void createTemplatePlatform() {
-        int platformSize = 13; // 13x13 platform
+        int platformSize = 15; // 13x13 platform
         int startX = -platformSize / 2;
         int startZ = -platformSize / 2;
 
@@ -89,14 +89,17 @@ public class HousingWorld {
                 // Place stone as the base (one block below the grass)
                 houseWorld.getBlockAt(x, 59, z).setType(Material.STONE);
 
-                // Place grass on top of the stone
-                houseWorld.getBlockAt(x, 60, z).setType(Material.GRASS_BLOCK);
+                // Place grass block on top of the stone
+                houseWorld.getBlockAt(x, 60, z).setType((Math.random() > 0.25) ? Material.GRASS_BLOCK : Material.DIRT);
+
+                // Place grass on top of grass block
+                if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.GRASS);
             }
         }
     }
 
     public void addEventAction(EventType eventType, Action action) {
-        // Shoutout to chatgpt cause i have 0 clue what this means
+        // Shoutout to chatgippity cause i have 0 clue what this means
         eventActions.computeIfAbsent(eventType, k -> new ArrayList<>()).add(action);
     }
 
@@ -139,7 +142,7 @@ public class HousingWorld {
     public void broadcast(String s) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().getName().equals(houseUUID)) {
-                player.sendMessage(s);
+                player.sendMessage();
             }
         }
     }
@@ -152,6 +155,7 @@ public class HousingWorld {
     }
     public void sendPlayerToHouse(Player player) {
         player.teleport(spawn);
+        player.sendMessage(colorize("&aSending you to " + name + "&a..."));
     }
     public void kickPlayerFromHouse(Player player) {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
@@ -164,6 +168,9 @@ public class HousingWorld {
     }
     public World getWorld() {
         return houseWorld;
+    }
+    public void setName(String s) {
+        name = s;
     }
     public String getName() {
         return name;

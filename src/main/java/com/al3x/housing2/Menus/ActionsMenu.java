@@ -47,13 +47,16 @@ public class ActionsMenu extends Menu {
     public void setupItems() {
         clearItems();
 
-        int start = currentPage * itemsPerPage;
-        int end = Math.min((actions != null) ? actions.size() : 0, start + itemsPerPage);
+        int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
-        // Display the actions for the current page
+        int start = currentPage * allowedSlots.length;
+        int end = Math.min((actions != null) ? actions.size() : 0, start + allowedSlots.length);
+
+        // Display the actions for the current page using the allowed slots
         for (int i = start; i < end; i++) {
             Action action = actions.get(i);
-            addItem(i - start, action.getDisplayItem(), () -> {
+            int slot = allowedSlots[i - start]; // Use the predefined slots
+            addItem(slot, action.getDisplayItem(), () -> {
                 if (action == null) {
                     player.sendMessage(colorize("&cError: Action is null?"));
                     return;
@@ -72,14 +75,18 @@ public class ActionsMenu extends Menu {
         ItemMeta prevMeta = previous.getItemMeta();
         prevMeta.setDisplayName(colorize("&aPrevious Page"));
         previous.setItemMeta(prevMeta);
-        addItem(45, previous, () -> {
-            if (currentPage > 0) {
+        if (currentPage > 0) {
+            addItem(45, previous, () -> {
                 currentPage--;
                 setupItems(); // Refresh the menu with the new page
                 return;
-            }
-            new EventActionsMenu(main, player, house).open();
-        });
+            });
+        } else {
+            addItem(49, previous, () -> {
+                new EventActionsMenu(main, player, house).open();
+            });
+        }
+        
 
         if (end < ((actions != null) ? actions.size() : 0)) {
             ItemStack next = new ItemStack(Material.ARROW);
@@ -96,7 +103,7 @@ public class ActionsMenu extends Menu {
         ItemMeta addActionMeta = addAction.getItemMeta();
         addActionMeta.setDisplayName(colorize("&aAdd Action"));
         addAction.setItemMeta(addActionMeta);
-        addItem(49, addAction, () -> {
+        addItem(50, addAction, () -> {
             new AddActionMenu(main, player, house, event).open();
         });
     }
