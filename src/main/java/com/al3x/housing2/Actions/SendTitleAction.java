@@ -77,4 +77,35 @@ public class SendTitleAction implements Action{
     public void execute(Player player) {
         player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
     }
+
+    public String getTitle() {
+        return title;
+    }
+    public String getSubtitle() {
+        return subtitle;
+    }
+    public int getFadeIn() {
+        return fadeIn;
+    }
+    public int getFadeOut() {
+        return fadeOut;
+    }
+    public int getStay() {
+        return stay;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+    public void setFadeIn(int fadeIn) {
+        this.fadeIn = fadeIn;
+    }
+    public void setFadeOut(int fadeOut) {
+        this.fadeOut = fadeOut;
+    }
+    public void setStay(int stay) {
+        this.stay = stay;
+    }
 }

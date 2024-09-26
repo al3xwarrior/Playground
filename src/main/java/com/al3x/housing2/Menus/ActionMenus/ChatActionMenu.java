@@ -28,7 +28,7 @@ public class ChatActionMenu extends Menu {
     private EventType event;
 
     public ChatActionMenu(Main main, Player player, HousingWorld house, ChatAction action, EventType event) {
-        super(player, colorize("&eChat Action Settings"), 36);
+        super(player, colorize("&eChat Action Settings"), 45);
         this.main = main;
         this.player = player;
         this.house = house;
@@ -43,9 +43,10 @@ public class ChatActionMenu extends Menu {
         ItemMeta messageItemMeta = messageItem.getItemMeta();
         messageItemMeta.setDisplayName(colorize("&aMessage"));
         messageItemMeta.setLore(Arrays.asList(
-                colorize("&fMessage: " + action.getMessage())
+                colorize("&fMessage: "/* + action.getMessage()*/)
         ));
         messageItem.setItemMeta(messageItemMeta);
+
         addItem(10, messageItem, () -> {
             // Close the menu and prompt the player to enter a new message
             player.closeInventory();
@@ -77,7 +78,7 @@ public class ChatActionMenu extends Menu {
         backArrow.setItemMeta(backArrowMeta);
         addItem(31, backArrow, () -> {
             if (event != null) {
-                new ActionsMenu(main, player, house, event.toString(), event);
+                new ActionsMenu(main, player, house, event.toString(), event).open();
                 return;
             }
         });

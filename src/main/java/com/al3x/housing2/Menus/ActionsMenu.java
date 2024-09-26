@@ -2,10 +2,12 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Actions.Action;
 import com.al3x.housing2.Actions.ChatAction;
+import com.al3x.housing2.Actions.SendTitleAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ActionMenus.ChatActionMenu;
+import com.al3x.housing2.Menus.ActionMenus.TitleActionMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -64,8 +66,13 @@ public class ActionsMenu extends Menu {
                 }
 
                 if (action instanceof ChatAction) {
-                    player.sendMessage("Opening ChatActionMenu with action: " + action);
                     new ChatActionMenu(main, player, house, (ChatAction) action, event).open();
+                    return;
+                }
+
+                if (action instanceof SendTitleAction) {
+                    new TitleActionMenu(main, player, house, (SendTitleAction) action, event).open();
+                    return;
                 }
             }, () -> {
                 removeAction(action);
