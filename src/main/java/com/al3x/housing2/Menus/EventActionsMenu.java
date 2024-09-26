@@ -18,6 +18,7 @@ public class EventActionsMenu extends Menu {
 
     public EventActionsMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&eEvent Actions"), 54);
+        this.main = main;
         this.player = player;
         this.house = house;
         setupItems();

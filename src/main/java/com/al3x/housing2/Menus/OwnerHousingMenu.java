@@ -17,6 +17,7 @@ public class OwnerHousingMenu extends Menu {
 
     public OwnerHousingMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&dHousing Menu"), 45);
+        this.main = main;
         this.player = player;
         this.house = house;
         setupItems();

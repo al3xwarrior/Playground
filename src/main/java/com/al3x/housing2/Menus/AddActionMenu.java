@@ -26,6 +26,7 @@ public class AddActionMenu extends Menu{
 
     public AddActionMenu(Main main, Player player, HousingWorld house, EventType event) {
         super(player, colorize("&aAdd Action"), 54);
+        this.main = main;
         this.player = player;
         this.house = house;
         this.event = event;

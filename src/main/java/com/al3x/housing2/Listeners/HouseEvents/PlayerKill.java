@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.World;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +23,7 @@ public class PlayerKill implements Listener {
     public void onKill(PlayerDeathEvent e) {
         DamageSource damageSource = e.getDamageSource();
         if (damageSource.getCausingEntity() != null && damageSource.getCausingEntity() instanceof Player) {
-            Player player = e.getDamageSource().getCausingEntity(); 
+            Player player = (Player) e.getDamageSource().getCausingEntity();
             World world = player.getWorld();
             if (world.getName().equals("world")) return;
 

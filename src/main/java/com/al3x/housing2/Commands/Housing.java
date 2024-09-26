@@ -64,7 +64,7 @@ public class Housing implements CommandExecutor {
 
                 if (strings.length < 1) {
                     player.sendMessage(colorize("&cYou need to supply a name!"));
-                    return;
+                    return true;
                 }
 
                 String fullName = "";

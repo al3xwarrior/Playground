@@ -4,6 +4,7 @@ import com.al3x.housing2.Actions.Action;
 import com.al3x.housing2.Actions.SendTitleAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.StatOperation;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import org.bukkit.*;
@@ -34,7 +35,7 @@ public class Stat {
             case StatOperation.DIVIDE: return num /= value;
             case StatOperation.MOD: return num %= value;
             case StatOperation.FLOOR: return num = Math.floor(num);
-            case StatOperation.ROUND: return num = Math.round(num);
+            case StatOperation.ROUND: return num = (double) Math.round(num);
             default: return num;
         }
     }

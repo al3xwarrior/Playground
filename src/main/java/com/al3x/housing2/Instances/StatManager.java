@@ -1,8 +1,15 @@
+package com.al3x.housing2.Instances;
+
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Stat;
+import org.bukkit.entity.Player;
+
+import java.util.*;
 
 public class StatManager {
 
     private Map<UUID, List<Stat>> stats;
-    private HousingWorld house; 
+    private HousingWorld house;
 
     public StatManager(HousingWorld house) {
         this.house = house;
@@ -19,15 +26,15 @@ public class StatManager {
         }
 
         // If no stat found, return a default stat with value 0
-        Stat defaultStat = new Stat(player, name, 0.0);
+        Stat defaultStat = new Stat(player.getUniqueId(), name, 0.0);
         playerStats.add(defaultStat);
         stats.put(player.getUniqueId(), playerStats);
         return defaultStat;
     }
 
     public List<Stat> getPlayerStats(Player player) {
-        if (stats.containsKey(player.getUniqueID())) {
-            return stats.get(player.getUniqueID());
+        if (stats.containsKey(player.getUniqueId())) {
+            return stats.get(player.getUniqueId());
         }
         return null;
     }

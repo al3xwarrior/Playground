@@ -17,6 +17,7 @@ public class SystemsMenu extends Menu {
 
     public SystemsMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&cSystems"), 45);
+        this.main = main;
         this.player = player;
         this.house = house;
         setupItems();

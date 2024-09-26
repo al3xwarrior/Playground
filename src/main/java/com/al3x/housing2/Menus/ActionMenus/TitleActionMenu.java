@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChatActionMenu extends Menu {
+public class TitleActionMenu extends Menu {
 
     private Main main;
     private Player player;
@@ -27,8 +27,8 @@ public class ChatActionMenu extends Menu {
     private ChatAction action;
     private EventType event;
 
-    public ChatActionMenu(Main main, Player player, HousingWorld house, ChatAction action, EventType event) {
-        super(player, colorize("&eChat Action Settings"), 36);
+    public TitleActionMenu(Main main, Player player, HousingWorld house, ChatAction action, EventType event) {
+        super(player, colorize("&eTitle Action Settings"), 36);
         this.main = main;
         this.player = player;
         this.house = house;
@@ -65,7 +65,7 @@ public class ChatActionMenu extends Menu {
                         AsyncPlayerChatEvent.getHandlerList().unregister(this);
 
                         // Reopen the ChatActionMenu
-                        Bukkit.getScheduler().runTaskLater(main, () -> new ChatActionMenu(main, player, house, action, event).open(), 1L); // Delay slightly to allow chat event to complete
+                        Bukkit.getScheduler().runTaskLater(main, () -> new TitleActionMenu(main, player, house, action, event).open(), 1L); // Delay slightly to allow chat event to complete
                     }
                 }
             }, main);

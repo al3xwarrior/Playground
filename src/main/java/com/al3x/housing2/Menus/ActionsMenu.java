@@ -28,6 +28,7 @@ public class ActionsMenu extends Menu {
 
     public ActionsMenu(Main main, Player player, HousingWorld house, String title, EventType event) {
         super(player, colorize(title), 54);
+        this.main = main;
         this.player = player;
         this.house = house;
         this.event = event;

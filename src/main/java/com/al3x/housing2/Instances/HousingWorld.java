@@ -50,7 +50,7 @@ public class HousingWorld {
         this.guests = 0;
         this.cookies = 0;
         this.timeCreated = System.currentTimeMillis();
-        this.statManager = new StatManager(house);
+        this.statManager = new StatManager(this);
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
         // Create the actual world
@@ -93,7 +93,7 @@ public class HousingWorld {
                 houseWorld.getBlockAt(x, 60, z).setType((Math.random() > 0.25) ? Material.GRASS_BLOCK : Material.DIRT);
 
                 // Place grass on top of grass block
-                if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.GRASS);
+                if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.SHORT_GRASS);
             }
         }
     }
