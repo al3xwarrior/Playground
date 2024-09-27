@@ -98,7 +98,7 @@ public class TitleActionMenu extends Menu {
             setSetting("SUBTITLE");
         });
 
-        ItemStack fadeInItem = new ItemStack(Material.BOOK);
+        ItemStack fadeInItem = new ItemStack(Material.CLOCK);
         ItemMeta fadeInItemMeta = fadeInItem.getItemMeta();
         fadeInItemMeta.setDisplayName(colorize("&aFade In Time"));
         fadeInItem.setItemMeta(fadeInItemMeta);
@@ -107,7 +107,7 @@ public class TitleActionMenu extends Menu {
             setSetting("FADEIN");
         });
 
-        ItemStack stayItem = new ItemStack(Material.BOOK);
+        ItemStack stayItem = new ItemStack(Material.CLOCK);
         ItemMeta stayItemMeta = stayItem.getItemMeta();
         stayItemMeta.setDisplayName(colorize("&aStay Time"));
         stayItem.setItemMeta(stayItemMeta);
@@ -116,7 +116,7 @@ public class TitleActionMenu extends Menu {
             setSetting("STAY");
         });
 
-        ItemStack fadeOutItem = new ItemStack(Material.BOOK);
+        ItemStack fadeOutItem = new ItemStack(Material.CLOCK);
         ItemMeta fadeOutItemMeta = fadeOutItem.getItemMeta();
         fadeOutItemMeta.setDisplayName(colorize("&aFade Out Time"));
         fadeOutItem.setItemMeta(fadeOutItemMeta);

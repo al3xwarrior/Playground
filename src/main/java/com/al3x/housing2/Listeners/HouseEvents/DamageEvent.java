@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
+
 public class DamageEvent implements Listener {
 
     private HousesManager housesManager;
@@ -21,14 +23,6 @@ public class DamageEvent implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player)) {return;}
-
-        Player player = (Player) e.getEntity();
-        World world = player.getWorld();
-        if (world.getName().equals("world")) return;
-
-        HousingWorld house = housesManager.getHouse(world);
-        if (house == null) return;
-
-        house.executeEventActions(EventType.PLAYER_DAMAGE, player);
+        sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity());
     }
 }

@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
+
 public class PlayerKill implements Listener {
 
     private HousesManager housesManager;
@@ -23,14 +25,8 @@ public class PlayerKill implements Listener {
     public void onKill(PlayerDeathEvent e) {
         DamageSource damageSource = e.getDamageSource();
         if (damageSource.getCausingEntity() != null && damageSource.getCausingEntity() instanceof Player) {
-            Player player = (Player) e.getDamageSource().getCausingEntity();
-            World world = player.getWorld();
-            if (world.getName().equals("world")) return;
-
-            HousingWorld house = housesManager.getHouse(world);
-            if (house == null) return;
-
-            house.executeEventActions(EventType.PLAYER_KILL, player);
+            sendEventExecution(housesManager, EventType.PLAYER_KILL, (Player) e.getDamageSource().getCausingEntity());
         }
+
     }
 }

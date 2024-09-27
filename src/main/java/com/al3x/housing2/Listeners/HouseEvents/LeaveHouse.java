@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
+
 public class LeaveHouse implements Listener {
 
     private HousesManager housesManager;
@@ -19,12 +21,7 @@ public class LeaveHouse implements Listener {
     }
 
     private void leaveHouse(Player player, World world) {
-        if (world.getName().equals("world")) return;
-
-        HousingWorld house = housesManager.getHouse(world);
-        if (house == null) return;
-
-        house.executeEventActions(EventType.PLAYER_QUIT, player);
+        sendEventExecution(housesManager, EventType.PLAYER_QUIT, player);
     }
 
     @EventHandler
