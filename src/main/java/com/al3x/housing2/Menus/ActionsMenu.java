@@ -74,6 +74,11 @@ public class ActionsMenu extends Menu {
                     new TitleActionMenu(main, player, house, (SendTitleAction) action, event).open();
                     return;
                 }
+
+                if (action instanceof ActionbarAction) {
+                    new ActionbarMenu(main, player, house, (ActionbarAction) action, event).open();
+                    return;
+                }
             }, () -> {
                 removeAction(action);
             });

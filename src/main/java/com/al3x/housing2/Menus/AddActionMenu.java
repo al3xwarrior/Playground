@@ -55,5 +55,25 @@ public class AddActionMenu extends Menu{
             house.setEventActions(event, actions);
             new ActionsMenu(main, player, house, event.toString(), event).open();
         });
+        
+        ItemStack actionBarItem = new ItemStack(Material.WRITTEN_BOOK);
+        ItemMeta actionBarItemMeta = actionBarItem.getItemMeta();
+        actionBarItemMeta.setDisplayName(colorize("&aAction Bar Action"));
+        actionBarItem.setItemMeta(actionBarItemMeta);
+        addItem(15, actionBarItem, () -> {
+            actions.add(new ActionbarAction());
+            house.setEventActions(event, actions);
+            new ActionsMenu(main, player, house, event.toString(), event).open();
+        });
+
+        ItemStack killItem = new ItemStack(Material.IRON_BAR);
+        ItemMeta killItemMeta = killItem.getItemMeta();
+        killItemMeta.setDisplayName(colorize("&aKill Player Action"));
+        killItem.setItemMeta(killItemMeta);
+        addItem(15, killItem, () -> {
+            actions.add(new KillPlayerAction());
+            house.setEventActions(event, actions);
+            new ActionsMenu(main, player, house, event.toString(), event).open();
+        });
     }
 }
