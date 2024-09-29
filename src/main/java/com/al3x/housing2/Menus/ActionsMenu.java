@@ -1,13 +1,10 @@
 package com.al3x.housing2.Menus;
 
-import com.al3x.housing2.Actions.Action;
-import com.al3x.housing2.Actions.ChatAction;
-import com.al3x.housing2.Actions.SendTitleAction;
+import com.al3x.housing2.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.ChatActionMenu;
-import com.al3x.housing2.Menus.ActionMenus.TitleActionMenu;
+import com.al3x.housing2.Menus.ActionMenus.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,10 +23,10 @@ public class ActionsMenu extends Menu {
     private EventType event;
 
     private int currentPage = 0;
-    private final int itemsPerPage = 45; // Leave room for navigation buttons
+    private final int itemsPerPage = 45;
 
-    public ActionsMenu(Main main, Player player, HousingWorld house, String title, EventType event) {
-        super(player, colorize(title), 54);
+    public ActionsMenu(Main main, Player player, HousingWorld house, EventType event) {
+        super(player, colorize("&7Edit Actions"), 54);
         this.main = main;
         this.player = player;
         this.house = house;
@@ -76,7 +73,17 @@ public class ActionsMenu extends Menu {
                 }
 
                 if (action instanceof ActionbarAction) {
-                    new ActionbarMenu(main, player, house, (ActionbarAction) action, event).open();
+                    new ActionbarActionMenu(main, player, house, (ActionbarAction) action, event).open();
+                    return;
+                }
+
+                if (action instanceof PlayerStatAction) {
+                    new PlayerStatActionMenu(main, player, house, (PlayerStatAction) action, event).open();
+                    return;
+                }
+
+                if (action instanceof PushPlayerAction) {
+                    new PushPlayerActionMenu(main, player, house, (PushPlayerAction) action, event).open();
                     return;
                 }
             }, () -> {
@@ -112,12 +119,22 @@ public class ActionsMenu extends Menu {
             });
         }
 
+        ItemStack backArrow = new ItemStack(Material.ARROW);
+        ItemMeta backArrowMeta = backArrow.getItemMeta();
+        backArrowMeta.setDisplayName(colorize("&cGo Back"));
+        backArrow.setItemMeta(backArrowMeta);
+        addItem(49, backArrow, () -> {
+            if (event != null) {
+                new EventActionsMenu(main, player, house).open();
+            }
+        });
+
         ItemStack addAction = new ItemStack(Material.PAPER);
         ItemMeta addActionMeta = addAction.getItemMeta();
         addActionMeta.setDisplayName(colorize("&aAdd Action"));
         addAction.setItemMeta(addActionMeta);
         addItem(50, addAction, () -> {
-            new AddActionMenu(main, player, house, event).open();
+            new AddActionMenu(main, player, 1, house, event).open();
         });
     }
 

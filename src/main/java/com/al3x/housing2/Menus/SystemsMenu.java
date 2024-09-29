@@ -16,7 +16,7 @@ public class SystemsMenu extends Menu {
     private HousingWorld house;
 
     public SystemsMenu(Main main, Player player, HousingWorld house) {
-        super(player, colorize("&cSystems"), 45);
+        super(player, colorize("&7Systems"), 45);
         this.main = main;
         this.player = player;
         this.house = house;
@@ -87,6 +87,14 @@ public class SystemsMenu extends Menu {
         customMenus.setItemMeta(customMenusMeta);
         addItem(19, customMenus, () -> {
             player.sendMessage("Opening Custom Menus...");
+        });
+
+        ItemStack backArrow = new ItemStack(Material.ARROW);
+        ItemMeta backArrowMeta = backArrow.getItemMeta();
+        backArrowMeta.setDisplayName(colorize("&cGo Back"));
+        backArrow.setItemMeta(backArrowMeta);
+        addItem(40, backArrow, () -> {
+            new OwnerHousingMenu(main, player, house).open();
         });
     }
 }

@@ -9,22 +9,22 @@ import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class KillPlayerAction implements Action{
+public class ResetInventoryAction implements Action{
 
-    public KillPlayerAction() {}
+    public ResetInventoryAction() {}
 
     @Override
     public String toString() {
-        return "KillPlayerAction";
+        return "ResetInventoryAction";
     }
 
     @Override
     public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.IRON_BARS);
+        ItemStack item = new ItemStack(Material.STONE);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&eKill Player Action"));
+        itemMeta.setDisplayName(colorize("&eReset Inventory Action"));
         itemMeta.setLore(Arrays.asList(
-                colorize("&7Kills the player"),
+                colorize("&7Clears the players inventory."),
                 "",
                 colorize("&eRight Click to remove!"),
                 colorize("&7Use shift and left/right click to change order.")
@@ -35,6 +35,6 @@ public class KillPlayerAction implements Action{
 
     @Override
     public void execute(Player player) {
-        player.setHealth(0.0);
+        player.getInventory().clear();
     }
 }

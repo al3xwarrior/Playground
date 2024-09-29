@@ -94,7 +94,7 @@ public class TitleActionMenu extends Menu {
         subtitleItemMeta.setDisplayName(colorize("&aSubtitle"));
         subtitleItem.setItemMeta(subtitleItemMeta);
 
-        addItem(11, titleItem, () -> {
+        addItem(11, subtitleItem, () -> {
             setSetting("SUBTITLE");
         });
 
@@ -103,7 +103,7 @@ public class TitleActionMenu extends Menu {
         fadeInItemMeta.setDisplayName(colorize("&aFade In Time"));
         fadeInItem.setItemMeta(fadeInItemMeta);
 
-        addItem(12, titleItem, () -> {
+        addItem(12, fadeInItem, () -> {
             setSetting("FADEIN");
         });
 
@@ -112,7 +112,7 @@ public class TitleActionMenu extends Menu {
         stayItemMeta.setDisplayName(colorize("&aStay Time"));
         stayItem.setItemMeta(stayItemMeta);
 
-        addItem(13, titleItem, () -> {
+        addItem(13, stayItem, () -> {
             setSetting("STAY");
         });
 
@@ -121,7 +121,7 @@ public class TitleActionMenu extends Menu {
         fadeOutItemMeta.setDisplayName(colorize("&aFade Out Time"));
         fadeOutItem.setItemMeta(fadeOutItemMeta);
 
-        addItem(14, titleItem, () -> {
+        addItem(14, fadeOutItem, () -> {
             setSetting("FADEOUT");
         });
 
@@ -131,7 +131,7 @@ public class TitleActionMenu extends Menu {
         backArrow.setItemMeta(backArrowMeta);
         addItem(31, backArrow, () -> {
             if (event != null) {
-                new ActionsMenu(main, player, house, event.toString(), event).open();
+                new ActionsMenu(main, player, house, event).open();
                 return;
             }
         });

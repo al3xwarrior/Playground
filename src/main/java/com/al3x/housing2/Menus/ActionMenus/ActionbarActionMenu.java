@@ -1,6 +1,6 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.ChatAction;
+import com.al3x.housing2.Actions.ActionbarAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -19,15 +19,15 @@ import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ActionbarMenu extends Menu {
+public class ActionbarActionMenu extends Menu {
 
     private Main main;
     private Player player;
     private HousingWorld house;
-    private ChatAction action;
+    private ActionbarAction action;
     private EventType event;
 
-    public ActionbarMenu(Main main, Player player, HousingWorld house, ActionbarAction action, EventType event) {
+    public ActionbarActionMenu(Main main, Player player, HousingWorld house, ActionbarAction action, EventType event) {
         super(player, colorize("&eChat Action Settings"), 45);
         this.main = main;
         this.player = player;
@@ -66,7 +66,7 @@ public class ActionbarMenu extends Menu {
                         AsyncPlayerChatEvent.getHandlerList().unregister(this);
 
                         // Reopen the ChatActionMenu
-                        Bukkit.getScheduler().runTaskLater(main, () -> new ActionbarAction(main, player, house, action, event).open(), 1L); // Delay slightly to allow chat event to complete
+                        Bukkit.getScheduler().runTaskLater(main, () -> new ActionbarActionMenu(main, player, house, action, event).open(), 1L); // Delay slightly to allow chat event to complete
                     }
                 }
             }, main);
@@ -78,7 +78,7 @@ public class ActionbarMenu extends Menu {
         backArrow.setItemMeta(backArrowMeta);
         addItem(31, backArrow, () -> {
             if (event != null) {
-                new ActionsMenu(main, player, house, event.toString(), event).open();
+                new ActionsMenu(main, player, house, event).open();
                 return;
             }
         });

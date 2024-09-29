@@ -68,15 +68,16 @@ public class HousingWorld {
 
         // Actions, Scoreboard, Default Stuff ya know?
         this.scoreboard = new ArrayList<>();
-        this.scoreboard.add(colorize("&fName: %player.name%"));
-        this.scoreboard.add(colorize("&fhawk tua! Ping: %player.ping%"));
-        this.scoreboard.add(colorize("&fSprinting! %player.isSprinting%"));
-        this.scoreboard.add(colorize("&f"));
-        this.scoreboard.add(colorize("&aPlayers: &2%house.guests%"));
-        this.scoreboard.add(colorize("&eCookies: &6%house.cookies%"));
+        this.scoreboard.add("&fName: %player.name%");
+        this.scoreboard.add("&fhawk tua! Ping: %player.ping%");
+        this.scoreboard.add("&fSprinting! %player.isSprinting%");
+        this.scoreboard.add("&f");
+        this.scoreboard.add("Twerks: &6%stat.player/twerks%");
+        this.scoreboard.add("&r");
+        this.scoreboard.add("&aPlayers: &2%house.guests%");
+        this.scoreboard.add("&eCookies: &6%house.cookies%");
 
         eventActions = new HashMap<>();
-        addEventAction(EventType.PLAYER_JOIN, new SendTitleAction("test", "shut up"));
     }
 
     private void createTemplatePlatform() {
@@ -90,7 +91,7 @@ public class HousingWorld {
                 houseWorld.getBlockAt(x, 59, z).setType(Material.STONE);
 
                 // Place grass block on top of the stone
-                houseWorld.getBlockAt(x, 60, z).setType((Math.random() > 0.25) ? Material.GRASS_BLOCK : Material.DIRT);
+                houseWorld.getBlockAt(x, 60, z).setType((Math.random() > 0.25) ? Material.GRASS_BLOCK : Material.COARSE_DIRT);
 
                 // Place grass on top of grass block
                 if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.SHORT_GRASS);
@@ -142,7 +143,7 @@ public class HousingWorld {
     public void broadcast(String s) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().getName().equals(houseUUID)) {
-                player.sendMessage();
+                player.sendMessage(colorize(s));
             }
         }
     }
@@ -156,6 +157,9 @@ public class HousingWorld {
     public void sendPlayerToHouse(Player player) {
         player.teleport(spawn);
         player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+    }
+    public StatManager getStatManager() {
+        return statManager;
     }
     public void kickPlayerFromHouse(Player player) {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());

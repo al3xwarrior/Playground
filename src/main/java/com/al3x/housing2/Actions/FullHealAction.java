@@ -9,22 +9,22 @@ import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class KillPlayerAction implements Action{
+public class FullHealAction implements Action{
 
-    public KillPlayerAction() {}
+    public FullHealAction() {}
 
     @Override
     public String toString() {
-        return "KillPlayerAction";
+        return "FullHealAction";
     }
 
     @Override
     public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.IRON_BARS);
+        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&eKill Player Action"));
+        itemMeta.setDisplayName(colorize("&eFull Heal Action"));
         itemMeta.setLore(Arrays.asList(
-                colorize("&7Kills the player"),
+                colorize("&7Fully heals the player."),
                 "",
                 colorize("&eRight Click to remove!"),
                 colorize("&7Use shift and left/right click to change order.")
@@ -35,6 +35,6 @@ public class KillPlayerAction implements Action{
 
     @Override
     public void execute(Player player) {
-        player.setHealth(0.0);
+        player.setHealth(player.getMaxHealth());
     }
 }

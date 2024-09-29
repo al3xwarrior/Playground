@@ -1,5 +1,8 @@
 package com.al3x.housing2.Actions;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -7,9 +10,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.swing.*;
 
+import java.awt.*;
 import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
+import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
 public class ActionbarAction implements Action{
 
@@ -49,7 +54,7 @@ public class ActionbarAction implements Action{
 
     @Override
     public void execute(Player player) {
-        //player.sendMessage(colorize(message));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(message)));
     }
 
     public String getMessage() {

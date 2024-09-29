@@ -23,7 +23,6 @@ public abstract class Menu implements Listener {
         this.player = player;
         this.size = size;
         this.inventory = Bukkit.createInventory(null, size, title);
-        setupItems();
     }
 
     public abstract void setupItems();
@@ -34,6 +33,7 @@ public abstract class Menu implements Listener {
 
     // Opens the menu for the player
     public void open() {
+        setupItems();
         MenuManager.setMenu(player, this);
         player.openInventory(inventory);
     }

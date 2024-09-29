@@ -7,5 +7,8 @@ public class Color {
     public static String colorize(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
+    public static String colorizeLegacyText(String s) {
+        return s.replaceAll("&", "§");
+    }
 
 }

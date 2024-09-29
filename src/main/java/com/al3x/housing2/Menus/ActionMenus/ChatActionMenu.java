@@ -78,7 +78,7 @@ public class ChatActionMenu extends Menu {
         backArrow.setItemMeta(backArrowMeta);
         addItem(31, backArrow, () -> {
             if (event != null) {
-                new ActionsMenu(main, player, house, event.toString(), event).open();
+                new ActionsMenu(main, player, house, event).open();
                 return;
             }
         });
