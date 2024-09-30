@@ -49,7 +49,7 @@ public class TitleActionMenu extends Menu {
             @EventHandler
             public void onPlayerChat(AsyncPlayerChatEvent e) {
                 if (e.getPlayer().equals(player)) {
-                    // Set the new message in the ChatAction
+                    e.setCancelled(true);
                     String newMessage = e.getMessage();
                     if (type.equals("TITLE")) {
                         action.setTitle(newMessage);

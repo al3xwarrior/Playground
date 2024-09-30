@@ -48,8 +48,8 @@ public class PlayerStatActionMenu extends Menu {
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onPlayerChat(AsyncPlayerChatEvent e) {
+                e.setCancelled(true);
                 if (e.getPlayer().equals(player)) {
-                    // Set the new message in the ChatAction
                     String newMessage = e.getMessage();
                     if (type.equals("STATNAME")) {
                         action.setStatName(newMessage);
@@ -84,12 +84,12 @@ public class PlayerStatActionMenu extends Menu {
         });
 
         ItemStack modeItem = new ItemStack(Material.COMPASS);
-        ItemMeta subtitleItemMeta = modeItem.getItemMeta();
-        subtitleItemMeta.setDisplayName(colorize("&aMode"));
-        subtitleItemMeta.setLore(Arrays.asList(
+        ItemMeta modeItemMeta = modeItem.getItemMeta();
+        modeItemMeta.setDisplayName(colorize("&aMode"));
+        modeItemMeta.setLore(Arrays.asList(
                 colorize("&fMode: " + action.getMode())
         ));
-        modeItem.setItemMeta(subtitleItemMeta);
+        modeItem.setItemMeta(modeItemMeta);
 
         addItem(11, modeItem, () -> {
             new OperationMenu(main, player, house, action, event).open();

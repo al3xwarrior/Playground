@@ -56,8 +56,8 @@ public class ActionbarActionMenu extends Menu {
             Bukkit.getPluginManager().registerEvents(new Listener() {
                 @EventHandler
                 public void onPlayerChat(AsyncPlayerChatEvent e) {
+                    e.setCancelled(true);
                     if (e.getPlayer().equals(player)) {
-                        // Set the new message in the ChatAction
                         String newMessage = e.getMessage();
                         action.setMessage(newMessage);
                         player.sendMessage(colorize("&aMessage set to: " + newMessage));
