@@ -117,13 +117,41 @@ public class AddActionMenu extends Menu{
                 new ActionsMenu(main, player, house, event).open();
             });
 
-            ItemStack backArrow = new ItemStack(Material.ARROW);
-            ItemMeta backArrowMeta = backArrow.getItemMeta();
-            backArrowMeta.setDisplayName(colorize("&cGo Back"));
-            backArrow.setItemMeta(backArrowMeta);
-            addItem(49, backArrow, () -> {
+            ItemStack playSoundItem = new ItemStack(Material.NOTE_BLOCK);
+            ItemMeta playSoundItemMeta = playSoundItem.getItemMeta();
+            playSoundItemMeta.setDisplayName(colorize("&aPlay Sound Action"));
+            playSoundItem.setItemMeta(playSoundItemMeta);
+            addItem(34, playSoundItem, () -> {
+                actions.add(new PlaySoundAction(player, house));
+                house.setEventActions(event, actions);
                 new ActionsMenu(main, player, house, event).open();
             });
+
+            ItemStack forwardArrow = new ItemStack(Material.ARROW);
+            ItemMeta forwardArrowMeta = forwardArrow.getItemMeta();
+            forwardArrowMeta.setDisplayName(colorize("&aNext Page"));
+            forwardArrow.setItemMeta(forwardArrowMeta);
+            addItem(53, forwardArrow, () -> {
+                new AddActionMenu(main, player, 2, house, event).open();
+            });
+        } else if (page == 2) {
+
+
+            ItemStack backArrow = new ItemStack(Material.ARROW);
+            ItemMeta backArrowMeta = backArrow.getItemMeta();
+            backArrowMeta.setDisplayName(colorize("&aLast Page"));
+            backArrow.setItemMeta(backArrowMeta);
+            addItem(45, backArrow, () -> {
+                new AddActionMenu(main, player, 1, house, event).open();
+            });
         }
+
+        ItemStack backArrow = new ItemStack(Material.ARROW);
+        ItemMeta backArrowMeta = backArrow.getItemMeta();
+        backArrowMeta.setDisplayName(colorize("&cGo Back"));
+        backArrow.setItemMeta(backArrowMeta);
+        addItem(49, backArrow, () -> {
+            new ActionsMenu(main, player, house, event).open();
+        });
     }
 }

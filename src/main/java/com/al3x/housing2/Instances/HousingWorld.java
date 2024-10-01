@@ -191,6 +191,9 @@ public class HousingWorld {
     public Location getSpawn() {
         return spawn;
     }
+    public void setScoreboard(List<String> scoreboard) {
+        this.scoreboard = scoreboard;
+    }
     public List<String> getScoreboard() {
         return scoreboard;
     }

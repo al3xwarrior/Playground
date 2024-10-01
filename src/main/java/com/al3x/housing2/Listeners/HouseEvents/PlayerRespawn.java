@@ -3,6 +3,8 @@ package com.al3x.housing2.Listeners.HouseEvents;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,9 +14,11 @@ import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExe
 
 public class PlayerRespawn implements Listener {
 
+    private Main main;
     private HousesManager housesManager;
 
-    public PlayerRespawn(HousesManager housesManager) {
+    public PlayerRespawn(Main main, HousesManager housesManager) {
+        this.main = main;
         this.housesManager = housesManager;
     }
 
@@ -26,7 +30,9 @@ public class PlayerRespawn implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
 
-        player.teleport(house.getSpawn());
+        Bukkit.getScheduler().runTaskLater(main, () -> {
+            player.teleport(house.getSpawn());
+        }, 1L);
     }
 
 }

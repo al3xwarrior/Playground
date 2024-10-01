@@ -86,6 +86,11 @@ public class ActionsMenu extends Menu {
                     new PushPlayerActionMenu(main, player, house, (PushPlayerAction) action, event).open();
                     return;
                 }
+
+                if (action instanceof PlaySoundAction) {
+                    new PlaySoundActionMenu(main, player, house, (PlaySoundAction) action, event).open();
+                    return;
+                }
             }, () -> {
                 removeAction(action);
             });

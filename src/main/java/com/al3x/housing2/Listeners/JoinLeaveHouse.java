@@ -101,6 +101,14 @@ public class JoinLeaveHouse implements Listener {
         // They are entering a house, not the hub
         if (!player.getWorld().getName().equals("world")) {
             joinHouse(player);
+        } else {
+            // Scoreboard
+            Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+            Objective objective = board.registerNewObjective("houseboard", "dummy");
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+            objective.setDisplayName(colorize("&e&lHOUSING V2"));
+            objective.getScore(colorize("&fTemp Hub Scoreboard")).setScore(1);
+            player.setScoreboard(board);
         }
     }
 

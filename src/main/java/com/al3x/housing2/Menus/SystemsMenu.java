@@ -46,7 +46,7 @@ public class SystemsMenu extends Menu {
         scoreboardEditorMeta.setDisplayName(colorize("&aScoreboard Editor"));
         scoreboardEditor.setItemMeta(scoreboardEditorMeta);
         addItem(12, scoreboardEditor, () -> {
-            player.sendMessage("Opening Scoreboard Editor...");
+            new ScoreboardMenu(main, player, house).open();
         });
 
         ItemStack commands = new ItemStack(Material.COMMAND_BLOCK);

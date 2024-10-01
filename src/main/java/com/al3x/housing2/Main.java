@@ -30,7 +30,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DamageEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDeath(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerKill(housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerRespawn(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerRespawn(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDropItem(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerPickupItem(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ToggleSneak(housesManager), this);
