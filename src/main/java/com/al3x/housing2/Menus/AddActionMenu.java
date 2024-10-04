@@ -4,6 +4,7 @@ import com.al3x.housing2.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.ActionMenus.RandomActionMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,11 +12,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class AddActionMenu extends Menu{
-
+public class AddActionMenu extends Menu {
+    private Menu backMenu;
     private Main main;
     private Player player;
     private int page;
@@ -34,6 +36,24 @@ public class AddActionMenu extends Menu{
         setupItems();
     }
 
+    //Will be used for random actions and conditions
+    public AddActionMenu(Main main, Player player, int page, HousingWorld house, EventType event, List<Action> actions, Menu backMenu) {
+        super(player, colorize("&aAdd Action"), 54);
+        this.main = main;
+        this.player = player;
+        this.page = page;
+        this.house = house;
+        this.event = event;
+        this.actions = actions;
+
+        if (actions == null) {
+            this.actions = house.getEventActions(event);
+        }
+
+        this.backMenu = backMenu;
+        setupItems();
+    }
+
     @Override
     public void setupItems() {
         if (page == 1) {
@@ -43,8 +63,12 @@ public class AddActionMenu extends Menu{
             pushItem.setItemMeta(pushItemMeta);
             addItem(0, pushItem, () -> {
                 actions.add(new PushPlayerAction(house));
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             //We go ahead and create the action here so we can check if it is allowed
@@ -56,8 +80,12 @@ public class AddActionMenu extends Menu{
                 cancelItem.setItemMeta(cancelItemMeta);
                 addItem(11, cancelItem, () -> {
                     actions.add(cancelAction);
-                    house.setEventActions(event, actions);
-                    new ActionsMenu(main, player, house, event).open();
+                    if (backMenu == null) {
+                        house.setEventActions(event, actions);
+                        new ActionsMenu(main, player, house, event).open();
+                        return;
+                    }
+                    backMenu.open();
                 });
             }
 
@@ -67,8 +95,12 @@ public class AddActionMenu extends Menu{
             killItem.setItemMeta(killItemMeta);
             addItem(12, killItem, () -> {
                 actions.add(new KillPlayerAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack fullHealItem = new ItemStack(Material.GOLDEN_APPLE);
@@ -77,8 +109,12 @@ public class AddActionMenu extends Menu{
             fullHealItem.setItemMeta(fullHealItemMeta);
             addItem(13, fullHealItem, () -> {
                 actions.add(new FullHealAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack sendTitleItem = new ItemStack(Material.BOOK);
@@ -87,8 +123,12 @@ public class AddActionMenu extends Menu{
             sendTitleItem.setItemMeta(sendTitleMeta);
             addItem(14, sendTitleItem, () -> {
                 actions.add(new SendTitleAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack actionBarItem = new ItemStack(Material.WRITABLE_BOOK);
@@ -97,8 +137,12 @@ public class AddActionMenu extends Menu{
             actionBarItem.setItemMeta(actionBarItemMeta);
             addItem(15, actionBarItem, () -> {
                 actions.add(new ActionbarAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack resetInventoryItem = new ItemStack(Material.STONE);
@@ -107,8 +151,12 @@ public class AddActionMenu extends Menu{
             resetInventoryItem.setItemMeta(resetInventoryItemMeta);
             addItem(16, resetInventoryItem, () -> {
                 actions.add(new ResetInventoryAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack chatMessageItem = new ItemStack(Material.PAPER);
@@ -117,8 +165,12 @@ public class AddActionMenu extends Menu{
             chatMessageItem.setItemMeta(chatMessageMeta);
             addItem(23, chatMessageItem, () -> {
                 actions.add(new ChatAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack statChangeItem = new ItemStack(Material.FEATHER);
@@ -127,8 +179,39 @@ public class AddActionMenu extends Menu{
             statChangeItem.setItemMeta(statChangeItemMeta);
             addItem(29, statChangeItem, () -> {
                 actions.add(new PlayerStatAction(player, house));
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
+            });
+
+            if (backMenu == null) {
+                ItemStack showRandomActionItem = new ItemStack(Material.ENDER_CHEST);
+                ItemMeta showRandomActionItemMeta = showRandomActionItem.getItemMeta();
+                showRandomActionItemMeta.setDisplayName(colorize("&aRandom Action"));
+                showRandomActionItem.setItemMeta(showRandomActionItemMeta);
+                addItem(32, showRandomActionItem, () -> {
+                    RandomAction randomAction = new RandomAction();
+                    actions.add(randomAction);
+                    house.setEventActions(event, actions);
+                    new RandomActionMenu(main, player, house, randomAction, event).open();
+                });
+            }
+
+            ItemStack showBossbarItem = new ItemStack(Material.WITHER_SKELETON_SKULL);
+            ItemMeta showBossbarItemMeta = showBossbarItem.getItemMeta();
+            showBossbarItemMeta.setDisplayName(colorize("&aShow Bossbar Action"));
+            showBossbarItem.setItemMeta(showBossbarItemMeta);
+            addItem(33, showBossbarItem, () -> {
+                actions.add(new ShowBossbarAction());
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack playSoundItem = new ItemStack(Material.NOTE_BLOCK);
@@ -137,18 +220,12 @@ public class AddActionMenu extends Menu{
             playSoundItem.setItemMeta(playSoundItemMeta);
             addItem(34, playSoundItem, () -> {
                 actions.add(new PlaySoundAction(player, house));
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
-            });
-
-            ItemStack showBossbarItem = new ItemStack(Material.WITHER_SKELETON_SKULL);
-            ItemMeta showBossbarItemMeta = showBossbarItem.getItemMeta();
-            showBossbarItemMeta.setDisplayName(colorize("&aShow Bossbar Action"));
-            showBossbarItem.setItemMeta(showBossbarItemMeta);
-            addItem(35, showBossbarItem, () -> {
-                actions.add(new ShowBossbarAction());
-                house.setEventActions(event, actions);
-                new ActionsMenu(main, player, house, event).open();
+                if (backMenu == null) {
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                    return;
+                }
+                backMenu.open();
             });
 
             ItemStack forwardArrow = new ItemStack(Material.ARROW);
@@ -175,6 +252,10 @@ public class AddActionMenu extends Menu{
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(49, backArrow, () -> {
+            if (backMenu != null) {
+                backMenu.open();
+                return;
+            }
             new ActionsMenu(main, player, house, event).open();
         });
     }

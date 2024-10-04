@@ -60,7 +60,7 @@ public class PushPlayerAction implements Action{
     }
 
     @Override
-    public boolean execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         switch (direction) {
             case FORWARD -> player.setVelocity(player.getLocation().getDirection().multiply(amount));
             case BACKWARD -> player.setVelocity(player.getLocation().getDirection().multiply(-amount));

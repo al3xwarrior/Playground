@@ -1,5 +1,6 @@
 package com.al3x.housing2.Actions;
 
+import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -74,7 +75,7 @@ public class SendTitleAction implements Action{
     }
 
     @Override
-    public boolean execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
         return true;
     }

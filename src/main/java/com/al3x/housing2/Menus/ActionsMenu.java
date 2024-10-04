@@ -21,6 +21,7 @@ public class ActionsMenu extends Menu {
     private HousingWorld house;
     private List<Action> actions;
     private EventType event;
+    private Menu backMenu;
 
     private int currentPage = 0;
     private final int itemsPerPage = 45;
@@ -32,6 +33,22 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.event = event;
         this.actions = house.getEventActions(event);
+        setupItems();
+    }
+
+    public ActionsMenu(Main main, Player player, HousingWorld house, EventType event, List<Action> actions, Menu backMenu) {
+        super(player, colorize("&7Edit Actions"), 54);
+        this.main = main;
+        this.player = player;
+        this.house = house;
+        this.event = event;
+        this.actions = actions;
+        this.backMenu = backMenu;
+
+        if (actions == null) {
+            this.actions = house.getEventActions(event);
+        }
+
         setupItems();
     }
 
@@ -91,6 +108,11 @@ public class ActionsMenu extends Menu {
                     new PlaySoundActionMenu(main, player, house, (PlaySoundAction) action, event).open();
                     return;
                 }
+
+                if (action instanceof RandomAction) {
+                    new RandomActionMenu(main, player, house, (RandomAction) action, event).open();
+                    return;
+                }
             }, () -> {
                 removeAction(action);
             });
@@ -111,7 +133,7 @@ public class ActionsMenu extends Menu {
                 new EventActionsMenu(main, player, house).open();
             });
         }
-        
+
 
         if (end < ((actions != null) ? actions.size() : 0)) {
             ItemStack next = new ItemStack(Material.ARROW);
@@ -139,7 +161,7 @@ public class ActionsMenu extends Menu {
         addActionMeta.setDisplayName(colorize("&aAdd Action"));
         addAction.setItemMeta(addActionMeta);
         addItem(50, addAction, () -> {
-            new AddActionMenu(main, player, 1, house, event).open();
+            new AddActionMenu(main, player, 1, house, event, actions, (backMenu != null ? this : null)).open();
         });
     }
 

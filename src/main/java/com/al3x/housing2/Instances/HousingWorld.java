@@ -51,6 +51,10 @@ public class HousingWorld {
     // Stats
     private StatManager statManager;
 
+    // Random Seed and Random instance
+    private String seed;
+    private Random random;
+
     public HousingWorld(Player owner, HouseSize size) {
         // Set up the Information
         this.ownerUUID = owner.getUniqueId();
@@ -62,6 +66,11 @@ public class HousingWorld {
         this.timeCreated = System.currentTimeMillis();
         this.housingNPCS = new ArrayList<>();
         this.statManager = new StatManager(this);
+
+        // Set up the seed and random instance
+        this.seed = UUID.randomUUID().toString();
+        this.random = new Random(seed.hashCode());
+
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
         // Create the actual world
@@ -89,6 +98,10 @@ public class HousingWorld {
         this.scoreboard.add("&eCookies: &6%house.cookies%");
 
         eventActions = new HashMap<>();
+        //Bad Al3x for not doing this the first time
+        for (EventType type : EventType.values()) {
+            eventActions.put(type, new ArrayList<>());
+        }
     }
 
     private void createTemplatePlatform() {
@@ -122,8 +135,8 @@ public class HousingWorld {
                 // Check if the action is null or if the event is allowed
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
                 // Execute the action either cancelling the event or not
-                if (event != null && !action.execute(player)) event.setCancelled(true);
-                if (event == null) action.execute(player);
+                if (event != null && !action.execute(player, this)) event.setCancelled(true);
+                if (event == null) action.execute(player, this);
             }
         }
     }
@@ -261,5 +274,13 @@ public class HousingWorld {
     }
     public int getSize() {
         return size;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public void setRandom(Random random) {
+        this.random = random;
     }
 }

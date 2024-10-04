@@ -1,6 +1,7 @@
 package com.al3x.housing2.Actions;
 
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Instances.HousingWorld;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
@@ -41,7 +42,7 @@ public class CancelAction implements Action {
     }
 
     @Override
-    public boolean execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         return false;
     }
 

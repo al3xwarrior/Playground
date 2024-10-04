@@ -1,5 +1,6 @@
 package com.al3x.housing2.Actions;
 
+import com.al3x.housing2.Instances.HousingWorld;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -53,7 +54,7 @@ public class ActionbarAction implements Action{
     }
 
     @Override
-    public boolean execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(message)));
 
         return true;
