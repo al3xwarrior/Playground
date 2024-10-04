@@ -127,6 +127,16 @@ public class AddActionMenu extends Menu{
                 new ActionsMenu(main, player, house, event).open();
             });
 
+            ItemStack showBossbarItem = new ItemStack(Material.WITHER_SKELETON_SKULL);
+            ItemMeta showBossbarItemMeta = showBossbarItem.getItemMeta();
+            showBossbarItemMeta.setDisplayName(colorize("&aShow Bossbar Action"));
+            showBossbarItem.setItemMeta(showBossbarItemMeta);
+            addItem(35, showBossbarItem, () -> {
+                actions.add(new ShowBossbarAction());
+                house.setEventActions(event, actions);
+                new ActionsMenu(main, player, house, event).open();
+            });
+
             ItemStack forwardArrow = new ItemStack(Material.ARROW);
             ItemMeta forwardArrowMeta = forwardArrow.getItemMeta();
             forwardArrowMeta.setDisplayName(colorize("&aNext Page"));

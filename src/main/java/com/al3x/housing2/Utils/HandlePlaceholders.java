@@ -22,6 +22,7 @@ public class HandlePlaceholders {
                 .replaceAll("%player.location.pitch%", String.valueOf(player.getLocation().getPitch()))
                 .replaceAll("%player.location.yaw%", String.valueOf(player.getLocation().getYaw()))
 
+
                 .replaceAll("%house.name%", house.getName())
                 .replaceAll("%house.cookies%", String.valueOf(house.getCookies()))
                 .replaceAll("%house.guests%", String.valueOf(house.getGuests()));

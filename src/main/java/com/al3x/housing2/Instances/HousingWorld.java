@@ -6,7 +6,10 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import de.oliver.fancynpcs.api.FancyNpcsPlugin;
+import de.oliver.fancynpcs.api.Npc;
 import org.bukkit.*;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -29,12 +32,16 @@ public class HousingWorld {
 
     // Stats about the house. More public data
     private String name;
+    private String description;
     private int size;
     private int guests;
     private int cookies;
     private long timeCreated;
     private Location spawn;
     private List<String> scoreboard;
+
+    // NPCs
+    private List<HousingNPC> housingNPCS;
 
     // Action Stuff
     private Map<EventType, List<Action>> eventActions;
@@ -49,7 +56,9 @@ public class HousingWorld {
         this.houseUUID = UUID.randomUUID();
         this.guests = 0;
         this.cookies = 0;
+        this.description = "";
         this.timeCreated = System.currentTimeMillis();
+        this.housingNPCS = new ArrayList<>();
         this.statManager = new StatManager(this);
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
@@ -113,6 +122,41 @@ public class HousingWorld {
         }
     }
 
+    public void createNPC(Player player, Location location) {
+        HousingNPC npc = new HousingNPC(player, location);
+        housingNPCS.add(npc);
+    }
+
+    public HousingNPC getNPC(String id) {
+        for (HousingNPC npc : housingNPCS) {
+            Bukkit.getLogger().info("Does " + npc.getNpcUUID() + " equal " + id + "? " + npc.getNpcUUID().equals(id));
+            if (npc.getNpcUUID().equals(id)) {
+                return npc;
+            }
+        }
+        return null;
+    }
+
+    public void removeNPC(String id) {
+        for (HousingNPC npc : housingNPCS) {
+            if (npc.getNpcUUID().equals(id)) {
+                Npc fancyNPC = FancyNpcsPlugin.get().getNpcManager().getNpcById(id);
+                if (fancyNPC == null) {
+                    Bukkit.getLogger().info("NPC is null...");
+                    return;
+                }
+                fancyNPC.removeForAll();
+                FancyNpcsPlugin.get().getNpcManager().removeNpc(fancyNPC);
+                housingNPCS.remove(npc);
+                return;
+            }
+        }
+    }
+
+    public List<HousingNPC> getNPCs() {
+        return housingNPCS;
+    }
+
     // Helper Method for delete()
     private boolean deleteWorld(File path) {
         if (path.exists()) {
@@ -148,6 +192,12 @@ public class HousingWorld {
         }
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String getDescription() {
+        return description;
+    }
     public void setEventActions(EventType type, List<Action> actions) {
         eventActions.put(type, actions);
     }

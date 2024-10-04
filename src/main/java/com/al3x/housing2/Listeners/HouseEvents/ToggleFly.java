@@ -5,7 +5,6 @@ import com.al3x.housing2.Instances.HousesManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 

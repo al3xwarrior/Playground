@@ -37,10 +37,10 @@ public class ScoreboardMenu extends Menu {
 
         List<String> scoreboard = house.getScoreboard();
         for (int i = 0; i < scoreboard.size(); i++) {
-            final String[] line = {scoreboard.get(i)};
+            String[] line = {scoreboard.get(i)};
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.setDisplayName(line[0]);
+            itemMeta.setDisplayName(colorize(line[0]));
             itemMeta.setLore(Arrays.asList(
                     colorize("&eLeft Click to edit!"),
                     colorize("&eRight Click to remove!"),

@@ -63,7 +63,7 @@ public class OwnerHousingMenu extends Menu {
         itemsMeta.setDisplayName(colorize("&aItems"));
         items.setItemMeta(itemsMeta);
         addItem(5, items, () -> {
-            player.sendMessage("items");
+            new ItemsMenu(main, player, house).open();
         });
 
         ItemStack furnature = new ItemStack(Material.RED_BED);

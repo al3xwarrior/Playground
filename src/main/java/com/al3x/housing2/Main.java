@@ -2,12 +2,29 @@ package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
-import com.al3x.housing2.Listeners.HousingMenuClickEvent;
-import com.al3x.housing2.Listeners.JoinLeaveHouse;
-import com.al3x.housing2.Listeners.MenuListener;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.plugin.java.JavaPlugin;
+
+// spawn particle
+// spawn entity
+// spectator mode
+// protool action (client side option)
+// https://www.youtube.com/watch?v=f3UY8ySackU
+// clear enderchest
+// booss bar
+// string stats
+// drop item at coords
+// launch projectile
+// player whitelist
+// chat event
+// clear player stats action
+// scoreboard layouts
 
 public final class Main extends JavaPlugin {
 
@@ -23,6 +40,8 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new HousingItems(housesManager), this);
 
         // House Events
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
