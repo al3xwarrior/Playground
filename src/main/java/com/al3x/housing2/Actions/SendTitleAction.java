@@ -74,8 +74,9 @@ public class SendTitleAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player) {
         player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        return true;
     }
 
     public String getTitle() {

@@ -53,8 +53,10 @@ public class ActionbarAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(message)));
+
+        return true;
     }
 
     public String getMessage() {

@@ -34,7 +34,8 @@ public class ResetInventoryAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player) {
         player.getInventory().clear();
+        return true;
     }
 }

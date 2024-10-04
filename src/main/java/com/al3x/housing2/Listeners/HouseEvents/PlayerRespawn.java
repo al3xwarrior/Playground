@@ -25,7 +25,7 @@ public class PlayerRespawn implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player player = e.getPlayer();
-        sendEventExecution(housesManager, EventType.PLAYER_RESPAWN, player);
+        sendEventExecution(housesManager, EventType.PLAYER_RESPAWN, player, null);
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;

@@ -34,7 +34,8 @@ public class KillPlayerAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player) {
         player.setHealth(0.0);
+        return true;
     }
 }

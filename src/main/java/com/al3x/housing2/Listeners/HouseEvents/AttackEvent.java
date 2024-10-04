@@ -20,6 +20,6 @@ public class AttackEvent implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getDamageSource().getCausingEntity() instanceof Player)) {return;}
-        sendEventExecution(housesManager, EventType.PLAYER_ATTACK, (Player) e.getDamageSource().getCausingEntity());
+        sendEventExecution(housesManager, EventType.PLAYER_ATTACK, (Player) e.getDamageSource().getCausingEntity(), e);
     }
 }

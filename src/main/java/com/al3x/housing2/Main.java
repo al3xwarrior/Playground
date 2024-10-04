@@ -2,6 +2,7 @@ package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import org.bukkit.Bukkit;
@@ -64,5 +65,12 @@ public final class Main extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        getServer().getLogger().info("[Housing2] Deleting houses...");
+        for (HousingWorld house : housesManager.getHouses()) {
+            house.delete();
+        }
+        getServer().getLogger().info("[Housing2] Disabled");
+
+    }
 }

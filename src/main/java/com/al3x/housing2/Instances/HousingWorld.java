@@ -11,6 +11,8 @@ import de.oliver.fancynpcs.api.Npc;
 import org.bukkit.*;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.io.File;
 import java.util.*;
@@ -113,11 +115,15 @@ public class HousingWorld {
         eventActions.computeIfAbsent(eventType, k -> new ArrayList<>()).add(action);
     }
 
-    public void executeEventActions(EventType eventType, Player player) {
+    public void executeEventActions(EventType eventType, Player player, Cancellable event) {
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
             for (Action action : actions) {
-                action.execute(player);
+                // Check if the action is null or if the event is allowed
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
+                // Execute the action either cancelling the event or not
+                if (event != null && !action.execute(player)) event.setCancelled(true);
+                if (event == null) action.execute(player);
             }
         }
     }

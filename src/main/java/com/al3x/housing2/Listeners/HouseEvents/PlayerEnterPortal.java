@@ -18,6 +18,6 @@ public class PlayerEnterPortal implements Listener {
 
     @EventHandler
     public void onEnterPortal(PlayerPortalEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_ENTER_PORTAL, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_ENTER_PORTAL, e.getPlayer(), e);
     }
 }

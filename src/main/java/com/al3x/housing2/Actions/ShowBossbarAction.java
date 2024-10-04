@@ -53,8 +53,8 @@ public class ShowBossbarAction implements Action{
                 "",
                 colorize("&eSettings:"),
                 colorize("&fTitle: " + getTitle()),
-                colorize("&fColor: " + getBarColor()),
-                colorize("&fStyle: " + getBarStyle()),
+                colorize("&fColor: " + getBarColor().name()),
+                colorize("&fStyle: " + getBarStyle().name()),
                 "",
                 colorize("&eLeft Click to edit!"),
                 colorize("&eRight Click to remove!"),
@@ -65,11 +65,12 @@ public class ShowBossbarAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player) {
         BossBar bossBar = Bukkit.createBossBar(colorize(title), barColor, barStyle);
         bossBar.setProgress(progress);
         bossBar.addPlayer(player);
         bossBar.setVisible(true);
+        return true;
     }
 
     public String getTitle() {

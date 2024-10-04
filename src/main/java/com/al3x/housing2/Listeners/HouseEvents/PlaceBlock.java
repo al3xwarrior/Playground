@@ -19,7 +19,7 @@ public class PlaceBlock implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_BLOCK_PLACE, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_BLOCK_PLACE, e.getPlayer(), e);
     }
 
 }

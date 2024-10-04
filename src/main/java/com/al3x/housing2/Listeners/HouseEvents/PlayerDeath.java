@@ -22,6 +22,6 @@ public class PlayerDeath implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_DEATH, e.getEntity());
+        sendEventExecution(housesManager, EventType.PLAYER_DEATH, e.getEntity(), null);
     }
 }

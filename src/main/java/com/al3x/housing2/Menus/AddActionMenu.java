@@ -47,6 +47,20 @@ public class AddActionMenu extends Menu{
                 new ActionsMenu(main, player, house, event).open();
             });
 
+            //We go ahead and create the action here so we can check if it is allowed
+            CancelAction cancelAction = new CancelAction();
+            if (cancelAction.allowedEvents().contains(event)) {
+                ItemStack cancelItem = new ItemStack(Material.TNT);
+                ItemMeta cancelItemMeta = cancelItem.getItemMeta();
+                cancelItemMeta.setDisplayName(colorize("&aCancel Action"));
+                cancelItem.setItemMeta(cancelItemMeta);
+                addItem(11, cancelItem, () -> {
+                    actions.add(cancelAction);
+                    house.setEventActions(event, actions);
+                    new ActionsMenu(main, player, house, event).open();
+                });
+            }
+
             ItemStack killItem = new ItemStack(Material.IRON_BARS);
             ItemMeta killItemMeta = killItem.getItemMeta();
             killItemMeta.setDisplayName(colorize("&aKill Player Action"));

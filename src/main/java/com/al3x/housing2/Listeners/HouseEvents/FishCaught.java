@@ -18,6 +18,6 @@ public class FishCaught implements Listener {
 
     @EventHandler
     public void onCatch(PlayerFishEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer(), e);
     }
 }

@@ -21,7 +21,7 @@ public class LeaveHouse implements Listener {
     }
 
     private void leaveHouse(Player player, World world) {
-        sendEventExecution(housesManager, EventType.PLAYER_QUIT, player);
+        sendEventExecution(housesManager, EventType.PLAYER_QUIT, player, null);
     }
 
     @EventHandler

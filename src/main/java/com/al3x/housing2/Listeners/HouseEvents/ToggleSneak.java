@@ -18,7 +18,7 @@ public class ToggleSneak implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_SNEAK, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_SNEAK, e.getPlayer(), null);
     }
 
 }

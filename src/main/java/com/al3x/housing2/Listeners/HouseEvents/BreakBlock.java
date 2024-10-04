@@ -19,7 +19,7 @@ public class BreakBlock implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_BLOCK_BREAK, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_BLOCK_BREAK, e.getPlayer(), e);
     }
 
 }
