@@ -67,11 +67,12 @@ public class PlaySoundAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         switch (location) {
             case INVOKERS_LOCATION -> player.playSound(player.getLocation(), sound, volume, pitch);
             case HOUSE_SPAWN -> player.playSound(house.getSpawn(), sound, volume, pitch);
         }
+        return true;
     }
 
     public Float getVolume() {

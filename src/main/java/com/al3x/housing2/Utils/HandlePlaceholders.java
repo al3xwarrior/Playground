@@ -7,6 +7,11 @@ import org.bukkit.entity.Player;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+I just vomited opening this file. It's a mess.
+- Sin_ender
+
+ */
 public class HandlePlaceholders {
 
     public static String parsePlaceholders(Player player, HousingWorld house, String s) {

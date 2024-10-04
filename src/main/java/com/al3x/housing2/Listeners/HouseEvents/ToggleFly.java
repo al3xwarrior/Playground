@@ -17,7 +17,7 @@ public class ToggleFly implements Listener {
 
     @EventHandler
     public void onFly(PlayerToggleFlightEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_FLIGHT, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_FLIGHT, e.getPlayer(), e);
     }
 
 }

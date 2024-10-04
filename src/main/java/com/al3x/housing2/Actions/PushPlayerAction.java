@@ -47,6 +47,7 @@ public class PushPlayerAction implements Action{
                 "",
                 colorize("&eSettings:"),
                 colorize("&fValue: " + getAmount()),
+                colorize("&fDirection: " + getDirection().name()),
                 "",
                 colorize("&eLeft Click to edit!"),
                 colorize("&eRight Click to remove!"),
@@ -59,7 +60,7 @@ public class PushPlayerAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         switch (direction) {
             case FORWARD -> player.setVelocity(player.getLocation().getDirection().multiply(amount));
             case BACKWARD -> player.setVelocity(player.getLocation().getDirection().multiply(-amount));
@@ -83,6 +84,8 @@ public class PushPlayerAction implements Action{
             }
 
         }
+
+        return true;
     }
 
     public double getAmount() {

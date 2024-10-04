@@ -25,7 +25,7 @@ public class PlayerKill implements Listener {
     public void onKill(PlayerDeathEvent e) {
         DamageSource damageSource = e.getDamageSource();
         if (damageSource.getCausingEntity() != null && damageSource.getCausingEntity() instanceof Player) {
-            sendEventExecution(housesManager, EventType.PLAYER_KILL, (Player) e.getDamageSource().getCausingEntity());
+            sendEventExecution(housesManager, EventType.PLAYER_KILL, (Player) e.getDamageSource().getCausingEntity(), null);
         }
 
     }

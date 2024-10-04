@@ -18,7 +18,7 @@ public class JoinHouse implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_JOIN, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_JOIN, e.getPlayer(), null);
     }
 
 }

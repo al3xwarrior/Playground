@@ -1,5 +1,6 @@
 package com.al3x.housing2.Actions;
 
+import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +35,8 @@ public class KillPlayerAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         player.setHealth(0.0);
+        return true;
     }
 }

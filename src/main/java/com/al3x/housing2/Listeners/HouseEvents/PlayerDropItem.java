@@ -18,6 +18,6 @@ public class PlayerDropItem implements Listener {
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer(), e);
     }
 }

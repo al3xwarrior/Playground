@@ -1,5 +1,6 @@
 package com.al3x.housing2.Actions;
 
+import com.al3x.housing2.Instances.HousingWorld;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -53,8 +54,8 @@ public class ShowBossbarAction implements Action{
                 "",
                 colorize("&eSettings:"),
                 colorize("&fTitle: " + getTitle()),
-                colorize("&fColor: " + getBarColor()),
-                colorize("&fStyle: " + getBarStyle()),
+                colorize("&fColor: " + getBarColor().name()),
+                colorize("&fStyle: " + getBarStyle().name()),
                 "",
                 colorize("&eLeft Click to edit!"),
                 colorize("&eRight Click to remove!"),
@@ -65,11 +66,12 @@ public class ShowBossbarAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         BossBar bossBar = Bukkit.createBossBar(colorize(title), barColor, barStyle);
         bossBar.setProgress(progress);
         bossBar.addPlayer(player);
         bossBar.setVisible(true);
+        return true;
     }
 
     public String getTitle() {

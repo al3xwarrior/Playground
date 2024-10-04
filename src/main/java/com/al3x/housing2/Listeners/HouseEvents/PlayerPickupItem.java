@@ -17,7 +17,7 @@ public class PlayerPickupItem implements Listener {
 
     @EventHandler
     public void onDrop(PlayerPickupItemEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_PICKUP_ITEM, e.getPlayer());
+        sendEventExecution(housesManager, EventType.PLAYER_PICKUP_ITEM, e.getPlayer(), e);
     }
 
 }

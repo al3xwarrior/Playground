@@ -63,9 +63,10 @@ public class PlayerStatAction implements Action{
     }
 
     @Override
-    public void execute(Player player) {
+    public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
         stat.modifyStat(mode, Double.parseDouble(value));
+        return true;
     }
 
     public String getStatName() {
