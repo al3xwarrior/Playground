@@ -86,14 +86,14 @@ public class NPCMenu extends Menu {
         entityTypeMeta.setDisplayName(colorize("&aEntity Type"));
         entityType.setItemMeta(entityTypeMeta);
         addItem(30, entityType, () -> {
-            player.sendMessage("entity type");
+            new EntityChooseMenu(main, player, housesManager, housingNPC).open();
         });
 
         ItemStack removeNPC = new ItemStack(Material.TNT);
         ItemMeta removeNPCMeta = removeNPC.getItemMeta();
         removeNPCMeta.setDisplayName(colorize("&cRemove NPC"));
         removeNPC.setItemMeta(removeNPCMeta);
-        addItem(44, removeNPC, () -> {
+        addItem(53, removeNPC, () -> {
             house.removeNPC(housingNPC.getNpcUUID());
             player.closeInventory();
         });
