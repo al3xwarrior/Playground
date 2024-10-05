@@ -55,7 +55,7 @@ public class HousingNPC {
 
         this.actions = new ArrayList<>();
 
-        NpcData data = new NpcData("null", creatorUUID, location);
+        NpcData data = new NpcData(UUID.randomUUID().toString(), creatorUUID, location);
         SkinFetcher skin = new SkinFetcher("http://textures.minecraft.net/texture/a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
         data.setSkin(skin);
         data.setDisplayName(colorize(this.name));

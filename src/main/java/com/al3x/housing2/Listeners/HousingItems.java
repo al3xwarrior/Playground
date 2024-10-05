@@ -24,7 +24,7 @@ public class HousingItems implements Listener {
     @EventHandler
     public void rightClick(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        Bukkit.getLogger().info("interact");
+
         // Click block
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             ItemStack item = e.getItem();
@@ -34,12 +34,11 @@ public class HousingItems implements Listener {
             String name = item.getItemMeta().getDisplayName();
             boolean ownerOfHouse = housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId());
 
-            Bukkit.getLogger().info("Right Clicked on a block holding an item");
-            Bukkit.getLogger().info(name.equals("§aNPC") + " " + itemType.equals(Material.PLAYER_HEAD) + " " + ownerOfHouse);
+            Bukkit.getLogger().info(name + " (" + name.equals("§aNPC") + " " + itemType.equals(Material.PLAYER_HEAD) + " " + ownerOfHouse + ")");
             if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && ownerOfHouse) {
+                e.setCancelled(true);
                 housesManager.getHouse(player.getWorld()).createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
             }
-
         }
     }
 }

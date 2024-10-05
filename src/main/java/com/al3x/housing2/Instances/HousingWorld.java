@@ -99,6 +99,7 @@ public class HousingWorld {
 
         eventActions = new HashMap<>();
         //Bad Al3x for not doing this the first time
+        // flip you buddy - Al3x
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
         }
