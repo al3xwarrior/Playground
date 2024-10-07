@@ -34,7 +34,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        this.housesManager = new HousesManager();
+        this.housesManager = new HousesManager(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager));
 

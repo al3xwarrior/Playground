@@ -4,16 +4,15 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import de.oliver.fancynpcs.api.FancyNpcsPlugin;
-import de.oliver.fancynpcs.api.Npc;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.LookClose;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import static com.al3x.housing2.Instances.HousingNPC.getNPCItem;
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
 public class NPCMenu extends Menu {
 
@@ -71,14 +70,15 @@ public class NPCMenu extends Menu {
         lookAtPlayersMeta.setDisplayName(colorize("&aLook at Players"));
         lookAtPlayers.setItemMeta(lookAtPlayersMeta);
         addItem(28, lookAtPlayers, () -> {
-            Npc npc = FancyNpcsPlugin.get().getNpcManager().getNpcById(housingNPC.getNpcUUID());
-            boolean newStatus = !npc.getData().isTurnToPlayer();
-            npc.getData().setTurnToPlayer(newStatus);
-            npc.updateForAll();
-            npc.removeForAll();
-            npc.spawnForAll();
-            if (newStatus) player.sendMessage(colorize("&aNPC will now look towards nearby players."));
-            else player.sendMessage(colorize("&aNPC will no longer look towards nearby players."));
+            NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(housingNPC.getNpcUUID());
+            boolean newStatus = !citizensNPC.hasTrait(LookClose.class);
+            if (newStatus) {
+                player.sendMessage(colorize("&aNPC will now look towards nearby players."));
+                citizensNPC.addTrait(LookClose.class);
+            } else {
+                player.sendMessage(colorize("&aNPC will no longer look towards nearby players."));
+                citizensNPC.removeTrait(LookClose.class);
+            }
         });
 
         ItemStack entityType = new ItemStack(Material.WOLF_SPAWN_EGG);

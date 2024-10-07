@@ -24,7 +24,7 @@ public class SkinSelectorMenu extends Menu {
     private HousingNPC housingNPC;
 
     public SkinSelectorMenu(Main main, Player player, HousesManager housesManager, HousingNPC housingNPC) {
-        super(player, colorize("&7Change Skin"), 45);
+        super(player, colorize("&7Change Skin"), 54);
         this.main = main;
         this.player = player;
         this.housesManager = housesManager;
@@ -34,7 +34,6 @@ public class SkinSelectorMenu extends Menu {
 
     @Override
     public void setupItems() {
-
 
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();

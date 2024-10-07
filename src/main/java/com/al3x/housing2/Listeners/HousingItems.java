@@ -1,7 +1,6 @@
 package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Instances.HousesManager;
-import de.oliver.fancynpcs.api.events.NpcInteractEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

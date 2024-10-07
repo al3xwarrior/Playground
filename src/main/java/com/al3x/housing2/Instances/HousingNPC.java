@@ -1,14 +1,15 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Actions.Action;
-import de.oliver.fancynpcs.api.FancyNpcsPlugin;
-import de.oliver.fancynpcs.api.Npc;
-import de.oliver.fancynpcs.api.NpcData;
-import de.oliver.fancynpcs.api.utils.SkinFetcher;
+import com.al3x.housing2.Main;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,11 @@ public class HousingNPC {
         return npc;
     }
 
+    private NPC citizensNPC;
+    private Main main;
+
     // Npc Properties
-    private String npcUUID;
+    private int npcUUID;
     private UUID creatorUUID;
     private String name;
     private boolean lookAtPlayer;
@@ -47,7 +51,8 @@ public class HousingNPC {
 
     private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
-    public HousingNPC(Player player, Location location) {
+    public HousingNPC(Main main, Player player, Location location) {
+        this.main = main;
         this.name = npcNames[new Random().nextInt(npcNames.length)];
         this.lookAtPlayer = true;
         this.location = location;
@@ -55,21 +60,24 @@ public class HousingNPC {
 
         this.actions = new ArrayList<>();
 
-        NpcData data = new NpcData(UUID.randomUUID().toString(), creatorUUID, location);
-        SkinFetcher skin = new SkinFetcher("http://textures.minecraft.net/texture/a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
-        data.setSkin(skin);
-        data.setDisplayName(colorize(this.name));
-
-        Npc npc = FancyNpcsPlugin.get().getNpcAdapter().apply(data);
-        FancyNpcsPlugin.get().getNpcManager().registerNpc(npc);
-        npc.create();
-        npc.spawnForAll();
+        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, this.name);
+        citizensNPC.spawn(location);
+        citizensNPC.faceLocation(player.getLocation());
 
         // Update it because weird
-        this.npcUUID = npc.getData().getId();
+        this.npcUUID = citizensNPC.getId();
     }
 
-    public String getNpcUUID() {
+    public void setEntity(EntityType entityType) {
+        citizensNPC.getEntity().setMetadata("NPC", new FixedMetadataValue(main, true));
+        citizensNPC.setBukkitEntityType(entityType);
+    }
+
+    public NPC getCitizensNPC() {
+        return citizensNPC;
+    }
+
+    public int getNpcUUID() {
         return npcUUID;
     }
 }

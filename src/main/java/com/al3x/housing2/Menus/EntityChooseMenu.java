@@ -2,10 +2,7 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
-import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import de.oliver.fancynpcs.api.FancyNpcsPlugin;
-import de.oliver.fancynpcs.api.Npc;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -29,14 +26,6 @@ public class EntityChooseMenu extends Menu {
         setupItems();
     }
 
-    private void setEntity(HousingNPC housingNPC, EntityType entityType) {
-        Npc npc = FancyNpcsPlugin.get().getNpcManager().getNpcById(housingNPC.getNpcUUID());
-        npc.getData().setType(entityType);
-        npc.updateForAll();
-        npc.removeForAll();
-        npc.spawnForAll();
-    }
-
     @Override
     public void setupItems() {
         // Basic entities
@@ -45,7 +34,7 @@ public class EntityChooseMenu extends Menu {
         zombieMeta.setDisplayName(colorize("&aZombie"));
         zombie.setItemMeta(zombieMeta);
         addItem(0, zombie, () -> {
-            setEntity(housingNPC, EntityType.ZOMBIE);
+            housingNPC.setEntity(EntityType.ZOMBIE);
         });
 
         ItemStack skeleton = new ItemStack(Material.SKELETON_SPAWN_EGG);
@@ -53,7 +42,7 @@ public class EntityChooseMenu extends Menu {
         skeletonMeta.setDisplayName(colorize("&aSkeleton"));
         skeleton.setItemMeta(skeletonMeta);
         addItem(1, skeleton, () -> {
-            setEntity(housingNPC, EntityType.SKELETON);
+            housingNPC.setEntity(EntityType.SKELETON);
         });
 
         ItemStack sheep = new ItemStack(Material.SHEEP_SPAWN_EGG);
@@ -61,7 +50,7 @@ public class EntityChooseMenu extends Menu {
         sheepMeta.setDisplayName(colorize("&aSheep"));
         sheep.setItemMeta(sheepMeta);
         addItem(2, sheep, () -> {
-            setEntity(housingNPC, EntityType.SHEEP);
+            housingNPC.setEntity(EntityType.SHEEP);
         });
 
         ItemStack cow = new ItemStack(Material.COW_SPAWN_EGG);
@@ -69,7 +58,7 @@ public class EntityChooseMenu extends Menu {
         cowMeta.setDisplayName(colorize("&aCow"));
         cow.setItemMeta(cowMeta);
         addItem(3, cow, () -> {
-            setEntity(housingNPC, EntityType.COW);
+            housingNPC.setEntity(EntityType.COW);
         });
 
         ItemStack pig = new ItemStack(Material.PIG_SPAWN_EGG);
@@ -77,7 +66,7 @@ public class EntityChooseMenu extends Menu {
         pigMeta.setDisplayName(colorize("&aPig"));
         pig.setItemMeta(pigMeta);
         addItem(4, pig, () -> {
-            setEntity(housingNPC, EntityType.PIG);
+            housingNPC.setEntity(EntityType.PIG);
         });
 
         ItemStack chicken = new ItemStack(Material.CHICKEN_SPAWN_EGG);
@@ -85,7 +74,7 @@ public class EntityChooseMenu extends Menu {
         chickenMeta.setDisplayName(colorize("&aChicken"));
         chicken.setItemMeta(chickenMeta);
         addItem(5, chicken, () -> {
-            setEntity(housingNPC, EntityType.CHICKEN);
+            housingNPC.setEntity(EntityType.CHICKEN);
         });
 
         ItemStack horse = new ItemStack(Material.HORSE_SPAWN_EGG);
@@ -93,7 +82,7 @@ public class EntityChooseMenu extends Menu {
         horseMeta.setDisplayName(colorize("&aHorse"));
         horse.setItemMeta(horseMeta);
         addItem(6, horse, () -> {
-            setEntity(housingNPC, EntityType.HORSE);
+            housingNPC.setEntity(EntityType.HORSE);
         });
 
         ItemStack villager = new ItemStack(Material.VILLAGER_SPAWN_EGG);
@@ -101,7 +90,7 @@ public class EntityChooseMenu extends Menu {
         villagerMeta.setDisplayName(colorize("&aVillager"));
         villager.setItemMeta(villagerMeta);
         addItem(7, villager, () -> {
-            setEntity(housingNPC, EntityType.VILLAGER);
+            housingNPC.setEntity(EntityType.VILLAGER);
         });
 
         ItemStack creeper = new ItemStack(Material.CREEPER_SPAWN_EGG);
@@ -109,7 +98,7 @@ public class EntityChooseMenu extends Menu {
         creeperMeta.setDisplayName(colorize("&aCreeper"));
         creeper.setItemMeta(creeperMeta);
         addItem(8, creeper, () -> {
-            setEntity(housingNPC, EntityType.CREEPER);
+            housingNPC.setEntity(EntityType.CREEPER);
         });
 
         ItemStack spider = new ItemStack(Material.SPIDER_SPAWN_EGG);
@@ -117,7 +106,7 @@ public class EntityChooseMenu extends Menu {
         spiderMeta.setDisplayName(colorize("&aSpider"));
         spider.setItemMeta(spiderMeta);
         addItem(9, spider, () -> {
-            setEntity(housingNPC, EntityType.SPIDER);
+            housingNPC.setEntity(EntityType.SPIDER);
         });
 
         ItemStack enderman = new ItemStack(Material.ENDERMAN_SPAWN_EGG);
@@ -125,7 +114,7 @@ public class EntityChooseMenu extends Menu {
         endermanMeta.setDisplayName(colorize("&aEnderman"));
         enderman.setItemMeta(endermanMeta);
         addItem(10, enderman, () -> {
-            setEntity(housingNPC, EntityType.ENDERMAN);
+            housingNPC.setEntity(EntityType.ENDERMAN);
         });
 
         ItemStack wolf = new ItemStack(Material.WOLF_SPAWN_EGG);
@@ -133,7 +122,7 @@ public class EntityChooseMenu extends Menu {
         wolfMeta.setDisplayName(colorize("&aWolf"));
         wolf.setItemMeta(wolfMeta);
         addItem(11, wolf, () -> {
-            setEntity(housingNPC, EntityType.WOLF);
+            housingNPC.setEntity(EntityType.WOLF);
         });
 
         ItemStack cat = new ItemStack(Material.CAT_SPAWN_EGG);
@@ -141,7 +130,7 @@ public class EntityChooseMenu extends Menu {
         catMeta.setDisplayName(colorize("&aCat"));
         cat.setItemMeta(catMeta);
         addItem(12, cat, () -> {
-            setEntity(housingNPC, EntityType.CAT);
+            housingNPC.setEntity(EntityType.CAT);
         });
 
         ItemStack fox = new ItemStack(Material.FOX_SPAWN_EGG);
@@ -149,7 +138,7 @@ public class EntityChooseMenu extends Menu {
         foxMeta.setDisplayName(colorize("&aFox"));
         fox.setItemMeta(foxMeta);
         addItem(13, fox, () -> {
-            setEntity(housingNPC, EntityType.FOX);
+            housingNPC.setEntity(EntityType.FOX);
         });
 
         ItemStack parrot = new ItemStack(Material.PARROT_SPAWN_EGG);
@@ -157,7 +146,7 @@ public class EntityChooseMenu extends Menu {
         parrotMeta.setDisplayName(colorize("&aParrot"));
         parrot.setItemMeta(parrotMeta);
         addItem(14, parrot, () -> {
-            setEntity(housingNPC, EntityType.PARROT);
+            housingNPC.setEntity(EntityType.PARROT);
         });
 
         ItemStack llama = new ItemStack(Material.LLAMA_SPAWN_EGG);
@@ -165,7 +154,7 @@ public class EntityChooseMenu extends Menu {
         llamaMeta.setDisplayName(colorize("&aLlama"));
         llama.setItemMeta(llamaMeta);
         addItem(15, llama, () -> {
-            setEntity(housingNPC, EntityType.LLAMA);
+            housingNPC.setEntity(EntityType.LLAMA);
         });
 
         ItemStack panda = new ItemStack(Material.PANDA_SPAWN_EGG);
@@ -173,7 +162,7 @@ public class EntityChooseMenu extends Menu {
         pandaMeta.setDisplayName(colorize("&aPanda"));
         panda.setItemMeta(pandaMeta);
         addItem(16, panda, () -> {
-            setEntity(housingNPC, EntityType.PANDA);
+            housingNPC.setEntity(EntityType.PANDA);
         });
 
         ItemStack bat = new ItemStack(Material.BAT_SPAWN_EGG);
@@ -181,7 +170,7 @@ public class EntityChooseMenu extends Menu {
         batMeta.setDisplayName(colorize("&aBat"));
         bat.setItemMeta(batMeta);
         addItem(17, bat, () -> {
-            setEntity(housingNPC, EntityType.BAT);
+            housingNPC.setEntity(EntityType.BAT);
         });
 
         ItemStack squid = new ItemStack(Material.SQUID_SPAWN_EGG);
@@ -189,7 +178,7 @@ public class EntityChooseMenu extends Menu {
         squidMeta.setDisplayName(colorize("&aSquid"));
         squid.setItemMeta(squidMeta);
         addItem(18, squid, () -> {
-            setEntity(housingNPC, EntityType.SQUID);
+            housingNPC.setEntity(EntityType.SQUID);
         });
 
         ItemStack dolphin = new ItemStack(Material.DOLPHIN_SPAWN_EGG);
@@ -197,7 +186,7 @@ public class EntityChooseMenu extends Menu {
         dolphinMeta.setDisplayName(colorize("&aDolphin"));
         dolphin.setItemMeta(dolphinMeta);
         addItem(19, dolphin, () -> {
-            setEntity(housingNPC, EntityType.DOLPHIN);
+            housingNPC.setEntity(EntityType.DOLPHIN);
         });
 
         ItemStack bee = new ItemStack(Material.BEE_SPAWN_EGG);
@@ -205,7 +194,7 @@ public class EntityChooseMenu extends Menu {
         beeMeta.setDisplayName(colorize("&aBee"));
         bee.setItemMeta(beeMeta);
         addItem(20, bee, () -> {
-            setEntity(housingNPC, EntityType.BEE);
+            housingNPC.setEntity(EntityType.BEE);
         });
 
         ItemStack ocelot = new ItemStack(Material.OCELOT_SPAWN_EGG);
@@ -213,7 +202,7 @@ public class EntityChooseMenu extends Menu {
         ocelotMeta.setDisplayName(colorize("&aOcelot"));
         ocelot.setItemMeta(ocelotMeta);
         addItem(21, ocelot, () -> {
-            setEntity(housingNPC, EntityType.OCELOT);
+            housingNPC.setEntity(EntityType.OCELOT);
         });
 
         ItemStack polarBear = new ItemStack(Material.POLAR_BEAR_SPAWN_EGG);
@@ -221,7 +210,7 @@ public class EntityChooseMenu extends Menu {
         polarBearMeta.setDisplayName(colorize("&aPolar Bear"));
         polarBear.setItemMeta(polarBearMeta);
         addItem(22, polarBear, () -> {
-            setEntity(housingNPC, EntityType.POLAR_BEAR);
+            housingNPC.setEntity(EntityType.POLAR_BEAR);
         });
 
         ItemStack rabbit = new ItemStack(Material.RABBIT_SPAWN_EGG);
@@ -229,7 +218,7 @@ public class EntityChooseMenu extends Menu {
         rabbitMeta.setDisplayName(colorize("&aRabbit"));
         rabbit.setItemMeta(rabbitMeta);
         addItem(23, rabbit, () -> {
-            setEntity(housingNPC, EntityType.RABBIT);
+            housingNPC.setEntity(EntityType.RABBIT);
         });
 
         ItemStack turtle = new ItemStack(Material.TURTLE_SPAWN_EGG);
@@ -237,7 +226,7 @@ public class EntityChooseMenu extends Menu {
         turtleMeta.setDisplayName(colorize("&aTurtle"));
         turtle.setItemMeta(turtleMeta);
         addItem(24, turtle, () -> {
-            setEntity(housingNPC, EntityType.TURTLE);
+            housingNPC.setEntity(EntityType.TURTLE);
         });
 
         ItemStack witch = new ItemStack(Material.WITCH_SPAWN_EGG);
@@ -245,7 +234,7 @@ public class EntityChooseMenu extends Menu {
         witchMeta.setDisplayName(colorize("&aWitch"));
         witch.setItemMeta(witchMeta);
         addItem(25, witch, () -> {
-            setEntity(housingNPC, EntityType.WITCH);
+            housingNPC.setEntity(EntityType.WITCH);
         });
 
         ItemStack ghast = new ItemStack(Material.GHAST_SPAWN_EGG);
@@ -253,7 +242,7 @@ public class EntityChooseMenu extends Menu {
         ghastMeta.setDisplayName(colorize("&aGhast"));
         ghast.setItemMeta(ghastMeta);
         addItem(26, ghast, () -> {
-            setEntity(housingNPC, EntityType.GHAST);
+            housingNPC.setEntity(EntityType.GHAST);
         });
 
         ItemStack witherSkeleton = new ItemStack(Material.WITHER_SKELETON_SPAWN_EGG);
@@ -261,7 +250,7 @@ public class EntityChooseMenu extends Menu {
         witherSkeletonMeta.setDisplayName(colorize("&aWither Skeleton"));
         witherSkeleton.setItemMeta(witherSkeletonMeta);
         addItem(27, witherSkeleton, () -> {
-            setEntity(housingNPC, EntityType.WITHER_SKELETON);
+            housingNPC.setEntity(EntityType.WITHER_SKELETON);
         });
 
         ItemStack blaze = new ItemStack(Material.BLAZE_SPAWN_EGG);
@@ -269,7 +258,7 @@ public class EntityChooseMenu extends Menu {
         blazeMeta.setDisplayName(colorize("&aBlaze"));
         blaze.setItemMeta(blazeMeta);
         addItem(28, blaze, () -> {
-            setEntity(housingNPC, EntityType.BLAZE);
+            housingNPC.setEntity(EntityType.BLAZE);
         });
 
         ItemStack slime = new ItemStack(Material.SLIME_SPAWN_EGG);
@@ -277,7 +266,7 @@ public class EntityChooseMenu extends Menu {
         slimeMeta.setDisplayName(colorize("&aSlime"));
         slime.setItemMeta(slimeMeta);
         addItem(29, slime, () -> {
-            setEntity(housingNPC, EntityType.SLIME);
+            housingNPC.setEntity(EntityType.SLIME);
         });
 
         ItemStack magmaCube = new ItemStack(Material.MAGMA_CUBE_SPAWN_EGG);
@@ -285,7 +274,7 @@ public class EntityChooseMenu extends Menu {
         magmaCubeMeta.setDisplayName(colorize("&aMagma Cube"));
         magmaCube.setItemMeta(magmaCubeMeta);
         addItem(30, magmaCube, () -> {
-            setEntity(housingNPC, EntityType.MAGMA_CUBE);
+            housingNPC.setEntity(EntityType.MAGMA_CUBE);
         });
 
         ItemStack guardian = new ItemStack(Material.GUARDIAN_SPAWN_EGG);
@@ -293,7 +282,7 @@ public class EntityChooseMenu extends Menu {
         guardianMeta.setDisplayName(colorize("&aGuardian"));
         guardian.setItemMeta(guardianMeta);
         addItem(31, guardian, () -> {
-            setEntity(housingNPC, EntityType.GUARDIAN);
+            housingNPC.setEntity(EntityType.GUARDIAN);
         });
 
         ItemStack elderGuardian = new ItemStack(Material.ELDER_GUARDIAN_SPAWN_EGG);
@@ -301,7 +290,7 @@ public class EntityChooseMenu extends Menu {
         elderGuardianMeta.setDisplayName(colorize("&aElder Guardian"));
         elderGuardian.setItemMeta(elderGuardianMeta);
         addItem(32, elderGuardian, () -> {
-            setEntity(housingNPC, EntityType.ELDER_GUARDIAN);
+            housingNPC.setEntity(EntityType.ELDER_GUARDIAN);
         });
 
         ItemStack phantom = new ItemStack(Material.PHANTOM_SPAWN_EGG);
@@ -309,7 +298,7 @@ public class EntityChooseMenu extends Menu {
         phantomMeta.setDisplayName(colorize("&aPhantom"));
         phantom.setItemMeta(phantomMeta);
         addItem(33, phantom, () -> {
-            setEntity(housingNPC, EntityType.PHANTOM);
+            housingNPC.setEntity(EntityType.PHANTOM);
         });
 
         ItemStack vex = new ItemStack(Material.VEX_SPAWN_EGG);
@@ -317,7 +306,7 @@ public class EntityChooseMenu extends Menu {
         vexMeta.setDisplayName(colorize("&aVex"));
         vex.setItemMeta(vexMeta);
         addItem(34, vex, () -> {
-            setEntity(housingNPC, EntityType.VEX);
+            housingNPC.setEntity(EntityType.VEX);
         });
 
         ItemStack evoker = new ItemStack(Material.EVOKER_SPAWN_EGG);
@@ -325,7 +314,7 @@ public class EntityChooseMenu extends Menu {
         evokerMeta.setDisplayName(colorize("&aEvoker"));
         evoker.setItemMeta(evokerMeta);
         addItem(35, evoker, () -> {
-            setEntity(housingNPC, EntityType.EVOKER);
+            housingNPC.setEntity(EntityType.EVOKER);
         });
 
         ItemStack pillager = new ItemStack(Material.PILLAGER_SPAWN_EGG);
@@ -333,7 +322,7 @@ public class EntityChooseMenu extends Menu {
         pillagerMeta.setDisplayName(colorize("&aPillager"));
         pillager.setItemMeta(pillagerMeta);
         addItem(36, pillager, () -> {
-            setEntity(housingNPC, EntityType.PILLAGER);
+            housingNPC.setEntity(EntityType.PILLAGER);
         });
 
         ItemStack ravager = new ItemStack(Material.RAVAGER_SPAWN_EGG);
@@ -341,7 +330,7 @@ public class EntityChooseMenu extends Menu {
         ravagerMeta.setDisplayName(colorize("&aRavager"));
         ravager.setItemMeta(ravagerMeta);
         addItem(37, ravager, () -> {
-            setEntity(housingNPC, EntityType.RAVAGER);
+            housingNPC.setEntity(EntityType.RAVAGER);
         });
 
         ItemStack strider = new ItemStack(Material.STRIDER_SPAWN_EGG);
@@ -349,7 +338,7 @@ public class EntityChooseMenu extends Menu {
         striderMeta.setDisplayName(colorize("&aStrider"));
         strider.setItemMeta(striderMeta);
         addItem(38, strider, () -> {
-            setEntity(housingNPC, EntityType.STRIDER);
+            housingNPC.setEntity(EntityType.STRIDER);
         });
 
         ItemStack piglin = new ItemStack(Material.PIGLIN_SPAWN_EGG);
@@ -357,7 +346,7 @@ public class EntityChooseMenu extends Menu {
         piglinMeta.setDisplayName(colorize("&aPiglin"));
         piglin.setItemMeta(piglinMeta);
         addItem(39, piglin, () -> {
-            setEntity(housingNPC, EntityType.PIGLIN);
+            housingNPC.setEntity(EntityType.PIGLIN);
         });
 
         ItemStack hoglin = new ItemStack(Material.HOGLIN_SPAWN_EGG);
@@ -365,7 +354,7 @@ public class EntityChooseMenu extends Menu {
         hoglinMeta.setDisplayName(colorize("&aHoglin"));
         hoglin.setItemMeta(hoglinMeta);
         addItem(40, hoglin, () -> {
-            setEntity(housingNPC, EntityType.HOGLIN);
+            housingNPC.setEntity(EntityType.HOGLIN);
         });
 
         ItemStack zoglin = new ItemStack(Material.ZOGLIN_SPAWN_EGG);
@@ -373,7 +362,7 @@ public class EntityChooseMenu extends Menu {
         zoglinMeta.setDisplayName(colorize("&aZoglin"));
         zoglin.setItemMeta(zoglinMeta);
         addItem(41, zoglin, () -> {
-            setEntity(housingNPC, EntityType.ZOGLIN);
+            housingNPC.setEntity(EntityType.ZOGLIN);
         });
 
         ItemStack striderSpawn = new ItemStack(Material.STRIDER_SPAWN_EGG);
@@ -381,7 +370,7 @@ public class EntityChooseMenu extends Menu {
         striderSpawnMeta.setDisplayName(colorize("&aStrider"));
         striderSpawn.setItemMeta(striderSpawnMeta);
         addItem(42, striderSpawn, () -> {
-            setEntity(housingNPC, EntityType.STRIDER);
+            housingNPC.setEntity(EntityType.STRIDER);
         });
 
         ItemStack shulker = new ItemStack(Material.SHULKER_SPAWN_EGG);
@@ -389,7 +378,7 @@ public class EntityChooseMenu extends Menu {
         shulkerMeta.setDisplayName(colorize("&aShulker"));
         shulker.setItemMeta(shulkerMeta);
         addItem(43, shulker, () -> {
-            setEntity(housingNPC, EntityType.SHULKER);
+            housingNPC.setEntity(EntityType.SHULKER);
         });
 
         ItemStack wither = new ItemStack(Material.WITHER_SPAWN_EGG);
@@ -397,22 +386,14 @@ public class EntityChooseMenu extends Menu {
         witherMeta.setDisplayName(colorize("&aWither"));
         wither.setItemMeta(witherMeta);
         addItem(44, wither, () -> {
-            setEntity(housingNPC, EntityType.WITHER);
-        });
-
-        ItemStack enderDragon = new ItemStack(Material.DRAGON_EGG);
-        ItemMeta enderDragonMeta = enderDragon.getItemMeta();
-        enderDragonMeta.setDisplayName(colorize("&aEnder Dragon"));
-        enderDragon.setItemMeta(enderDragonMeta);
-        addItem(45, enderDragon, () -> {
-            setEntity(housingNPC, EntityType.ENDER_DRAGON);
+            housingNPC.setEntity(EntityType.WITHER);
         });
 
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
-        addItem(40, backArrow, () -> {
+        addItem(49, backArrow, () -> {
             new NPCMenu(main, player, housesManager, housingNPC).open();
         });
     }

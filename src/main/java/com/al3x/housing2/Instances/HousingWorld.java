@@ -1,18 +1,16 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Actions.Action;
-import com.al3x.housing2.Actions.SendTitleAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Main;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
-import de.oliver.fancynpcs.api.FancyNpcsPlugin;
-import de.oliver.fancynpcs.api.Npc;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
-import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.player.PlayerEvent;
 
 import java.io.File;
 import java.util.*;
@@ -20,6 +18,8 @@ import java.util.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
+
+    private Main main;
 
     // Multiverse Core
     MultiverseCore core = (MultiverseCore) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -55,7 +55,9 @@ public class HousingWorld {
     private String seed;
     private Random random;
 
-    public HousingWorld(Player owner, HouseSize size) {
+    public HousingWorld(Main main, Player owner, HouseSize size) {
+        this.main = main;
+
         // Set up the Information
         this.ownerUUID = owner.getUniqueId();
         this.name = owner.getName() + "'s House";
@@ -143,30 +145,29 @@ public class HousingWorld {
     }
 
     public void createNPC(Player player, Location location) {
-        HousingNPC npc = new HousingNPC(player, location);
+        HousingNPC npc = new HousingNPC(main, player, location);
         housingNPCS.add(npc);
     }
 
-    public HousingNPC getNPC(String id) {
+    public HousingNPC getNPC(int id) {
         for (HousingNPC npc : housingNPCS) {
-            Bukkit.getLogger().info("Does " + npc.getNpcUUID() + " equal " + id + "? " + npc.getNpcUUID().equals(id));
-            if (npc.getNpcUUID().equals(id)) {
+            if (npc.getNpcUUID() == id) {
                 return npc;
             }
         }
         return null;
     }
 
-    public void removeNPC(String id) {
+    public void removeNPC(int id) {
         for (HousingNPC npc : housingNPCS) {
-            if (npc.getNpcUUID().equals(id)) {
-                Npc fancyNPC = FancyNpcsPlugin.get().getNpcManager().getNpcById(id);
-                if (fancyNPC == null) {
+            if (npc.getNpcUUID() == id) {
+                NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);
+                if (citizensNPC == null) {
                     Bukkit.getLogger().info("NPC is null...");
                     return;
                 }
-                fancyNPC.removeForAll();
-                FancyNpcsPlugin.get().getNpcManager().removeNpc(fancyNPC);
+                citizensNPC.destroy();
+                CitizensAPI.getNPCRegistry().deregister(citizensNPC);
                 housingNPCS.remove(npc);
                 return;
             }
@@ -179,6 +180,10 @@ public class HousingWorld {
 
     // Helper Method for delete()
     private boolean deleteWorld(File path) {
+        for (HousingNPC npc : housingNPCS) {
+            removeNPC(npc.getNpcUUID());
+        }
+
         if (path.exists()) {
             File files[] = path.listFiles();
             for (int i = 0; i < files.length; i++) {

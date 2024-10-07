@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Main;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -11,15 +12,18 @@ import java.util.UUID;
 
 public class HousesManager {
 
+    private Main main;
+
     // All the houses
     private List<HousingWorld> houses;
 
-    public HousesManager() {
+    public HousesManager(Main main) {
+        this.main = main;
         this.houses = new ArrayList<>();
     }
 
     public HousingWorld createHouse(Player owner, HouseSize size) {
-        HousingWorld house = new HousingWorld(owner, size);
+        HousingWorld house = new HousingWorld(main, owner, size);
         houses.add(house);
         return house;
     }
