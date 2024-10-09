@@ -4,14 +4,14 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.NPCMenu;
+import com.al3x.housing2.Menus.NPC.NPCMenu;
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class NPCInteractListener implements Listener {
@@ -19,37 +19,37 @@ public class NPCInteractListener implements Listener {
     private Main main;
     private HousesManager housesManager;
 
-    public NPCInteractListener(Main main, HousesManager housesManager) {
+    public NPCInteractListener(Main main) {
         this.main = main;
-        this.housesManager = housesManager;
+        this.housesManager = main.getHousesManager();
     }
 
-    @EventHandler
-    public void clickNPC(PlayerInteractEntityEvent e) {
-        Player player = e.getPlayer();
-        player.sendMessage("clicked");
-
-        Entity entity = e.getRightClicked();
+    private void npcInteract(Player player, Entity entity) {
         if (!entity.hasMetadata("NPC")) return;
-
-        player.sendMessage("its an npc");
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
-
-        player.sendMessage("house found");
 
         NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
         HousingNPC npc = house.getNPC(citizensNPC.getId());
         if (npc == null) return;
 
-        player.sendMessage("npc found");
-
-        player.sendMessage((house.getOwnerUUID().equals(player.getUniqueId())) + " " + player.isSneaking());
         if (house.getOwnerUUID().equals(player.getUniqueId()) && player.isSneaking()) {
-            new NPCMenu(main, player, housesManager, npc).open();
+            new NPCMenu(main, player, npc).open();
             return;
         }
+
+        npc.sendExecuteActions(house, player);
+    }
+
+    @EventHandler
+    public void leftClickNPC(EntityDamageByEntityEvent e) {
+        npcInteract((Player) e.getDamager(), e.getEntity());
+    }
+
+    @EventHandler
+    public void rightClickNPC(PlayerInteractEntityEvent e) {
+        npcInteract(e.getPlayer(), e.getRightClicked());
     }
 
 }

@@ -17,11 +17,9 @@ public abstract class Menu implements Listener {
     private Map<Integer, Runnable> leftClickActions = new HashMap<>();
     private Map<Integer, Runnable> rightClickActions = new HashMap<>();
     private Player player;
-    private int size;
 
     public Menu(Player player, String title, int size) {
         this.player = player;
-        this.size = size;
         this.inventory = Bukkit.createInventory(null, size, title);
     }
 

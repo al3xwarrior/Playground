@@ -4,6 +4,7 @@ import com.al3x.housing2.Actions.Action;
 import com.al3x.housing2.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.HologramTrait;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -73,11 +74,36 @@ public class HousingNPC {
         citizensNPC.setBukkitEntityType(entityType);
     }
 
+    public void sendExecuteActions(HousingWorld house, Player player) {
+        if (actions != null) {
+            for (Action action : actions) {
+                action.execute(player, house);
+            }
+        }
+    }
+
+    public void setHologramLines(List<String> lines) {
+        HologramTrait hologram = citizensNPC.getOrAddTrait(HologramTrait.class);
+        hologram.clear();
+
+        for (String line : lines) {
+            hologram.addLine(line);
+        }
+    }
+
+    public List<String> getHolograms() {
+        return citizensNPC.getOrAddTrait(HologramTrait.class).getLines();
+    }
+
     public NPC getCitizensNPC() {
         return citizensNPC;
     }
 
     public int getNpcUUID() {
         return npcUUID;
+    }
+
+    public List<Action> getActions() {
+        return actions;
     }
 }

@@ -1,8 +1,10 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.NPC;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Menus.NPC.NPCMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -28,12 +30,19 @@ public class EntityChooseMenu extends Menu {
 
     @Override
     public void setupItems() {
-        // Basic entities
+        ItemStack playerEntity = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta playerEntityMeta = playerEntity.getItemMeta();
+        playerEntityMeta.setDisplayName(colorize("&aPlayer"));
+        playerEntity.setItemMeta(playerEntityMeta);
+        addItem(0, playerEntity, () -> {
+            housingNPC.setEntity(EntityType.PLAYER);
+        });
+
         ItemStack zombie = new ItemStack(Material.ZOMBIE_SPAWN_EGG);
         ItemMeta zombieMeta = zombie.getItemMeta();
         zombieMeta.setDisplayName(colorize("&aZombie"));
         zombie.setItemMeta(zombieMeta);
-        addItem(0, zombie, () -> {
+        addItem(1, zombie, () -> {
             housingNPC.setEntity(EntityType.ZOMBIE);
         });
 
@@ -41,7 +50,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta skeletonMeta = skeleton.getItemMeta();
         skeletonMeta.setDisplayName(colorize("&aSkeleton"));
         skeleton.setItemMeta(skeletonMeta);
-        addItem(1, skeleton, () -> {
+        addItem(2, skeleton, () -> {
             housingNPC.setEntity(EntityType.SKELETON);
         });
 
@@ -49,7 +58,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta sheepMeta = sheep.getItemMeta();
         sheepMeta.setDisplayName(colorize("&aSheep"));
         sheep.setItemMeta(sheepMeta);
-        addItem(2, sheep, () -> {
+        addItem(3, sheep, () -> {
             housingNPC.setEntity(EntityType.SHEEP);
         });
 
@@ -57,7 +66,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta cowMeta = cow.getItemMeta();
         cowMeta.setDisplayName(colorize("&aCow"));
         cow.setItemMeta(cowMeta);
-        addItem(3, cow, () -> {
+        addItem(4, cow, () -> {
             housingNPC.setEntity(EntityType.COW);
         });
 
@@ -65,7 +74,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta pigMeta = pig.getItemMeta();
         pigMeta.setDisplayName(colorize("&aPig"));
         pig.setItemMeta(pigMeta);
-        addItem(4, pig, () -> {
+        addItem(5, pig, () -> {
             housingNPC.setEntity(EntityType.PIG);
         });
 
@@ -73,7 +82,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta chickenMeta = chicken.getItemMeta();
         chickenMeta.setDisplayName(colorize("&aChicken"));
         chicken.setItemMeta(chickenMeta);
-        addItem(5, chicken, () -> {
+        addItem(6, chicken, () -> {
             housingNPC.setEntity(EntityType.CHICKEN);
         });
 
@@ -81,7 +90,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta horseMeta = horse.getItemMeta();
         horseMeta.setDisplayName(colorize("&aHorse"));
         horse.setItemMeta(horseMeta);
-        addItem(6, horse, () -> {
+        addItem(7, horse, () -> {
             housingNPC.setEntity(EntityType.HORSE);
         });
 
@@ -89,7 +98,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta villagerMeta = villager.getItemMeta();
         villagerMeta.setDisplayName(colorize("&aVillager"));
         villager.setItemMeta(villagerMeta);
-        addItem(7, villager, () -> {
+        addItem(8, villager, () -> {
             housingNPC.setEntity(EntityType.VILLAGER);
         });
 
@@ -97,7 +106,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta creeperMeta = creeper.getItemMeta();
         creeperMeta.setDisplayName(colorize("&aCreeper"));
         creeper.setItemMeta(creeperMeta);
-        addItem(8, creeper, () -> {
+        addItem(9, creeper, () -> {
             housingNPC.setEntity(EntityType.CREEPER);
         });
 
@@ -105,7 +114,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta spiderMeta = spider.getItemMeta();
         spiderMeta.setDisplayName(colorize("&aSpider"));
         spider.setItemMeta(spiderMeta);
-        addItem(9, spider, () -> {
+        addItem(10, spider, () -> {
             housingNPC.setEntity(EntityType.SPIDER);
         });
 
@@ -113,7 +122,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta endermanMeta = enderman.getItemMeta();
         endermanMeta.setDisplayName(colorize("&aEnderman"));
         enderman.setItemMeta(endermanMeta);
-        addItem(10, enderman, () -> {
+        addItem(11, enderman, () -> {
             housingNPC.setEntity(EntityType.ENDERMAN);
         });
 
@@ -121,7 +130,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta wolfMeta = wolf.getItemMeta();
         wolfMeta.setDisplayName(colorize("&aWolf"));
         wolf.setItemMeta(wolfMeta);
-        addItem(11, wolf, () -> {
+        addItem(12, wolf, () -> {
             housingNPC.setEntity(EntityType.WOLF);
         });
 
@@ -129,7 +138,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta catMeta = cat.getItemMeta();
         catMeta.setDisplayName(colorize("&aCat"));
         cat.setItemMeta(catMeta);
-        addItem(12, cat, () -> {
+        addItem(13, cat, () -> {
             housingNPC.setEntity(EntityType.CAT);
         });
 
@@ -137,7 +146,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta foxMeta = fox.getItemMeta();
         foxMeta.setDisplayName(colorize("&aFox"));
         fox.setItemMeta(foxMeta);
-        addItem(13, fox, () -> {
+        addItem(14, fox, () -> {
             housingNPC.setEntity(EntityType.FOX);
         });
 
@@ -145,7 +154,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta parrotMeta = parrot.getItemMeta();
         parrotMeta.setDisplayName(colorize("&aParrot"));
         parrot.setItemMeta(parrotMeta);
-        addItem(14, parrot, () -> {
+        addItem(15, parrot, () -> {
             housingNPC.setEntity(EntityType.PARROT);
         });
 
@@ -153,7 +162,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta llamaMeta = llama.getItemMeta();
         llamaMeta.setDisplayName(colorize("&aLlama"));
         llama.setItemMeta(llamaMeta);
-        addItem(15, llama, () -> {
+        addItem(16, llama, () -> {
             housingNPC.setEntity(EntityType.LLAMA);
         });
 
@@ -161,7 +170,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta pandaMeta = panda.getItemMeta();
         pandaMeta.setDisplayName(colorize("&aPanda"));
         panda.setItemMeta(pandaMeta);
-        addItem(16, panda, () -> {
+        addItem(17, panda, () -> {
             housingNPC.setEntity(EntityType.PANDA);
         });
 
@@ -169,7 +178,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta batMeta = bat.getItemMeta();
         batMeta.setDisplayName(colorize("&aBat"));
         bat.setItemMeta(batMeta);
-        addItem(17, bat, () -> {
+        addItem(18, bat, () -> {
             housingNPC.setEntity(EntityType.BAT);
         });
 
@@ -177,7 +186,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta squidMeta = squid.getItemMeta();
         squidMeta.setDisplayName(colorize("&aSquid"));
         squid.setItemMeta(squidMeta);
-        addItem(18, squid, () -> {
+        addItem(19, squid, () -> {
             housingNPC.setEntity(EntityType.SQUID);
         });
 
@@ -185,7 +194,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta dolphinMeta = dolphin.getItemMeta();
         dolphinMeta.setDisplayName(colorize("&aDolphin"));
         dolphin.setItemMeta(dolphinMeta);
-        addItem(19, dolphin, () -> {
+        addItem(20, dolphin, () -> {
             housingNPC.setEntity(EntityType.DOLPHIN);
         });
 
@@ -193,7 +202,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta beeMeta = bee.getItemMeta();
         beeMeta.setDisplayName(colorize("&aBee"));
         bee.setItemMeta(beeMeta);
-        addItem(20, bee, () -> {
+        addItem(21, bee, () -> {
             housingNPC.setEntity(EntityType.BEE);
         });
 
@@ -201,7 +210,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta ocelotMeta = ocelot.getItemMeta();
         ocelotMeta.setDisplayName(colorize("&aOcelot"));
         ocelot.setItemMeta(ocelotMeta);
-        addItem(21, ocelot, () -> {
+        addItem(22, ocelot, () -> {
             housingNPC.setEntity(EntityType.OCELOT);
         });
 
@@ -209,7 +218,7 @@ public class EntityChooseMenu extends Menu {
         ItemMeta polarBearMeta = polarBear.getItemMeta();
         polarBearMeta.setDisplayName(colorize("&aPolar Bear"));
         polarBear.setItemMeta(polarBearMeta);
-        addItem(22, polarBear, () -> {
+        addItem(23, polarBear, () -> {
             housingNPC.setEntity(EntityType.POLAR_BEAR);
         });
 
@@ -217,16 +226,8 @@ public class EntityChooseMenu extends Menu {
         ItemMeta rabbitMeta = rabbit.getItemMeta();
         rabbitMeta.setDisplayName(colorize("&aRabbit"));
         rabbit.setItemMeta(rabbitMeta);
-        addItem(23, rabbit, () -> {
+        addItem(24, rabbit, () -> {
             housingNPC.setEntity(EntityType.RABBIT);
-        });
-
-        ItemStack turtle = new ItemStack(Material.TURTLE_SPAWN_EGG);
-        ItemMeta turtleMeta = turtle.getItemMeta();
-        turtleMeta.setDisplayName(colorize("&aTurtle"));
-        turtle.setItemMeta(turtleMeta);
-        addItem(24, turtle, () -> {
-            housingNPC.setEntity(EntityType.TURTLE);
         });
 
         ItemStack witch = new ItemStack(Material.WITCH_SPAWN_EGG);
@@ -394,7 +395,7 @@ public class EntityChooseMenu extends Menu {
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(49, backArrow, () -> {
-            new NPCMenu(main, player, housesManager, housingNPC).open();
+            new NPCMenu(main, player, housingNPC).open();
         });
     }
 }

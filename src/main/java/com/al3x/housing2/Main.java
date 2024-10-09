@@ -41,7 +41,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(housesManager), this);
 
         // House Events
@@ -62,6 +62,10 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlaceBlock(housesManager), this);
 
         getServer().getLogger().info("[Housing2] Enabled");
+    }
+
+    public HousesManager getHousesManager() {
+        return housesManager;
     }
 
     @Override

@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.UUID;
 
 public class SkullTextures {
+
+
     public static ItemStack getCustomSkull(String texture) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();

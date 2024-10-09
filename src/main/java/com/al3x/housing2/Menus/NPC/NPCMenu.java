@@ -1,9 +1,11 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.NPC;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.ActionsMenu;
+import com.al3x.housing2.Menus.Menu;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
@@ -22,10 +24,11 @@ public class NPCMenu extends Menu {
     private HousesManager housesManager;
     private HousingNPC housingNPC;
 
-    public NPCMenu(Main main, Player player, HousesManager housesManager, HousingNPC housingNPC) {
+    public NPCMenu(Main main, Player player, HousingNPC housingNPC) {
         super(player, colorize("&7Edit NPC"), 54);
+        this.main = main;
         this.player = player;
-        this.housesManager = housesManager;
+        this.housesManager = main.getHousesManager();
         this.house = housesManager.getHouse(player.getWorld());
         this.housingNPC = housingNPC;
         setupItems();
@@ -46,7 +49,7 @@ public class NPCMenu extends Menu {
         clickActionsMeta.setDisplayName(colorize("&aClick Actions"));
         clickActions.setItemMeta(clickActionsMeta);
         addItem(12, clickActions, () -> {
-            player.sendMessage("Click Actions selected");
+            new ActionsMenu(main, player, house, housingNPC).open();
         });
 
         ItemStack changeSkin = new ItemStack(Material.PLAYER_HEAD);

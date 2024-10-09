@@ -1,18 +1,14 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.NPC;
 
-import com.al3x.housing2.Actions.*;
-import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
-import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.*;
+import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Menus.NPC.NPCMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -40,7 +36,7 @@ public class SkinSelectorMenu extends Menu {
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(49, backArrow, () -> {
-            new NPCMenu(main, player, housesManager, housingNPC).open();
+            new NPCMenu(main, player, housingNPC).open();
         });
     }
 
