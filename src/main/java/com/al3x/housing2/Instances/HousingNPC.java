@@ -91,6 +91,10 @@ public class HousingNPC {
         }
     }
 
+    public List<String> getHologramLines() {
+        return citizensNPC.getOrAddTrait(HologramTrait.class).getLines();
+    }
+
     public List<String> getHolograms() {
         return citizensNPC.getOrAddTrait(HologramTrait.class).getLines();
     }

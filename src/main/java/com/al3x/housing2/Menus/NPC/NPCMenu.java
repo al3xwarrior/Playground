@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ActionsMenu;
+import com.al3x.housing2.Menus.HologramEditorMenu;
 import com.al3x.housing2.Menus.Menu;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -41,7 +42,7 @@ public class NPCMenu extends Menu {
         editHologramMeta.setDisplayName(colorize("&aEdit Hologram"));
         editHologram.setItemMeta(editHologramMeta);
         addItem(10, editHologram, () -> {
-            player.sendMessage("Edit Hologram selected");
+            new HologramEditorMenu(main, player, housingNPC).open();
         });
 
         ItemStack clickActions = new ItemStack(Material.PAPER);

@@ -47,9 +47,11 @@ public class NPCInteractListener implements Listener {
         npcInteract((Player) e.getDamager(), e.getEntity());
     }
 
+    /*
     @EventHandler
     public void rightClickNPC(PlayerInteractEntityEvent e) {
         npcInteract(e.getPlayer(), e.getRightClicked());
     }
+     */
 
 }
