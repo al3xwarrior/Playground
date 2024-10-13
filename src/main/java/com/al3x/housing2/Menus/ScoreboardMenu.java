@@ -2,7 +2,6 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.ActionbarActionMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -63,7 +62,7 @@ public class ScoreboardMenu extends Menu {
                             String newMessage = e.getMessage();
                             line[0] = newMessage;
                             player.sendMessage(colorize("&aLine set to: " + newMessage));
-                            house.setScoreboard(List.of(line));
+                            house.setScoreboard(Arrays.asList(line));
 
                             // Unregister this listener after capturing the message
                             AsyncPlayerChatEvent.getHandlerList().unregister(this);

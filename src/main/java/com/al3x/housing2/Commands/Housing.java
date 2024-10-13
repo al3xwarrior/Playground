@@ -3,6 +3,7 @@ package com.al3x.housing2.Commands;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -16,10 +17,12 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class Housing implements CommandExecutor {
 
+    private final Main main;
     private HousesManager housesManager;
 
-    public Housing(HousesManager housesManager) {
+    public Housing(HousesManager housesManager, Main main) {
         this.housesManager = housesManager;
+        this.main = main;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class Housing implements CommandExecutor {
                 HousingWorld house = housesManager.getHouse(player);
                 house.setName(fullName);
                 player.sendMessage(colorize("&aThe name of your house was set to " + fullName + "&a!"));
-                
+
                 return true;
             }
 

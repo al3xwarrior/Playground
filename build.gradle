@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.3'
+}
+
+group = 'com.al3x'
+version = '1.0'
+sourceCompatibility = '21'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/groups/public/' }
+    maven { url 'https://repo.onarandombox.com/content/groups/public/' }
+    maven { url 'https://maven.citizensnpcs.co/repo' }
+    maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
+    maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT'
+    compileOnly 'com.onarandombox.multiversecore:Multiverse-Core:4.3.1'
+    compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
+        transitive = false
+    }
+    compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
+    implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

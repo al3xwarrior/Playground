@@ -4,27 +4,36 @@ import com.al3x.housing2.Actions.Action;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Main;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
+import com.infernalsuite.aswm.api.exceptions.CorruptedWorldException;
+import com.infernalsuite.aswm.api.exceptions.NewerFormatException;
+import com.infernalsuite.aswm.api.exceptions.UnknownWorldException;
+import com.infernalsuite.aswm.api.loaders.SlimeLoader;
+import com.infernalsuite.aswm.api.world.SlimeWorld;
+import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
+import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
-
-    private Main main;
-
-    // Multiverse Core
-    MultiverseCore core = (MultiverseCore) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Core");
-    MVWorldManager worldManager = core.getMVWorldManager();
-    private World houseWorld;
+    transient private Main main;
+    transient private SlimeLoader loader;
+    transient private AdvancedSlimePaperAPI asp;
+    transient private World houseWorld;
+    transient private SlimeWorld slimeWorld;
 
     // The actual owners UUID
     private UUID ownerUUID;
@@ -55,8 +64,22 @@ public class HousingWorld {
     private String seed;
     private Random random;
 
+    //Loading a house that already exists
+    public HousingWorld(Main main, Player owner, HouseSize size, String name) {
+
+    }
+
+    // Creating a new house
     public HousingWorld(Main main, Player owner, HouseSize size) {
+        main.getLogger().info("Creating a new house for " + owner.getName() + "...");
         this.main = main;
+        try {
+            this.loader = main.getLoader();
+            this.asp = AdvancedSlimePaperAPI.instance();
+        } catch (Exception e) {
+            main.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            e.printStackTrace();
+        }
 
         // Set up the Information
         this.ownerUUID = owner.getUniqueId();
@@ -76,14 +99,14 @@ public class HousingWorld {
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
         // Create the actual world
-        worldManager.addWorld(
-                this.houseUUID.toString(),
-                World.Environment.NORMAL,
-                null,
-                WorldType.FLAT,
-                false,
-                "VoidGen"
-        );
+
+        SlimeWorld world = createOrReadWorld();
+        if (world == null) {
+            owner.sendMessage(colorize("&cFailed to create your house!"));
+            return;
+        }
+        slimeWorld = world;
+
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         createTemplatePlatform();
@@ -123,6 +146,52 @@ public class HousingWorld {
                 // Place grass on top of grass block
                 if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.SHORT_GRASS);
             }
+        }
+    }
+
+    private SlimePropertyMap getProperties() {
+        SlimePropertyMap properties = new SlimePropertyMap();
+
+        properties.setValue(SlimeProperties.DIFFICULTY, "normal");
+        properties.setValue(SlimeProperties.SPAWN_X, 0);
+        properties.setValue(SlimeProperties.SPAWN_Y, 61);
+        properties.setValue(SlimeProperties.SPAWN_Z, 0);
+//            properties.setValue(SlimeProperties.ALLOW_ANIMALS, false);
+//            properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
+//            properties.setValue(SlimeProperties.DRAGON_BATTLE, false);
+//            properties.setValue(SlimeProperties.PVP, false);
+        properties.setValue(SlimeProperties.ENVIRONMENT, "normal");
+        properties.setValue(SlimeProperties.WORLD_TYPE, "default");
+        properties.setValue(SlimeProperties.DEFAULT_BIOME, "minecraft:plains");
+
+        return properties;
+    }
+
+    private SlimeWorld createOrReadWorld() {
+        SlimeWorld world = null;
+
+        try {
+            if (!loader.worldExists(houseUUID.toString())) {
+                world = asp.createEmptyWorld(houseUUID.toString(), false, getProperties(), loader);
+                asp.saveWorld(world);
+            } else {
+                world = asp.readWorld(loader, houseUUID.toString(), false, getProperties());
+            }
+
+            world = asp.loadWorld(world, true);
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return world;
+    }
+
+    public void save() {
+        try {
+
+            asp.saveWorld(slimeWorld);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -184,17 +253,13 @@ public class HousingWorld {
             removeNPC(npc.getNpcUUID());
         }
 
-        if (path.exists()) {
-            File files[] = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteWorld(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
+        try {
+            loader.deleteWorld(houseUUID.toString());
+            return true;
+        } catch (UnknownWorldException | IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            return false;
         }
-        return(path.delete());
     }
 
     public void delete() {

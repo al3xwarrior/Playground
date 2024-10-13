@@ -5,12 +5,12 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
+import com.infernalsuite.aswm.api.loaders.SlimeLoader;
+import com.infernalsuite.aswm.loaders.file.FileLoader;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 // spawn particle
 // spawn entity
@@ -28,15 +28,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 // scoreboard layouts
 
 public final class Main extends JavaPlugin {
-
+    private SlimeLoader loader;
     private HousesManager housesManager;
 
     @Override
     public void onEnable() {
-
+        loader = new FileLoader(new File("./slime_worlds"));
         this.housesManager = new HousesManager(this);
 
-        getCommand("housing").setExecutor(new Housing(housesManager));
+        getCommand("housing").setExecutor(new Housing(housesManager, this));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
@@ -68,11 +68,15 @@ public final class Main extends JavaPlugin {
         return housesManager;
     }
 
+    public SlimeLoader getLoader() {
+        return loader;
+    }
+
     @Override
     public void onDisable() {
-        getServer().getLogger().info("[Housing2] Deleting houses...");
+        getServer().getLogger().info("[Housing2] Saving houses...");
         for (HousingWorld house : housesManager.getHouses()) {
-            house.delete();
+            house.save();
         }
         getServer().getLogger().info("[Housing2] Disabled");
 
