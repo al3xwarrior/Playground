@@ -62,7 +62,7 @@ public class AddActionMenu extends Menu {
             pushItemMeta.setDisplayName(colorize("&aPush Player Action"));
             pushItem.setItemMeta(pushItemMeta);
             addItem(0, pushItem, () -> {
-                actions.add(new PushPlayerAction(house));
+                actions.add(new PushPlayerAction());
                 if (backMenu == null) {
                     house.setEventActions(event, actions);
                     new ActionsMenu(main, player, house, event).open();
@@ -178,7 +178,7 @@ public class AddActionMenu extends Menu {
             statChangeItemMeta.setDisplayName(colorize("&aChange Stat Action"));
             statChangeItem.setItemMeta(statChangeItemMeta);
             addItem(29, statChangeItem, () -> {
-                actions.add(new PlayerStatAction(player, house));
+                actions.add(new PlayerStatAction());
                 if (backMenu == null) {
                     house.setEventActions(event, actions);
                     new ActionsMenu(main, player, house, event).open();
@@ -219,7 +219,7 @@ public class AddActionMenu extends Menu {
             playSoundItemMeta.setDisplayName(colorize("&aPlay Sound Action"));
             playSoundItem.setItemMeta(playSoundItemMeta);
             addItem(34, playSoundItem, () -> {
-                actions.add(new PlaySoundAction(player, house));
+                actions.add(new PlaySoundAction());
                 if (backMenu == null) {
                     house.setEventActions(event, actions);
                     new ActionsMenu(main, player, house, event).open();

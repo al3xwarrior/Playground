@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,40 @@ import java.util.List;
 /**
  * Represents an action that can be executed by a player.
  */
-public interface Action {
-    String toString();
+public abstract class Action {
+    String name;
 
-    ItemStack getDisplayItem();
+    public Action(String name) {
+        this.name = name;
+    }
 
-    boolean execute(Player player, HousingWorld house);
+    public String getName() {
+        return name;
+    }
+
+    public abstract String toString();
+
+    public abstract ItemStack getDisplayItem();
+
+    public abstract boolean execute(Player player, HousingWorld house);
+
+    public abstract HashMap<String, Object> data();
+
+    public void fromData(HashMap<String, Object> data, Class< ? extends Action> actionClass) {
+        for (String key : data.keySet()) {
+            try {
+                Field field = actionClass.getDeclaredField(key);
+                field.setAccessible(true);
+                if (field.getType().isEnum()) {
+                    field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
+                    continue;
+                }
+                field.set(this, data.get(key));
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     /**
@@ -26,7 +55,7 @@ public interface Action {
      *
      * @return a list of strings representing the allowed events
      */
-    default List<EventType> allowedEvents() {
+    public List<EventType> allowedEvents() {
         return null;
     }
 
@@ -39,7 +68,7 @@ public interface Action {
      *
      * @return a map of strings representing the actions
      */
-    default HashMap<String, List<Action>> getActions() {
+    public HashMap<String, List<Action>> getActions() {
         return new HashMap<>();
     }
 }

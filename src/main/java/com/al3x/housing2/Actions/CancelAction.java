@@ -10,15 +10,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Enums.EventType.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
-public class CancelAction implements Action {
+public class CancelAction extends Action {
 
-    public CancelAction() { }
+    public CancelAction() {
+        super("Cancel Action");
+    }
 
     @Override
     public String toString() {
@@ -49,5 +52,10 @@ public class CancelAction implements Action {
     @Override
     public List<EventType> allowedEvents() {
         return Arrays.asList(FISH_CAUGHT, PLAYER_ENTER_PORTAL, PLAYER_BLOCK_BREAK, PLAYER_BLOCK_PLACE, PLAYER_DROP_ITEM, PLAYER_PICKUP_ITEM, PLAYER_TOGGLE_FLIGHT);
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        return new HashMap<>();
     }
 }

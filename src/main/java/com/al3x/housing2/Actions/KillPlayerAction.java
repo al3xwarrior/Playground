@@ -7,12 +7,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class KillPlayerAction implements Action{
+public class KillPlayerAction extends Action {
 
-    public KillPlayerAction() {}
+    public KillPlayerAction() {
+        super("Kill Player Action");
+    }
 
     @Override
     public String toString() {
@@ -38,5 +41,10 @@ public class KillPlayerAction implements Action{
     public boolean execute(Player player, HousingWorld house) {
         player.setHealth(0.0);
         return true;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        return new HashMap<>();
     }
 }

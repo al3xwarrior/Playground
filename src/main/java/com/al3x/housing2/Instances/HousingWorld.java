@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Actions.Action;
+import com.al3x.housing2.Actions.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.HouseData;
@@ -63,7 +64,7 @@ public class HousingWorld {
     private List<HousingNPC> housingNPCS;
 
     // Action Stuff
-    private Map<EventType, List<Action>> eventActions;
+    private HashMap<EventType, List<Action>> eventActions;
 
     // Stats
     private StatManager statManager;
@@ -119,10 +120,14 @@ public class HousingWorld {
         this.scoreboard = houseData.getScoreboard();
 
         eventActions = new HashMap<>(); //Eventually I will have this load from the json
-        //Bad Al3x for not doing this the first time
-        // flip you buddy - Al3x
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
+            List<com.al3x.housing2.Instances.HousingData.Action> actions = houseData.getEventActions().get(type);
+            if (actions != null) {
+                for (com.al3x.housing2.Instances.HousingData.Action action : actions) {
+                    eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData()));
+                }
+            }
         }
 
         this.seed = houseData.getSeed();
@@ -444,5 +449,9 @@ public class HousingWorld {
 
     public String getSeed() {
         return seed;
+    }
+
+    public HashMap<EventType, List<Action>> getEventActions() {
+        return eventActions;
     }
 }

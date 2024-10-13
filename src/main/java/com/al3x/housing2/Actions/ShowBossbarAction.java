@@ -14,11 +14,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.BatchUpdateException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
-public class ShowBossbarAction implements Action{
+public class ShowBossbarAction extends Action {
 
     private String title;
     private BarColor barColor;
@@ -26,6 +27,7 @@ public class ShowBossbarAction implements Action{
     private double progress;
 
     public ShowBossbarAction() {
+        super("Show Bossbar Action");
         this.title = "&eHello World!";
         this.barColor = BarColor.WHITE;
         this.barStyle = BarStyle.SOLID;
@@ -33,6 +35,7 @@ public class ShowBossbarAction implements Action{
     }
 
     public ShowBossbarAction(String title, BarColor barColor, BarStyle barStyle, double progress) {
+        super("Show Bossbar Action");
         this.title = title;
         this.barColor = barColor;
         this.barStyle = barStyle;
@@ -91,5 +94,15 @@ public class ShowBossbarAction implements Action{
     }
     public void setBarStyle(BarStyle barStyle) {
         this.barStyle = barStyle;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("barColor", barColor);
+        data.put("barStyle", barStyle);
+        data.put("progress", progress);
+        return data;
     }
 }

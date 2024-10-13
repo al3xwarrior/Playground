@@ -13,25 +13,28 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
-public class ActionbarAction implements Action{
+public class ActionbarAction extends Action {
 
     private String message;
 
     public ActionbarAction() {
+        super("Actionbar Action");
         this.message = "&eHello World!";
     }
 
     public ActionbarAction(String message) {
+        super("Actionbar Action");
         this.message = message;
     }
 
     @Override
     public String toString() {
-        return "ActionbarAction (Message: " + message + ")";
+        return name + " (Message: " + message + ")";
     }
 
     @Override
@@ -66,4 +69,19 @@ public class ActionbarAction implements Action{
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("message", message);
+        return data;
+    }
+
+//    @Override
+//    public void fromData(HashMap<String, Object> data) {
+//        if (!data.containsKey("message")) {
+//            return;
+//        }
+//        message = (String) data.get("message");
+//    }
 }

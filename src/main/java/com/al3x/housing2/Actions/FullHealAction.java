@@ -7,12 +7,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class FullHealAction implements Action{
+public class FullHealAction extends Action {
 
-    public FullHealAction() {}
+    public FullHealAction() {
+        super("Full Heal Action");
+    }
 
     @Override
     public String toString() {
@@ -38,5 +41,10 @@ public class FullHealAction implements Action{
     public boolean execute(Player player, HousingWorld house) {
         player.setHealth(player.getMaxHealth());
         return true;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        return new HashMap<>();
     }
 }

@@ -9,18 +9,21 @@ import org.bukkit.inventory.meta.ItemMeta;
 import javax.swing.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChatAction implements Action{
+public class ChatAction extends Action {
 
     private String message;
 
     public ChatAction() {
+        super("Chat Action");
         this.message = "&eHello World!";
     }
 
     public ChatAction(String message) {
+        super("Chat Action");
         this.message = message;
     }
 
@@ -60,4 +63,17 @@ public class ChatAction implements Action{
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("message", message);
+        return data;
+    }
+
+//    @Override
+//    public void fromData(HashMap<String, Object> data) {
+//        if (!data.containsKey("message")) return;
+//        message = (String) data.get("message");
+//    }
 }

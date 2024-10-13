@@ -9,10 +9,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import javax.swing.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class SendTitleAction implements Action{
+public class SendTitleAction extends Action {
 
     private String title;
     private String subtitle;
@@ -21,6 +22,7 @@ public class SendTitleAction implements Action{
     private int fadeOut;
 
     public SendTitleAction() {
+        super("Send Title Action");
         this.title = "Title";
         this.subtitle = "Subtitle";
         this.fadeIn = 20;
@@ -29,6 +31,7 @@ public class SendTitleAction implements Action{
     }
 
     public SendTitleAction(String title, String subtitle) {
+        super("Send Title Action");
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = 20;
@@ -37,6 +40,7 @@ public class SendTitleAction implements Action{
     }
 
     public SendTitleAction(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        super("Send Title Action");
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;
@@ -109,5 +113,16 @@ public class SendTitleAction implements Action{
     }
     public void setStay(int stay) {
         this.stay = stay;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("subtitle", subtitle);
+        data.put("fadeIn", fadeIn);
+        data.put("stay", stay);
+        data.put("fadeOut", fadeOut);
+        return data;
     }
 }

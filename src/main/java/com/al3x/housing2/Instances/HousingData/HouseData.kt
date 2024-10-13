@@ -1,5 +1,7 @@
 package com.al3x.housing2.Instances.HousingData
 
+import com.al3x.housing2.Actions.ActionEnum
+import com.al3x.housing2.Enums.EventType
 import com.al3x.housing2.Enums.StatOperation
 import com.al3x.housing2.Instances.HousingData.HousingStat.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingNPC
@@ -16,6 +18,7 @@ data class HouseData(
     var guests: Int,
     var cookies: Double,
     var timeCreated: Long,
+    var eventActions: HashMap<EventType, List<Action>>,
     var spawnLocation: Location,
     var scoreboard: List<String>,
     var houseNPCs: List<HouseNPC>,
@@ -34,6 +37,7 @@ data class HouseData(
                 world.guests,
                 world.cookies,
                 world.timeCreated,
+                Action.fromHashMap(world.eventActions),
                 Location.fromLocation(world.spawn),
                 world.scoreboard,
                 HouseNPC.fromList(world.npCs),
@@ -113,5 +117,41 @@ data class HousingStat(
             }
             return map
         }
+    }
+}
+
+data class Action(
+    val action: String,
+    val data: HashMap<String, Any>
+) {
+    companion object {
+        fun fromHashMap(actionMap: HashMap<EventType, List<com.al3x.housing2.Actions.Action>>): HashMap<EventType, List<Action>> {
+            val map = hashMapOf<EventType, List<Action>>()
+            actionMap.forEach { (eventType, actionList) ->
+                val list = mutableListOf<Action>()
+                actionList.forEach {
+                    list.add(Action(it.name, it.data()))
+                }
+                map[eventType] = list
+            }
+            return map
+        }
+
+        fun fromList(actionList: List<com.al3x.housing2.Actions.Action>): List<Action> {
+            val list = mutableListOf<Action>()
+            actionList.forEach {
+                list.add(Action(it.name, it.data()))
+            }
+            return list
+        }
+
+        fun toList(actionList: List<Action>): List<com.al3x.housing2.Actions.Action> {
+            val list = mutableListOf<com.al3x.housing2.Actions.Action>()
+            actionList.forEach {
+                list.add(ActionEnum.getActionByName(it.action)!!.getActionInstance(it.data))
+            }
+            return list
+        }
+
     }
 }

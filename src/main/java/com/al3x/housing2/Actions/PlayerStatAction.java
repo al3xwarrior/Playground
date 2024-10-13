@@ -9,31 +9,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PlayerStatAction implements Action{
+public class PlayerStatAction extends Action {
 
-    private HousingWorld house;
     private String statName;
     private StatOperation mode;
     private String value;
-    private Stat stat;
 
-    public PlayerStatAction(Player player, HousingWorld house) {
-        this.house = house;
+    public PlayerStatAction() {
+        super("Player Stat Action");
         this.statName = "Kills";
         this.mode = StatOperation.INCREASE;
         this.value = "1";
-        this.stat = house.getStatManager().getPlayerStatByName(player, statName);
     }
 
-    public PlayerStatAction(Player player, HousingWorld house, String statName, StatOperation mode, String value) {
-        this.house = house;
+    public PlayerStatAction(String statName, StatOperation mode, String value) {
+        super("Player Stat Action");
         this.statName = statName;
         this.mode = mode;
         this.value = value;
-        this.stat = house.getStatManager().getPlayerStatByName(player, statName);
     }
 
     @Override
@@ -87,4 +84,23 @@ public class PlayerStatAction implements Action{
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("statName", statName);
+        data.put("mode", mode);
+        data.put("value", value);
+        return data;
+    }
+
+//    @Override
+//    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+//        if (!data.containsKey("statName") || !data.containsKey("mode") || !data.containsKey("value")) {
+//            return;
+//        }
+//        this.statName = (String) data.get("statName");
+//        this.mode = StatOperation.valueOf((String) data.get("mode"));
+//        this.value = (String) data.get("value");
+//    }
 }

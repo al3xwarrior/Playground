@@ -11,23 +11,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PushPlayerAction implements Action{
-
-    private HousingWorld house;
+public class PushPlayerAction extends Action {
     private PushDirection direction;
     private double amount;
 
-    public PushPlayerAction(HousingWorld house) {
-        this.house = house;
+    public PushPlayerAction() {
+        super("Push Player Action");
         this.direction = PushDirection.FORWARD;
         this.amount = 1.5;
     }
 
-    public PushPlayerAction(HousingWorld house, Double amount, PushDirection direction) {
-        this.house = house;
+    public PushPlayerAction(Double amount, PushDirection direction) {
+        super("Push Player Action");
         this.direction = direction;
         this.amount = amount;
     }
@@ -100,4 +99,21 @@ public class PushPlayerAction implements Action{
     public void setDirection(PushDirection direction) {
         this.direction = direction;
     }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("amount", amount);
+        data.put("direction", direction);
+        return data;
+    }
+
+//    @Override
+//    public void fromData(HashMap<String, Object> data) {
+//        if (!data.containsKey("amount") || !data.containsKey("direction")) {
+//            return;
+//        }
+//        this.amount = (double) data.get("amount");
+//        this.direction = (PushDirection) data.get("direction");
+//    }
 }

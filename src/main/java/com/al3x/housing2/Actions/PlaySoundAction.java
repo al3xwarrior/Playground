@@ -2,9 +2,9 @@ package com.al3x.housing2.Actions;
 
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Instances.HousingData.Location;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -12,27 +12,26 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PlaySoundAction implements Action{
-
-    private HousingWorld house;
+public class PlaySoundAction extends Action {
     private Float volume;
     private Float pitch;
     private Sound sound;
     private Locations location;
 
-    public PlaySoundAction(Player player, HousingWorld house) {
-        this.house = house;
+    public PlaySoundAction() {
+        super("Play Sound");
         this.volume = 1.0F;
         this.pitch = 1.0F;
         this.sound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
         this.location = Locations.INVOKERS_LOCATION;
     }
 
-    public PlaySoundAction(Player player, HousingWorld house, Float volume, Float pitch, Sound sound, Locations location) {
-        this.house = house;
+    public PlaySoundAction(Float volume, Float pitch, Sound sound, Locations location) {
+        super("Play Sound");
         this.volume = volume;
         this.pitch = pitch;
         this.sound = sound;
@@ -107,4 +106,22 @@ public class PlaySoundAction implements Action{
     public void setLocation(Locations location) {
         this.location = location;
     }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("volume", volume);
+        data.put("pitch", pitch);
+        data.put("sound", sound);
+        data.put("location", location);
+        return data;
+    }
+
+//    @Override
+//    public void fromData(HashMap<String, Object> data) {
+//        volume = (Float) data.get("volume");
+//        pitch = (Float) data.get("pitch");
+//        sound = (Sound) data.get("sound");
+//        location = (Locations) data.get("location");
+//    }
 }
