@@ -75,7 +75,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         getServer().getLogger().info("[Housing2] Saving houses...");
-        for (HousingWorld house : housesManager.getHouses()) {
+        for (HousingWorld house : housesManager.getLoadedHouses()) {
             house.save();
         }
         getServer().getLogger().info("[Housing2] Disabled");

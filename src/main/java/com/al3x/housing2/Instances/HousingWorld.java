@@ -3,7 +3,12 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Actions.Action;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Instances.HousingData.HouseData;
+import com.al3x.housing2.Instances.HousingData.HouseNPC;
+import com.al3x.housing2.Instances.HousingData.HousingStat;
 import com.al3x.housing2.Main;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
 import com.infernalsuite.aswm.api.exceptions.CorruptedWorldException;
 import com.infernalsuite.aswm.api.exceptions.NewerFormatException;
@@ -23,12 +28,15 @@ import org.bukkit.event.Cancellable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
+    private static Gson gson = new Gson();
+
     transient private Main main;
     transient private SlimeLoader loader;
     transient private AdvancedSlimePaperAPI asp;
@@ -46,7 +54,7 @@ public class HousingWorld {
     private String description;
     private int size;
     private int guests;
-    private int cookies;
+    private double cookies;
     private long timeCreated;
     private Location spawn;
     private List<String> scoreboard;
@@ -62,11 +70,75 @@ public class HousingWorld {
 
     // Random Seed and Random instance
     private String seed;
-    private Random random;
+    transient private Random random;
+    transient private HouseData houseData;
+
 
     //Loading a house that already exists
-    public HousingWorld(Main main, Player owner, HouseSize size, String name) {
+    public HousingWorld(Main main, Player owner, String name) {
+        main.getLogger().info("Loading house for " + owner.getName() + "...");
+        this.main = main;
+        try {
+            this.loader = main.getLoader();
+            this.asp = AdvancedSlimePaperAPI.instance();
+        } catch (Exception e) {
+            main.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            e.printStackTrace();
+        }
 
+        File file = new File(main.getDataFolder(), "houses/" + name + ".json");
+        if (!file.exists()) {
+            owner.sendMessage(colorize("&cFailed to load your house!"));
+            return;
+        }
+        try {
+            String json = Files.readString(file.toPath());
+            houseData = gson.fromJson(json, HouseData.class);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+        this.ownerUUID = owner.getUniqueId();
+        this.name = houseData.getHouseName();
+        this.houseUUID = UUID.fromString(houseData.getHouseID());
+        this.guests = houseData.getGuests();
+        this.cookies = houseData.getCookies();
+        this.description = houseData.getDescription();
+        this.timeCreated = houseData.getTimeCreated();
+        this.housingNPCS = new ArrayList<>();
+
+        for (HouseNPC npc : houseData.getHouseNPCs()) {
+            Location location = npc.getNpcLocation().toLocation();
+            createNPC(owner, location); // Eventually change this to a method that creates an npc with the correct data
+        }
+
+        this.statManager = new StatManager(this);
+
+        this.statManager.setPlayerStats(HousingStat.Companion.toHashMap(houseData.getPlayerStats()));
+
+        this.scoreboard = houseData.getScoreboard();
+
+        eventActions = new HashMap<>(); //Eventually I will have this load from the json
+        //Bad Al3x for not doing this the first time
+        // flip you buddy - Al3x
+        for (EventType type : EventType.values()) {
+            eventActions.put(type, new ArrayList<>());
+        }
+
+        this.seed = houseData.getSeed();
+        this.random = new Random(seed.hashCode());
+        this.size = houseData.getSize();
+
+        SlimeWorld world = createOrReadWorld();
+        if (world == null) {
+            owner.sendMessage(colorize("&cFailed to load your house!"));
+            return;
+        }
+        slimeWorld = world;
+        this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
+        this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+
+        save();
     }
 
     // Creating a new house
@@ -128,6 +200,9 @@ public class HousingWorld {
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
         }
+
+        // Save the house
+        save();
     }
 
     private void createTemplatePlatform() {
@@ -188,6 +263,13 @@ public class HousingWorld {
 
     public void save() {
         try {
+            houseData = HouseData.Companion.fromHousingWorld(this);
+
+            File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
+            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+            if (!file.exists()) file.createNewFile();
+            String json = gson.toJson(houseData);
+            Files.write(file.toPath(), json.getBytes());
 
             asp.saveWorld(slimeWorld);
         } catch (IOException e) {
@@ -214,7 +296,7 @@ public class HousingWorld {
     }
 
     public void createNPC(Player player, Location location) {
-        HousingNPC npc = new HousingNPC(main, player, location);
+        HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
     }
 
@@ -251,6 +333,11 @@ public class HousingWorld {
     private boolean deleteWorld(File path) {
         for (HousingNPC npc : housingNPCS) {
             removeNPC(npc.getNpcUUID());
+        }
+
+        File file = new File(main.getDataFolder(), "houses/" + houseUUID.toString() + ".json");
+        if (file.exists()) {
+            file.delete();
         }
 
         try {
@@ -340,7 +427,7 @@ public class HousingWorld {
     public int getGuests() {
         return guests;
     }
-    public int getCookies() {
+    public double getCookies() {
         return cookies;
     }
     public int getSize() {
@@ -353,5 +440,9 @@ public class HousingWorld {
 
     public void setRandom(Random random) {
         this.random = random;
+    }
+
+    public String getSeed() {
+        return seed;
     }
 }

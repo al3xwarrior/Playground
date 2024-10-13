@@ -52,5 +52,9 @@ public class Stat {
     public String getStatName() {
         return stat;
     }
+
+    public UUID getUUID() {
+        return uuid;
+    }
     
 }

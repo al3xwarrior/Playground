@@ -24,7 +24,7 @@ public class NPCInteractListener implements Listener {
         this.housesManager = main.getHousesManager();
     }
 
-    private void npcInteract(Player player, Entity entity) {
+    private void npcInteract(Player player, Entity entity, boolean rightClick) {
         if (!entity.hasMetadata("NPC")) return;
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
@@ -34,7 +34,7 @@ public class NPCInteractListener implements Listener {
         HousingNPC npc = house.getNPC(citizensNPC.getId());
         if (npc == null) return;
 
-        if (house.getOwnerUUID().equals(player.getUniqueId()) && player.isSneaking()) {
+        if (house.getOwnerUUID().equals(player.getUniqueId()) && player.isSneaking() && rightClick) {
             new NPCMenu(main, player, npc).open();
             return;
         }
@@ -44,14 +44,15 @@ public class NPCInteractListener implements Listener {
 
     @EventHandler
     public void leftClickNPC(EntityDamageByEntityEvent e) {
-        npcInteract((Player) e.getDamager(), e.getEntity());
+        if (!(e.getDamager() instanceof Player)) return;
+        npcInteract((Player) e.getDamager(), e.getEntity(), false);
     }
 
-    /*
+
     @EventHandler
     public void rightClickNPC(PlayerInteractEntityEvent e) {
-        npcInteract(e.getPlayer(), e.getRightClicked());
+        npcInteract(e.getPlayer(), e.getRightClicked(), true);
     }
-     */
+
 
 }

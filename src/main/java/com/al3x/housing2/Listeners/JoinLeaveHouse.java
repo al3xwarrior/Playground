@@ -56,6 +56,9 @@ public class JoinLeaveHouse implements Listener {
         house.incGuests();
         player.teleport(house.getSpawn());
 
+        player.setHealth(20);
+        player.setFoodLevel(20);
+
         // If the person joining is the owner
         if (house.getOwnerUUID().equals(player.getUniqueId())) {
             ItemStack menu = new ItemStack(Material.NETHER_STAR);
@@ -86,7 +89,7 @@ public class JoinLeaveHouse implements Listener {
     private void leaveHouse(Player player, HousingWorld from) {
         if (from == null) return;
         from.decGuests();
-        from.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
+        from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
     }
 
     @EventHandler

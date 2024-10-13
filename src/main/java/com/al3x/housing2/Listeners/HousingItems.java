@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -30,7 +31,7 @@ public class HousingItems implements Listener {
 
             Block block = e.getClickedBlock();
             Material itemType = item.getType();
-            String name = item.getItemMeta().getDisplayName();
+            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
             boolean ownerOfHouse = housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId());
 
             Bukkit.getLogger().info(name + " (" + name.equals("§aNPC") + " " + itemType.equals(Material.PLAYER_HEAD) + " " + ownerOfHouse + ")");

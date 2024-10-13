@@ -26,7 +26,7 @@ public class HouseBrowserMenu extends Menu{
 
     @Override
     public void setupItems() {
-        List<HousingWorld> houses = housesManager.getHouses();
+        List<HousingWorld> houses = housesManager.getLoadedHouses();
 
         for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
             HousingWorld house = houses.get(i);

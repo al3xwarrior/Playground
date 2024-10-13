@@ -31,6 +31,7 @@ public class HousingNPC {
     }
 
     private NPC citizensNPC;
+    private HousingWorld house;
     private Main main;
 
     // Npc Properties
@@ -52,8 +53,9 @@ public class HousingNPC {
 
     private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
-    public HousingNPC(Main main, Player player, Location location) {
+    public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
         this.main = main;
+        this.house = house;
         this.name = npcNames[new Random().nextInt(npcNames.length)];
         this.lookAtPlayer = true;
         this.location = location;
@@ -67,6 +69,7 @@ public class HousingNPC {
 
         // Update it because weird
         this.npcUUID = citizensNPC.getId();
+
     }
 
     public void setEntity(EntityType entityType) {
@@ -109,5 +112,21 @@ public class HousingNPC {
 
     public List<Action> getActions() {
         return actions;
+    }
+
+    public HousingWorld getHouse() {
+        return house;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public boolean isLookAtPlayer() {
+        return lookAtPlayer;
     }
 }
