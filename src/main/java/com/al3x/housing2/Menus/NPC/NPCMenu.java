@@ -102,6 +102,8 @@ public class NPCMenu extends Menu {
         npcNameMeta.setDisplayName(colorize("&aNPC Name"));
         npcName.setItemMeta(npcNameMeta);
         addItem(32, npcName, () -> {
+            player.sendMessage(colorize("&7Enter the new name for the NPC:"));
+            player.closeInventory();
             Bukkit.getPluginManager().registerEvents(new Listener() {
                 @EventHandler
                 public void onPlayerChat(AsyncPlayerChatEvent e) {

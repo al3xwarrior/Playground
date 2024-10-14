@@ -42,6 +42,8 @@ public class HologramEditorMenu extends Menu{
             lineMeta.setDisplayName(lines.get(i));
             int finalI = i;
             addItem(validLines[i], line, () -> {
+                player.sendMessage(colorize("&eEnter a new message for line " + (finalI + 1) + ":"));
+                player.closeInventory();
                 Bukkit.getPluginManager().registerEvents(new Listener() {
                     @EventHandler
                     public void onPlayerChat(AsyncPlayerChatEvent e) {
