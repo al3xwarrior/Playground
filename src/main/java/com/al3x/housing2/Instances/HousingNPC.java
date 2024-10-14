@@ -165,4 +165,9 @@ public class HousingNPC {
     public boolean isLookAtPlayer() {
         return lookAtPlayer;
     }
+
+    public void setName(String newMessage) {
+        this.name = newMessage;
+        citizensNPC.setName(newMessage);
+    }
 }

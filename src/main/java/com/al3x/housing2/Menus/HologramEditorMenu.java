@@ -63,5 +63,15 @@ public class HologramEditorMenu extends Menu{
             });
         }
 
+        ItemStack addLine = new ItemStack(Material.LIME_DYE);
+        ItemMeta addLineMeta = addLine.getItemMeta();
+        addLineMeta.setDisplayName(colorize("&aAdd Line"));
+        addLine.setItemMeta(addLineMeta);
+        addItem(24, addLine, () -> {
+            lines.add("New Line");
+            housingNPC.setHologramLines(lines);
+            new HologramEditorMenu(main, player, housingNPC).open();
+        });
+
     }
 }

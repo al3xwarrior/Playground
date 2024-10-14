@@ -10,8 +10,12 @@ import com.al3x.housing2.Menus.Menu;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -92,6 +96,31 @@ public class NPCMenu extends Menu {
         addItem(30, entityType, () -> {
             new EntityChooseMenu(main, player, housesManager, housingNPC).open();
         });
+
+        ItemStack npcName = new ItemStack(Material.NAME_TAG);
+        ItemMeta npcNameMeta = npcName.getItemMeta();
+        npcNameMeta.setDisplayName(colorize("&aNPC Name"));
+        npcName.setItemMeta(npcNameMeta);
+        addItem(32, npcName, () -> {
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onPlayerChat(AsyncPlayerChatEvent e) {
+                    e.setCancelled(true);
+                    if (e.getPlayer().equals(player)) {
+                        String newMessage = e.getMessage();
+                        housingNPC.setName(newMessage);
+                        player.sendMessage(colorize("&aNpc name set to: " + newMessage));
+
+                        // Unregister this listener after capturing the message
+                        AsyncPlayerChatEvent.getHandlerList().unregister(this);
+
+                        // Reopen the NPCMenu
+                        Bukkit.getScheduler().runTaskLater(main, () -> new NPCMenu(main, player, housingNPC).open(), 1L); // Delay slightly to allow chat event to complete
+                    }
+                }
+            }, main);
+        });
+
 
         ItemStack removeNPC = new ItemStack(Material.TNT);
         ItemMeta removeNPCMeta = removeNPC.getItemMeta();
