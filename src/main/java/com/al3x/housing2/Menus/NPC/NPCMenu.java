@@ -110,8 +110,10 @@ public class NPCMenu extends Menu {
                     e.setCancelled(true);
                     if (e.getPlayer().equals(player)) {
                         String newMessage = e.getMessage();
-                        housingNPC.setName(newMessage);
-                        player.sendMessage(colorize("&aNpc name set to: " + newMessage));
+                        Bukkit.getScheduler().runTask(main, () -> {
+                            housingNPC.setName(newMessage);
+                            player.sendMessage(colorize("&aNpc name set to: " + newMessage));
+                        });
 
                         // Unregister this listener after capturing the message
                         AsyncPlayerChatEvent.getHandlerList().unregister(this);

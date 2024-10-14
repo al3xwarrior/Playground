@@ -1,6 +1,10 @@
 package com.al3x.housing2.Actions;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +19,7 @@ import static com.al3x.housing2.Instances.HousingData.Action.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class RandomAction extends Action {
+    private static final Gson gson = new Gson();
     private List<Action> subActions;
 
     public RandomAction(ArrayList<Action> subactions) {
@@ -77,6 +82,16 @@ public class RandomAction extends Action {
     @SuppressWarnings("unchecked")
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         if (!data.containsKey("subActions")) return;
-        subActions = Companion.toList((List<com.al3x.housing2.Instances.HousingData.Action>) data.get("subActions"));
+        // I don't know how this works lol
+        Object subActions = data.get("subActions");
+        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
+        ArrayList<com.al3x.housing2.Instances.HousingData.Action> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            com.al3x.housing2.Instances.HousingData.Action action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.Action.class);
+            actions.add(action);
+        }
+
+        this.subActions = Companion.toList(actions);
     }
 }

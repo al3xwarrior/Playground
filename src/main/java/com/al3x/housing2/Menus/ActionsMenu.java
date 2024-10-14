@@ -179,6 +179,9 @@ public class ActionsMenu extends Menu {
             if (event != null) {
                 new EventActionsMenu(main, player, house).open();
             }
+            if (housingNPC != null) {
+                new NPCMenu(main, player, housingNPC).open();
+            }
         });
 
         ItemStack addAction = new ItemStack(Material.PAPER);

@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingData.HousingStat.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingNPC
 import com.al3x.housing2.Instances.HousingWorld
 import com.al3x.housing2.Instances.Stat
+import com.google.gson.JsonArray
 import java.util.UUID
 
 data class HouseData(
@@ -144,7 +145,6 @@ data class Action(
             }
             return list
         }
-
         fun toList(actionList: List<Action>): List<com.al3x.housing2.Actions.Action> {
             val list = mutableListOf<com.al3x.housing2.Actions.Action>()
             actionList.forEach {
