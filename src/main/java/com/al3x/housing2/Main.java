@@ -76,6 +76,9 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         getServer().getLogger().info("[Housing2] Saving houses...");
         for (HousingWorld house : housesManager.getLoadedHouses()) {
+            house.getNPCs().forEach((npc) -> {
+                npc.getCitizensNPC().destroy();
+            });
             house.save();
         }
         getServer().getLogger().info("[Housing2] Disabled");

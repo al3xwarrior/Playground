@@ -2,7 +2,6 @@ package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Actions.ActionEnum
 import com.al3x.housing2.Enums.EventType
-import com.al3x.housing2.Enums.StatOperation
 import com.al3x.housing2.Instances.HousingData.HousingStat.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingNPC
 import com.al3x.housing2.Instances.HousingWorld
@@ -15,7 +14,7 @@ data class HouseData(
     var houseName: String,
     var description: String,
     var size: Int,
-    var guests: Int,
+//    var guests: Int,
     var cookies: Double,
     var timeCreated: Long,
     var eventActions: HashMap<EventType, List<Action>>,
@@ -34,7 +33,6 @@ data class HouseData(
                 world.name,
                 world.description,
                 world.size,
-                world.guests,
                 world.cookies,
                 world.timeCreated,
                 Action.fromHashMap(world.eventActions),
@@ -70,18 +68,20 @@ data class Location(
 }
 
 data class HouseNPC(
-    val npcID: String,
+    val npcID: Int,
+    val npcUUID: String,
     val npcName: String,
     val npcType: String,
     val npcLocation: Location,
     val npcSkin: String,
+    val actions: List<Action>,
     val lookAtPlayer: Boolean
 ) {
     companion object {
         fun fromList(npcList: List<HousingNPC>): List<HouseNPC> {
             val list = mutableListOf<HouseNPC>()
             npcList.forEach {
-                list.add(HouseNPC(it.npcUUID.toString(), it.name, it.citizensNPC.entity.type.name, Location.fromLocation(it.location), "null", it.isLookAtPlayer))
+                list.add(HouseNPC(it.npcID, it.npcUUID.toString(), it.name, it.entityType.name, Location.fromLocation(it.location), "null", Action.fromList(it.actions), it.isLookAtPlayer))
             }
             return list
         }

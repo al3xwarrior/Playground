@@ -9,10 +9,7 @@ import com.al3x.housing2.Instances.HousingData.HouseNPC;
 import com.al3x.housing2.Instances.HousingData.HousingStat;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
-import com.infernalsuite.aswm.api.exceptions.CorruptedWorldException;
-import com.infernalsuite.aswm.api.exceptions.NewerFormatException;
 import com.infernalsuite.aswm.api.exceptions.UnknownWorldException;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.api.world.SlimeWorld;
@@ -102,16 +99,11 @@ public class HousingWorld {
         this.ownerUUID = owner.getUniqueId();
         this.name = houseData.getHouseName();
         this.houseUUID = UUID.fromString(houseData.getHouseID());
-        this.guests = houseData.getGuests();
+//        this.guests = houseData.getGuests();
         this.cookies = houseData.getCookies();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.housingNPCS = new ArrayList<>();
-
-        for (HouseNPC npc : houseData.getHouseNPCs()) {
-            Location location = npc.getNpcLocation().toLocation();
-            createNPC(owner, location); // Eventually change this to a method that creates an npc with the correct data
-        }
 
         this.statManager = new StatManager(this);
 
@@ -119,7 +111,7 @@ public class HousingWorld {
 
         this.scoreboard = houseData.getScoreboard();
 
-        eventActions = new HashMap<>(); //Eventually I will have this load from the json
+        eventActions = new HashMap<>();
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
             List<com.al3x.housing2.Instances.HousingData.Action> actions = houseData.getEventActions().get(type);
@@ -142,6 +134,12 @@ public class HousingWorld {
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+
+        // Load NPCs into the world
+        for (HouseNPC npc : houseData.getHouseNPCs()) {
+            Location location = npc.getNpcLocation().toLocation();
+            loadNPC(owner, location, npc); // Eventually change this to a method that creates an npc with the correct data
+        }
 
         save();
     }
@@ -305,9 +303,14 @@ public class HousingWorld {
         housingNPCS.add(npc);
     }
 
+    public void loadNPC(Player player, Location location, HouseNPC data) {
+        HousingNPC npc = new HousingNPC(main, player, location, this, data);
+        housingNPCS.add(npc);
+    }
+
     public HousingNPC getNPC(int id) {
         for (HousingNPC npc : housingNPCS) {
-            if (npc.getNpcUUID() == id) {
+            if (npc.getNpcID() == id) {
                 return npc;
             }
         }
@@ -316,7 +319,7 @@ public class HousingWorld {
 
     public void removeNPC(int id) {
         for (HousingNPC npc : housingNPCS) {
-            if (npc.getNpcUUID() == id) {
+            if (npc.getNpcID() == id) {
                 NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);
                 if (citizensNPC == null) {
                     Bukkit.getLogger().info("NPC is null...");
@@ -337,7 +340,7 @@ public class HousingWorld {
     // Helper Method for delete()
     private boolean deleteWorld(File path) {
         for (HousingNPC npc : housingNPCS) {
-            removeNPC(npc.getNpcUUID());
+            removeNPC(npc.getNpcID());
         }
 
         File file = new File(main.getDataFolder(), "houses/" + houseUUID.toString() + ".json");

@@ -1,10 +1,12 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Actions.Action;
+import com.al3x.housing2.Instances.HousingData.HouseNPC;
 import com.al3x.housing2.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.HologramTrait;
+import net.citizensnpcs.util.Util;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.al3x.housing2.Instances.HousingData.Action.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
@@ -35,11 +38,13 @@ public class HousingNPC {
     private Main main;
 
     // Npc Properties
-    private int npcUUID;
+    private int npcID;
+    private UUID npcUUID;
     private UUID creatorUUID;
     private String name;
     private boolean lookAtPlayer;
     private Location location;
+    private EntityType entityType;
     
     // Equipment
     private ItemStack hand;
@@ -53,6 +58,23 @@ public class HousingNPC {
 
     private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
+    public HousingNPC(Main main, Player player, Location location, HousingWorld house, HouseNPC data) {
+        this.main = main;
+        this.house = house;
+        this.name = data.getNpcName();
+        this.lookAtPlayer = data.getLookAtPlayer();
+        this.location = location;
+        this.npcID = data.getNpcID();
+        this.npcUUID = UUID.fromString(data.getNpcUUID());
+        this.entityType = EntityType.valueOf(data.getNpcType());
+
+        this.creatorUUID = player.getUniqueId();
+        this.actions = Companion.toList(data.getActions());
+
+        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
+        citizensNPC.spawn(location);
+    }
+
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
         this.main = main;
         this.house = house;
@@ -60,19 +82,25 @@ public class HousingNPC {
         this.lookAtPlayer = true;
         this.location = location;
         this.creatorUUID = player.getUniqueId();
+        this.entityType = EntityType.PLAYER;
 
         this.actions = new ArrayList<>();
 
-        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, this.name);
+        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
         citizensNPC.spawn(location);
         citizensNPC.faceLocation(player.getLocation());
 
-        // Update it because weird
-        this.npcUUID = citizensNPC.getId();
+        main.getServer().getScheduler().runTaskLaterAsynchronously(main, () -> {
+            this.location = citizensNPC.getEntity().getLocation();
+        }, 80L); // 4 seconds
 
+        // Update it because weird
+        this.npcID = citizensNPC.getId();
+        this.npcUUID = citizensNPC.getUniqueId();
     }
 
     public void setEntity(EntityType entityType) {
+        this.entityType = entityType;
         citizensNPC.getEntity().setMetadata("NPC", new FixedMetadataValue(main, true));
         citizensNPC.setBukkitEntityType(entityType);
     }
@@ -106,7 +134,11 @@ public class HousingNPC {
         return citizensNPC;
     }
 
-    public int getNpcUUID() {
+    public int getNpcID() {
+        return npcID;
+    }
+
+    public UUID getNpcUUID() {
         return npcUUID;
     }
 
@@ -116,6 +148,10 @@ public class HousingNPC {
 
     public HousingWorld getHouse() {
         return house;
+    }
+
+    public EntityType getEntityType() {
+        return entityType;
     }
 
     public String getName() {

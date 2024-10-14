@@ -60,30 +60,32 @@ public class PushPlayerAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        Vector playerVelocity = player.getVelocity();
         switch (direction) {
-            case FORWARD -> player.setVelocity(player.getLocation().getDirection().multiply(amount));
-            case BACKWARD -> player.setVelocity(player.getLocation().getDirection().multiply(-amount));
-            case UP -> player.setVelocity(new Vector(0, amount, 0));
-            case DOWN -> player.setVelocity(new Vector(0, -amount, 0));
-            case NORTH -> player.setVelocity(new Vector(0, 0, -amount));
-            case SOUTH -> player.setVelocity(new Vector(0, 0, amount));
-            case EAST -> player.setVelocity(new Vector(amount, 0, 0));
-            case WEST -> player.setVelocity(new Vector(-amount, 0, 0));
+            case FORWARD -> playerVelocity.add(player.getLocation().getDirection().multiply(amount));
+            case BACKWARD -> playerVelocity.add(player.getLocation().getDirection().multiply(-amount));
+            case UP -> playerVelocity.add(new Vector(0, amount, 0));
+            case DOWN -> playerVelocity.add(new Vector(0, -amount, 0));
+            case NORTH -> playerVelocity.add(new Vector(0, 0, -amount));
+            case SOUTH -> playerVelocity.add(new Vector(0, 0, amount));
+            case EAST -> playerVelocity.add(new Vector(amount, 0, 0));
+            case WEST -> playerVelocity.add(new Vector(-amount, 0, 0));
             case LEFT -> {
                 Vector direction = player.getLocation().getDirection();
                 // Rotate the direction 90 degrees counterclockwise (left)
                 Vector left = new Vector(-direction.getZ(), 0, direction.getX()).normalize().multiply(amount);
-                player.setVelocity(left);
+                playerVelocity.add(left);
             }
             case RIGHT -> {
                 Vector direction = player.getLocation().getDirection();
                 // Rotate the direction 90 degrees clockwise (right)
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
-                player.setVelocity(right);
+                playerVelocity.add(right);
             }
-
         }
-
+        //This way it can get two different velocities at the same time
+        //ex. UP and FORWARD
+        player.setVelocity(playerVelocity);
         return true;
     }
 

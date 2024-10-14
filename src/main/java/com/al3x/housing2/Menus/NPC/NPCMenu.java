@@ -74,7 +74,7 @@ public class NPCMenu extends Menu {
         lookAtPlayersMeta.setDisplayName(colorize("&aLook at Players"));
         lookAtPlayers.setItemMeta(lookAtPlayersMeta);
         addItem(28, lookAtPlayers, () -> {
-            NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(housingNPC.getNpcUUID());
+            NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(housingNPC.getNpcID());
             boolean newStatus = !citizensNPC.hasTrait(LookClose.class);
             if (newStatus) {
                 player.sendMessage(colorize("&aNPC will now look towards nearby players."));
@@ -98,7 +98,7 @@ public class NPCMenu extends Menu {
         removeNPCMeta.setDisplayName(colorize("&cRemove NPC"));
         removeNPC.setItemMeta(removeNPCMeta);
         addItem(53, removeNPC, () -> {
-            house.removeNPC(housingNPC.getNpcUUID());
+            house.removeNPC(housingNPC.getNpcID());
             player.closeInventory();
         });
 
