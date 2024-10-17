@@ -1,8 +1,6 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.Action;
-import com.al3x.housing2.Actions.ChatAction;
-import com.al3x.housing2.Actions.SendTitleAction;
+import com.al3x.housing2.Action.Actions.SendTitleAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -16,8 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 

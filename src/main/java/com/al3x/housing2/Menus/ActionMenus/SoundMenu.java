@@ -1,8 +1,7 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.PlaySoundAction;
+import com.al3x.housing2.Action.Actions.PlaySoundAction;
 import com.al3x.housing2.Enums.EventType;
-import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;

@@ -1,9 +1,11 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -37,25 +40,49 @@ public class PushPlayerAction extends Action {
     }
 
     @Override
-    public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.PISTON);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&ePush Player Action"));
-        itemMeta.setLore(Arrays.asList(
-                colorize("&7Propel a player in a direction."),
-                "",
-                colorize("&eSettings:"),
-                colorize("&fValue: " + getAmount()),
-                colorize("&fDirection: " + getDirection().name()),
-                "",
-                colorize("&eLeft Click to edit!"),
-                colorize("&eRight Click to remove!"),
-                colorize("&7Use shift and left/right click to change order."),
-                "",
-                colorize("&8&oThank you Home Depot")
-        ));
-        item.setItemMeta(itemMeta);
-        return item;
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.PISTON);
+        builder.name("&ePush Player Action");
+        builder.info("&eSettings", "");
+        builder.info("Direction", "&a" + direction);
+        builder.info("Velocity", "&a" + amount);
+
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.PISTON);
+        builder.name("&aPush Player Action");
+        builder.description("Propel a player in a direction.");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        builder.extraLore("&8&oThank you Home Depot"); //Yes I did add #extraLore just for this joke
+    }
+
+    @Override
+    public ActionEditor editorMenu(HousingWorld house) {
+        List<ActionEditor.ActionItem> items = Arrays.asList(
+                new ActionEditor.ActionItem("direction",
+                        ItemBuilder.create(Material.COMPASS)
+                                .name("&eDirection")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + direction)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS
+                ),
+                new ActionEditor.ActionItem("amount",
+                        ItemBuilder.create(Material.SLIME_BALL)
+                                .name("&eVelocity")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + amount)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.DOUBLE
+                )
+        );
+
+        return new ActionEditor(4, "&ePush Player Action Settings", items);
     }
 
     @Override

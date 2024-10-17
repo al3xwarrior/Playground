@@ -1,9 +1,9 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +15,6 @@ import java.util.List;
 
 import static com.al3x.housing2.Enums.EventType.*;
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
 public class CancelAction extends Action {
 
@@ -29,19 +28,19 @@ public class CancelAction extends Action {
     }
 
     @Override
-    public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.TNT);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&eCancel Action"));
-        itemMeta.setLore(Arrays.asList(
-                colorize("&7Apply the action to cancel this event."),
-                "",
-                colorize("&eLeft Click to edit!"),
-                colorize("&eRight Click to remove!"),
-                colorize("&7Use shift and left/right click to change order.")
-        ));
-        item.setItemMeta(itemMeta);
-        return item;
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.TNT);
+        builder.name("&eCancel Action");
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.changeOrderLore(true);
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.TNT);
+        builder.name("&aCancel Event");
+        builder.description("Apply this action to cancel this event.");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override

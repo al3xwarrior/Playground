@@ -11,11 +11,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public abstract class Menu implements Listener {
     private Inventory inventory;
-    private Map<Integer, Runnable> leftClickActions = new HashMap<>();
-    private Map<Integer, Runnable> rightClickActions = new HashMap<>();
+    private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
+    private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
     private Player player;
 
     public Menu(Player player, String title, int size) {
@@ -42,25 +43,36 @@ public abstract class Menu implements Listener {
         if (event.getClickedInventory() == inventory) {
             event.setCancelled(true);
             int slot = event.getSlot();
-            Runnable leftAction = leftClickActions.get(slot);
-            Runnable rightAction = rightClickActions.get(slot);
+            Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
+            Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
+
+            if (leftAction != null && rightAction == null) {
+                leftAction.accept(event); // Run the left-click action
+                return;
+            }
 
             if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
-                leftAction.run(); // Run the left-click action
+                leftAction.accept(event); // Run the left-click action
             } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
-                rightAction.run(); // Run the right-click action
+                rightAction.accept(event); // Run the right-click action
             }
         }
     }
 
     // Helper method to add an item and bind actions to its slot
+    public void addItem(int slot, ItemStack item, Consumer<InventoryClickEvent> clickAction) {
+        inventory.setItem(slot, item);
+        leftClickActions.put(slot, clickAction);
+    }
+
     public void addItem(int slot, ItemStack item, Runnable leftClickAction) {
         inventory.setItem(slot, item);
-        leftClickActions.put(slot, leftClickAction);
+        leftClickActions.put(slot, (e) -> leftClickAction.run());
     }
+
     public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction) {
         inventory.setItem(slot, item);
-        leftClickActions.put(slot, leftClickAction);
-        rightClickActions.put(slot, rightClickAction);
+        leftClickActions.put(slot, (e) -> leftClickAction.run());
+        rightClickActions.put(slot, (e) -> rightClickAction.run());
     }
 }

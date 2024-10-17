@@ -1,9 +1,7 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.PlayerStatAction;
-import com.al3x.housing2.Actions.SendTitleAction;
+import com.al3x.housing2.Action.Actions.PlayerStatAction;
 import com.al3x.housing2.Enums.EventType;
-import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ActionsMenu;
@@ -55,7 +53,12 @@ public class PlayerStatActionMenu extends Menu {
                         action.setStatName(newMessage);
                         player.sendMessage(colorize("&aStat Name set to: " + newMessage));
                     } else if (type.equals("VALUE")) {
-                        action.setValue(newMessage);
+                        try {
+                            action.setValue(Double.parseDouble(newMessage));
+                        } catch (NumberFormatException ex) {
+                            player.sendMessage(colorize("&cInvalid number format!"));
+                            return;
+                        }
                         player.sendMessage(colorize("&aValue set to: " + newMessage));
                     }
 

@@ -1,19 +1,13 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.ActionbarAction;
-import com.al3x.housing2.Actions.RandomAction;
+import com.al3x.housing2.Action.Actions.RandomAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ActionsMenu;
-import com.al3x.housing2.Menus.AddActionMenu;
 import com.al3x.housing2.Menus.Menu;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 

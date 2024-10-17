@@ -2,7 +2,6 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.ChatActionMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

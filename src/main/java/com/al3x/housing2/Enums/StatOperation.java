@@ -1,5 +1,6 @@
 package com.al3x.housing2.Enums;
 
+
 public enum StatOperation {
     SET,
     INCREASE,
@@ -8,5 +9,5 @@ public enum StatOperation {
     DIVIDE,
     ROUND,
     FLOOR,
-    MOD
+    MOD;
 }

@@ -1,12 +1,12 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Actions.Action;
-import com.al3x.housing2.Actions.ActionEnum;
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.HouseData;
-import com.al3x.housing2.Instances.HousingData.HouseNPC;
-import com.al3x.housing2.Instances.HousingData.HousingStat;
+import com.al3x.housing2.Instances.HousingData.NPCData;
+import com.al3x.housing2.Instances.HousingData.StatData;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
@@ -107,16 +107,16 @@ public class HousingWorld {
 
         this.statManager = new StatManager(this);
 
-        this.statManager.setPlayerStats(HousingStat.Companion.toHashMap(houseData.getPlayerStats()));
+        this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
 
         this.scoreboard = houseData.getScoreboard();
 
         eventActions = new HashMap<>();
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
-            List<com.al3x.housing2.Instances.HousingData.Action> actions = houseData.getEventActions().get(type);
+            List<com.al3x.housing2.Instances.HousingData.ActionData> actions = houseData.getEventActions().get(type);
             if (actions != null) {
-                for (com.al3x.housing2.Instances.HousingData.Action action : actions) {
+                for (com.al3x.housing2.Instances.HousingData.ActionData action : actions) {
                     eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData()));
                 }
             }
@@ -136,7 +136,7 @@ public class HousingWorld {
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
 
         // Load NPCs into the world
-        for (HouseNPC npc : houseData.getHouseNPCs()) {
+        for (NPCData npc : houseData.getHouseNPCs()) {
             Location location = npc.getNpcLocation().toLocation();
             loadNPC(owner, location, npc); // Eventually change this to a method that creates an npc with the correct data
         }
@@ -288,13 +288,15 @@ public class HousingWorld {
     public void executeEventActions(EventType eventType, Player player, Cancellable event) {
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
-            for (Action action : actions) {
-                // Check if the action is null or if the event is allowed
-                if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
-                // Execute the action either cancelling the event or not
-                if (event != null && !action.execute(player, this)) event.setCancelled(true);
-                if (event == null) action.execute(player, this);
-            }
+            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+                for (Action action : actions) {
+                    // Check if the action is null or if the event is allowed
+                    if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
+                    // Execute the action either cancelling the event or not
+                    if (event != null && !action.execute(player, this)) event.setCancelled(true);
+                    if (event == null) action.execute(player, this);
+                }
+            });
         }
     }
 
@@ -303,7 +305,7 @@ public class HousingWorld {
         housingNPCS.add(npc);
     }
 
-    public void loadNPC(Player player, Location location, HouseNPC data) {
+    public void loadNPC(Player player, Location location, NPCData data) {
         HousingNPC npc = new HousingNPC(main, player, location, this, data);
         housingNPCS.add(npc);
     }

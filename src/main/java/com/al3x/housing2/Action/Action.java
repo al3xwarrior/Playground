@@ -1,7 +1,8 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * Represents an action that can be executed by a player.
  */
 public abstract class Action {
-    String name;
+    protected String name;
 
     public Action(String name) {
         this.name = name;
@@ -26,7 +27,24 @@ public abstract class Action {
 
     public abstract String toString();
 
-    public abstract ItemStack getDisplayItem();
+    /*
+    New formats for item creation
+     */
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.name("&e" + name);
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.changeOrderLore(true);
+    }
+
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.name("&a" + name);
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
+
+    public ActionEditor editorMenu(HousingWorld house) {
+        return null;
+    }
 
     public abstract boolean execute(Player player, HousingWorld house);
 

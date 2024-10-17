@@ -1,6 +1,8 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,18 +25,18 @@ public class FullHealAction extends Action {
     }
 
     @Override
-    public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&eFull Heal Action"));
-        itemMeta.setLore(Arrays.asList(
-                colorize("&7Fully heals the player."),
-                "",
-                colorize("&eRight Click to remove!"),
-                colorize("&7Use shift and left/right click to change order.")
-        ));
-        item.setItemMeta(itemMeta);
-        return item;
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.GOLDEN_APPLE);
+        builder.name("&eFull Heal");
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.GOLDEN_APPLE);
+        builder.name("&aFull Heal Event");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override

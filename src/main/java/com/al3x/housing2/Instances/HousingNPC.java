@@ -1,12 +1,11 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Actions.Action;
-import com.al3x.housing2.Instances.HousingData.HouseNPC;
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Instances.HousingData.NPCData;
 import com.al3x.housing2.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.HologramTrait;
-import net.citizensnpcs.util.Util;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.al3x.housing2.Instances.HousingData.Action.Companion;
+import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
@@ -58,7 +57,7 @@ public class HousingNPC {
 
     private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
-    public HousingNPC(Main main, Player player, Location location, HousingWorld house, HouseNPC data) {
+    public HousingNPC(Main main, Player player, Location location, HousingWorld house, NPCData data) {
         this.main = main;
         this.house = house;
         this.name = data.getNpcName();

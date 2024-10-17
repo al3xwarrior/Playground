@@ -1,10 +1,8 @@
 package com.al3x.housing2.Menus.ActionMenus;
 
-import com.al3x.housing2.Actions.PlayerStatAction;
-import com.al3x.housing2.Actions.PushPlayerAction;
+import com.al3x.housing2.Action.Actions.PushPlayerAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.PushDirection;
-import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;

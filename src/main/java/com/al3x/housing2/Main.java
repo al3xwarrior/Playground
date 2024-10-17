@@ -33,7 +33,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // The location of the worlds folder is relative to the server's root directory
         loader = new FileLoader(new File("./slime_worlds"));
+
         this.housesManager = new HousesManager(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
@@ -76,7 +78,7 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         getServer().getLogger().info("[Housing2] Saving houses...");
         for (HousingWorld house : housesManager.getLoadedHouses()) {
-            house.getNPCs().forEach((npc) -> {
+            house.getNPCs().forEach((npc) -> { // We shouldn't keep NPC instances after the plugin is disabled
                 npc.getCitizensNPC().destroy();
             });
             house.save();

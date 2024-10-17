@@ -1,11 +1,13 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action;
+
+import com.al3x.housing2.Action.Actions.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public enum ActionEnum {
-    ACTIONBAR("Actionbar Action", ActionbarAction.class),
     CANCEL("Cancel Action", CancelAction.class),
+    ACTIONBAR("Actionbar Action", ActionbarAction.class),
     CHAT("Chat Action", ChatAction.class),
     FULL_HEAL("Full Heal Action", FullHealAction.class),
     KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
@@ -16,7 +18,7 @@ public enum ActionEnum {
     RESET_INVENTORY("Reset Inventory Action", ResetInventoryAction.class),
     SEND_TITLE("Send Title Action", SendTitleAction.class),
     SHOW_BOSSBAR("Show Bossbar Action", ShowBossbarAction.class),
-
+    PAUSE_EXECUTION("Pause Action", PauseAction.class),
     // Add new actions here
     ;
     private String name;
@@ -40,6 +42,15 @@ public enum ActionEnum {
             Action action = this.action.getDeclaredConstructor().newInstance();
             action.fromData(data, this.action);
             return action;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Action getActionInstance() {
+        try {
+            return this.action.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }

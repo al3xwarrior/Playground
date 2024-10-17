@@ -1,10 +1,12 @@
-package com.al3x.housing2.Actions;
+package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.internal.LinkedTreeMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.al3x.housing2.Instances.HousingData.Action.Companion;
+import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class RandomAction extends Action {
@@ -38,19 +40,38 @@ public class RandomAction extends Action {
     }
 
     @Override
-    public ItemStack getDisplayItem() {
-        ItemStack item = new ItemStack(Material.ENDER_CHEST);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(colorize("&eRandom Action"));
-        itemMeta.setLore(Arrays.asList(
-                colorize("&7Change the settings for this action"),
-                "",
-                colorize("&eLeft Click to edit!"),
-                colorize("&eRight Click to remove!"),
-                colorize("&7Use shift and left/right click to change order.")
-        ));
-        item.setItemMeta(itemMeta);
-        return item;
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.ENDER_CHEST);
+        builder.name("&eRandom Action");
+        builder.description("Change the settings for this action");
+        builder.info("&eSettings", "");
+        builder.info("Actions", subActions.size());
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.ENDER_CHEST);
+        builder.name("&aRandom Action");
+        builder.description("Executes a single random action form the selected actions.");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
+
+    @Override
+    public ActionEditor editorMenu(HousingWorld house) {
+        List<ActionEditor.ActionItem> items = List.of(
+                new ActionEditor.ActionItem("subActions",
+                        ItemBuilder.create(Material.WRITTEN_BOOK)
+                                .name("&aActions")
+                                .info("&7Current Value", "")
+                                .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.ACTION
+                )
+        );
+        return new ActionEditor(4, "&eChat Action Settings", items);
     }
 
     @Override
@@ -85,10 +106,10 @@ public class RandomAction extends Action {
         // I don't know how this works lol
         Object subActions = data.get("subActions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.Action> actions = new ArrayList<>();
+        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.Action action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.Action.class);
+            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
             actions.add(action);
         }
 
