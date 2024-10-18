@@ -131,6 +131,11 @@ public class PlayerStatAction extends Action {
         return data;
     }
 
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
+
 //    @Override
 //    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
 //        if (!data.containsKey("statName") || !data.containsKey("mode") || !data.containsKey("value")) {

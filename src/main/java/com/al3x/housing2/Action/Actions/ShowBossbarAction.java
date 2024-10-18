@@ -148,4 +148,9 @@ public class ShowBossbarAction extends Action {
         data.put("progress", progress);
         return data;
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
 }

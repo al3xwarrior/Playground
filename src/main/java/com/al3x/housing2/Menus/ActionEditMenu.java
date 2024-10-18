@@ -3,9 +3,12 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.Duple;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -50,6 +54,15 @@ public class ActionEditMenu extends Menu {
         this.event = event;
     }
 
+    public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, Menu backMenu) {
+        super(player, colorize(action.editorMenu(house).getTitle()), action.editorMenu(house).getRows() * 9);
+        this.main = main;
+        this.action = action;
+        this.player = player;
+        this.house = house;
+        this.backMenu = backMenu;
+    }
+
 
 
     @Override
@@ -69,7 +82,7 @@ public class ActionEditMenu extends Menu {
                 switch (item.getType()) {
                     case STRING: {
                         player.sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                        openChat(item, (input) -> {
+                        openChat(main, (input) -> {
                             try {
                                 // Set the field
                                 Field field = action.getClass().getDeclaredField(item.getVarName());
@@ -85,7 +98,7 @@ public class ActionEditMenu extends Menu {
                     }
                     case INT: {
                         player.sendMessage(colorize("&ePlease enter the number you wish to set in chat!"));
-                        openChat(item, (input) -> {
+                        openChat(main, (input) -> {
                             try {
                                 int num = Integer.parseInt(input);
                                 // Check if the number is within the min and max range
@@ -113,7 +126,7 @@ public class ActionEditMenu extends Menu {
                     }
                     case DOUBLE: {
                         player.sendMessage(colorize("&ePlease enter the number you wish to set in chat!"));
-                        openChat(item, (input) -> {
+                        openChat(main, (input) -> {
                             try {
                                 double num = Double.parseDouble(input);
                                 // Check if the number is within the min and max range
@@ -156,6 +169,25 @@ public class ActionEditMenu extends Menu {
                         }
                         break;
                     }
+                    case FUNCTION: {
+                        List<Duple<Function, ItemBuilder>> functions = new ArrayList<>();
+                        for (Function function : house.getFunctions()) {
+                            functions.add(new Duple<>(function, ItemBuilder.create(function.getMaterial()).name(function.getName()).description(function.getDescription()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+                        PaginationMenu<Function> paginationMenu = new PaginationMenu<Function>(main, "Select a Function", functions, player, house, this, (function) -> {
+                            try {
+                                // Set the field
+                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                field.setAccessible(true);
+                                field.set(action, function);
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + function.getName()));
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
+                    }
                     case BOOLEAN: {
                         try {
                             Field field = action.getClass().getDeclaredField(item.getVarName());
@@ -187,28 +219,12 @@ public class ActionEditMenu extends Menu {
                 new ActionsMenu(main, player, house, event).open();
                 return;
             }
+            if (backMenu != null) {
+                backMenu.open();
+                return;
+            }
             player.sendMessage(colorize("&cError: No back menu found"));
             player.closeInventory();
         });
-    }
-
-    public void openChat(ActionEditor.ActionItem item, Consumer<String> consumer) {
-        player.closeInventory();
-        Bukkit.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onPlayerChat(AsyncPlayerChatEvent e) {
-                e.setCancelled(true);
-                if (e.getPlayer().equals(player)) {
-                    String input = e.getMessage();
-                    consumer.accept(input);
-
-                    // Unregister this listener after capturing the message
-                    AsyncPlayerChatEvent.getHandlerList().unregister(this);
-
-                    // Reopen the ActionEditMenu
-                    Bukkit.getScheduler().runTaskLater(main, ActionEditMenu.this::open, 1L); // Delay slightly to allow chat event to complete
-                }
-            }
-        }, main);
     }
 }

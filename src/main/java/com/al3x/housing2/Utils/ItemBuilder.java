@@ -309,6 +309,11 @@ public class ItemBuilder {
         REMOVE_YELLOW("remove", YELLOW),
         ADD_YELLOW("add", YELLOW),
         CHANGE_YELLOW("change", YELLOW),
+        EDIT_ACTIONS("edit actions", YELLOW),
+        EDIT_FUNCTION("edit function", YELLOW),
+        RENAME_YELLOW("rename", YELLOW),
+        SELECT_YELLOW("select", YELLOW),
+        DELETE_YELLOW("delete", YELLOW),
         ;
 
         private String action;

@@ -76,12 +76,14 @@ public class AddActionMenu extends Menu {
             action.createAddDisplayItem(item);
             addItem(slots[i] - 1, item.build(), () -> {
                 actions.add(action);
-                if (backMenu == null) {
+                if (event != null) {
                     house.setEventActions(event, actions);
                     new ActionsMenu(main, player, house, event).open();
+                }
+                if (backMenu != null) {
+                    backMenu.open();
                     return;
                 }
-                backMenu.open();
             });
         }
 

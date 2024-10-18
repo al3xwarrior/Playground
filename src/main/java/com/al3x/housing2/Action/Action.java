@@ -27,20 +27,9 @@ public abstract class Action {
 
     public abstract String toString();
 
-    /*
-    New formats for item creation
-     */
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.name("&e" + name);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.changeOrderLore(true);
-    }
+    public abstract void createDisplayItem(ItemBuilder builder);
 
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.name("&a" + name);
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
+    public abstract void createAddDisplayItem(ItemBuilder builder);
 
     public ActionEditor editorMenu(HousingWorld house) {
         return null;
@@ -50,22 +39,7 @@ public abstract class Action {
 
     public abstract HashMap<String, Object> data();
 
-    public void fromData(HashMap<String, Object> data, Class< ? extends Action> actionClass) {
-        for (String key : data.keySet()) {
-            try {
-                Field field = actionClass.getDeclaredField(key);
-                field.setAccessible(true);
-                if (field.getType().isEnum()) {
-                    field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
-                    continue;
-                }
-                field.set(this, data.get(key));
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+    public abstract boolean requiresPlayer();
 
     /**
      * Returns a list of events that are allowed for this action.
@@ -88,5 +62,21 @@ public abstract class Action {
      */
     public HashMap<String, List<Action>> getActions() {
         return new HashMap<>();
+    }
+
+    public void fromData(HashMap<String, Object> data, Class< ? extends Action> actionClass) {
+        for (String key : data.keySet()) {
+            try {
+                Field field = actionClass.getDeclaredField(key);
+                field.setAccessible(true);
+                if (field.getType().isEnum()) {
+                    field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
+                    continue;
+                }
+                field.set(this, data.get(key));
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

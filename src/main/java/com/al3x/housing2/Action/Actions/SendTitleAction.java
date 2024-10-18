@@ -175,4 +175,9 @@ public class SendTitleAction extends Action {
         data.put("fadeOut", fadeOut);
         return data;
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
 }

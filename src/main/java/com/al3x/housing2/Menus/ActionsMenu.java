@@ -116,6 +116,7 @@ public class ActionsMenu extends Menu {
                     if (event != null) {
                         new ActionEditMenu(action, main, player, house, event).open();
                     }
+                    new ActionEditMenu(action, main, player, house, backMenu).open();
                 }, () -> {
                     removeAction(action);
                 });
@@ -165,7 +166,7 @@ public class ActionsMenu extends Menu {
         addActionMeta.setDisplayName(colorize("&aAdd Action"));
         addAction.setItemMeta(addActionMeta);
         addItem(50, addAction, () -> {
-            new AddActionMenu(main, player, 1, house, event, actions, backMenu).open();
+            new AddActionMenu(main, player, 1, house, event, this.actions, backMenu).open();
         });
     }
 

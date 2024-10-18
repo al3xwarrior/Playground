@@ -88,4 +88,9 @@ public class PauseAction extends Action {
         data.put("duration", duration);
         return data;
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }

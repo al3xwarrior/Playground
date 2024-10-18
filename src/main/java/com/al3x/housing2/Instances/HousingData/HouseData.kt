@@ -19,7 +19,8 @@ data class HouseData(
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
     var playerStats: HashMap<String, List<StatData>>,
-    val seed: String
+    val seed: String,
+    var functions: List<FunctionData>? = arrayListOf()
 ) {
     companion object {
         fun fromHousingWorld(world: HousingWorld): HouseData {
@@ -37,7 +38,8 @@ data class HouseData(
                 NPCData.fromList(world.npCs),
                 arrayListOf(),
                 fromHashMap(world.statManager.playerStats),
-                world.seed
+                world.seed,
+                FunctionData.fromList(world.functions)
             )
             return houseData
         }

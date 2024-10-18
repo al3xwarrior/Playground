@@ -4,9 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HouseSize;
-import com.al3x.housing2.Instances.HousingData.HouseData;
-import com.al3x.housing2.Instances.HousingData.NPCData;
-import com.al3x.housing2.Instances.HousingData.StatData;
+import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
@@ -62,6 +60,7 @@ public class HousingWorld {
 
     // Action Stuff
     private HashMap<EventType, List<Action>> eventActions;
+    private List<Function> functions;
 
     // Stats
     private StatManager statManager;
@@ -84,11 +83,13 @@ public class HousingWorld {
             e.printStackTrace();
         }
 
+        // Grab the house data from the file
         File file = new File(main.getDataFolder(), "houses/" + name + ".json");
         if (!file.exists()) {
             owner.sendMessage(colorize("&cFailed to load your house!"));
             return;
         }
+        // Load the house data from the file
         try {
             String json = Files.readString(file.toPath());
             houseData = gson.fromJson(json, HouseData.class);
@@ -96,10 +97,11 @@ public class HousingWorld {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
             return;
         }
+        //Go kaboom with the data
         this.ownerUUID = owner.getUniqueId();
         this.name = houseData.getHouseName();
         this.houseUUID = UUID.fromString(houseData.getHouseID());
-//        this.guests = houseData.getGuests();
+//        this.guests = houseData.getGuests(); we dont like guests right now :D
         this.cookies = houseData.getCookies();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
@@ -114,31 +116,40 @@ public class HousingWorld {
         eventActions = new HashMap<>();
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
-            List<com.al3x.housing2.Instances.HousingData.ActionData> actions = houseData.getEventActions().get(type);
+            List<ActionData> actions = houseData.getEventActions().get(type);
             if (actions != null) {
-                for (com.al3x.housing2.Instances.HousingData.ActionData action : actions) {
+                for (ActionData action : actions) {
                     eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData()));
                 }
             }
         }
 
+        // Load functions and since its a new feature, we need to check if the functions are null
+        functions = new ArrayList<>();
+        if (houseData.getFunctions() != null) {
+            functions = FunctionData.Companion.toList(houseData.getFunctions());
+        }
+
+
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
 
+        //Raed and load the world
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to load your house!"));
             return;
         }
         slimeWorld = world;
+
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
 
-        // Load NPCs into the world
+        // Load NPCs into the world, the reason we do this after the world is loaded is because we need the world to spawn the NPCs
         for (NPCData npc : houseData.getHouseNPCs()) {
             Location location = npc.getNpcLocation().toLocation();
-            loadNPC(owner, location, npc); // Eventually change this to a method that creates an npc with the correct data
+            loadNPC(owner, location, npc);
         }
 
         save();
@@ -166,6 +177,7 @@ public class HousingWorld {
         this.timeCreated = System.currentTimeMillis();
         this.housingNPCS = new ArrayList<>();
         this.statManager = new StatManager(this);
+        this.functions = new ArrayList<>();
 
         // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
@@ -283,6 +295,17 @@ public class HousingWorld {
     public void addEventAction(EventType eventType, Action action) {
         // Shoutout to chatgippity cause i have 0 clue what this means
         eventActions.computeIfAbsent(eventType, k -> new ArrayList<>()).add(action);
+    }
+
+    public Function createFunction(String name) {
+        if (name == null) return null;
+        for (Function function : functions) {
+            if (function.getName().equals(name)) return null;
+        }
+
+        Function function = new Function(name);
+        functions.add(function);
+        return function;
     }
 
     public void executeEventActions(EventType eventType, Player player, Cancellable event) {
@@ -458,5 +481,9 @@ public class HousingWorld {
 
     public HashMap<EventType, List<Action>> getEventActions() {
         return eventActions;
+    }
+
+    public List<Function> getFunctions() {
+        return functions;
     }
 }

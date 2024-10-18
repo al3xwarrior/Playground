@@ -100,6 +100,11 @@ public class RandomAction extends Action {
     }
 
     @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         if (!data.containsKey("subActions")) return;

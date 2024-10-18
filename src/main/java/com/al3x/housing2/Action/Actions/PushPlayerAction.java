@@ -137,6 +137,11 @@ public class PushPlayerAction extends Action {
         return data;
     }
 
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
+
 //    @Override
 //    public void fromData(HashMap<String, Object> data) {
 //        if (!data.containsKey("amount") || !data.containsKey("direction")) {

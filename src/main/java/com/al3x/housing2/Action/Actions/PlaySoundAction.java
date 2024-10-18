@@ -160,6 +160,11 @@ public class PlaySoundAction extends Action {
         return data;
     }
 
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
+
 //    @Override
 //    public void fromData(HashMap<String, Object> data) {
 //        volume = (Float) data.get("volume");

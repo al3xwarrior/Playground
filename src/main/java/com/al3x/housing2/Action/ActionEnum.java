@@ -19,6 +19,7 @@ public enum ActionEnum {
     SEND_TITLE("Send Title Action", SendTitleAction.class),
     SHOW_BOSSBAR("Show Bossbar Action", ShowBossbarAction.class),
     PAUSE_EXECUTION("Pause Action", PauseAction.class),
+    FUNCTION("Function Action", FunctionAction.class),
     // Add new actions here
     ;
     private String name;

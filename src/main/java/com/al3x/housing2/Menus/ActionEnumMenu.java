@@ -67,6 +67,7 @@ public class ActionEnumMenu extends Menu {
                 items.add(new ItemBuilder().material(item.getEnumMaterial()).name("&e" + name));
             } else {
                 if (value instanceof BarColor) items.add(new ItemBuilder().material(Color.fromColor((BarColor) value)).name("&e" + name));
+                if (value instanceof Material) items.add(new ItemBuilder().material((Material) value).name("&e" + name));
             }
         }
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};

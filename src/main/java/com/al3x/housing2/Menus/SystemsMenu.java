@@ -62,7 +62,7 @@ public class SystemsMenu extends Menu {
         functionsMeta.setDisplayName(colorize("&aFunctions"));
         functions.setItemMeta(functionsMeta);
         addItem(14, functions, () -> {
-            player.sendMessage("Opening Functions Menu...");
+            new FunctionsMenu(main, player, house).open();
         });
 
         ItemStack inventoryLayouts = new ItemStack(Material.IRON_AXE);

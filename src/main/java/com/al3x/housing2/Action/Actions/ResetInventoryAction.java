@@ -49,4 +49,9 @@ public class ResetInventoryAction extends Action {
     public HashMap<String, Object> data() {
         return new HashMap<>();
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
 }

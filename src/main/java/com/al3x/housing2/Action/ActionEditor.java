@@ -136,7 +136,7 @@ public class ActionEditor {
         }
 
         public enum ActionType {
-            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, ACTION
+            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, ACTION, FUNCTION
         }
 
         public interface EnumInterface {

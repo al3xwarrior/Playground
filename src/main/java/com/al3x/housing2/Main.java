@@ -28,11 +28,13 @@ import java.io.File;
 // scoreboard layouts
 
 public final class Main extends JavaPlugin {
+    private static Main INSTANCE;
     private SlimeLoader loader;
     private HousesManager housesManager;
 
     @Override
     public void onEnable() {
+        INSTANCE = this;
         // The location of the worlds folder is relative to the server's root directory
         loader = new FileLoader(new File("./slime_worlds"));
 
@@ -85,5 +87,9 @@ public final class Main extends JavaPlugin {
         }
         getServer().getLogger().info("[Housing2] Disabled");
 
+    }
+
+    public static Main getInstance() {
+        return INSTANCE;
     }
 }
