@@ -33,5 +33,21 @@ data class StatData(
             }
             return map
         }
+
+        fun fromList(statList: List<Stat>): List<StatData> {
+            val list = mutableListOf<StatData>()
+            statList.forEach {
+                list.add(StatData(it.uuid.toString(), it.statName, it.statNum))
+            }
+            return list
+        }
+
+        fun toList(statList: List<StatData>): List<Stat> {
+            val list = mutableListOf<Stat>()
+            statList.forEach {
+                list.add(Stat(UUID.fromString(it.id), it.name, it.value))
+            }
+            return list
+        }
     }
 }

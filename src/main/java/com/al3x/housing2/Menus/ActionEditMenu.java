@@ -153,7 +153,7 @@ public class ActionEditMenu extends Menu {
                         break;
                     }
                     case ENUM: {
-                        new ActionEnumMenu(action, item, main, player, house, event).open();
+                        new ActionEnumMenu(action, item, main, player, house, event, this).open();
                         break;
                     }
                     case ACTION: {
@@ -187,6 +187,7 @@ public class ActionEditMenu extends Menu {
                             }
                         });
                         paginationMenu.open();
+                        break;
                     }
                     case BOOLEAN: {
                         try {
@@ -195,6 +196,7 @@ public class ActionEditMenu extends Menu {
                             boolean value = (boolean) field.get(action);
                             field.set(action, !value);
                             player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + !value));
+                            open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));

@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ActionMenus.RandomActionMenu;
@@ -26,34 +27,46 @@ public class AddActionMenu extends Menu {
     private Player player;
     private int page;
     private HousingWorld house;
+    private Function function;
     private EventType event;
     private List<Action> actions;
 
-    public AddActionMenu(Main main, Player player, int page, HousingWorld house, EventType event) {
+    public AddActionMenu(Main main, Player player, int page, HousingWorld house, Function function, Menu backMenu) {
         super(player, colorize("&aAdd Action"), 54);
         this.main = main;
         this.player = player;
         this.page = page;
         this.house = house;
+
+        this.function = function;
+        this.actions = function.getActions();
+        this.backMenu = backMenu;
+
+        setupItems();
+    }
+
+    public AddActionMenu(Main main, Player player, int page, HousingWorld house, EventType event, Menu backMenu) {
+        super(player, colorize("&aAdd Action"), 54);
+        this.main = main;
+        this.player = player;
+        this.page = page;
+        this.house = house;
+
         this.event = event;
-        this.actions = (house.getEventActions(event) != null) ? house.getEventActions(event) : new ArrayList<>();
+        this.actions = house.getEventActions(event);
+        this.backMenu = backMenu;
+
         setupItems();
     }
 
     //Will be used for random actions and conditions
-    public AddActionMenu(Main main, Player player, int page, HousingWorld house, EventType event, List<Action> actions, Menu backMenu) {
+    public AddActionMenu(Main main, Player player, int page, HousingWorld house, List<Action> actions, Menu backMenu) {
         super(player, colorize("&aAdd Action"), 54);
         this.main = main;
         this.player = player;
         this.page = page;
         this.house = house;
-        this.event = event;
         this.actions = actions;
-
-        if (actions == null) {
-            this.actions = house.getEventActions(event);
-        }
-
         this.backMenu = backMenu;
         setupItems();
     }
@@ -61,13 +74,28 @@ public class AddActionMenu extends Menu {
     @Override
     public void setupItems() {
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
-        List<Action> actionArray = Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter((action) ->{
-            if (action == null) {
-                return false;
+        List<Action> actionArray = Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).toList();
+        List<Action> newActions = new ArrayList<>();
+        for (Action action : actionArray) {
+            if (action == null) continue;
+            if (function != null) {
+                if (function.isGlobal() && action.requiresPlayer()) continue;
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(null)) continue;
+                newActions.add(action);
+                continue;
             }
-            return action.allowedEvents() == null || action.allowedEvents().contains(event);
-        }).collect(Collectors.toList());
-        PaginationList<Action> paginationList = new PaginationList<>(actionArray, 21);
+
+            if (event != null) {
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(event)) continue;
+                newActions.add(action);
+                continue;
+            }
+
+            if (action.allowedEvents() != null) continue;
+
+            newActions.add(action);
+        }
+        PaginationList<Action> paginationList = new PaginationList<>(newActions, 21);
         List<Action> actionsList = paginationList.getPage(page);
 
         for (int i = 0; i < actionsList.size(); i++) {
@@ -76,10 +104,6 @@ public class AddActionMenu extends Menu {
             action.createAddDisplayItem(item);
             addItem(slots[i] - 1, item.build(), () -> {
                 actions.add(action);
-                if (event != null) {
-                    house.setEventActions(event, actions);
-                    new ActionsMenu(main, player, house, event).open();
-                }
                 if (backMenu != null) {
                     backMenu.open();
                     return;
@@ -93,7 +117,7 @@ public class AddActionMenu extends Menu {
             forwardArrowMeta.setDisplayName(colorize("&aNext Page"));
             forwardArrow.setItemMeta(forwardArrowMeta);
             addItem(53, forwardArrow, () -> {
-                new AddActionMenu(main, player, page + 1, house, event, actions, backMenu).open();
+                new AddActionMenu(main, player, page + 1, house, actions, backMenu).open();
             });
         }
 
@@ -103,7 +127,7 @@ public class AddActionMenu extends Menu {
             backArrowMeta.setDisplayName(colorize("&aLast Page"));
             backArrow.setItemMeta(backArrowMeta);
             addItem(45, backArrow, () -> {
-                new AddActionMenu(main, player, page - 1, house, event, actions, backMenu).open();
+                new AddActionMenu(main, player, page - 1, house, actions, backMenu).open();
             });
         }
 
@@ -116,7 +140,7 @@ public class AddActionMenu extends Menu {
                 backMenu.open();
                 return;
             }
-            new ActionsMenu(main, player, house, event).open();
+            new ActionsMenu(main, player, house, actions, null).open();
         });
     }
 }

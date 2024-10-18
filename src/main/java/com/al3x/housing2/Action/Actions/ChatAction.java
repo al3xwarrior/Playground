@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -71,7 +73,7 @@ public class ChatAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.sendMessage(colorize(message));
+        player.sendMessage(HandlePlaceholders.parsePlaceholders(player, house, colorize(message)));
         return true;
     }
 

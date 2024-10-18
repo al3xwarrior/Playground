@@ -54,7 +54,7 @@ public class PlayerStatActionMenu extends Menu {
                         player.sendMessage(colorize("&aStat Name set to: " + newMessage));
                     } else if (type.equals("VALUE")) {
                         try {
-                            action.setValue(Double.parseDouble(newMessage));
+                            action.setValue(newMessage);
                         } catch (NumberFormatException ex) {
                             player.sendMessage(colorize("&cInvalid number format!"));
                             return;

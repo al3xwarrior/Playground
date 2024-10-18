@@ -14,8 +14,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-public class NPCInteractListener implements Listener {
+import java.util.HashMap;
+import java.util.UUID;
 
+public class NPCInteractListener implements Listener {
+    private HashMap<UUID, Long> cooldowns = new HashMap<>();
     private Main main;
     private HousesManager housesManager;
 
@@ -45,13 +48,25 @@ public class NPCInteractListener implements Listener {
     @EventHandler
     public void leftClickNPC(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
+        if (cooldowns.containsKey(e.getDamager().getUniqueId())) {
+            if (cooldowns.get(e.getDamager().getUniqueId()) > System.currentTimeMillis()) {
+                return;
+            }
+        }
         npcInteract((Player) e.getDamager(), e.getEntity(), false);
+        cooldowns.put(e.getDamager().getUniqueId(), System.currentTimeMillis() + 200);
     }
 
 
     @EventHandler
     public void rightClickNPC(PlayerInteractEntityEvent e) {
+        if (cooldowns.containsKey(e.getPlayer().getUniqueId())) {
+            if (cooldowns.get(e.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
+                return;
+            }
+        }
         npcInteract(e.getPlayer(), e.getRightClicked(), true);
+        cooldowns.put(e.getPlayer().getUniqueId(), System.currentTimeMillis() + 200);
     }
 
 

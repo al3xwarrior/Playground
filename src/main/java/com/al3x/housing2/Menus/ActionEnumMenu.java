@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -47,7 +48,7 @@ public class ActionEnumMenu extends Menu {
     }
 
     // Events
-    public ActionEnumMenu(Action action, ActionEditor.ActionItem item, Main main, Player player, HousingWorld house, EventType event) {
+    public ActionEnumMenu(Action action, ActionEditor.ActionItem item, Main main, Player player, HousingWorld house, EventType event, Menu backMenu) {
         super(player, "Select Option", 54);
         this.main = main;
         this.action = action;
@@ -55,21 +56,44 @@ public class ActionEnumMenu extends Menu {
         this.player = player;
         this.house = house;
         this.event = event;
+        this.backMenu = backMenu;
     }
+
+    private static Material[] STAT_OPERATION_MATERIALS = new Material[]{
+            Material.GREEN_STAINED_GLASS,
+            Material.RED_STAINED_GLASS,
+            Material.YELLOW_STAINED_GLASS,
+            Material.ORANGE_STAINED_GLASS,
+            Material.BLUE_STAINED_GLASS,
+            Material.MAGENTA_STAINED_GLASS,
+            Material.WHITE_STAINED_GLASS,
+            Material.BROWN_STAINED_GLASS,
+    };
 
     @Override
     public void setupItems() {
         clearItems();
         List<ItemBuilder> items = new ArrayList<>();
-        for (Enum value : item.getEnumClass()) {
+        Enum[] enumClass = item.getEnumClass();
+
+        for (int i = 0; i < enumClass.length; i++) {
+            Enum value = enumClass[i];
             String name = StringUtilsKt.formatCapitalize(value.toString());
             if (item.getEnumMaterial() != null) {
                 items.add(new ItemBuilder().material(item.getEnumMaterial()).name("&e" + name));
             } else {
-                if (value instanceof BarColor) items.add(new ItemBuilder().material(Color.fromColor((BarColor) value)).name("&e" + name));
-                if (value instanceof Material) items.add(new ItemBuilder().material((Material) value).name("&e" + name));
+                //Are there better ways to do this? Probably, do I care? No
+                if (value instanceof BarColor)
+                    items.add(new ItemBuilder().material(Color.fromColor((BarColor) value)).name("&e" + name));
+
+                if (value instanceof StatOperation)
+                    items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
+
+                if (value instanceof Material)
+                    items.add(new ItemBuilder().material((Material) value).name("&e" + name));
             }
         }
+
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
         PaginationList<ItemBuilder> paginationList = new PaginationList<>(items, 21);
@@ -82,7 +106,7 @@ public class ActionEnumMenu extends Menu {
             addItem(slot, itemBuilder.build(), (e) -> {
                 if (e.getCurrentItem() == null) return;
                 if (!e.getCurrentItem().hasItemMeta()) return;
-                String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(" ", "_").toUpperCase();
+                String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(" ", "_").toUpperCase().replaceAll("§[A-F0-9]", "");
                 try {
                     Field field = action.getClass().getDeclaredField(item.getVarName());
                     field.setAccessible(true);
@@ -95,6 +119,10 @@ public class ActionEnumMenu extends Menu {
                     }
                     if (event != null) {
                         new ActionEditMenu(action, main, player, house, event).open();
+                        return;
+                    }
+                    if (backMenu != null) {
+                        backMenu.open();
                         return;
                     }
                     player.sendMessage(colorize("&cError: No back menu found"));

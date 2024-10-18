@@ -11,8 +11,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -34,9 +33,9 @@ public class ScoreboardMenu extends Menu {
     public void setupItems() {
         int[] avaliableSlots = {10,11,12,13,14,15,16,19,20,21,22,23,24,25,28};
 
-        List<String> scoreboard = house.getScoreboard();
+        List<String> scoreboard = new ArrayList<>(house.getScoreboard());
         for (int i = 0; i < scoreboard.size(); i++) {
-            String[] line = {scoreboard.get(i)};
+            final String[] line = {scoreboard.get(i)};
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setDisplayName(colorize(line[0]));
@@ -61,8 +60,9 @@ public class ScoreboardMenu extends Menu {
                         if (e.getPlayer().equals(player)) {
                             String newMessage = e.getMessage();
                             line[0] = newMessage;
+                            scoreboard.set(finalI, newMessage);
                             player.sendMessage(colorize("&aLine set to: " + newMessage));
-                            house.setScoreboard(Arrays.asList(line));
+                            house.setScoreboard(scoreboard);
 
                             // Unregister this listener after capturing the message
                             AsyncPlayerChatEvent.getHandlerList().unregister(this);
@@ -88,7 +88,7 @@ public class ScoreboardMenu extends Menu {
                 return;
             }
 
-            List<String> newScoreboard = house.getScoreboard();
+            List<String> newScoreboard = new ArrayList<>(house.getScoreboard());
             newScoreboard.add("Hello World!");
             house.setScoreboard(newScoreboard);
             new ScoreboardMenu(main, player, house).open();

@@ -27,7 +27,7 @@ public class FunctionSettingsMenu extends Menu {
     public void setupItems() {
 
         //Rename Function
-        addItem(11, ItemBuilder.create(Material.ANVIL)
+        addItem(10, ItemBuilder.create(Material.ANVIL)
                 .name(colorize("&aRename Function"))
                 .description("Change the name of this function.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
@@ -38,7 +38,7 @@ public class FunctionSettingsMenu extends Menu {
         });
 
         //Edit Description
-        addItem(13, ItemBuilder.create(Material.BOOK)
+        addItem(12, ItemBuilder.create(Material.BOOK)
                 .name(colorize("&aEdit Description"))
                 .description("Edit the description of this function.\n\n" + function.getDescription())
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
@@ -49,7 +49,7 @@ public class FunctionSettingsMenu extends Menu {
         });
 
         //Edit Icon
-        addItem(15, ItemBuilder.create(function.getMaterial())
+        addItem(14, ItemBuilder.create(function.getMaterial())
                 .name(colorize("&aEdit Icon"))
                 .description("Change the icon of this function.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -61,11 +61,24 @@ public class FunctionSettingsMenu extends Menu {
             enumMenu.open();
         });
 
+        //Toggle Global
+        addItem(16, ItemBuilder.create(Material.PLAYER_HEAD)
+                .skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1")
+                .name(colorize("&aToggle Global"))
+                .description("If enabled, this function will not run for all players in the house.\n\n&7Only really matters for automatic executions.")
+                .info("&7Current", (function.isGlobal() ? "&aEnabled" : "&cDisabled"))
+                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                .build(), (e) -> {
+            function.setGlobal(!function.isGlobal());
+            setupItems();
+        });
+
         //Delete Function
         addItem(30, ItemBuilder.create(Material.TNT)
                 .name(colorize("&aDelete Function"))
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
                 .build(), (e) -> {
+            function.setLoaded(false);
             house.getFunctions().remove(function);
             new FunctionsMenu(main, player, house).open();
         });
@@ -85,6 +98,7 @@ public class FunctionSettingsMenu extends Menu {
                 .info("&7Current", (function.getTicks() == null ? "&cDisabled" : "&a" + function.getTicks() + " ticks"))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .build(), (e) -> {
+            player.sendMessage(colorize("&eEnter the amount of ticks you want this function to run every (1 second is 20 ticks): "));
             openChat(main, (message) -> {
                 try {
                     function.setTicks(Double.parseDouble(message));

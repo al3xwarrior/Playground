@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Enums.EventType
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
+import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
 
 data class HouseData(
@@ -32,11 +33,11 @@ data class HouseData(
                 world.size,
                 world.cookies,
                 world.timeCreated,
-                ActionData.fromHashMap(world.eventActions),
+                ActionData.fromHashMap(world.eventActions, world),
                 LocationData.fromLocation(world.spawn),
                 world.scoreboard,
                 NPCData.fromList(world.npCs),
-                arrayListOf(),
+                fromList(world.statManager.globalStats),
                 fromHashMap(world.statManager.playerStats),
                 world.seed,
                 FunctionData.fromList(world.functions)

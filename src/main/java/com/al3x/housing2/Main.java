@@ -7,6 +7,7 @@ import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -65,6 +66,8 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AttackEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlaceBlock(housesManager), this);
 
+        Runnables.startRunnables(this);
+
         getServer().getLogger().info("[Housing2] Enabled");
     }
 
@@ -78,13 +81,12 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getLogger().info("[Housing2] Saving houses...");
-        for (HousingWorld house : housesManager.getLoadedHouses()) {
-            house.getNPCs().forEach((npc) -> { // We shouldn't keep NPC instances after the plugin is disabled
-                npc.getCitizensNPC().destroy();
-            });
-            house.save();
+        getServer().getLogger().info("[Housing2] Saving and unloading houses...");
+        Runnables.stopRunnables();
+        for (HousingWorld house : housesManager.getConcurrentLoadedHouses().values()) {
+            housesManager.saveHouseAndUnload(house);
         }
+
         getServer().getLogger().info("[Housing2] Disabled");
 
     }
@@ -92,4 +94,6 @@ public final class Main extends JavaPlugin {
     public static Main getInstance() {
         return INSTANCE;
     }
+
+
 }

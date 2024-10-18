@@ -104,7 +104,7 @@ public class ShowBossbarAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + progress)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.DOUBLE, 0, 1
                 )
         );
 
@@ -114,6 +114,8 @@ public class ShowBossbarAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         BossBar bossBar = Bukkit.createBossBar(colorize(title), barColor, barStyle);
+        if (progress < 0) progress = 0;
+        if (progress > 1) progress = 1;
         bossBar.setProgress(progress);
         bossBar.addPlayer(player);
         bossBar.setVisible(true);

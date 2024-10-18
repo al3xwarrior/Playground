@@ -36,6 +36,7 @@ import static org.bukkit.ChatColor.*;
 public class ItemBuilder {
     private ItemStack stack;
     private Material material;
+    private String skullTexture;
     private int amount;
     private short data;
     private String name;
@@ -62,6 +63,14 @@ public class ItemBuilder {
 
     public ItemBuilder material(Material material) {
         this.material = material;
+        return this;
+    }
+
+    public ItemBuilder skullTexture(String skullTexture) {
+        if (material != Material.PLAYER_HEAD) {
+            throw new IllegalArgumentException("Skull texture can only be set for PLAYER_HEAD material.");
+        }
+        this.skullTexture = skullTexture;
         return this;
     }
 
@@ -198,14 +207,23 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-        stack = new ItemStack(material, amount);
+        //Make the skull or item stack
+        if (skullTexture != null) {
+            stack = SkullTextures.getCustomSkull(skullTexture);
+        } else {
+            stack = new ItemStack(material, amount);
+        }
+
         ItemMeta itemMeta = stack.getItemMeta();
         if (itemMeta == null) {
             // ItemMeta is null for AIR
             return stack;
         }
+
+        //Set the item name and lore
         itemMeta.setDisplayName(colorize(name));
         itemMeta.setLore(colorize(getLore()));
+
         // Hide all item flags cause they are annoying and useless
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemMeta.addItemFlags(ItemFlag.HIDE_DESTROYS);
@@ -213,6 +231,7 @@ public class ItemBuilder {
         itemMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
         stack.setItemMeta(itemMeta);
+        //Add glow effect
         if (glow) {
             stack.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
             ItemMeta meta = stack.getItemMeta();
