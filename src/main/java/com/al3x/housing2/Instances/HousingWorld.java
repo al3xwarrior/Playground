@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
 import com.infernalsuite.aswm.api.exceptions.UnknownWorldException;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
@@ -31,7 +32,7 @@ import java.util.logging.Level;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     transient private Main main;
     transient private SlimeLoader loader;
@@ -110,6 +111,7 @@ public class HousingWorld {
         this.statManager = new StatManager(this);
 
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
+        this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
 
         this.scoreboard = houseData.getScoreboard();
 
@@ -200,14 +202,14 @@ public class HousingWorld {
 
         // Actions, Scoreboard, Default Stuff ya know?
         this.scoreboard = new ArrayList<>();
-        this.scoreboard.add("&fName: %player.name%");
-        this.scoreboard.add("&fhawk tua! Ping: %player.ping%");
-        this.scoreboard.add("&fSprinting! %player.isSprinting%");
-        this.scoreboard.add("&f");
-        this.scoreboard.add("Twerks: &6%stat.player/twerks%");
-        this.scoreboard.add("&r");
-        this.scoreboard.add("&aPlayers: &2%house.guests%");
         this.scoreboard.add("&eCookies: &6%house.cookies%");
+        this.scoreboard.add("&aPlayers: &2%house.guests%");
+        this.scoreboard.add("&r");
+        this.scoreboard.add("Twerks: &6%stat.player/twerks%");
+        this.scoreboard.add("&f");
+        this.scoreboard.add("&fSprinting! %player.isSprinting%");
+        this.scoreboard.add("&fhawk tua! Ping: %player.ping%");
+        this.scoreboard.add("&fName: %player.name%");
 
         eventActions = new HashMap<>();
         //Bad Al3x for not doing this the first time
@@ -290,6 +292,17 @@ public class HousingWorld {
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    public void unload() {
+        for (Player player : houseWorld.getPlayers()) {
+            player.sendMessage(colorize("&e&lHouse is being unloaded!"));
+            kickPlayerFromHouse(player);
+        }
+        for (HousingNPC npc : housingNPCS) {
+            npc.getCitizensNPC().destroy();
+        }
+        Bukkit.unloadWorld(houseWorld, false);
     }
 
     public void addEventAction(EventType eventType, Action action) {
@@ -485,5 +498,12 @@ public class HousingWorld {
 
     public List<Function> getFunctions() {
         return functions;
+    }
+
+    public Function getFunction(String name) {
+        for (Function function : functions) {
+            if (function.getName().equals(name)) return function;
+        }
+        return null;
     }
 }

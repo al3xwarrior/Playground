@@ -16,21 +16,29 @@ public class HypixelLoreFormatter {
      * Generates Hypixel lores with faithful formatting guidelines, all fact-checked using an auto-wrapped part of lore in Housing.
      * - Wraps using the same word-by-word system as Hypixel
      * - Adds punctuation automatically if needed like Hypixel
-     *
+     * <p>
      * - Todo: Add support for custom colours
      * - Todo: Add support for custom wrapping lengths
      * - Todo: Add support for custom punctuation
      *
-     * @param str    The string to add wrapping to
-     * @param info  Additional info to add to the middle
-     * (e.g. "Settings:", "Message: Hello World!")
+     * @param description    The string to add wrapping to
+     * @param info   Additional info to add to the middle
+     *               (e.g. "Settings:", "Message: Hello World!")
      * @param labels Additional labels for the bottom (e.g. "Left Click to edit!")
      * @return The formatted lines with colour codes
      */
-    public static List<String> hypixelLore(String str, List<Duple<String, Object>> info, List<String> labels) {
+    public static List<String> hypixelLore(String description, List<Duple<String, Object>> info, List<String> labels) {
         List<String> lines = new ArrayList<>();
 
-        if (!str.isEmpty()) {
+        for (String str : description.split("\n")) {
+            if (description.isEmpty()) {
+                continue;
+            }
+            if (str.isEmpty()) {
+                lines.add("");
+                continue;
+            }
+
             if (!HYPX_LORE_PUNCTUATION.matcher(str).matches()) {
                 str += ".";
             }
@@ -51,9 +59,9 @@ public class HypixelLoreFormatter {
             for (int i = 0; i < lines.size(); i++) {
                 lines.set(i, "§7" + lines.get(i));
             }
-
         }
-        if(info != null && !info.isEmpty()) {
+
+        if (info != null && !info.isEmpty()) {
             lines.add("");
             for (Duple<String, Object> key : info) {
                 if (key.getFirst() == null) {

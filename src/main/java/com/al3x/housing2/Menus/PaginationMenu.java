@@ -46,11 +46,12 @@ public class PaginationMenu<E> extends Menu {
             Duple<E, ItemBuilder> something = page.get(i);
             addItem(slots[i], something.getSecond().build(), (event) -> {
                 con.accept(something.getFirst());
+                backMenu.open();
             });
         }
 
         //Previous Page
-        if (currentPage > 0) {
+        if (currentPage > 1) {
             addItem(45, ItemBuilder.create(Material.ARROW)
                     .name(colorize("&ePrevious Page"))
                     .description("&ePage " + (currentPage - 1))
@@ -72,7 +73,7 @@ public class PaginationMenu<E> extends Menu {
         }
 
         //Back Button
-        addItem(49, ItemBuilder.create(Material.BARRIER)
+        addItem(49, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&cBack"))
                 .description("To " + backMenu.getTitle())
                 .build(), (event) -> {

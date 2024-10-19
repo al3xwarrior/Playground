@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -31,7 +32,6 @@ public class FunctionsMenu extends Menu {
     public void setupItems() {
         clearItems();
         int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-
         PaginationList<Function> paginationList = new PaginationList<>(house.getFunctions(), slots.length);
         List<Function> functions = paginationList.getPage(currentPage);
         if (functions != null) {
@@ -44,7 +44,15 @@ public class FunctionsMenu extends Menu {
                 item.rClick(ItemBuilder.ActionType.EDIT_FUNCTION);
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {
-                        new ActionsMenu(main, player, house, function.getActions(), this).open();
+                        //Remove invalid actions from global functions
+                        if (function.isGlobal()) {
+                            for (Action action: function.getActions()) {
+                                if (action.requiresPlayer()) {
+                                    function.getActions().remove(action);
+                                }
+                            }
+                        }
+                        new ActionsMenu(main, player, house, function, this).open();
                     } else if (e.getClick().isRightClick()) {
                         new FunctionSettingsMenu(main, player, house, function).open();
                     }
@@ -81,7 +89,7 @@ public class FunctionsMenu extends Menu {
                 Bukkit.getScheduler().runTask(main, () -> {
                     Function function = house.createFunction(s);
                     Bukkit.getScheduler().runTaskLater(main, () -> {
-                        new ActionsMenu(main, player, house, function.getActions(), this).open();
+                        new ActionsMenu(main, player, house, function, this).open();
                     }, 1L);
                 });
             });

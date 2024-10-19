@@ -7,32 +7,29 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.al3x.housing2.Utils.Color.colorize;
-
-public class PlayerStatAction extends Action {
+public class GlobalStatAction extends Action {
 
     private String statName;
     private StatOperation mode;
     private String value;
 
-    public PlayerStatAction() {
-        super("Player Stat Action");
+    public GlobalStatAction() {
+        super("Global Stat Action");
         this.statName = "Kills";
         this.mode = StatOperation.INCREASE;
         this.value = "1.0";
     }
 
-    public PlayerStatAction(String statName, StatOperation mode, Double value) {
-        super("Player Stat Action");
+    public GlobalStatAction(String statName, StatOperation mode, Double value) {
+        super("Global Stat Action");
         this.statName = statName;
         this.mode = mode;
         this.value = String.valueOf(value);
@@ -40,13 +37,14 @@ public class PlayerStatAction extends Action {
 
     @Override
     public String toString() {
-        return "PlayerStatAction (StatName: " + statName + ", Mode: " + mode + ", Value: " + value + ")";
+        return "GlobalStatAction (StatName: " + statName + ", Mode: " + mode + ", Value: " + value + ")";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&eChange Player Stat");
+        builder.material(Material.PLAYER_HEAD);
+        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
+        builder.name("&eChange Global Stat");
         builder.info("&eSettings", "");
         builder.info("Stat", "&a" + statName);
         builder.info("Mode", "&a" + mode);
@@ -59,8 +57,9 @@ public class PlayerStatAction extends Action {
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&aChange Player Stat");
+        builder.material(Material.PLAYER_HEAD);
+        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
+        builder.name("&aChange Global Stat");
         builder.description("Modify a stat of the player who triggered the action.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
@@ -94,22 +93,20 @@ public class PlayerStatAction extends Action {
                 )
         );
 
-        return new ActionEditor(4, "&ePlayer Stat Action Settings", items);
+        return new ActionEditor(4, "&eGlobal Stat Action Settings", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
+        Stat stat = house.getStatManager().getGlobalStatByName(statName);
         try {
-            stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, value)));
+            stat.modifyStat(mode, Double.parseDouble(value));
         } catch (NumberFormatException e) {
             try {
-                stat.modifyStat(mode, Double.parseDouble(value));
+                stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, value)));
             } catch (NumberFormatException e2) {
-                player.sendMessage(colorize("&cInvalid value for stat action."));
                 return true;
             }
-            return true;
         }
         return true;
     }
@@ -129,8 +126,8 @@ public class PlayerStatAction extends Action {
     public void setMode(StatOperation mode) {
         this.mode = mode;
     }
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(Double value) {
+        this.value = String.valueOf(value);
     }
 
     @Override
@@ -144,7 +141,7 @@ public class PlayerStatAction extends Action {
 
     @Override
     public boolean requiresPlayer() {
-        return true;
+        return false;
     }
 
 //    @Override

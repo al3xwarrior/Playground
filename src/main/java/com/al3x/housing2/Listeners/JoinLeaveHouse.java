@@ -17,6 +17,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +42,8 @@ public class JoinLeaveHouse implements Listener {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName(colorize("&e&lHOUSING V2"));
 
-        List<String> scoreboard = house.getScoreboard();
+        List<String> scoreboard = new ArrayList<>(house.getScoreboard());
+        Collections.reverse(scoreboard);
         for (int i = 0; i < scoreboard.size(); i++) {
             String line = scoreboard.get(i);
             objective.getScore(colorize(parsePlaceholders(player, house, line))).setScore(i);

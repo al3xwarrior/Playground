@@ -12,6 +12,7 @@ public enum ActionEnum {
     FULL_HEAL("Full Heal Action", FullHealAction.class),
     KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
     PLAYER_STAT("Player Stat Action", PlayerStatAction.class),
+    GLOBAL_STAT("Global Stat Action", GlobalStatAction.class),
     PLAY_SOUND("Play Sound Action", PlaySoundAction.class),
     PUSH_PLAYER("Push Player Action", PushPlayerAction.class),
     RANDOM_ACTION("Random Action", RandomAction.class),

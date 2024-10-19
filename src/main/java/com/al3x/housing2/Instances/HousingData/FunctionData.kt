@@ -11,6 +11,7 @@ data class FunctionData(
     val description: String,
     val ticks: Double?,
     val material: String,
+    val global: Boolean = false,
     val actions: List<ActionData>
 ) {
     companion object {
@@ -24,6 +25,7 @@ data class FunctionData(
                         it.description,
                         it.ticks,
                         it.material.name,
+                        it.isGlobal,
                         ActionData.fromList(it.actions)
                     )
                 )
@@ -41,7 +43,8 @@ data class FunctionData(
                         it.ticks,
                         Material.valueOf(it.material),
                         it.description,
-                        ActionData.toList(it.actions)
+                        ActionData.toList(it.actions),
+                        it.global
                     )
                 )
             }

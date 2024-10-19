@@ -127,6 +127,16 @@ public class Housing implements CommandExecutor {
             if (strings[0].equalsIgnoreCase("menu")) {
                 new HouseBrowserMenu(player, housesManager).open();
             }
+
+            if (strings[0].equalsIgnoreCase("save") && player.hasPermission("housing.save")) {
+                if (housesManager.getHouse(player.getWorld()) == null) {
+                    player.sendMessage(colorize("&cYou are not in a house!"));
+                    return true;
+                }
+                housesManager.saveHouseAndUnload(housesManager.getHouse(player.getWorld()));
+                player.sendMessage(colorize("&aHouses saved and unloaded!"));
+                return true;
+            }
         }
 
         player.sendMessage(colorize("&7&m----------------------------------------------"));

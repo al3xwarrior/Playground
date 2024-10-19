@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
 import net.md_5.bungee.api.ChatMessageType;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
 public class ActionbarAction extends Action {
@@ -40,7 +42,7 @@ public class ActionbarAction extends Action {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.WRITABLE_BOOK);
         builder.name("&eActionbar Action").description("Sends a actionbar message");
-        builder.info("Settings", "").info("Message", message);
+        builder.info("&eSettings", "").info("Message", message);
         builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
@@ -69,7 +71,7 @@ public class ActionbarAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(message)));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(HandlePlaceholders.parsePlaceholders(player, house, colorize(message)))));
 
         return true;
     }

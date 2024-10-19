@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +19,9 @@ public class Function {
     private String description;
     private List<Action> actions;
     private boolean global = false;
+    private boolean loaded = true;
+
+    private long lastRun = 0;
 
     public Function(String name) {
         this.name = name;
@@ -26,26 +30,42 @@ public class Function {
         this.ticks = null;
         this.material = Material.MAP;
         this.actions = new ArrayList<>();
+        this.lastRun = System.currentTimeMillis();
     }
 
-    public Function(String name, UUID id, Double ticks, Material material, String description, List<Action> actions) {
+    public Function(String name, UUID id, Double ticks, Material material, String description, List<Action> actions, boolean global) {
         this.name = name;
         this.id = id;
         this.ticks = ticks;
         this.material = material;
         this.description = description;
         this.actions = actions;
+        this.lastRun = System.currentTimeMillis();
+        this.global = global;
     }
 
     public void execute(Main main, Player player, HousingWorld house) {
-        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            for (Action action : actions) {
-                //Null check for allowed events, if null then all events are allowed, if the list contains null then its actually a function in disguise :D
-                if (action.allowedEvents() != null && !action.allowedEvents().contains(null)) return;
-                if (global && action.requiresPlayer() && player == null) return;
-                action.execute(player, house);
+        if (!loaded) return;
+        List<Player> players = new ArrayList<>();
+        //I dont fucking know anymore lol
+        if (global) {
+            players.add(null);
+        } else {
+            if (player != null) {
+                players.add(player);
+            } else {
+                players = house.getWorld().getPlayers();
             }
-        });
+        }
+        for (Player p : players) {
+            for (Action action : actions) {
+                if (action.requiresPlayer() && p == null) continue;
+                //Null check for allowed events, if null then all events are allowed, if the list contains null then its actually a function in disguise :D
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) return;
+                action.execute(p, house);
+            }
+        }
+        lastRun = System.currentTimeMillis();
     }
 
     public String getName() {
@@ -98,6 +118,18 @@ public class Function {
 
     public void setGlobal(boolean global) {
         this.global = global;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
+    public long getLastRun() {
+        return lastRun;
     }
 }
 

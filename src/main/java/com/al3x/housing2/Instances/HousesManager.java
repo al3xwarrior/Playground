@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class HousesManager {
@@ -21,9 +22,11 @@ public class HousesManager {
 
     // All the loaded houses
     private final List<HousingWorld> loadedHouses;
+    private ConcurrentHashMap<String, HousingWorld> concurrentLoadedHouses = new ConcurrentHashMap<>();
 
     // All the player houses
     private final HashMap<UUID, List<String>> playerHouses;
+    private final List<String> housesById = new ArrayList<>();
 
     public HousesManager(Main main) {
         this.main = main;
@@ -47,6 +50,7 @@ public class HousesManager {
 
                 List<String> hs = playerHouses.getOrDefault(UUID.fromString(houseData.getOwnerID()), new ArrayList<>());
                 hs.add(houseData.getHouseID());
+                housesById.add(houseData.getHouseID());
                 playerHouses.put(UUID.fromString(houseData.getOwnerID()), hs);
             } catch (Exception e) {
                 main.getLogger().log(Level.SEVERE, e.getMessage(), e);
@@ -59,6 +63,7 @@ public class HousesManager {
     public HousingWorld createHouse(Player owner, HouseSize size) {
         HousingWorld house = new HousingWorld(main, owner, size);
         loadedHouses.add(house);
+        concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
         playerHouses.getOrDefault(owner.getUniqueId(), new ArrayList<>()).add(house.getHouseUUID().toString());
         return house;
     }
@@ -66,7 +71,11 @@ public class HousesManager {
 
 
     public List<HousingWorld> getLoadedHouses() {
-        return loadedHouses;
+        return concurrentLoadedHouses.values().stream().toList();
+    }
+
+    public ConcurrentHashMap<String, HousingWorld> getConcurrentLoadedHouses() {
+        return concurrentLoadedHouses;
     }
 
     public HashMap<UUID, List<String>> getPlayerHouses() {
@@ -84,6 +93,7 @@ public class HousesManager {
             for (String houseID : playerHouses.get(owner.getUniqueId())) {
                 HousingWorld house = new HousingWorld(main, owner, houseID);
                 loadedHouses.add(house);
+                concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
                 return house;
             }
         }
@@ -108,6 +118,19 @@ public class HousesManager {
         return null;
     }
 
+    public HouseData getHouseData(String houseID) {
+        File houseFile = new File(main.getDataFolder(), "houses/" + houseID + ".json");
+        if (!houseFile.exists()) {
+            return null;
+        }
+        try {
+            return gson.fromJson(Files.readString(houseFile.toPath()), HouseData.class);
+        } catch (Exception e) {
+            main.getLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
+
     public boolean playerHasHouse(Player player) {
         for (HousingWorld house : loadedHouses) {
             if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
@@ -122,6 +145,7 @@ public class HousesManager {
         for (HousingWorld house : loadedHouses) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
                 loadedHouses.remove(house);
+                concurrentLoadedHouses.remove(house.getHouseUUID().toString());
                 house.delete();
                 return;
             }
@@ -130,7 +154,6 @@ public class HousesManager {
         if (playerHouses.containsKey(owner.getUniqueId())) {
             for (String houseID : playerHouses.get(owner.getUniqueId())) {
                 HousingWorld house = new HousingWorld(main, owner, houseID);
-                loadedHouses.add(house);
                 house.delete();
                 return;
             }
@@ -147,4 +170,22 @@ public class HousesManager {
         }
     }
 
+    public void saveHouseAndUnload(Player owner) {
+        HousingWorld house = getHouse(owner);
+        if (house != null) {
+            house.save();
+            house.unload();
+            loadedHouses.remove(house);
+            concurrentLoadedHouses.remove(house.getHouseUUID().toString());
+        }
+    }
+
+    public void saveHouseAndUnload(HousingWorld house) {
+        if (house != null) {
+            house.save();
+            house.unload();
+            loadedHouses.remove(house);
+            concurrentLoadedHouses.remove(house.getHouseUUID().toString());
+        }
+    }
 }

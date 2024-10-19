@@ -7,11 +7,13 @@ import java.util.*;
 public class StatManager {
 
     private HashMap<UUID, List<Stat>> playerStats;
+    private List<Stat> globalStats;
     private HousingWorld house;
 
     public StatManager(HousingWorld house) {
         this.house = house;
         this.playerStats = new HashMap<>();
+        this.globalStats = new ArrayList<>();
     }
 
     public Stat getPlayerStatByName(Player player, String name) {
@@ -30,6 +32,19 @@ public class StatManager {
         return defaultStat;
     }
 
+    public Stat getGlobalStatByName(String name) {
+        for (Stat stat : globalStats) {
+            if (stat.getStatName().equals(name)) {
+                return stat;
+            }
+        }
+
+        // If no stat found, return a default stat with value 0
+        Stat defaultStat = new Stat(UUID.randomUUID(), name, 0.0);
+        globalStats.add(defaultStat);
+        return defaultStat;
+    }
+
     public List<Stat> getPlayerStats(Player player) {
         if (playerStats.containsKey(player.getUniqueId())) {
             return playerStats.get(player.getUniqueId());
@@ -45,4 +60,12 @@ public class StatManager {
         this.playerStats = playerStats;
     }
 
+
+    public List<Stat> getGlobalStats() {
+        return globalStats;
+    }
+
+    public void setGlobalStats(List<Stat> globalStats) {
+        this.globalStats = globalStats;
+    }
 }

@@ -9,7 +9,7 @@ public class Stat {
     private UUID uuid;
     private String stat;
     private StatOperation statOperation;
-    private Double num;
+    private Double num; //This will probably be an object soon since we want to be able to store more than just numbers
 
     public Stat(UUID uuid, String stat, double num) {
         this.uuid = uuid;
@@ -20,6 +20,7 @@ public class Stat {
 
     public double modifyStat(double value) {
         switch (statOperation) {
+            case StatOperation.SET: return num = value;
             case StatOperation.INCREASE: return num += value;
             case StatOperation.DECREASE: return num -= value;
             case StatOperation.MULTIPLY: return num *= value;
@@ -33,6 +34,7 @@ public class Stat {
 
     public double modifyStat(StatOperation operation, double value) {
         switch (operation) {
+            case StatOperation.SET: return num = value;
             case StatOperation.INCREASE: return num += value;
             case StatOperation.DECREASE: return num -= value;
             case StatOperation.MULTIPLY: return num *= value;
