@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.Material;
@@ -119,7 +120,7 @@ public class OwnerHousingMenu extends Menu {
         travelMeta.setDisplayName(colorize("&aTravel to someone else's house"));
         travel.setItemMeta(travelMeta);
         addItem(27, travel, () -> {
-            player.sendMessage("Travel to someone else's house");
+            new HouseBrowserMenu(player, main.getHousesManager()).open();
         });
 
         ItemStack rewards = new ItemStack(Material.PLAYER_HEAD);
@@ -175,7 +176,7 @@ public class OwnerHousingMenu extends Menu {
         houseSettingsMeta.setDisplayName(colorize("&aHouse Settings"));
         houseSettings.setItemMeta(houseSettingsMeta);
         addItem(39, houseSettings, () -> {
-            player.sendMessage("House Settings");
+            new HouseSettingsMenu(main, player, house).open();
         });
 
         ItemStack permissionsGroups = new ItemStack(Material.FILLED_MAP);

@@ -34,7 +34,6 @@ public class HousesManager {
         this.playerHouses = new HashMap<>();
 
         loadPlayerHouses();
-
     }
 
     private void loadPlayerHouses() {

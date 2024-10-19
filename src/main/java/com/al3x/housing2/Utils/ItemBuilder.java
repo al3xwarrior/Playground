@@ -333,6 +333,7 @@ public class ItemBuilder {
         RENAME_YELLOW("rename", YELLOW),
         SELECT_YELLOW("select", YELLOW),
         DELETE_YELLOW("delete", YELLOW),
+        TOGGLE_YELLOW("toggle", YELLOW),
         ;
 
         private String action;

@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,18 +47,27 @@ public abstract class Menu implements Listener {
     public void handleClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == inventory) {
             event.setCancelled(true);
+
             int slot = event.getSlot();
             Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
             Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
 
             if (leftAction != null && rightAction == null) {
                 leftAction.accept(event); // Run the left-click action
+
+                // Will remove if it becomes annoying
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
+
                 return;
             }
 
             if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
+                // Will remove if it becomes annoying
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                 leftAction.accept(event); // Run the left-click action
             } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
+                // Will remove if it becomes annoying
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                 rightAction.accept(event); // Run the right-click action
             }
         }

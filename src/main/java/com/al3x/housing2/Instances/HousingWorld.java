@@ -102,7 +102,7 @@ public class HousingWorld {
         this.ownerUUID = owner.getUniqueId();
         this.name = houseData.getHouseName();
         this.houseUUID = UUID.fromString(houseData.getHouseID());
-//        this.guests = houseData.getGuests(); we dont like guests right now :D
+        // this.guests = houseData.getGuests(); we dont like guests right now :D
         this.cookies = houseData.getCookies();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
@@ -131,7 +131,6 @@ public class HousingWorld {
         if (houseData.getFunctions() != null) {
             functions = FunctionData.Companion.toList(houseData.getFunctions());
         }
-
 
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
@@ -175,7 +174,7 @@ public class HousingWorld {
         this.houseUUID = UUID.randomUUID();
         this.guests = 0;
         this.cookies = 0;
-        this.description = "";
+        this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
         this.housingNPCS = new ArrayList<>();
         this.statManager = new StatManager(this);

@@ -71,14 +71,14 @@ public class Housing implements CommandExecutor {
                     return true;
                 }
 
-                String fullName = "";
-                for (int i = 1; i < strings.length - 2; i++) {
-                    fullName += strings[i];
-                    if (i + 1 != strings.length) fullName += " ";
+                StringBuilder fullName = new StringBuilder();
+                for (int i = 1; i < strings.length; i++) {
+                    fullName.append(strings[i]);
+                    if (i + 1 != strings.length) fullName.append(" ");
                 }
 
                 HousingWorld house = housesManager.getHouse(player);
-                house.setName(fullName);
+                house.setName(fullName.toString());
                 player.sendMessage(colorize("&aThe name of your house was set to " + fullName + "&a!"));
 
                 return true;
