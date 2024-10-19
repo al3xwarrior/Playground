@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class NPCInteractListener implements Listener {
 
@@ -51,8 +52,8 @@ public class NPCInteractListener implements Listener {
 
     @EventHandler
     public void rightClickNPC(PlayerInteractEntityEvent e) {
+        if(e.getHand() != EquipmentSlot.HAND) return;
         npcInteract(e.getPlayer(), e.getRightClicked(), true);
     }
-
 
 }
