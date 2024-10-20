@@ -13,29 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-// spawn particle
-// spawn entity
-// spectator mode
-// protool action (client side option)
-// https://www.youtube.com/watch?v=f3UY8ySackU
-// string stats
-// drop item at coords
-// launch projectile
-// player whitelist
-// chat event
-// scoreboard layouts
-
-// sound next page don't work
-// placeholders in messages limit
-// backrooms in sound action
-// go back in sound action
-// go back on mode in stats
-// lines dupe in scoreboard
-// weird tick timiing in execution
-// colors not working in title (done)
-// setting times in title not working (maybe)
-// change held item doesnt work (done)
-
 public final class Main extends JavaPlugin {
     private static Main INSTANCE;
     private SlimeLoader loader;
