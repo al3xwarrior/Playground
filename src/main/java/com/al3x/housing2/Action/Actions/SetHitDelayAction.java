@@ -71,6 +71,7 @@ public class SetHitDelayAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         if (player != null) {
+            player.setMaximumNoDamageTicks(delay);
             player.setNoDamageTicks(delay);
         }
         return true;

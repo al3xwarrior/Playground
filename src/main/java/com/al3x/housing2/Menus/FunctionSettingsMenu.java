@@ -102,7 +102,17 @@ public class FunctionSettingsMenu extends Menu {
             player.sendMessage(colorize("&eEnter the amount of ticks you want this function to run every (1 second is 20 ticks): "));
             openChat(main, (message) -> {
                 try {
-                    function.setTicks(Double.parseDouble(message));
+                    double ticks = Double.parseDouble(message);
+                    if (ticks <= 0) {
+                        function.setTicks(null);
+                        player.sendMessage(colorize("&cDisabled automatic execution."));
+                        return;
+                    }
+                    if (ticks < 2) {
+                        player.sendMessage(colorize("&cInvalid number!"));
+                        return;
+                    }
+                    function.setTicks(ticks);
                 } catch (NumberFormatException ex) {
                     function.setTicks(null);
                     player.sendMessage(colorize("&cInvalid number!"));

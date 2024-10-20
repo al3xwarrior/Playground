@@ -47,7 +47,7 @@ public class Function {
     public void execute(Main main, Player player, HousingWorld house) {
         if (!loaded) return;
         List<Player> players = new ArrayList<>();
-        //I dont fucking know anymore lol
+        //I dont fliping know anymore lol
         if (global) {
             players.add(null);
         } else {

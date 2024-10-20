@@ -43,6 +43,7 @@ public class JoinLeaveHouse implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setNoDamageTicks(10);
+        player.setMaximumNoDamageTicks(10); // 10 i think?
     }
 
     private void updateScoreboard(Player player, HousingWorld house) {
@@ -54,7 +55,7 @@ public class JoinLeaveHouse implements Listener {
         List<String> scoreboard = new ArrayList<>(house.getScoreboard());
         Collections.reverse(scoreboard);
         for (int i = 0; i < scoreboard.size(); i++) {
-            String line = scoreboard.get(i) + "&" + (i % 10);
+            String line = scoreboard.get(i) + "&" + (i % 10); // add a color code to the end because scoreboards dont render 2 of the same line
             objective.getScore(colorize(parsePlaceholders(player, house, line))).setScore(i);
         }
         player.setScoreboard(board);

@@ -132,7 +132,8 @@ public class ActionEditMenu extends Menu {
                         player.sendMessage(colorize("&ePlease enter the number you wish to set in chat!"));
                         openChat(main, (input) -> {
                             try {
-                                double num = Double.parseDouble(input);
+                                // a google search told me that using Double.valueOf might work compared to Double.parseDouble
+                                double num = Double.valueOf(input);
                                 // Check if the number is within the min and max range
                                 if (num < item.getMin()) {
                                     player.sendMessage(colorize("&cNumber must be greater than " + item.getMin()));

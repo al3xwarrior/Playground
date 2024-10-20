@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
+import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
 
 public class ChatAction extends Action {
 
@@ -72,7 +73,7 @@ public class ChatAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.sendMessage(colorize(HandlePlaceholders.parsePlaceholders(player, house, message)));
+        player.sendMessage(colorize(parsePlaceholders(player, house, message)));
         return true;
     }
 

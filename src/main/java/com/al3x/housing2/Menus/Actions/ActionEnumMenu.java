@@ -158,6 +158,12 @@ public class ActionEnumMenu extends Menu {
                 new ActionEditMenu(action, main, player, house, event).open();
                 return;
             }
+
+            // not sure why this wasnt here? (prob bald)
+            if (backMenu != null) {
+                backMenu.open();
+                return;
+            }
             player.sendMessage(colorize("&cError: No back menu found"));
             player.closeInventory();
         });

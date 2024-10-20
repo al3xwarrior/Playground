@@ -18,6 +18,6 @@ public class ChangeHeldItem implements Listener {
 
     @EventHandler
     public void onChangeHeldItem(PlayerChangedMainHandEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer(), null);
+        sendEventExecution(housesManager, EventType.PLAYER_CHANGE_HELD_ITEM, e.getPlayer(), null);
     }
 }
