@@ -12,16 +12,12 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -200,6 +196,17 @@ public class ActionEditMenu extends Menu {
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                        }
+                        break;
+                    }
+                    case ACTION_SETTING: {
+                        try {
+                            Field field = action.getClass().getDeclaredField(item.getVarName());
+                            field.setAccessible(true);
+                            new ActionEditMenu((Action) field.get(action), main, player, house, this).open();
+                        } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
+                            player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));
                         }
                         break;
                     }

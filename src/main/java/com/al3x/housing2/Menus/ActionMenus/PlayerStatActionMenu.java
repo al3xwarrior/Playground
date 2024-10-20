@@ -54,7 +54,7 @@ public class PlayerStatActionMenu extends Menu {
                         player.sendMessage(colorize("&aStat Name set to: " + newMessage));
                     } else if (type.equals("VALUE")) {
                         try {
-                            action.setValue(newMessage);
+//                            action.setValue(newMessage); deprecated so who cares
                         } catch (NumberFormatException ex) {
                             player.sendMessage(colorize("&cInvalid number format!"));
                             return;
@@ -102,7 +102,7 @@ public class PlayerStatActionMenu extends Menu {
         ItemMeta valueItemMeta = valueItem.getItemMeta();
         valueItemMeta.setDisplayName(colorize("&aValue"));
         valueItemMeta.setLore(Arrays.asList(
-                colorize("&fValue: " + action.getValue())
+//                colorize("&fValue: " + action.getValue()) deprecated so who cares
         ));
         valueItem.setItemMeta(valueItemMeta);
 

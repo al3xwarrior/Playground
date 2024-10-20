@@ -51,7 +51,7 @@ public class HouseSettingsMenu extends Menu {
                 .description("Click to change the name of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
-            player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
+            player.sendMessage(colorize("&eType the message you would like for the &ahouse name&e."));
             openChat(main, (message) -> {
                 house.setName(message);
             });

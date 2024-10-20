@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.ExpressionOperation;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -89,6 +90,9 @@ public class ActionEnumMenu extends Menu {
                 if (value instanceof StatOperation)
                     items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
 
+                if (value instanceof ExpressionOperation)
+                    items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
+
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));
             }
@@ -107,6 +111,7 @@ public class ActionEnumMenu extends Menu {
                 if (e.getCurrentItem() == null) return;
                 if (!e.getCurrentItem().hasItemMeta()) return;
                 String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(" ", "_").toUpperCase().replaceAll("§[A-F0-9]", "");
+                Bukkit.getLogger().info(name);
                 try {
                     Field field = action.getClass().getDeclaredField(item.getVarName());
                     field.setAccessible(true);
@@ -155,6 +160,10 @@ public class ActionEnumMenu extends Menu {
             }
             if (event != null) {
                 new ActionEditMenu(action, main, player, house, event).open();
+                return;
+            }
+            if (backMenu != null) {
+                backMenu.open();
                 return;
             }
             player.sendMessage(colorize("&cError: No back menu found"));

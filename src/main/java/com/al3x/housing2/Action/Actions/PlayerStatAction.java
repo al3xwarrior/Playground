@@ -3,39 +3,44 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlayerStatAction extends Action {
 
+    private static final Gson gson = new Gson();
     private String statName;
     private StatOperation mode;
-    private String value;
+    private StatValue value;
 
     public PlayerStatAction() {
         super("Player Stat Action");
         this.statName = "Kills";
         this.mode = StatOperation.INCREASE;
-        this.value = "1.0";
+        this.value = new StatValue();
     }
 
-    public PlayerStatAction(String statName, StatOperation mode, Double value) {
+    public PlayerStatAction(String statName, StatOperation mode, StatValue value) {
         super("Player Stat Action");
         this.statName = statName;
         this.mode = mode;
-        this.value = String.valueOf(value);
+        this.value = value;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class PlayerStatAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + value)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
+                        ActionEditor.ActionItem.ActionType.ACTION_SETTING
                 )
         );
 
@@ -101,10 +106,10 @@ public class PlayerStatAction extends Action {
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
         try {
-            stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, value)));
+            stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house)))));
         } catch (NumberFormatException e) {
             try {
-                stat.modifyStat(mode, Double.parseDouble(value));
+                stat.modifyStat(mode, Double.parseDouble(String.valueOf(value.calculate(player, house))));
             } catch (NumberFormatException e2) {
                 player.sendMessage(colorize("&cInvalid value for stat action."));
                 return true;
@@ -120,17 +125,11 @@ public class PlayerStatAction extends Action {
     public StatOperation getMode() {
         return mode;
     }
-    public String getValue() {
-        return value;
-    }
     public void setStatName(String name) {
         this.statName = name;
     }
     public void setMode(StatOperation mode) {
         this.mode = mode;
-    }
-    public void setValue(String value) {
-        this.value = value;
     }
 
     @Override
@@ -156,4 +155,12 @@ public class PlayerStatAction extends Action {
 //        this.mode = StatOperation.valueOf((String) data.get("mode"));
 //        this.value = (String) data.get("value");
 //    }
+
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        statName = (String) data.get("statName");
+        mode = StatOperation.valueOf((String) data.get("mode"));
+        value = new StatValue();
+        value.fromData((HashMap<String, Object>) gson.fromJson(data.get("value").toString(), HashMap.class), null);
+    }
 }
