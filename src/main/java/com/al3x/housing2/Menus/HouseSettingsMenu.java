@@ -49,7 +49,7 @@ public class HouseSettingsMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
             player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
-            openChat(main, (message) -> {
+            openChat(main, house.getName(), (message) -> {
                 house.setName(message);
             });
         });
@@ -60,7 +60,7 @@ public class HouseSettingsMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
             player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
-            openChat(main, (message) -> {
+            openChat(main, house.getDescription(), (message) -> {
                 house.setDescription(message);
             });
         });

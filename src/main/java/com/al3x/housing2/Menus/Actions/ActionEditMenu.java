@@ -83,17 +83,29 @@ public class ActionEditMenu extends Menu {
                     return;
                 }
 
+                //I don't understand java
+                var o = new Object() {
+                    Field field = null;
+                    Object value = null;
+                };
+                try {
+                    o.field = action.getClass().getDeclaredField(item.getVarName());
+                    o.field.setAccessible(true);
+                    o.value = o.field.get(action);
+                } catch (NoSuchFieldException | IllegalAccessException ex) {
+                    Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
+                    player.sendMessage(colorize("&cFailed to get field " + item.getBuilder().getName() + " in " + action.getName()));
+                }
                 switch (item.getType()) {
                     case STRING: {
                         player.sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                        openChat(main, (input) -> {
+                        openChat(main, o.value.toString(), (input) -> {
                             try {
                                 // Set the field
-                                Field field = action.getClass().getDeclaredField(item.getVarName());
-                                field.setAccessible(true);
-                                field.set(action, input);
+                                if (o.field == null) return;
+                                o.field.set(action, input);
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            } catch (IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                             }
@@ -102,7 +114,7 @@ public class ActionEditMenu extends Menu {
                     }
                     case INT: {
                         player.sendMessage(colorize("&ePlease enter the number you wish to set in chat!"));
-                        openChat(main, (input) -> {
+                        openChat(main, o.value.toString(), (input) -> {
                             try {
                                 int num = Integer.parseInt(input);
                                 // Check if the number is within the min and max range
@@ -115,11 +127,10 @@ public class ActionEditMenu extends Menu {
                                     return;
                                 }
                                 // Set the field
-                                Field field = action.getClass().getDeclaredField(item.getVarName());
-                                field.setAccessible(true);
-                                field.set(action, num);
+                                if (o.field == null) return;
+                                o.field.set(action, num);
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            } catch (IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                             } catch (NumberFormatException ex) {
@@ -130,7 +141,7 @@ public class ActionEditMenu extends Menu {
                     }
                     case DOUBLE: {
                         player.sendMessage(colorize("&ePlease enter the number you wish to set in chat!"));
-                        openChat(main, (input) -> {
+                        openChat(main, o.value.toString(), (input) -> {
                             try {
                                 // a google search told me that using Double.valueOf might work compared to Double.parseDouble
                                 double num = Double.valueOf(input);
@@ -144,11 +155,10 @@ public class ActionEditMenu extends Menu {
                                     return;
                                 }
                                 // Set the field
-                                Field field = action.getClass().getDeclaredField(item.getVarName());
-                                field.setAccessible(true);
-                                field.set(action, num);
+                                if (o.field == null) return;
+                                o.field.set(action, num);
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            } catch (IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                             } catch (NumberFormatException ex) {
@@ -196,13 +206,12 @@ public class ActionEditMenu extends Menu {
                     }
                     case BOOLEAN: {
                         try {
-                            Field field = action.getClass().getDeclaredField(item.getVarName());
-                            field.setAccessible(true);
-                            boolean value = (boolean) field.get(action);
-                            field.set(action, !value);
+                            if (o.field == null) return;
+                            boolean value = (boolean) o.field.get(action);
+                            o.field.set(action, !value);
                             player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + !value));
                             open();
-                        } catch (NoSuchFieldException | IllegalAccessException ex) {
+                        } catch (IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                         }

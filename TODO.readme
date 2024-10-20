@@ -21,13 +21,13 @@ Stuff anyone can do when they have time:
 
 Bugs:
 - sound next page don't work //Maybe fixed? //Didn't save either lol (done)
-- placeholders in messages limit
+- placeholders in messages limit (done)
   - to replicate, make a chat action with a placeholder like %stat.player/kills% followed by a bunch of characters
   - the characters will be cut off
 - lines dupe in scoreboard (leave to alex)
 - weird tick timing in execution (leave to alex)
 - colors not working in title (done)
-- setting times in title not working (maybe)
+- setting times in title not working (done)
 - change held item doesnt work (done)
 
 Possible Ideas:

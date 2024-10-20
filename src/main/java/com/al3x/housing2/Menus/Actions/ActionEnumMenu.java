@@ -162,7 +162,7 @@ public class ActionEnumMenu extends Menu {
                 return;
             }
             player.sendMessage(colorize("&ePlease enter the search term:"));
-            openChat(main, (search) -> {
+            openChat(main, search, (search) -> {
                 this.search = search;
                 currentPage = 1;
                 Bukkit.getScheduler().runTaskLater(main, this::open, 1L);

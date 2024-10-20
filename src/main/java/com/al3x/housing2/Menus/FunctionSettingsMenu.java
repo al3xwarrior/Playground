@@ -33,7 +33,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("Change the name of this function.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
                 .build(), (e) -> {
-            openChat(main, (message) -> {
+            openChat(main, function.getName(), (message) -> {
                 function.setName(message);
             });
         });
@@ -44,7 +44,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("Edit the description of this function.\n\n" + function.getDescription())
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
                 .build(), (e) -> {
-            openChat(main, (message) -> {
+            openChat(main, function.getDescription(), (message) -> {
                 function.setDescription(message);
             });
         });
@@ -100,7 +100,7 @@ public class FunctionSettingsMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .build(), (e) -> {
             player.sendMessage(colorize("&eEnter the amount of ticks you want this function to run every (1 second is 20 ticks): "));
-            openChat(main, (message) -> {
+            openChat(main, (function.getTicks() != null ? function.getTicks().toString() : ""), (message) -> {
                 try {
                     double ticks = Double.parseDouble(message);
                     if (ticks <= 0) {

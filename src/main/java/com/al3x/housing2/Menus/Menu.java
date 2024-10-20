@@ -2,6 +2,11 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -102,7 +107,19 @@ public abstract class Menu implements Listener {
     }
 
     protected void openChat(Main main, Consumer<String> consumer) {
+        openChat(main, "", consumer);
+    }
+
+    protected void openChat(Main main, String previous, Consumer<String> consumer) {
         player.closeInventory();
+        TextComponent cancelComp = new TextComponent(" §c[CANCEL]");
+        cancelComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cancelinput"));
+        cancelComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClick to cancel")));
+        TextComponent previousComp = new TextComponent(" §b[Previous]");
+        previousComp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, previous));
+        previousComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§bClick to paste previous value")));
+        player.spigot().sendMessage(previousComp, cancelComp);
+
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onPlayerChat(AsyncPlayerChatEvent e) {

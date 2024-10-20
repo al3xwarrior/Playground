@@ -105,7 +105,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + fadeIn)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 ),
                 new ActionEditor.ActionItem("stay",
                         ItemBuilder.create(Material.CLOCK)
@@ -113,7 +113,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + stay)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 ),
                 new ActionEditor.ActionItem("fadeOut",
                         ItemBuilder.create(Material.CLOCK)
@@ -121,7 +121,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + fadeOut)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 )
         );
 

@@ -43,7 +43,7 @@ public class ScoreboardMenu extends Menu {
                     .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                     .build(), () -> {
                 player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
-                openChat(main, (message) -> {
+                openChat(main, line[0], (message) -> {
                     scoreboard.add(message);
                     player.sendMessage(colorize("&aLine set to: " + message));
                 });
