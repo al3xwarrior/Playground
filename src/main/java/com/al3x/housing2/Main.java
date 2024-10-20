@@ -18,14 +18,11 @@ import java.io.File;
 // spectator mode
 // protool action (client side option)
 // https://www.youtube.com/watch?v=f3UY8ySackU
-// clear enderchest
-// booss bar
 // string stats
 // drop item at coords
 // launch projectile
 // player whitelist
 // chat event
-// clear player stats action
 // scoreboard layouts
 
 public final class Main extends JavaPlugin {

@@ -21,6 +21,12 @@ public enum ActionEnum {
     SHOW_BOSSBAR("Show Bossbar Action", ShowBossbarAction.class),
     PAUSE_EXECUTION("Pause Action", PauseAction.class),
     FUNCTION("Function Action", FunctionAction.class),
+    CHANGE_MAX_HEALTH("Change Max Health Action", ChangeMaxHealthAction.class),
+    SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),
+    CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
+    CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
+    APPLY_POTION("Apply Potion Action", ApplyPotionEffectAction.class),
+    CLEAR_POTION("Clear Potion Action", ClearPotionEffectAction.class),
     // Add new actions here
     ;
     private String name;

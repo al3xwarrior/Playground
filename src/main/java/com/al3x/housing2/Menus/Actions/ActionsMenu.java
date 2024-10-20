@@ -1,13 +1,13 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.*;
+import com.al3x.housing2.Menus.HousingMenu.EventActionsMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;

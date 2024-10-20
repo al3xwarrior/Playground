@@ -1,4 +1,4 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;

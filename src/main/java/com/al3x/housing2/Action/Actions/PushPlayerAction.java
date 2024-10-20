@@ -123,7 +123,7 @@ public class PushPlayerAction extends Action {
         return direction;
     }
     public void setAmount(double amount) {
-        this.amount = amount;
+        this.amount = Math.max(amount, 100.0); // cant go over 100
     }
     public void setDirection(PushDirection direction) {
         this.direction = direction;

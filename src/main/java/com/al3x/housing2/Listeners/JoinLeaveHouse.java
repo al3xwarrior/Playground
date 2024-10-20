@@ -4,7 +4,9 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,8 +37,15 @@ public class JoinLeaveHouse implements Listener {
         this.housesManager = housesManager;
     }
 
-    public void updateScoreboard(Player player, HousingWorld house) {
-        // Scoreboard
+    // Actions that modify the player's "profile" need to be reset.
+    private void resetPlayer(Player player) {
+        player.setMaximumAir(20);
+        player.setHealth(20);
+        player.setFoodLevel(20);
+        player.setNoDamageTicks(10);
+    }
+
+    private void updateScoreboard(Player player, HousingWorld house) {
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = board.registerNewObjective("houseboard", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -45,10 +54,9 @@ public class JoinLeaveHouse implements Listener {
         List<String> scoreboard = new ArrayList<>(house.getScoreboard());
         Collections.reverse(scoreboard);
         for (int i = 0; i < scoreboard.size(); i++) {
-            String line = scoreboard.get(i);
+            String line = scoreboard.get(i) + "&" + (i % 10);
             objective.getScore(colorize(parsePlaceholders(player, house, line))).setScore(i);
         }
-
         player.setScoreboard(board);
     }
 
@@ -59,11 +67,11 @@ public class JoinLeaveHouse implements Listener {
         house.incGuests();
         player.teleport(house.getSpawn());
 
-        player.setHealth(20);
-        player.setFoodLevel(20);
+        resetPlayer(player);
 
         // If the person joining is the owner
         if (house.getOwnerUUID().equals(player.getUniqueId())) {
+            player.setGameMode(GameMode.CREATIVE);
             ItemStack menu = new ItemStack(Material.NETHER_STAR);
             ItemMeta menuMeta = menu.getItemMeta();
             menuMeta.setDisplayName(colorize("&dHousing Menu &7(Right-Click"));
@@ -72,6 +80,7 @@ public class JoinLeaveHouse implements Listener {
         }
         // Normal player joins
         else {
+            player.setGameMode(GameMode.SURVIVAL);
             ItemStack menu = new ItemStack(Material.DARK_OAK_DOOR);
             ItemMeta menuMeta = menu.getItemMeta();
             menuMeta.setDisplayName(colorize("&aHousing Menu &7(Right-Click"));
@@ -108,6 +117,8 @@ public class JoinLeaveHouse implements Listener {
         if (!player.getWorld().getName().equals("world")) {
             joinHouse(player);
         } else {
+            resetPlayer(player);
+
             // Scoreboard
             Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
             Objective objective = board.registerNewObjective("houseboard", "dummy");

@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.FunctionsMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -94,7 +95,7 @@ public class FunctionSettingsMenu extends Menu {
         //Automatic Executions
         addItem(32, ItemBuilder.create(Material.COMPARATOR)
                 .name(colorize("&aAutomatic Executions"))
-                .description("Functions can be enabled to automatically executed for all players in houses every X amount of ticks. TIP: 1 second is 20 ticks")
+                .description("Functions can be enabled to automatically executed for all players in houses every X amount of ticks. TIP: 1 second is 20 ticks\n\n&8Rip Poison loops :(")
                 .info("&7Current", (function.getTicks() == null ? "&cDisabled" : "&a" + function.getTicks() + " ticks"))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .build(), (e) -> {

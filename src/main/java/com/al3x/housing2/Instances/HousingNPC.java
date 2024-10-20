@@ -119,6 +119,8 @@ public class HousingNPC {
         for (String line : lines) {
             hologram.addLine(line);
         }
+
+        citizensNPC.addTrait(hologram);
     }
 
     public List<String> getHologramLines() {

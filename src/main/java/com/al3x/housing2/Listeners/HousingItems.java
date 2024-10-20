@@ -34,7 +34,6 @@ public class HousingItems implements Listener {
             String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
             boolean ownerOfHouse = housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId());
 
-            Bukkit.getLogger().info(name + " (" + name.equals("§aNPC") + " " + itemType.equals(Material.PLAYER_HEAD) + " " + ownerOfHouse + ")");
             if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && ownerOfHouse) {
                 e.setCancelled(true);
                 housesManager.getHouse(player.getWorld()).createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));

@@ -4,7 +4,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionsMenu;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.HologramEditorMenu;
 import com.al3x.housing2.Menus.Menu;
 import net.citizensnpcs.api.CitizensAPI;
