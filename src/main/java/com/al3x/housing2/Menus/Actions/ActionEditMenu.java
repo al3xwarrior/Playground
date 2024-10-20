@@ -75,6 +75,8 @@ public class ActionEditMenu extends Menu {
             addItem(slots[i] - 1, item.getBuilder().build(), (e) -> {
                 if (item.getCustomRunnable() != null) {
                     item.getCustomRunnable().run();
+                    this.open();
+                    return;
                 }
 
                 switch (item.getType()) {

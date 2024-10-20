@@ -4,13 +4,20 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionEditMenu;
+import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,7 +39,9 @@ public class ClearPotionEffectAction extends Action {
     }
 
     @Override
-    public String toString() {return "ApplyPotionEffectAction{" + "potionEffectType=" + potionEffectType + ", clearAll=" + clearAll + '}';}
+    public String toString() {
+        return "ApplyPotionEffectAction{" + "potionEffectType=" + potionEffectType + ", clearAll=" + clearAll + '}';
+    }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
@@ -61,7 +70,19 @@ public class ClearPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&6" + potionEffectType.getName())
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.ENUM
+                        () -> {
+                            //Create a list of all the potion effects
+                            List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
+                            for (PotionEffectType type : PotionEffectType.values()) {
+                                potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
+                            }
+                            //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
+                            new PaginationMenu<>(Main.getInstance(),
+                                    "&eSelect a Potion Effect", potions,
+                                    Bukkit.getPlayer(house.getOwnerUUID()), house, null, (potion) -> {
+                                potionEffectType = potion;
+                            }).open();
+                        }
                 ),
                 new ActionItem("clearall",
                         ItemBuilder.create(Material.POTION)
@@ -100,12 +121,4 @@ public class ClearPotionEffectAction extends Action {
     public boolean requiresPlayer() {
         return true;
     }
-
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("message")) {
-//            return;
-//        }
-//        message = (String) data.get("message");
-//    }
 }

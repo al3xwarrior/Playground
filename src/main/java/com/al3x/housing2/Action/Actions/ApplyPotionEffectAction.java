@@ -4,16 +4,21 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,7 +76,19 @@ public class ApplyPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&6" + potionEffectType.getName())
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.ENUM
+                        () -> {
+                            //Create a list of all the potion effects
+                            List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
+                            for (PotionEffectType type : PotionEffectType.values()) {
+                                potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
+                            }
+                            //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
+                            new PaginationMenu<>(Main.getInstance(),
+                                    "&eSelect a Potion Effect", potions,
+                                    Bukkit.getPlayer(house.getOwnerUUID()), house, null, (potion) -> {
+                                potionEffectType = potion;
+                            }).open();
+                        }
                 ),
                 new ActionItem("level",
                         ItemBuilder.create(Material.POTION)
@@ -79,7 +96,7 @@ public class ApplyPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, level)
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.INT
+                        ActionItem.ActionType.INT, 1, 100 //Pretty easy way to do min and max
                 ),
                 new ActionItem("duration",
                         ItemBuilder.create(Material.POTION)
@@ -87,7 +104,7 @@ public class ApplyPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, duration)
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.INT
+                        ActionItem.ActionType.INT, 1, 2000000 //Pretty easy way to do min and max
                 )
         );
         return new ActionEditor(4, "&ePotion Effect Action Settings", items);
@@ -95,7 +112,7 @@ public class ApplyPotionEffectAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.addPotionEffect(new PotionEffect(potionEffectType, Math.min(2000000, duration), Math.min(100, level)));
+        player.addPotionEffect(new PotionEffect(potionEffectType, duration, level));
         return true;
     }
 
