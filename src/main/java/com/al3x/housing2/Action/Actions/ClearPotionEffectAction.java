@@ -85,7 +85,7 @@ public class ClearPotionEffectAction extends Action {
                             }).open();
                         }
                 ),
-                new ActionItem("clearall",
+                new ActionItem("clearAll", //Needs to be the exact same as the variable name
                         ItemBuilder.create(Material.POTION)
                                 .name("&aClear All")
                                 .description("If toggled on, this will clear all potion effects except the one selected")
