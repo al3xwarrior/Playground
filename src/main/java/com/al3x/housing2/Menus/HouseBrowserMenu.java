@@ -33,7 +33,7 @@ public class HouseBrowserMenu extends Menu{
 
         for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
             HousingWorld house = houses.get(i);
-            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            ItemStack head = new ItemStack(house.getIcon());
             SkullMeta meta = (SkullMeta) head.getItemMeta();
 
             meta.setDisplayName(colorize(house.getName()));

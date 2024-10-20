@@ -52,11 +52,12 @@ public class HousingWorld {
     private String description;
     private int size;
     private int guests;
-    private double cookies;
+    private int cookies;
     private long timeCreated;
     private Location spawn;
     private List<String> scoreboard;
     private HousePrivacy privacy;
+    private Material icon;
 
     // NPCs
     private List<HousingNPC> housingNPCS;
@@ -74,7 +75,7 @@ public class HousingWorld {
     public HouseData houseData;
 
 
-    //Loading a house that already exists
+    // Loading a house that already exists
     public HousingWorld(Main main, Player owner, String name) {
         main.getLogger().info("Loading house for " + owner.getName() + "...");
         this.main = main;
@@ -105,13 +106,14 @@ public class HousingWorld {
         this.name = houseData.getHouseName();
         this.houseUUID = UUID.fromString(houseData.getHouseID());
         // this.guests = houseData.getGuests(); we dont like guests right now :D
-        this.cookies = houseData.getCookies();
+        this.cookies = (int) houseData.getCookies(); // casting to an int for now cause i dont wanna mess with the data storage stuff
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.housingNPCS = new ArrayList<>();
 
-        // privacy doesnt save yet
+        // doesnt save yet ender do yo thing
         this.privacy = HousePrivacy.PRIVATE;
+        this.icon = Material.OAK_DOOR;
 
         this.statManager = new StatManager(this);
 
@@ -185,6 +187,7 @@ public class HousingWorld {
         this.statManager = new StatManager(this);
         this.functions = new ArrayList<>();
         this.privacy = HousePrivacy.PRIVATE;
+        this.icon = Material.OAK_DOOR;
 
         // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
@@ -475,7 +478,7 @@ public class HousingWorld {
     public int getGuests() {
         return guests;
     }
-    public double getCookies() {
+    public int getCookies() {
         return cookies;
     }
     public int getSize() {
@@ -507,5 +510,11 @@ public class HousingWorld {
             if (function.getName().equals(name)) return function;
         }
         return null;
+    }
+    public Material getIcon() {
+        return icon;
+    }
+    public void setMaterial(Material material) {
+        this.icon = material;
     }
 }
