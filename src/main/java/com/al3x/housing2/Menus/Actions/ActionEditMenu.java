@@ -184,7 +184,7 @@ public class ActionEditMenu extends Menu {
                                 // Set the field
                                 Field field = action.getClass().getDeclaredField(item.getVarName());
                                 field.setAccessible(true);
-                                field.set(action, function);
+                                field.set(action, function.getName());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + function.getName()));
                             } catch (NoSuchFieldException | IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());

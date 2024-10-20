@@ -6,6 +6,7 @@ import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class PlaySoundAction extends Action {
     private Locations location;
 
     public PlaySoundAction() {
-        super("Play Sound");
+        super("Play Sound Action");
         this.volume = 1.0F;
         this.pitch = 1.0F;
         this.sound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
@@ -33,7 +34,7 @@ public class PlaySoundAction extends Action {
     }
 
     public PlaySoundAction(Float volume, Float pitch, Sound sound, Locations location) {
-        super("Play Sound");
+        super("Play Sound Action");
         this.volume = volume;
         this.pitch = pitch;
         this.sound = sound;
@@ -155,8 +156,8 @@ public class PlaySoundAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("volume", volume);
         data.put("pitch", pitch);
-        data.put("sound", sound);
-        data.put("location", location);
+        data.put("sound", sound.name());
+        data.put("location", location.name());
         return data;
     }
 
@@ -165,11 +166,11 @@ public class PlaySoundAction extends Action {
         return true;
     }
 
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        volume = (Float) data.get("volume");
-//        pitch = (Float) data.get("pitch");
-//        sound = (Sound) data.get("sound");
-//        location = (Locations) data.get("location");
-//    }
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        volume = NumberUtilsKt.toFloat((Double) data.get("volume"));
+        pitch = NumberUtilsKt.toFloat((Double) data.get("pitch"));
+        sound = Sound.valueOf((String) data.get("sound"));
+        location = Locations.valueOf((String) data.get("location"));
+    }
 }

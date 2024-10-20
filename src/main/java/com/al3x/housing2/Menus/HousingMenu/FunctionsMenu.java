@@ -75,7 +75,7 @@ public class FunctionsMenu extends Menu {
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(54, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
                 currentPage++;
                 setupItems();
                 open();

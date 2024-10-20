@@ -17,16 +17,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class Menu implements Listener {
-    private Inventory inventory;
+    protected Inventory inventory;
     private String title;
+    private int size;
     private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
     private Player player;
 
     public Menu(Player player, String title, int size) {
+        this.inventory = Bukkit.createInventory(null, size, title);
         this.player = player;
         this.title = title;
-        this.inventory = Bukkit.createInventory(null, size, title);
+        this.size = size;
     }
 
     public abstract void setupItems();
@@ -37,6 +39,7 @@ public abstract class Menu implements Listener {
 
     // Opens the menu for the player
     public void open() {
+        this.inventory = Bukkit.createInventory(null, size, title);
         setupItems();
         MenuManager.setMenu(player, this);
         player.openInventory(inventory);
@@ -75,6 +78,10 @@ public abstract class Menu implements Listener {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     // Helper method to add an item and bind actions to its slot

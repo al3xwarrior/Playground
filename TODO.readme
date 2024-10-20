@@ -20,7 +20,7 @@ Stuff anyone can do when they have time:
 - chat event
 
 Bugs:
-- sound next page don't work
+- sound next page don't work //Maybe fixed? //Didn't save either lol (done)
 - placeholders in messages limit
   - to replicate, make a chat action with a placeholder like %stat.player/kills% followed by a bunch of characters
   - the characters will be cut off
