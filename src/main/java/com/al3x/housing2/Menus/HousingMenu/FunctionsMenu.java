@@ -1,9 +1,12 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.HousingMenu;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import com.al3x.housing2.Menus.FunctionSettingsMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Bukkit;
@@ -72,7 +75,7 @@ public class FunctionsMenu extends Menu {
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(54, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
                 currentPage++;
                 setupItems();
                 open();

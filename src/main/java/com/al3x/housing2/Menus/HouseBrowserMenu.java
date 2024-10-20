@@ -1,13 +1,16 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.HousingComparison;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -39,6 +42,8 @@ public class HouseBrowserMenu extends Menu{
                     "",
                     colorize("&2Players: &a" + house.getGuests()),
                     colorize("&6Cookies: &e" + house.getCookies()),
+                    "",
+                    colorize("&7Privacy: " + ((house.getPrivacy().equals(HousePrivacy.PUBLIC)) ? "&aPublic" : "&cPrivate")),
                     "",
                     colorize("&eClick to Join")
             ));

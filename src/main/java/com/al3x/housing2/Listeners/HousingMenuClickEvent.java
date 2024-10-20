@@ -2,7 +2,7 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.OwnerHousingMenu;
+import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

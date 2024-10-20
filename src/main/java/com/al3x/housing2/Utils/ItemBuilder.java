@@ -48,6 +48,7 @@ public class ItemBuilder {
     private List<Duple<String, Object>> info;
     private boolean glow;
     private boolean changeOrderLore;
+    private boolean punctuation;
 
     public ItemBuilder() {
         this.material = Material.AIR;
@@ -59,6 +60,8 @@ public class ItemBuilder {
         this.rightClickAction = null;
         this.info = new ArrayList<>();
         this.glow = false;
+        this.changeOrderLore = false;
+        this.punctuation = true;
     }
 
     public ItemBuilder material(Material material) {
@@ -206,6 +209,16 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Enables or disables the punctuation at the end of each line of the description.
+     *
+     * @return the ItemBuilder with the added label
+     */
+    public ItemBuilder punctuation(boolean punctuation) {
+        this.punctuation = punctuation;
+        return this;
+    }
+
     public ItemStack build() {
         //Make the skull or item stack
         if (skullTexture != null) {
@@ -257,7 +270,7 @@ public class ItemBuilder {
                 labels.add(colorize(rightClickAction.color + "Right Click to " + rightClickAction));
         }
         //Lore formatting
-        List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels);
+        List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation);
 
         //Action menu label
         if (changeOrderLore) {

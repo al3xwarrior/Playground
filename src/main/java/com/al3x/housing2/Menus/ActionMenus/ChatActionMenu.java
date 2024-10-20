@@ -4,7 +4,7 @@ import com.al3x.housing2.Action.Actions.ChatAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionsMenu;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

@@ -1,7 +1,8 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.HousingMenu;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

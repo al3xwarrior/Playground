@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
@@ -55,6 +56,7 @@ public class HousingWorld {
     private long timeCreated;
     private Location spawn;
     private List<String> scoreboard;
+    private HousePrivacy privacy;
 
     // NPCs
     private List<HousingNPC> housingNPCS;
@@ -68,8 +70,8 @@ public class HousingWorld {
 
     // Random Seed and Random instance
     private String seed;
-    transient private Random random;
-    transient private HouseData houseData;
+    private Random random;
+    public HouseData houseData;
 
 
     //Loading a house that already exists
@@ -107,6 +109,9 @@ public class HousingWorld {
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.housingNPCS = new ArrayList<>();
+
+        // privacy doesnt save yet
+        this.privacy = HousePrivacy.PRIVATE;
 
         this.statManager = new StatManager(this);
 
@@ -179,6 +184,7 @@ public class HousingWorld {
         this.housingNPCS = new ArrayList<>();
         this.statManager = new StatManager(this);
         this.functions = new ArrayList<>();
+        this.privacy = HousePrivacy.PRIVATE;
 
         // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
@@ -187,7 +193,6 @@ public class HousingWorld {
         switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
 
         // Create the actual world
-
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
@@ -201,14 +206,12 @@ public class HousingWorld {
 
         // Actions, Scoreboard, Default Stuff ya know?
         this.scoreboard = new ArrayList<>();
-        this.scoreboard.add("&eCookies: &6%house.cookies%");
-        this.scoreboard.add("&aPlayers: &2%house.guests%");
-        this.scoreboard.add("&r");
-        this.scoreboard.add("Twerks: &6%stat.player/twerks%");
-        this.scoreboard.add("&f");
-        this.scoreboard.add("&fSprinting! %player.isSprinting%");
-        this.scoreboard.add("&fhawk tua! Ping: %player.ping%");
-        this.scoreboard.add("&fName: %player.name%");
+        this.scoreboard.add("%house.name%:");
+        this.scoreboard.add("&7- &eCookies: &6%house.cookies%");
+        this.scoreboard.add("&7- &aPlayers: &2%house.guests%");
+        this.scoreboard.add("&7");
+        this.scoreboard.add("&7Edit the scoreboard in the");
+        this.scoreboard.add(("&7systems menu!"));
 
         eventActions = new HashMap<>();
         //Bad Al3x for not doing this the first time
@@ -478,27 +481,27 @@ public class HousingWorld {
     public int getSize() {
         return size;
     }
-
+    public HousePrivacy getPrivacy() {
+        return privacy;
+    }
+    public void setPrivacy(HousePrivacy privacy) {
+        this.privacy = privacy;
+    }
     public Random getRandom() {
         return random;
     }
-
     public void setRandom(Random random) {
         this.random = random;
     }
-
     public String getSeed() {
         return seed;
     }
-
     public HashMap<EventType, List<Action>> getEventActions() {
         return eventActions;
     }
-
     public List<Function> getFunctions() {
         return functions;
     }
-
     public Function getFunction(String name) {
         for (Function function : functions) {
             if (function.getName().equals(name)) return function;

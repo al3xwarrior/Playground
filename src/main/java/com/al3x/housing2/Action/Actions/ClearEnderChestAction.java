@@ -5,43 +5,38 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
-import static com.al3x.housing2.Utils.Color.colorize;
+public class ClearEnderChestAction extends Action {
 
-public class FullHealAction extends Action {
-
-    public FullHealAction() {
-        super("Full Heal Action");
+    public ClearEnderChestAction() {
+        super("Clear Enderchest Action");
     }
 
     @Override
     public String toString() {
-        return "FullHealAction";
+        return "ClearEnderChestAction";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GOLDEN_APPLE);
-        builder.name("&eFull Heal");
+        builder.material(Material.ENDER_CHEST);
+        builder.name("&eClear Enderchest Action");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GOLDEN_APPLE);
-        builder.name("&aFull Heal");
+        builder.material(Material.ENDER_CHEST);
+        builder.name("&aClear Enderchest");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.setHealth(player.getMaxHealth());
+        player.getEnderChest().clear();
         return true;
     }
 

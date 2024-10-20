@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.FunctionsMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,7 +33,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("Change the name of this function.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
                 .build(), (e) -> {
-            openChat(main, (message) -> {
+            openChat(main, function.getName(), (message) -> {
                 function.setName(message);
             });
         });
@@ -43,7 +44,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("Edit the description of this function.\n\n" + function.getDescription())
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
                 .build(), (e) -> {
-            openChat(main, (message) -> {
+            openChat(main, function.getDescription(), (message) -> {
                 function.setDescription(message);
             });
         });
@@ -94,14 +95,24 @@ public class FunctionSettingsMenu extends Menu {
         //Automatic Executions
         addItem(32, ItemBuilder.create(Material.COMPARATOR)
                 .name(colorize("&aAutomatic Executions"))
-                .description("Functions can be enabled to automatically executed for all players in houses every X amount of ticks. TIP: 1 second is 20 ticks")
+                .description("Functions can be enabled to automatically executed for all players in houses every X amount of ticks. TIP: 1 second is 20 ticks\n\n&8Rip Poison loops :(")
                 .info("&7Current", (function.getTicks() == null ? "&cDisabled" : "&a" + function.getTicks() + " ticks"))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .build(), (e) -> {
             player.sendMessage(colorize("&eEnter the amount of ticks you want this function to run every (1 second is 20 ticks): "));
-            openChat(main, (message) -> {
+            openChat(main, (function.getTicks() != null ? function.getTicks().toString() : ""), (message) -> {
                 try {
-                    function.setTicks(Double.parseDouble(message));
+                    double ticks = Double.parseDouble(message);
+                    if (ticks <= 0) {
+                        function.setTicks(null);
+                        player.sendMessage(colorize("&cDisabled automatic execution."));
+                        return;
+                    }
+                    if (ticks < 2) {
+                        player.sendMessage(colorize("&cInvalid number!"));
+                        return;
+                    }
+                    function.setTicks(ticks);
                 } catch (NumberFormatException ex) {
                     function.setTicks(null);
                     player.sendMessage(colorize("&cInvalid number!"));

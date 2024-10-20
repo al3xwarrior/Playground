@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ public class HologramEditorMenu extends Menu{
     private HousingNPC housingNPC;
 
     public HologramEditorMenu(Main main, Player player, HousingNPC housingNPC) {
-        super(player, colorize("&6Edit Hologram"), 45);
+        super(player, colorize("&7Edit Hologram"), 45);
         this.main = main;
         this.player = player;
         this.housingNPC = housingNPC;
@@ -64,12 +65,10 @@ public class HologramEditorMenu extends Menu{
             });
         }
 
-        ItemStack addLine = new ItemStack(Material.LIME_DYE);
-        ItemMeta addLineMeta = addLine.getItemMeta();
-        addLineMeta.setDisplayName(colorize("&aAdd Line"));
-        addLine.setItemMeta(addLineMeta);
-        addItem(24, addLine, () -> {
-            lines.add("New Line");
+        addItem(40, ItemBuilder.create(Material.PAPER)
+                .name("&eAdd Line")
+                .build(), () -> {
+            lines.add("&6New Line!");
             housingNPC.setHologramLines(lines);
             new HologramEditorMenu(main, player, housingNPC).open();
         });

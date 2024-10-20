@@ -2,6 +2,11 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -17,16 +22,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class Menu implements Listener {
-    private Inventory inventory;
+    protected Inventory inventory;
     private String title;
+    private int size;
     private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
     private Player player;
 
     public Menu(Player player, String title, int size) {
+        this.inventory = Bukkit.createInventory(null, size, title);
         this.player = player;
         this.title = title;
-        this.inventory = Bukkit.createInventory(null, size, title);
+        this.size = size;
     }
 
     public abstract void setupItems();
@@ -37,6 +44,7 @@ public abstract class Menu implements Listener {
 
     // Opens the menu for the player
     public void open() {
+        this.inventory = Bukkit.createInventory(null, size, title);
         setupItems();
         MenuManager.setMenu(player, this);
         player.openInventory(inventory);
@@ -77,6 +85,10 @@ public abstract class Menu implements Listener {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     // Helper method to add an item and bind actions to its slot
     public void addItem(int slot, ItemStack item, Consumer<InventoryClickEvent> clickAction) {
         inventory.setItem(slot, item);
@@ -95,7 +107,19 @@ public abstract class Menu implements Listener {
     }
 
     protected void openChat(Main main, Consumer<String> consumer) {
+        openChat(main, "", consumer);
+    }
+
+    protected void openChat(Main main, String previous, Consumer<String> consumer) {
         player.closeInventory();
+        TextComponent cancelComp = new TextComponent(" §c[CANCEL]");
+        cancelComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cancelinput"));
+        cancelComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClick to cancel")));
+        TextComponent previousComp = new TextComponent(" §b[Previous]");
+        previousComp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, previous));
+        previousComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§bClick to paste previous value")));
+        player.spigot().sendMessage(previousComp, cancelComp);
+
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onPlayerChat(AsyncPlayerChatEvent e) {

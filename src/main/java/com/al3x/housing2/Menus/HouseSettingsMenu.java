@@ -2,15 +2,12 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
 public class HouseSettingsMenu extends Menu {
 
@@ -51,8 +48,8 @@ public class HouseSettingsMenu extends Menu {
                 .description("Click to change the name of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
-            player.sendMessage(colorize("&eType the message you would like for the &ahouse name&e."));
-            openChat(main, (message) -> {
+            player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
+            openChat(main, house.getName(), (message) -> {
                 house.setName(message);
             });
         });
@@ -63,7 +60,7 @@ public class HouseSettingsMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
             player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
-            openChat(main, (message) -> {
+            openChat(main, house.getDescription(), (message) -> {
                 house.setDescription(message);
             });
         });

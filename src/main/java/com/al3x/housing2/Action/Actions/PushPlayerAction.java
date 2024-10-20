@@ -78,7 +78,7 @@ public class PushPlayerAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + amount)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.1, 100.0 //Pretty easy to change the max value
                 )
         );
 
@@ -122,8 +122,9 @@ public class PushPlayerAction extends Action {
     public PushDirection getDirection() {
         return direction;
     }
+    //Won't do anything since it doesn't use this function
     public void setAmount(double amount) {
-        this.amount = amount;
+        this.amount = Math.max(amount, 100.0); // cant go over 100
     }
     public void setDirection(PushDirection direction) {
         this.direction = direction;
@@ -141,13 +142,4 @@ public class PushPlayerAction extends Action {
     public boolean requiresPlayer() {
         return true;
     }
-
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("amount") || !data.containsKey("direction")) {
-//            return;
-//        }
-//        this.amount = (double) data.get("amount");
-//        this.direction = (PushDirection) data.get("direction");
-//    }
 }

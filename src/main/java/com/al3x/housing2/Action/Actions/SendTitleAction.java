@@ -63,9 +63,9 @@ public class SendTitleAction extends Action {
         builder.info("&eSettings", "");
         builder.info("Title", title);
         builder.info("Subtitle", subtitle);
-        builder.info("Fade In Time", "&6" + fadeIn);
-        builder.info("Stay Time", "&6" + stay);
-        builder.info("Fade Out Time", "&6" + fadeOut);
+        builder.info("Fade In Time", "&6" + fadeIn + " ticks");
+        builder.info("Stay Time", "&6" + stay + " ticks");
+        builder.info("Fade Out Time", "&6" + fadeOut + " ticks");
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -105,7 +105,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + fadeIn)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 ),
                 new ActionEditor.ActionItem("stay",
                         ItemBuilder.create(Material.CLOCK)
@@ -113,7 +113,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + stay)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 ),
                 new ActionEditor.ActionItem("fadeOut",
                         ItemBuilder.create(Material.CLOCK)
@@ -121,7 +121,7 @@ public class SendTitleAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + fadeOut)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.INT
                 )
         );
 
@@ -130,7 +130,7 @@ public class SendTitleAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        player.sendTitle(colorize(title), colorize(subtitle), fadeIn, stay, fadeOut);
         return true;
     }
 

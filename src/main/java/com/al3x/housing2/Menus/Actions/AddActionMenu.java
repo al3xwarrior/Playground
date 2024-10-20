@@ -1,12 +1,11 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.ActionMenus.RandomActionMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Material;
@@ -17,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 

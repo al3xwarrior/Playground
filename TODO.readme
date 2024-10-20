@@ -5,7 +5,32 @@ Ender:
 
 Al3xWarrior:
 - Conditions
-- House Menu/Housing Browser
+- House Menu/Housing Browser (almost done)
+  - player whitelist
 
 Cacti:
 - To do...To do
+
+Stuff anyone can do when they have time:
+- spawn particle action
+- spawn entity action
+- set gamemode action with spectator mode
+- drop item at coords action
+- launch projectile action
+- chat event
+
+Bugs:
+- sound next page don't work //Maybe fixed? //Didn't save either lol (done)
+- placeholders in messages limit (done)
+  - to replicate, make a chat action with a placeholder like %stat.player/kills% followed by a bunch of characters
+  - the characters will be cut off
+- lines dupe in scoreboard (leave to alex)
+- weird tick timing in execution (leave to alex)
+- colors not working in title (done)
+- setting times in title not working (done)
+- change held item doesnt work (done)
+
+Possible Ideas:
+- scoreboard layouts
+- protool action (client side option)
+- https://www.youtube.com/watch?v=f3UY8ySackU

@@ -5,43 +5,38 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
-import static com.al3x.housing2.Utils.Color.colorize;
+public class ClearPlayerStatsAction extends Action {
 
-public class FullHealAction extends Action {
-
-    public FullHealAction() {
-        super("Full Heal Action");
+    public ClearPlayerStatsAction() {
+        super("Clear Player Stats Action");
     }
 
     @Override
     public String toString() {
-        return "FullHealAction";
+        return "ClearPlayerStatsAction";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GOLDEN_APPLE);
-        builder.name("&eFull Heal");
+        builder.material(Material.BARRIER);
+        builder.name("&eClear Player Stats Action");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GOLDEN_APPLE);
-        builder.name("&aFull Heal");
+        builder.material(Material.BARRIER);
+        builder.name("&aClear Player Stats");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.setHealth(player.getMaxHealth());
+        house.getStatManager().getPlayerStats(player).clear();
         return true;
     }
 
