@@ -2,6 +2,7 @@ package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +33,10 @@ public abstract class Action {
     public abstract void createAddDisplayItem(ItemBuilder builder);
 
     public ActionEditor editorMenu(HousingWorld house) {
+        return null;
+    }
+
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         return null;
     }
 

@@ -27,7 +27,7 @@ public class HypixelLoreFormatter {
      * @param labels Additional labels for the bottom (e.g. "Left Click to edit!")
      * @return The formatted lines with colour codes
      */
-    public static List<String> hypixelLore(String description, List<Duple<String, Object>> info, List<String> labels) {
+    public static List<String> hypixelLore(String description, List<Duple<String, Object>> info, List<String> labels, boolean punctuation) {
         List<String> lines = new ArrayList<>();
 
         for (String str : description.split("\n")) {
@@ -39,7 +39,7 @@ public class HypixelLoreFormatter {
                 continue;
             }
 
-            if (!HYPX_LORE_PUNCTUATION.matcher(str).matches()) {
+            if (!HYPX_LORE_PUNCTUATION.matcher(str).matches() && punctuation) {
                 str += ".";
             }
 

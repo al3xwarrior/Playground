@@ -62,7 +62,7 @@ public class PaginationMenu<E> extends Menu {
         }
 
         //Next Page
-        if (currentPage < paginationList.getPageCount() - 1) {
+        if (currentPage < paginationList.getPageCount()) {
             addItem(53, ItemBuilder.create(Material.ARROW)
                     .name(colorize("&eNext Page"))
                     .description("&ePage " + (currentPage + 1))

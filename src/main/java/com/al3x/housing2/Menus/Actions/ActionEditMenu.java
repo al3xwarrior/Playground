@@ -32,9 +32,13 @@ public class ActionEditMenu extends Menu {
     private EventType event;
     private Menu backMenu;
 
+    private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu) {
+        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu);
+    }
+
     // NPC
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, HousingNPC housingNPC) {
-        super(player, colorize(action.editorMenu(house).getTitle()), action.editorMenu(house).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -44,7 +48,7 @@ public class ActionEditMenu extends Menu {
 
     // Events
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, EventType event) {
-        super(player, colorize(action.editorMenu(house).getTitle()), action.editorMenu(house).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -53,7 +57,7 @@ public class ActionEditMenu extends Menu {
     }
 
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, Menu backMenu) {
-        super(player, colorize(action.editorMenu(house).getTitle()), action.editorMenu(house).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -66,7 +70,8 @@ public class ActionEditMenu extends Menu {
     @Override
     public void setupItems() {
         clearItems();
-        ActionEditor editor = action.editorMenu(house);
+        //Only needed for actions that need their own custom menu
+        ActionEditor editor = getEditor(action, house, this);
         List<ActionEditor.ActionItem> items = editor.getItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
@@ -75,7 +80,6 @@ public class ActionEditMenu extends Menu {
             addItem(slots[i] - 1, item.getBuilder().build(), (e) -> {
                 if (item.getCustomRunnable() != null) {
                     item.getCustomRunnable().run();
-                    this.open();
                     return;
                 }
 

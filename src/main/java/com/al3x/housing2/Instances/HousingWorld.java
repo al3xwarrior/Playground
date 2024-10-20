@@ -70,8 +70,8 @@ public class HousingWorld {
 
     // Random Seed and Random instance
     private String seed;
-    transient private Random random;
-    transient private HouseData houseData;
+    private Random random;
+    public HouseData houseData;
 
 
     //Loading a house that already exists

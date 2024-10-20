@@ -38,7 +38,8 @@ public class ScoreboardMenu extends Menu {
             int finalI = i;
             addItem(avaliableSlots[finalI], ItemBuilder.create(Material.PAPER)
                     .name("&eLine #" + finalI)
-                    .description("\n&7Line: " + colorize(line[0]) + "\n\n&7How this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])))
+                    .description("\n&eLine: \n" + colorize(line[0]) + "\n\n&7How this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])))
+                    .punctuation(false)
                     .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                     .build(), () -> {
                 player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));

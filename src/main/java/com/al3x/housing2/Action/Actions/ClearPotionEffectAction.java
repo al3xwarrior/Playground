@@ -6,6 +6,7 @@ import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -27,13 +28,13 @@ public class ClearPotionEffectAction extends Action {
     private boolean clearAll;
 
     public ClearPotionEffectAction() {
-        super("Apply Potion Effect Action");
+        super("Clear Potion Effect Action");
         this.potionEffectType = PotionEffectType.SPEED;
         this.clearAll = false;
     }
 
     public ClearPotionEffectAction(PotionEffectType potionEffectType, boolean clearAll) {
-        super("Apply Potion Effect Action");
+        super("Clear Potion Effect Action");
         this.potionEffectType = potionEffectType;
         this.clearAll = clearAll;
     }
@@ -62,7 +63,7 @@ public class ClearPotionEffectAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         List<ActionItem> items = List.of(
                 new ActionItem("potion",
                         ItemBuilder.create(Material.POTION)
@@ -79,7 +80,7 @@ public class ClearPotionEffectAction extends Action {
                             //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
                             new PaginationMenu<>(Main.getInstance(),
                                     "&eSelect a Potion Effect", potions,
-                                    Bukkit.getPlayer(house.getOwnerUUID()), house, null, (potion) -> {
+                                    Bukkit.getPlayer(house.getOwnerUUID()), house, backMenu, (potion) -> {
                                 potionEffectType = potion;
                             }).open();
                         }
@@ -112,7 +113,7 @@ public class ClearPotionEffectAction extends Action {
     @Override
     public HashMap<String, Object> data() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("potion", potionEffectType);
+        data.put("potion", potionEffectType.getName());
         data.put("clearall", clearAll);
         return data;
     }
@@ -120,5 +121,14 @@ public class ClearPotionEffectAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        //Bunch of errors coming from PotionEffectType so I needed to add this
+        if (!data.containsKey("potion")) return;
+        potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
+        if (!data.containsKey("clearall")) return;
+        clearAll = (boolean) data.get("clearall");
     }
 }

@@ -25,8 +25,9 @@ public enum ActionEnum {
     SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
-    APPLY_POTION("Apply Potion Action", ApplyPotionEffectAction.class),
-    CLEAR_POTION("Clear Potion Action", ClearPotionEffectAction.class),
+    //Name of the action and the class that has the name of the action need to be the exact same
+    APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
+    CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     // Add new actions here
     ;
     private String name;

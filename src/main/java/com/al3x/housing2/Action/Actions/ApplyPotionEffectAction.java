@@ -5,11 +5,14 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import kotlin.NumbersKt;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -68,7 +71,7 @@ public class ApplyPotionEffectAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         List<ActionItem> items = List.of(
                 new ActionItem("potion",
                         ItemBuilder.create(Material.POTION)
@@ -85,7 +88,7 @@ public class ApplyPotionEffectAction extends Action {
                             //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
                             new PaginationMenu<>(Main.getInstance(),
                                     "&eSelect a Potion Effect", potions,
-                                    Bukkit.getPlayer(house.getOwnerUUID()), house, null, (potion) -> {
+                                    Bukkit.getPlayer(house.getOwnerUUID()), house, backMenu, (potion) -> {
                                 potionEffectType = potion;
                             }).open();
                         }
@@ -119,7 +122,7 @@ public class ApplyPotionEffectAction extends Action {
     @Override
     public HashMap<String, Object> data() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("potion", potionEffectType);
+        data.put("potion", potionEffectType.getName());
         data.put("duration", duration);
         data.put("level", level);
         return data;
@@ -130,11 +133,13 @@ public class ApplyPotionEffectAction extends Action {
         return true;
     }
 
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("message")) {
-//            return;
-//        }
-//        message = (String) data.get("message");
-//    }
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        if (!data.containsKey("potion")) return;
+        potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
+        if (!data.containsKey("duration")) return;
+        duration = NumberUtilsKt.toInt((Double) data.get("duration"));
+        if (!data.containsKey("level")) return;
+        level = NumberUtilsKt.toInt((Double) data.get("level"));
+    }
 }

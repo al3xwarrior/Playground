@@ -21,7 +21,7 @@ data class HouseData(
     var globalStats : List<StatData>,
     var playerStats: HashMap<String, List<StatData>>,
     val seed: String,
-    var functions: List<FunctionData>? = arrayListOf()
+    var functions: List<FunctionData> = arrayListOf()
 ) {
     companion object {
         fun fromHousingWorld(world: HousingWorld): HouseData {
