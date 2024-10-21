@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.ActionData;
+import com.al3x.housing2.Instances.HousingData.MoreStatData;
+import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -11,6 +13,8 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import org.bson.json.JsonReader;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -33,7 +37,7 @@ public class PlayerStatAction extends Action {
         super("Player Stat Action");
         this.statName = "Kills";
         this.mode = StatOperation.INCREASE;
-        this.value = new StatValue();
+        this.value = new StatValue(false);
     }
 
     public PlayerStatAction(String statName, StatOperation mode, StatValue value) {
@@ -71,7 +75,9 @@ public class PlayerStatAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Player player) {
+        Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
+
         List<ActionEditor.ActionItem> items = Arrays.asList(
                 new ActionEditor.ActionItem("statName",
                         ItemBuilder.create(Material.BOOK)
@@ -87,7 +93,8 @@ public class PlayerStatAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + mode)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, StatOperation.values(), null
+                        //That way we can look for this in the EnumThingy :)
+                        ActionEditor.ActionItem.ActionType.ENUM, StatOperation.values(), (stat.isNotNumber()) ? Material.LEGACY_FEATHER : null
                 ),
                 new ActionEditor.ActionItem("value",
                         ItemBuilder.create(Material.BOOK)
@@ -105,31 +112,32 @@ public class PlayerStatAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
-        try {
-            stat.modifyStat(mode, HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house))));
-        } catch (NumberFormatException e) {
-            try {
-                stat.modifyStat(mode, String.valueOf(value.calculate(player, house)));
-            } catch (NumberFormatException e2) {
-                player.sendMessage(colorize("&cInvalid value for stat action."));
-                return true;
-            }
-            return true;
+
+        if (stat.modifyStat(mode, HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house)))) == null) {
+            player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + mode + " and value: " + value));
         }
+
         return true;
     }
 
     public String getStatName() {
         return statName;
     }
+
     public StatOperation getMode() {
         return mode;
     }
+
     public void setStatName(String name) {
         this.statName = name;
     }
+
     public void setMode(StatOperation mode) {
         this.mode = mode;
+    }
+
+    public StatValue getValue() {
+        return value;
     }
 
     @Override
@@ -137,7 +145,7 @@ public class PlayerStatAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("statName", statName);
         data.put("mode", mode);
-        data.put("value", value);
+        data.put("value", StatActionData.Companion.fromStatValue(value));
         return data;
     }
 
@@ -160,7 +168,6 @@ public class PlayerStatAction extends Action {
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         statName = (String) data.get("statName");
         mode = StatOperation.valueOf((String) data.get("mode"));
-        value = new StatValue();
-        value.fromData((HashMap<String, Object>) gson.fromJson(data.get("value").toString(), HashMap.class), null);
+        value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
     }
 }

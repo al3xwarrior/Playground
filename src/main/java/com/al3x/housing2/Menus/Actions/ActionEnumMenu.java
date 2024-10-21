@@ -3,7 +3,6 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.EventType;
-import com.al3x.housing2.Enums.ExpressionOperation;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static org.bukkit.Material.ARROW;
+import static org.bukkit.Material.*;
 
 public class ActionEnumMenu extends Menu {
     private Main main;
@@ -65,21 +64,32 @@ public class ActionEnumMenu extends Menu {
     }
 
     private static Material[] STAT_OPERATION_MATERIALS = new Material[]{
-            Material.GREEN_STAINED_GLASS,
-            Material.RED_STAINED_GLASS,
-            Material.YELLOW_STAINED_GLASS,
-            Material.ORANGE_STAINED_GLASS,
-            Material.BLUE_STAINED_GLASS,
-            Material.MAGENTA_STAINED_GLASS,
-            Material.WHITE_STAINED_GLASS,
-            Material.BROWN_STAINED_GLASS,
+            GREEN_STAINED_GLASS, // INCREASE
+            RED_STAINED_GLASS, // DECREASE
+            YELLOW_STAINED_GLASS,// SET
+            ORANGE_STAINED_GLASS, // MULTIPLY
+            BLUE_STAINED_GLASS, // DIVIDE
+            MAGENTA_STAINED_GLASS, // MODULUS
+            WHITE_STAINED_GLASS, // FLOOR
+            BROWN_STAINED_GLASS, // ROUND
+            FEATHER, // GET STAT
+            BOOK, // CONCAT
+            CHAIN, // INDEX_OF
+            PAPER // SET_STRING
     };
 
-    private static Material[] EXPRESSION_OPERATION_MATERIALS = new Material[]{
-            Material.GREEN_STAINED_GLASS,
-            Material.RED_STAINED_GLASS,
-            Material.ORANGE_STAINED_GLASS,
-            Material.BLUE_STAINED_GLASS,
+    private static Material[] STRING_OPERATION_MATERIALS = new Material[]{
+            GREEN_STAINED_GLASS, // CONCAT
+            BROWN_STAINED_GLASS, // INDEX_OF
+            YELLOW_STAINED_GLASS, //SET STRING
+//            Material.RED_STAINED_GLASS, // REPLACE
+//            Material.YELLOW_STAINED_GLASS, // SUBSTRING
+//            Material.ORANGE_STAINED_GLASS, // TO_LOWER
+//            Material.BLUE_STAINED_GLASS, // TO_UPPER
+//            Material.MAGENTA_STAINED_GLASS, // TRIM
+//            Material.WHITE_STAINED_GLASS, // LENGTH
+//            Material.BOOK, // CHAR_AT
+//            Material.CHAIN // SPLIT
     };
 
     @Override
@@ -158,7 +168,7 @@ public class ActionEnumMenu extends Menu {
         }
 
         // Search
-        addItem(48, new ItemBuilder().material(Material.ANVIL).name("&eSearch").punctuation(false)
+        addItem(48, new ItemBuilder().material(ANVIL).name("&eSearch").punctuation(false)
                 .description("&7Search for an option.\n\n&eCurrent Value:\n&7" + search)
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
@@ -206,7 +216,7 @@ public class ActionEnumMenu extends Menu {
         for (int i = 0; i < enumClass.length; i++) {
             Enum value = enumClass[i];
             String name = StringUtilsKt.formatCapitalize(value.toString());
-            if (item.getEnumMaterial() != null) {
+            if (item.getEnumMaterial() != null && item.getEnumMaterial() != LEGACY_FEATHER) {
                 items.add(new ItemBuilder().material(item.getEnumMaterial()).name("&e" + name));
             } else {
                 //Are there better ways to do this? Probably, do I care? No
@@ -216,11 +226,15 @@ public class ActionEnumMenu extends Menu {
                 if (value instanceof StatOperation)
                     items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
 
-                if (value instanceof ExpressionOperation)
-                    items.add(new ItemBuilder().material(EXPRESSION_OPERATION_MATERIALS[i]).name("&e" + name));
-
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));
+            }
+        }
+
+        if (item.getEnumMaterial() == LEGACY_FEATHER) {
+            items.clear();
+            for (int i = 0; i < STRING_OPERATION_MATERIALS.length; i++) {
+                items.add(new ItemBuilder().material(STRING_OPERATION_MATERIALS[i]).name("&e" + StringUtilsKt.formatCapitalize(item.getEnumClass()[9 + i].toString())));
             }
         }
 

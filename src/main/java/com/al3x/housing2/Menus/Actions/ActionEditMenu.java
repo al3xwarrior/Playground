@@ -32,13 +32,13 @@ public class ActionEditMenu extends Menu {
     private EventType event;
     private Menu backMenu;
 
-    private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu) {
-        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu);
+    private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
+        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, player);
     }
 
     // NPC
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, HousingNPC housingNPC) {
-        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -48,7 +48,7 @@ public class ActionEditMenu extends Menu {
 
     // Events
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, EventType event) {
-        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -57,7 +57,7 @@ public class ActionEditMenu extends Menu {
     }
 
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, Menu backMenu) {
-        super(player, colorize(getEditor(action, house, null).getTitle()), getEditor(action, house, null).getRows() * 9);
+        super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
         this.main = main;
         this.action = action;
         this.player = player;
@@ -71,7 +71,7 @@ public class ActionEditMenu extends Menu {
     public void setupItems() {
         clearItems();
         //Only needed for actions that need their own custom menu
-        ActionEditor editor = getEditor(action, house, this);
+        ActionEditor editor = getEditor(action, house, this, player);
         List<ActionEditor.ActionItem> items = editor.getItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 

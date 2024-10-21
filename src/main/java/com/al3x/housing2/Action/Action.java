@@ -36,6 +36,10 @@ public abstract class Action {
         return null;
     }
 
+    public ActionEditor editorMenu(HousingWorld house, Player player) {
+        return null;
+    }
+
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         return null;
     }

@@ -17,22 +17,9 @@ fun Double.toFloat(): Float {
 fun String.isDouble(): Boolean {
     try {
         parseDouble(this)
-        Bukkit.getLogger().info("isDouble")
         return true
     } catch (e: NumberFormatException) {
-        try {
-            parseLong(this)
-            Bukkit.getLogger().info("isLong")
-            return true
-        } catch (e: NumberFormatException) {
-            try {
-                parseFloat(this)
-                Bukkit.getLogger().info("isFloat")
-                return true
-            } catch (e: NumberFormatException) {
-                return false
-            }
-        }
+        return false
     }
 }
 

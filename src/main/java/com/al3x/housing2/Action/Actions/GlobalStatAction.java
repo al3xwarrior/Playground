@@ -3,10 +3,13 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Instances.HousingData.MoreStatData;
+import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,24 +18,27 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class GlobalStatAction extends Action {
+    private static final Gson gson = new Gson();
 
     private String statName;
     private StatOperation mode;
-    private String value;
+    private StatValue value;
 
     public GlobalStatAction() {
         super("Global Stat Action");
         this.statName = "Kills";
         this.mode = StatOperation.INCREASE;
-        this.value = "1.0";
+        this.value = new StatValue(true);
     }
 
-    public GlobalStatAction(String statName, StatOperation mode, Double value) {
+    public GlobalStatAction(String statName, StatOperation mode, StatValue value) {
         super("Global Stat Action");
         this.statName = statName;
         this.mode = mode;
-        this.value = String.valueOf(value);
+        this.value = value;
     }
 
     @Override
@@ -100,7 +106,9 @@ public class GlobalStatAction extends Action {
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getGlobalStatByName(statName);
 
-        stat.modifyStat(mode, value);
+        if (stat.modifyStat(mode, HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house)))) == null) {
+            player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + mode + " and value: " + value));
+        }
         return true;
     }
 
@@ -110,7 +118,7 @@ public class GlobalStatAction extends Action {
     public StatOperation getMode() {
         return mode;
     }
-    public String getValue() {
+    public StatValue getValue() {
         return value;
     }
     public void setStatName(String name) {
@@ -119,8 +127,8 @@ public class GlobalStatAction extends Action {
     public void setMode(StatOperation mode) {
         this.mode = mode;
     }
-    public void setValue(Double value) {
-        this.value = String.valueOf(value);
+    public void setValue(StatValue value) {
+        this.value = value;
     }
 
     @Override
@@ -128,7 +136,7 @@ public class GlobalStatAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("statName", statName);
         data.put("mode", mode);
-        data.put("value", value);
+        data.put("value", StatActionData.Companion.fromStatValue(value));
         return data;
     }
 
@@ -137,13 +145,10 @@ public class GlobalStatAction extends Action {
         return false;
     }
 
-//    @Override
-//    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-//        if (!data.containsKey("statName") || !data.containsKey("mode") || !data.containsKey("value")) {
-//            return;
-//        }
-//        this.statName = (String) data.get("statName");
-//        this.mode = StatOperation.valueOf((String) data.get("mode"));
-//        this.value = (String) data.get("value");
-//    }
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        statName = (String) data.get("statName");
+        mode = StatOperation.valueOf((String) data.get("mode"));
+        value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
+    }
 }

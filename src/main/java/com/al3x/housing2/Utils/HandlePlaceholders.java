@@ -54,7 +54,6 @@ public class HandlePlaceholders {
             String statName = playerMatch.getGroups().get(1).getValue(); // The captured <stat>
             Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
             String replacement = (stat == null) ? "0" : stat.formatValue();
-            Bukkit.getLogger().info("Stat: " + statName + " Value: " + replacement);
             replaceAll(result, playerMatch.getValue(), replacement);
             playerMatch = playerMatch.next();
         }

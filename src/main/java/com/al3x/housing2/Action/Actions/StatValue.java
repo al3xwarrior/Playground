@@ -2,47 +2,60 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Enums.ExpressionOperation;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.google.gson.Gson;
 import com.al3x.housing2.Utils.ItemBuilder;
+import kotlin.text.MatchResult;
+import kotlin.text.Regex;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class StatValue extends Action {
-
-    private static final Gson gson = new Gson();
-    private ExpressionOperation mode;
+    private boolean isGlobal;
+    private boolean isExpression;
     private String literalValue;
+    private StatOperation mode;
     private StatValue value1;
     private StatValue value2;
-    private boolean isExpression;
 
-    public StatValue() {
+    public StatValue(boolean isGlobal) {
         super("StatValue");
         this.literalValue = "1.0";
 //            this.value1 = "Kills";
-        this.mode = ExpressionOperation.INCREASE;
+        this.mode = StatOperation.INCREASE;
 //            this.value2 = "1.0";
         this.isExpression = false;
+        this.isGlobal = isGlobal;
+    }
+
+    public StatValue(boolean isGlobal, boolean isExpression, String literalValue, StatOperation mode, StatValue value1, StatValue value2) {
+        super("StatValue");
+        this.isGlobal = isGlobal;
+        this.isExpression = isExpression;
+        this.literalValue = literalValue;
+        this.mode = mode;
+        this.value1 = value1;
+        this.value2 = value2;
     }
 
 
     @Override
     public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items;
+        ArrayList<ActionEditor.ActionItem> items;
         if (isExpression) {
-            if (value1 == null) value1 = new StatValue();
-            if (value2 == null) value2 = new StatValue();
+            if (value1 == null && mode != StatOperation.GET_STAT) value1 = new StatValue(isGlobal);
+            if (value2 == null) value2 = new StatValue(isGlobal);
+            if (mode == StatOperation.GET_STAT) value1 = null;
             literalValue = null;
-            items = Arrays.asList(
+            items = new ArrayList<>(Arrays.asList(
                     new ActionEditor.ActionItem("isExpression",
                             ItemBuilder.create((isExpression ? Material.LIME_DYE : Material.RED_DYE))
                                     .name("&aIs expression")
@@ -51,36 +64,37 @@ public class StatValue extends Action {
                                     .info(null, isExpression ? "&aExpression" : "&cLiteral"),
                             ActionEditor.ActionItem.ActionType.BOOLEAN
                     ),
-                    new ActionEditor.ActionItem("value1",
+                    (value1 == null ? null : new ActionEditor.ActionItem("value1",
                             ItemBuilder.create(Material.BOOK)
                                     .name("&eAmount 1")
                                     .info("&7Current Value", "")
                                     .info(null, "&a" + value1.asString())
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                             ActionEditor.ActionItem.ActionType.ACTION_SETTING
-                    ),
+                    )),
                     new ActionEditor.ActionItem("mode",
                             ItemBuilder.create(Material.COMPASS)
                                     .name("&eMode")
                                     .info("&7Current Value", "")
                                     .info(null, "&a" + mode)
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            ActionEditor.ActionItem.ActionType.ENUM, ExpressionOperation.values(), null
+                            ActionEditor.ActionItem.ActionType.ENUM, StatOperation.values(), null
                     ),
+                    //This entire thing is kinda scuffed lol :)
                     new ActionEditor.ActionItem("value2",
                             ItemBuilder.create(Material.BOOK)
                                     .name("&eAmount 2")
                                     .info("&7Current Value", "")
                                     .info(null, "&a" + value2.asString())
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            ActionEditor.ActionItem.ActionType.ACTION_SETTING
+                             ActionEditor.ActionItem.ActionType.ACTION_SETTING
                     )
-            );
+            ));
         } else {
             value1 = null;
             value2 = null;
-            if(literalValue == null) literalValue = "1.0";
-            items = Arrays.asList(
+            if (literalValue == null) literalValue = "1.0";
+            items = new ArrayList<>(Arrays.asList(
                     new ActionEditor.ActionItem("isExpression",
                             ItemBuilder.create((isExpression ? Material.LIME_DYE : Material.RED_DYE))
                                     .name("&aIs expression")
@@ -97,25 +111,44 @@ public class StatValue extends Action {
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                             ActionEditor.ActionItem.ActionType.STRING
                     )
-            );
+            ));
         }
-
+        items.remove(null);
         return new ActionEditor(4, "&ePlayer Stat Action Settings", items);
     }
 
     //Need to move over the changes from Stat.java to here
     public String calculate(Player player, HousingWorld world) throws NumberFormatException {
         if (!isExpression) return HandlePlaceholders.parsePlaceholders(player, world, literalValue);
-        switch (mode) {
-            case INCREASE:
-                return Stat.modifyStat(StatOperation.INCREASE, value1.calculate(player, world), value2.calculate(player, world));
-            case DECREASE:
-                return Stat.modifyStat(StatOperation.DECREASE, value1.calculate(player, world), value2.calculate(player, world));
-            case MULTIPLY:
-                return Stat.modifyStat(StatOperation.MULTIPLY, value1.calculate(player, world), value2.calculate(player, world));
-            case DIVIDE: default:
-                return Stat.modifyStat(StatOperation.DIVIDE, value1.calculate(player, world), value2.calculate(player, world));
+        //Look for a stat in value1 and modify it with value2
+        if (mode == StatOperation.SET) {
+            if (value1.isExpression) {
+                Stat stat = world.getStatManager().getPlayerStatByName(player, value1.calculate(player, world));
+                if (stat != null) return stat.modifyStat(StatOperation.SET, value2.calculate(player, world));
+            }
+
+            Regex statPattern = new Regex("(.+|)%stat\\.player/([a-zA-Z0-9_]+)%(.+?|)");
+            MatchResult playerMatch = statPattern.find(value1.literalValue, 0);
+            if (playerMatch != null && playerMatch.getGroups().size() == 4) {
+                String prefix = playerMatch.getGroups().get(1).getValue();
+                String statName = playerMatch.getGroups().get(2).getValue();
+                String suffix = playerMatch.getGroups().get(3).getValue();
+                if (prefix.isEmpty() && suffix.isEmpty()) {
+                    Stat stat = world.getStatManager().getPlayerStatByName(player, statName);
+                    if (stat != null) return stat.modifyStat(StatOperation.SET, value2.calculate(player, world));
+                }
+            }
         }
+
+        //Get the stat value of value1
+        if (mode == StatOperation.GET_STAT) {
+            Stat stat = world.getStatManager().getPlayerStatByName(player, value1.calculate(player, world));
+            if (stat != null) return stat.getValue();
+        }
+
+        if (value1 == null || value2 == null) return "0.0";
+
+        return Stat.modifyStat(mode, value1.calculate(player, world), value2.calculate(player, world));
     }
 
     public boolean requiresPlayer() {
@@ -123,43 +156,47 @@ public class StatValue extends Action {
     }
 
     public String toString() {
-        if (isExpression) return "&7(&a" + value1 + "&6 " + mode.asString() + " &a" + value2 + "&7)";
+        if (isExpression) return "&7(&a" + (value1 != null ? value1 + " " : "") + "&6" + mode.asString() + " &a" + value2 + "&7)";
         else return literalValue;
     }
 
     public String asString() {
-        if (isExpression) return "&fValue 1: &a" + value1 + "\n&fMode: &6" + mode + "\n&fValue 2: &a" + value2;
+        if (isExpression) return (value1 != null ? "&fValue 1: &a\n" + value1 : "") + "&fMode: &6" + mode + "\n&fValue 2: &a" + value2;
         else return literalValue;
     }
 
-    public void createDisplayItem(ItemBuilder builder) {} // never in display
-    public void createAddDisplayItem(ItemBuilder builder) {} // never created
+    public void createDisplayItem(ItemBuilder builder) {
+    } // never in display
+
+    public void createAddDisplayItem(ItemBuilder builder) {
+    } // never created
+
     public boolean execute(Player player, HousingWorld house) {
         return false;
     } // never "executed"
 
     @Override
     public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("value1", value1);
-        data.put("mode", mode);
-        data.put("value2", value2);
-        return data;
+        return new HashMap<>();
     }
 
-    // i mew over the slain bodies of all who doubted me
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        isExpression = (boolean) data.get("isExpression");
-        if(isExpression) {
-            value1 = new StatValue();
-            value1.fromData((HashMap<String, Object>) gson.fromJson(data.get("value1").toString(), HashMap.class), null);
-            mode = ExpressionOperation.valueOf((String) data.get("mode"));
-            value2 = new StatValue();
-            value2.fromData((HashMap<String, Object>) gson.fromJson(data.get("value2").toString(), HashMap.class), null);
-        } else {
-            literalValue = String.valueOf(data.get("literalValue"));
-        }
+    public boolean isExpression() {
+        return isExpression;
+    }
 
+    public String getLiteralValue() {
+        return literalValue;
+    }
+
+    public StatOperation getMode() {
+        return mode;
+    }
+
+    public StatValue getValue1() {
+        return value1;
+    }
+
+    public StatValue getValue2() {
+        return value2;
     }
 }

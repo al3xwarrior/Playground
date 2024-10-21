@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static com.al3x.housing2.Enums.StatOperation.*;
+
 public class Stat {
 
     private UUID uuid;
@@ -22,13 +24,13 @@ public class Stat {
     public static String modifyStat(StatOperation operation, String value1, String value2) {
         //Check all possible combinations of value and this.value
         if (modifyDoubleIfInt(operation, value1, value2) != null) {
-            return value1 = String.valueOf(modifyDoubleIfInt(operation, value1, value2));
+            return String.valueOf(modifyDoubleIfInt(operation, value1, value2));
         } else if (modifyIntIfDouble(operation, value1, value2) != null) {
-            return value1 = String.valueOf(modifyIntIfDouble(operation, value1, value2));
+            return String.valueOf(modifyIntIfDouble(operation, value1, value2));
         } else if (modifyIntIfInt(operation, value1, value2) != null) {
-            return value1 = String.valueOf(modifyIntIfInt(operation, value1, value2));
+            return String.valueOf(modifyIntIfInt(operation, value1, value2));
         } else if (modifyDoubleIfDouble(operation, value1, value2) != null) {
-            return value1 = String.valueOf(modifyDoubleIfDouble(operation, value1, value2));
+            return String.valueOf(modifyDoubleIfDouble(operation, value1, value2));
         }
 
         //If all else fails, just return the value or append the value
@@ -36,7 +38,8 @@ public class Stat {
     }
 
     public String modifyStat(StatOperation operation, String value) {
-        return this.value = modifyStat(operation, this.value, value);
+        this.value = modifyStat(operation, this.value, value);
+        return this.value;
     }
 
     public static Integer modifyDoubleIfInt(StatOperation operation, String numStr, String valueStr) {
@@ -44,15 +47,15 @@ public class Stat {
             double value = Double.parseDouble(valueStr);
             int num = Integer.parseInt(numStr);
             return switch (operation) {
-                case StatOperation.SET -> num = (int) value;
-                case StatOperation.INCREASE -> num += value;
-                case StatOperation.DECREASE -> num -= value;
-                case StatOperation.MULTIPLY -> num *= value;
-                case StatOperation.DIVIDE -> num /= value;
-                case StatOperation.MOD -> num %= value;
-                case StatOperation.FLOOR -> (int) Math.floor(num);
-                case StatOperation.ROUND -> Math.round(num);
-                default -> num;
+                case SET -> num = (int) value;
+                case INCREASE -> num += value;
+                case DECREASE -> num -= value;
+                case MULTIPLY -> num *= value;
+                case DIVIDE -> num /= value;
+                case MOD -> num %= value;
+                case FLOOR -> (int) Math.floor(num);
+                case ROUND -> Math.round(num);
+                default -> null;
             };
         }
         return null;
@@ -63,15 +66,15 @@ public class Stat {
             double value = Double.parseDouble(valueStr);
             double num = Double.parseDouble(numStr);
             return switch (operation) {
-                case StatOperation.SET -> num = value;
-                case StatOperation.INCREASE -> num += value;
-                case StatOperation.DECREASE -> num -= value;
-                case StatOperation.MULTIPLY -> num *= value;
-                case StatOperation.DIVIDE -> num /= value;
-                case StatOperation.MOD -> num %= value;
-                case StatOperation.FLOOR -> Math.floor(num);
-                case StatOperation.ROUND -> (double) Math.round(num);
-                default -> num;
+                case SET -> num = value;
+                case INCREASE -> num += value;
+                case DECREASE -> num -= value;
+                case MULTIPLY -> num *= value;
+                case DIVIDE -> num /= value;
+                case MOD -> num %= value;
+                case FLOOR -> Math.floor(num);
+                case ROUND -> (double) Math.round(num);
+                default -> null;
             };
         }
         return null;
@@ -82,15 +85,15 @@ public class Stat {
             int value = Integer.parseInt(valueStr);
             int num = Integer.parseInt(numStr);
             return switch (operation) {
-                case StatOperation.SET -> num = value;
-                case StatOperation.INCREASE -> num += value;
-                case StatOperation.DECREASE -> num -= value;
-                case StatOperation.MULTIPLY -> num *= value;
-                case StatOperation.DIVIDE -> num /= value;
-                case StatOperation.MOD -> num %= value;
-                case StatOperation.FLOOR -> (int) Math.floor(num);
-                case StatOperation.ROUND -> Math.round(num);
-                default -> num;
+                case SET -> num = value;
+                case INCREASE -> num += value;
+                case DECREASE -> num -= value;
+                case MULTIPLY -> num *= value;
+                case DIVIDE -> num /= value;
+                case MOD -> num %= value;
+                case FLOOR -> (int) Math.floor(num);
+                case ROUND -> Math.round(num);
+                default -> null;
             };
         }
         return null;
@@ -99,17 +102,17 @@ public class Stat {
     public static Double modifyIntIfDouble(StatOperation operation, String numStr, String valueStr) {
         if (NumberUtilsKt.isDouble(numStr) && NumberUtilsKt.isInt(valueStr)) {
             int value = Integer.parseInt(valueStr);
-            double num = Integer.parseInt(numStr);
+            double num = Double.parseDouble(numStr);
             return switch (operation) {
-                case StatOperation.SET -> num = value;
-                case StatOperation.INCREASE -> num += value;
-                case StatOperation.DECREASE -> num -= value;
-                case StatOperation.MULTIPLY -> num *= value;
-                case StatOperation.DIVIDE -> num /= value;
-                case StatOperation.MOD -> num %= value;
-                case StatOperation.FLOOR -> Math.floor(num); //These really don't make sense lol
-                case StatOperation.ROUND -> (double) Math.round(num);
-                default -> num;
+                case SET -> num = value;
+                case INCREASE -> num += value;
+                case DECREASE -> num -= value;
+                case MULTIPLY -> num *= value;
+                case DIVIDE -> num /= value;
+                case MOD -> num %= value;
+                case FLOOR -> Math.floor(num); //These really don't make sense lol
+                case ROUND -> (double) Math.round(num);
+                default -> null;
             };
         }
         return null;
@@ -117,9 +120,12 @@ public class Stat {
 
     public static String modifyStringIfString(StatOperation operation, String numStr, String valueStr) {
         return switch (operation) {
-            case StatOperation.SET -> valueStr;
-            case StatOperation.INCREASE -> numStr + valueStr; //This is basically append (shrug)
-            default -> valueStr;
+            case SET -> valueStr;
+            case INCREASE -> numStr + valueStr; //This is basically append (shrug)
+            case CONCAT -> numStr + valueStr;
+            case INDEX_OF -> String.valueOf(numStr.indexOf(valueStr));
+            case SET_STRING -> valueStr;
+            default -> null;
         };
     }
 
@@ -132,6 +138,10 @@ public class Stat {
             return df.format(Double.parseDouble(value));
         }
         return value;
+    }
+
+    public boolean isNotNumber() {
+        return !NumberUtilsKt.isInt(value) && !NumberUtilsKt.isDouble(value);
     }
 
     public String getValue() {
