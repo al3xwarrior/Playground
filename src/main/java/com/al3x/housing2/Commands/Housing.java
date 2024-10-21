@@ -149,7 +149,7 @@ public class Housing implements CommandExecutor {
                     }
 
                     HousingWorld house = housesManager.getHouse(target);
-                    if (house.getStatManager().getPlayerStats(target).isEmpty()) {
+                    if (house.getStatManager().getPlayerStats(target) == null || house.getStatManager().getPlayerStats(target).isEmpty()) {
                         player.sendMessage(colorize("&cThat player has no stats!"));
                         return true;
                     }

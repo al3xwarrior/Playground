@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
+import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
@@ -333,17 +334,25 @@ public class HousingWorld {
         return function;
     }
 
-    public void executeEventActions(EventType eventType, Player player, Cancellable event) {
+    public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
         List<Action> actions = eventActions.get(eventType);
+        boolean cancelled = false;
         if (actions != null) {
-            for (Action action : actions) {
-                // Check if the action is null or if the event is allowed
-                if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
-                // Execute the action either cancelling the event or not
-                if (event != null && !action.execute(player, this)) event.setCancelled(true);
-                if (event == null) action.execute(player, this);
+            //Look and see if there is a cancel action
+            CancelAction cancelAction = Action.getCancelAction(actions);
+            if (cancelAction != null && cancelAction.allowedEvents().contains(eventType)) {
+                cancelled = true;
+                event.setCancelled(true);
             }
+            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+                for (Action action : actions) {
+                    // Check if the action is null or if the event is allowed
+                    if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
+                    if (event == null) action.execute(player, this);
+                }
+            });
         }
+        return cancelled;
     }
 
     public void createNPC(Player player, Location location) {

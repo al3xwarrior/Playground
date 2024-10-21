@@ -6,12 +6,14 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
+import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -33,6 +35,7 @@ public class CancelInput implements CommandExecutor {
 
         Player player = (Player) commandSender;
 
+        AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
         MenuManager.getPlayerMenu(player).open();
 
         return true;

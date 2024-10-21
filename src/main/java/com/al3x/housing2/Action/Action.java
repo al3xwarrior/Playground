@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action;
 
+import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
@@ -87,5 +88,15 @@ public abstract class Action {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public static CancelAction getCancelAction(List<Action> actions) {
+        for (Action action : actions) {
+            if (action instanceof CancelAction) {
+                return (CancelAction) action;
+            }
+        }
+        return null;
     }
 }

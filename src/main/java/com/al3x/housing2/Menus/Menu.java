@@ -122,7 +122,7 @@ public abstract class Menu implements Listener {
         previousComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§bClick to paste previous value")));
         player.spigot().sendMessage(previousComp, cancelComp);
 
-        Bukkit.getPluginManager().registerEvents(new Listener() {
+        Bukkit.getPluginManager().registerEvents(MenuManager.setListener(player, new Listener() {
             @EventHandler
             public void onPlayerChat(AsyncPlayerChatEvent e) {
                 e.setCancelled(true);
@@ -137,6 +137,6 @@ public abstract class Menu implements Listener {
                     Bukkit.getScheduler().runTaskLater(main, Menu.this::open, 1L); // Delay slightly to allow chat event to complete
                 }
             }
-        }, main);
+        }), main);
     }
 }

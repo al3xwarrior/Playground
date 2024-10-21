@@ -95,7 +95,7 @@ public class GlobalStatAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + value)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
+                        ActionEditor.ActionItem.ActionType.ACTION_SETTING
                 )
         );
 
@@ -108,6 +108,10 @@ public class GlobalStatAction extends Action {
 
         if (stat.modifyStat(mode, HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house)))) == null) {
             player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + mode + " and value: " + value));
+        }
+
+        if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
+            house.getStatManager().getGlobalStats().remove(stat);
         }
         return true;
     }

@@ -20,20 +20,20 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlaySoundAction extends Action {
-    private Float volume;
-    private Float pitch;
+    private Double volume;
+    private Double pitch;
     private Sound sound;
     private Locations location;
 
     public PlaySoundAction() {
         super("Play Sound Action");
-        this.volume = 1.0F;
-        this.pitch = 1.0F;
+        this.volume = 1.0D;
+        this.pitch = 1.0D;
         this.sound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
         this.location = Locations.INVOKERS_LOCATION;
     }
 
-    public PlaySoundAction(Float volume, Float pitch, Sound sound, Locations location) {
+    public PlaySoundAction(Double volume, Double pitch, Sound sound, Locations location) {
         super("Play Sound Action");
         this.volume = volume;
         this.pitch = pitch;
@@ -112,43 +112,10 @@ public class PlaySoundAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         switch (location) {
-            case INVOKERS_LOCATION -> player.playSound(player.getLocation(), sound, volume, pitch);
-            case HOUSE_SPAWN -> player.playSound(house.getSpawn(), sound, volume, pitch);
+            case INVOKERS_LOCATION -> player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            case HOUSE_SPAWN -> player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
         }
         return true;
-    }
-
-    public Float getVolume() {
-        return volume;
-    }
-    public Float getPitch() {
-        return pitch;
-    }
-    public Sound getSound() {
-        return sound;
-    }
-    public Locations getLocation() {
-        return location;
-    }
-
-    public void setSound(Sound sound) {
-        this.sound = sound;
-    }
-    public void setSound(String s) {
-        try {
-            sound = Sound.valueOf(s);
-        } catch (IllegalArgumentException err) {
-            sound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
-        }
-    }
-    public void setPitch(Float pitch) {
-        this.pitch = pitch;
-    }
-    public void setVolume(Float volume) {
-        this.volume = volume;
-    }
-    public void setLocation(Locations location) {
-        this.location = location;
     }
 
     @Override
@@ -168,8 +135,8 @@ public class PlaySoundAction extends Action {
 
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        volume = NumberUtilsKt.toFloat((Double) data.get("volume"));
-        pitch = NumberUtilsKt.toFloat((Double) data.get("pitch"));
+        volume = (Double) data.get("volume");
+        pitch = (Double) data.get("pitch");
         sound = Sound.valueOf((String) data.get("sound"));
         location = Locations.valueOf((String) data.get("location"));
     }

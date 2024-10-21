@@ -87,8 +87,8 @@ public class FunctionAction extends Action {
             return false;
         }
         if (runForAllPlayers) {
-            for (Player uuid : house.getWorld().getPlayers()) {
-                functionData.execute(Main.getInstance(), player, house);
+            for (Player p : house.getWorld().getPlayers()) {
+                functionData.execute(Main.getInstance(), p, house);
             }
         } else {
             functionData.execute(Main.getInstance(), player, house);

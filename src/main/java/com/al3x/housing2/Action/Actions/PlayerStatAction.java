@@ -117,6 +117,10 @@ public class PlayerStatAction extends Action {
             player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + mode + " and value: " + value));
         }
 
+        if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
+            house.getStatManager().getPlayerStats(player).remove(stat);
+        }
+
         return true;
     }
 
