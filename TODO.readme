@@ -3,7 +3,7 @@ Ender:
 - Placeholders rewrite again (done for now)
 - launch projectile action
 - chat event (%event.message%) (done?)
-- Recode EventActionsMenu.java
+- Recode EventActionsMenu.java (done) (thank you chatgippity)
 
 Al3xWarrior:
 - Conditions
