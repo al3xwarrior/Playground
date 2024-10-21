@@ -2,12 +2,14 @@ package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -36,6 +38,23 @@ public class HandlePlaceholders {
             replaceAll(result, "%player.location.z%", String.valueOf(player.getLocation().getZ()));
             replaceAll(result, "%player.location.pitch%", String.valueOf(player.getLocation().getPitch()));
             replaceAll(result, "%player.location.yaw%", String.valueOf(player.getLocation().getYaw()));
+
+            // Regex for capturing stat placeholders like %stat.player/<stat>%
+            Regex statPattern = new Regex("%stat\\.player/([a-zA-Z0-9_]+)%");
+            MatchResult playerMatch = statPattern.find(result.toString(), 0);
+            while (playerMatch != null) {
+                String statName = playerMatch.getGroups().get(1).getValue(); // The captured <stat>
+                Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
+                String replacement = (stat == null) ? "0" : stat.formatValue();
+                replaceAll(result, playerMatch.getValue(), replacement);
+                playerMatch = playerMatch.next();
+            }
+
+            // Event Data per player
+            if (ChatEvent.lastChatEvent.containsKey(player.getUniqueId())) {
+                AsyncPlayerChatEvent event = ChatEvent.lastChatEvent.get(player.getUniqueId());
+                replaceAll(result, "%event.chat/message%", event.getMessage());
+            }
         }
 
         // House placeholders
@@ -46,17 +65,6 @@ public class HandlePlaceholders {
 
         // Misc
         replaceAll(result, "%unix.time%", String.valueOf(System.currentTimeMillis() / 1000));
-
-        // Regex for capturing stat placeholders like %stat.player/<stat>%
-        Regex statPattern = new Regex("%stat\\.player/([a-zA-Z0-9_]+)%");
-        MatchResult playerMatch = statPattern.find(result.toString(), 0);
-        while (playerMatch != null) {
-            String statName = playerMatch.getGroups().get(1).getValue(); // The captured <stat>
-            Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
-            String replacement = (stat == null) ? "0" : stat.formatValue();
-            replaceAll(result, playerMatch.getValue(), replacement);
-            playerMatch = playerMatch.next();
-        }
 
         // Regex for capturing stat placeholders like %stat.global/<stat>%
         Regex globalPattern = new Regex("%stat\\.global/([a-zA-Z0-9_]+)%");

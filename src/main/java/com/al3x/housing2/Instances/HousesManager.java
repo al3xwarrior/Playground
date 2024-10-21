@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class HousesManager {
         for (File file : houses.listFiles()) {
             main.getLogger().info("Loading house " + file.getName());
             try {
-                HouseData houseData = gson.fromJson(Files.readString(file.toPath()), HouseData.class);
+                HouseData houseData = gson.fromJson(Files.readString(file.toPath(), StandardCharsets.UTF_8), HouseData.class);
 
                 List<String> hs = playerHouses.getOrDefault(UUID.fromString(houseData.getOwnerID()), new ArrayList<>());
                 hs.add(houseData.getHouseID());

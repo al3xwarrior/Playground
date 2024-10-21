@@ -1,9 +1,11 @@
 package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Enums.EventType
+import com.al3x.housing2.Enums.HousePrivacy
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
+import org.bukkit.Material
 
 data class HouseData(
     val ownerID: String,
@@ -13,6 +15,8 @@ data class HouseData(
     var size: Int,
 //    var guests: Int,
     var cookies: Int,
+    var privacy: String? = HousePrivacy.PRIVATE.name,
+    var icon: String? = Material.OAK_DOOR.name,
     var timeCreated: Long,
     var eventActions: HashMap<EventType, List<ActionData>>,
     var spawnLocation: LocationData,
@@ -32,6 +36,8 @@ data class HouseData(
                 world.description,
                 world.size,
                 world.cookies,
+                world.privacy.name,
+                world.icon.name,
                 world.timeCreated,
                 ActionData.fromHashMap(world.eventActions, world),
                 LocationData.fromLocation(world.spawn),

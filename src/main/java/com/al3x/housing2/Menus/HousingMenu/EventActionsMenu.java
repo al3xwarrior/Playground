@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -312,6 +313,18 @@ public class EventActionsMenu extends Menu {
         addItem(33, toggleFlight, () -> {
             new ActionsMenu(main, player, house, EventType.PLAYER_TOGGLE_FLIGHT).open();
         });
+
+        ItemStack chatMessage = new ItemBuilder()
+                .material(Material.PLAYER_HEAD)
+                .name("&aPlayer Chat Message")
+                .description("&7Executes when a player sends a chat message.")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build();
+        addItem(34, chatMessage, () -> {
+                    new ActionsMenu(main, player, house, EventType.PLAYER_CHAT).open();
+                }
+        );
+
 
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();

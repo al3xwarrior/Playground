@@ -26,6 +26,7 @@ import org.bukkit.event.Cancellable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
@@ -95,7 +96,7 @@ public class HousingWorld {
         }
         // Load the house data from the file
         try {
-            String json = Files.readString(file.toPath());
+            String json = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             houseData = gson.fromJson(json, HouseData.class);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
@@ -111,9 +112,9 @@ public class HousingWorld {
         this.timeCreated = houseData.getTimeCreated();
         this.housingNPCS = new ArrayList<>();
 
-        // doesnt save yet ender do yo thing
-        this.privacy = HousePrivacy.PRIVATE;
-        this.icon = Material.OAK_DOOR;
+        // doesnt save yet ender do yo thing okie :)
+        this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
+        this.icon = houseData.getIcon() != null ? Material.valueOf(houseData.getIcon()) : Material.OAK_DOOR;
 
         this.statManager = new StatManager(this);
 
@@ -193,7 +194,13 @@ public class HousingWorld {
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
 
-        switch (size) {case MEDIUM -> this.size = 50;case LARGE -> this.size = 75;case XLARGE -> this.size = 100;case MASSIVE -> this.size = 255;default -> this.size = 30;}
+        switch (size) {
+            case MEDIUM -> this.size = 50;
+            case LARGE -> this.size = 75;
+            case XLARGE -> this.size = 100;
+            case MASSIVE -> this.size = 255;
+            default -> this.size = 30;
+        }
 
         // Create the actual world
         SlimeWorld world = createOrReadWorld();
@@ -291,7 +298,7 @@ public class HousingWorld {
             if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
             if (!file.exists()) file.createNewFile();
             String json = gson.toJson(houseData);
-            Files.write(file.toPath(), json.getBytes());
+            Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
 
             asp.saveWorld(slimeWorld);
         } catch (IOException e) {
@@ -329,15 +336,13 @@ public class HousingWorld {
     public void executeEventActions(EventType eventType, Player player, Cancellable event) {
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
-            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-                for (Action action : actions) {
-                    // Check if the action is null or if the event is allowed
-                    if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
-                    // Execute the action either cancelling the event or not
-                    if (event != null && !action.execute(player, this)) event.setCancelled(true);
-                    if (event == null) action.execute(player, this);
-                }
-            });
+            for (Action action : actions) {
+                // Check if the action is null or if the event is allowed
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) return;
+                // Execute the action either cancelling the event or not
+                if (event != null && !action.execute(player, this)) event.setCancelled(true);
+                if (event == null) action.execute(player, this);
+            }
         }
     }
 
@@ -423,94 +428,123 @@ public class HousingWorld {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setEventActions(EventType type, List<Action> actions) {
         eventActions.put(type, actions);
     }
+
     public List<Action> getEventActions(EventType type) {
-        return eventActions.get(type);
+        return eventActions.getOrDefault(type, new ArrayList<>());
     }
+
     public void sendPlayerToHouse(Player player) {
         player.teleport(spawn);
         player.sendMessage(colorize("&aSending you to " + name + "&a..."));
     }
+
     public StatManager getStatManager() {
         return statManager;
     }
+
     public void kickPlayerFromHouse(Player player) {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
+
     public void setGuests() {
         guests = Bukkit.getWorld(houseUUID.toString()).getPlayers().size();
     }
+
     public World getWorld() {
         return houseWorld;
     }
+
     public void setName(String s) {
         name = s;
     }
+
     public String getName() {
         return name;
     }
+
     public Long getTimeCreated() {
         return timeCreated;
     }
+
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
+
     public UUID getHouseUUID() {
         return houseUUID;
     }
+
     public Location getSpawn() {
         return spawn;
     }
+
     public void setScoreboard(List<String> scoreboard) {
         this.scoreboard = scoreboard;
     }
+
     public List<String> getScoreboard() {
         return scoreboard;
     }
+
     public int getGuests() {
         return guests;
     }
+
     public int getCookies() {
         return cookies;
     }
+
     public int getSize() {
         return size;
     }
+
     public HousePrivacy getPrivacy() {
         return privacy;
     }
+
     public void setPrivacy(HousePrivacy privacy) {
         this.privacy = privacy;
     }
+
     public Random getRandom() {
         return random;
     }
+
     public void setRandom(Random random) {
         this.random = random;
     }
+
     public String getSeed() {
         return seed;
     }
+
     public HashMap<EventType, List<Action>> getEventActions() {
         return eventActions;
     }
+
     public List<Function> getFunctions() {
         return functions;
     }
+
     public Function getFunction(String name) {
         for (Function function : functions) {
             if (function.getName().equals(name)) return function;
         }
         return null;
     }
+
     public Material getIcon() {
         return icon;
     }
+
     public void setMaterial(Material material) {
         this.icon = material;
     }

@@ -21,5 +21,6 @@ public enum EventType {
     PLAYER_TOGGLE_FLIGHT,
     PLAYER_BLOCK_PLACE,
     PLAYER_ATTACK,
-    FUNCTION
+    FUNCTION,
+    PLAYER_CHAT
 }

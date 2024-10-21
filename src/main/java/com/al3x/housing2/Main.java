@@ -52,6 +52,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ToggleFly(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new AttackEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlaceBlock(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new ChatEvent(housesManager), this);
 
         Runnables.startRunnables(this);
 

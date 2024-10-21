@@ -1,7 +1,9 @@
 Ender:
-- String/Boolean/Double stats
-- Placeholders rewrite again
-- idk what else
+- String/Boolean/Double stats (Done)
+- Placeholders rewrite again (done for now)
+- launch projectile action
+- chat event (%event.message%) (done?)
+- Recode EventActionsMenu.java
 
 Al3xWarrior:
 - Conditions
