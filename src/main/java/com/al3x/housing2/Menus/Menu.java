@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public abstract class Menu implements Listener {
     protected Inventory inventory;
     private String title;
@@ -30,7 +32,7 @@ public abstract class Menu implements Listener {
     private Player player;
 
     public Menu(Player player, String title, int size) {
-        this.inventory = Bukkit.createInventory(null, size, title);
+        this.inventory = Bukkit.createInventory(null, size, colorize(title));
         this.player = player;
         this.title = title;
         this.size = size;
@@ -44,7 +46,7 @@ public abstract class Menu implements Listener {
 
     // Opens the menu for the player
     public void open() {
-        this.inventory = Bukkit.createInventory(null, size, title);
+        this.inventory = Bukkit.createInventory(null, size, colorize(title));
         setupItems();
         MenuManager.setMenu(player, this);
         player.openInventory(inventory);

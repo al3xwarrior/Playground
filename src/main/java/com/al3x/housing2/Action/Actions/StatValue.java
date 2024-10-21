@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.ExpressionOperation;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.google.gson.Gson;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -54,7 +55,7 @@ public class StatValue extends Action {
                             ItemBuilder.create(Material.BOOK)
                                     .name("&eAmount 1")
                                     .info("&7Current Value", "")
-                                    .info(null, "&a" + value1)
+                                    .info(null, "&a" + value1.asString())
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                             ActionEditor.ActionItem.ActionType.ACTION_SETTING
                     ),
@@ -70,7 +71,7 @@ public class StatValue extends Action {
                             ItemBuilder.create(Material.BOOK)
                                     .name("&eAmount 2")
                                     .info("&7Current Value", "")
-                                    .info(null, "&a" + value2)
+                                    .info(null, "&a" + value2.asString())
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                             ActionEditor.ActionItem.ActionType.ACTION_SETTING
                     )
@@ -102,17 +103,18 @@ public class StatValue extends Action {
         return new ActionEditor(4, "&ePlayer Stat Action Settings", items);
     }
 
-    public double calculate(Player player, HousingWorld world) throws NumberFormatException {
-        if (!isExpression) return Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, world, literalValue));
+    //Need to move over the changes from Stat.java to here
+    public String calculate(Player player, HousingWorld world) throws NumberFormatException {
+        if (!isExpression) return HandlePlaceholders.parsePlaceholders(player, world, literalValue);
         switch (mode) {
             case INCREASE:
-                return value1.calculate(player, world) + value2.calculate(player, world);
+                return Stat.modifyStat(StatOperation.INCREASE, value1.calculate(player, world), value2.calculate(player, world));
             case DECREASE:
-                return value1.calculate(player, world) - value2.calculate(player, world);
+                return Stat.modifyStat(StatOperation.DECREASE, value1.calculate(player, world), value2.calculate(player, world));
             case MULTIPLY:
-                return value1.calculate(player, world) * value2.calculate(player, world);
+                return Stat.modifyStat(StatOperation.MULTIPLY, value1.calculate(player, world), value2.calculate(player, world));
             case DIVIDE: default:
-                return value1.calculate(player, world) / value2.calculate(player, world);
+                return Stat.modifyStat(StatOperation.DIVIDE, value1.calculate(player, world), value2.calculate(player, world));
         }
     }
 
@@ -121,7 +123,12 @@ public class StatValue extends Action {
     }
 
     public String toString() {
-        if (isExpression) return "[Expression]";
+        if (isExpression) return "&7(&a" + value1 + "&6 " + mode.asString() + " &a" + value2 + "&7)";
+        else return literalValue;
+    }
+
+    public String asString() {
+        if (isExpression) return "&fValue 1: &a" + value1 + "\n&fMode: &6" + mode + "\n&fValue 2: &a" + value2;
         else return literalValue;
     }
 

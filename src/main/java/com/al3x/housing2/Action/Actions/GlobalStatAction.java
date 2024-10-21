@@ -99,15 +99,8 @@ public class GlobalStatAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getGlobalStatByName(statName);
-        try {
-            stat.modifyStat(mode, Double.parseDouble(value));
-        } catch (NumberFormatException e) {
-            try {
-                stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, value)));
-            } catch (NumberFormatException e2) {
-                return true;
-            }
-        }
+
+        stat.modifyStat(mode, value);
         return true;
     }
 

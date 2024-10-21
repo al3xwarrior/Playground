@@ -7,3 +7,4 @@ depend: [Citizens]
 commands:
   housing:
     aliases: ["h"]
+  cancelinput:

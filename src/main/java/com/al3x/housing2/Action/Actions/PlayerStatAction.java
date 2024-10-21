@@ -93,7 +93,7 @@ public class PlayerStatAction extends Action {
                         ItemBuilder.create(Material.BOOK)
                                 .name("&eAmount")
                                 .info("&7Current Value", "")
-                                .info(null, "&a" + value)
+                                .info(null, "&a" + value.asString())
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.ACTION_SETTING
                 )
@@ -106,10 +106,10 @@ public class PlayerStatAction extends Action {
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
         try {
-            stat.modifyStat(mode, Double.parseDouble(HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house)))));
+            stat.modifyStat(mode, HandlePlaceholders.parsePlaceholders(player, house, String.valueOf(value.calculate(player, house))));
         } catch (NumberFormatException e) {
             try {
-                stat.modifyStat(mode, Double.parseDouble(String.valueOf(value.calculate(player, house))));
+                stat.modifyStat(mode, String.valueOf(value.calculate(player, house)));
             } catch (NumberFormatException e2) {
                 player.sendMessage(colorize("&cInvalid value for stat action."));
                 return true;

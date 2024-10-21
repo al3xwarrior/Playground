@@ -5,6 +5,8 @@ import com.al3x.housing2.Instances.Stat;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
+import kotlin.text.RegexOption;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
@@ -47,28 +49,25 @@ public class HandlePlaceholders {
 
         // Regex for capturing stat placeholders like %stat.player/<stat>%
         Regex statPattern = new Regex("%stat\\.player/([a-zA-Z0-9_]+)%");
-        Iterator<MatchResult> statMatcher = statPattern.findAll(result, 0).iterator();
-        while (statMatcher.hasNext()) {
-            MatchResult match = statMatcher.next();
-            String statName = match.getGroups().get(1).getValue(); // The captured <stat>
+        MatchResult playerMatch = statPattern.find(result.toString(), 0);
+        while (playerMatch != null) {
+            String statName = playerMatch.getGroups().get(1).getValue(); // The captured <stat>
             Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
-            DecimalFormat df = new DecimalFormat("#");
-            df.setMaximumFractionDigits(8);
-            String replacement = (stat == null) ? "0" : df.format(stat.getStatNum());
-            replaceAll(result, match.getValue(), replacement);
+            String replacement = (stat == null) ? "0" : stat.formatValue();
+            Bukkit.getLogger().info("Stat: " + statName + " Value: " + replacement);
+            replaceAll(result, playerMatch.getValue(), replacement);
+            playerMatch = playerMatch.next();
         }
 
         // Regex for capturing stat placeholders like %stat.global/<stat>%
-        Regex globalStatPattern = new Regex("%stat\\.global/([a-zA-Z0-9_]+)%");
-        Iterator<MatchResult> globalStatMatcher = globalStatPattern.findAll(result, 0).iterator();
-        while (globalStatMatcher.hasNext()) {
-            MatchResult match = globalStatMatcher.next();
-            String statName = match.getGroups().get(1).getValue(); // The captured <stat>
+        Regex globalPattern = new Regex("%stat\\.global/([a-zA-Z0-9_]+)%");
+        MatchResult globalMatch = globalPattern.find(result.toString(), 0);
+        while (globalMatch != null) {
+            String statName = globalMatch.getGroups().get(1).getValue(); // The captured <stat>
             Stat stat = house.getStatManager().getGlobalStatByName(statName);
-            DecimalFormat df = new DecimalFormat("#");
-            df.setMaximumFractionDigits(8);
-            String replacement = (stat == null) ? "0" : df.format(stat.getStatNum());
-            replaceAll(result, match.getValue(), replacement);
+            String replacement = (stat == null) ? "0" : stat.formatValue();
+            replaceAll(result, globalMatch.getValue(), replacement);
+            globalMatch = globalMatch.next();
         }
 
         return result.toString();

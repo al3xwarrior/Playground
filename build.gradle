@@ -26,6 +26,7 @@ dependencies {
     compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
     implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'fr.mrmicky:fastboard:2.1.3'
 }
 
 tasks.withType(JavaCompile) {

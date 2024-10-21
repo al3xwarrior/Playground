@@ -6,6 +6,7 @@ import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ActionEditor {
     private int rows = 4;
@@ -48,7 +49,8 @@ public class ActionEditor {
     public static class ActionItem {
         private ItemBuilder builder;
         private ActionType type;
-        private double min = Double.MIN_VALUE;
+        private int slot;
+        private double min = 0;
         private double max = Double.MAX_VALUE;
         private Enum[] enumClass;
         private Material enumMaterial;

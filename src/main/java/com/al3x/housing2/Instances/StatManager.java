@@ -26,7 +26,7 @@ public class StatManager {
         }
 
         // If no stat found, return a default stat with value 0
-        Stat defaultStat = new Stat(player.getUniqueId(), name, 0.0);
+        Stat defaultStat = new Stat(player.getUniqueId(), name, "0.0");
         playerStats.add(defaultStat);
         this.playerStats.put(player.getUniqueId(), playerStats);
         return defaultStat;
@@ -40,7 +40,7 @@ public class StatManager {
         }
 
         // If no stat found, return a default stat with value 0
-        Stat defaultStat = new Stat(UUID.randomUUID(), name, 0.0);
+        Stat defaultStat = new Stat(UUID.randomUUID(), name, "0.0");
         globalStats.add(defaultStat);
         return defaultStat;
     }

@@ -11,6 +11,9 @@ public class Color {
     public static String colorize(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
+    public static boolean isJustColor(String s) {
+        return s.matches("^[&§][0-9a-fA-F]$");
+    }
     public static List<String> colorize (List<String> s) {
         s.replaceAll(Color::colorize);
         return s;

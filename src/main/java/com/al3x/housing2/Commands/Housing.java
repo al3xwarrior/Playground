@@ -128,6 +128,35 @@ public class Housing implements CommandExecutor {
                 new HouseBrowserMenu(player, housesManager).open();
             }
 
+            if (strings[0].equalsIgnoreCase("playerstats")) {
+                if (strings.length == 2) {
+                    Player target = Bukkit.getPlayer(strings[1]);
+                    if (target == null) {
+                        player.sendMessage(colorize("&cThere is no player with that username online!"));
+                        return true;
+                    }
+
+                    if (!housesManager.playerHasHouse(target)) {
+                        player.sendMessage(colorize("&cThat player doesn't have a house!"));
+                        return true;
+                    }
+
+                    HousingWorld house = housesManager.getHouse(target);
+                    if (house.getStatManager().getPlayerStats(target).isEmpty()) {
+                        player.sendMessage(colorize("&cThat player has no stats!"));
+                        return true;
+                    }
+                    player.sendMessage(colorize("&aStats for " + target.getName() + ":"));
+                    house.getStatManager().getPlayerStats(target).forEach((stat) -> {
+                        player.sendMessage(colorize("&a" + stat.getStatName() + ": &f" + stat.getValue()));
+                    });
+                    return true;
+                }
+
+                player.sendMessage(colorize("&cUsage: /housing playerstats <player>"));
+                return true;
+            }
+
             if (strings[0].equalsIgnoreCase("save") && player.hasPermission("housing.save")) {
                 if (housesManager.getHouse(player.getWorld()) == null) {
                     player.sendMessage(colorize("&cYou are not in a house!"));

@@ -99,8 +99,17 @@ public class HousesManager {
         return null;
     }
 
+    public HousingWorld getLoadedHouse(Player owner) {
+        for (HousingWorld house : getLoadedHouses()) {
+            if (house.getOwnerUUID().equals(owner.getUniqueId())) {
+                return house;
+            }
+        }
+        return null;
+    }
+
     public HousingWorld getHouse(UUID houseUUID) {
-        for (HousingWorld house : loadedHouses) {
+        for (HousingWorld house : getLoadedHouses()) {
             if (house.getHouseUUID().equals(houseUUID)) {
                 return house;
             }
@@ -109,7 +118,7 @@ public class HousesManager {
     }
 
     public HousingWorld getHouse(World world) {
-        for (HousingWorld house : loadedHouses) {
+        for (HousingWorld house : getLoadedHouses()) {
             if (house.getWorld().equals(world)) {
                 return house;
             }

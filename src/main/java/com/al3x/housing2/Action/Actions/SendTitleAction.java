@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,9 +21,9 @@ public class SendTitleAction extends Action {
 
     private String title;
     private String subtitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
+    private double fadeIn;
+    private double stay;
+    private double fadeOut;
 
     public SendTitleAction() {
         super("Send Title Action");
@@ -130,7 +131,7 @@ public class SendTitleAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.sendTitle(colorize(title), colorize(subtitle), fadeIn, stay, fadeOut);
+        player.sendTitle(colorize(title), colorize(subtitle), NumberUtilsKt.toInt(fadeIn), NumberUtilsKt.toInt(stay), NumberUtilsKt.toInt(fadeOut));
         return true;
     }
 
@@ -140,13 +141,13 @@ public class SendTitleAction extends Action {
     public String getSubtitle() {
         return subtitle;
     }
-    public int getFadeIn() {
+    public double getFadeIn() {
         return fadeIn;
     }
-    public int getFadeOut() {
+    public double getFadeOut() {
         return fadeOut;
     }
-    public int getStay() {
+    public double getStay() {
         return stay;
     }
     public void setTitle(String title) {

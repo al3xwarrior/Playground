@@ -439,11 +439,8 @@ public class HousingWorld {
     public void kickPlayerFromHouse(Player player) {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
-    public void incGuests() {
-        guests++;
-    }
-    public void decGuests() {
-        guests--;
+    public void setGuests() {
+        guests = Bukkit.getWorld(houseUUID.toString()).getPlayers().size();
     }
     public World getWorld() {
         return houseWorld;

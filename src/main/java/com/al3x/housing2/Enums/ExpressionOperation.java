@@ -4,5 +4,15 @@ public enum ExpressionOperation {
     INCREASE,
     DECREASE,
     MULTIPLY,
-    DIVIDE,
+    DIVIDE
+    ;
+
+    public String asString() {
+        return switch (this) {
+            case INCREASE -> "+";
+            case DECREASE -> "-";
+            case MULTIPLY -> "*";
+            case DIVIDE -> "/";
+        };
+    }
 }

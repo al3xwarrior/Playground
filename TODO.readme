@@ -21,6 +21,7 @@ Stuff anyone can do when they have time:
 
 Bugs:
 - sound next page don't work //Maybe fixed? //Didn't save either lol (done)
+- placeholders wont display if there were more than two of them in one line (done)
 - placeholders in messages limit (done)
   - to replicate, make a chat action with a placeholder like %stat.player/kills% followed by a bunch of characters
   - the characters will be cut off

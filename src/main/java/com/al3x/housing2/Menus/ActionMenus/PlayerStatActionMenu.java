@@ -94,9 +94,9 @@ public class PlayerStatActionMenu extends Menu {
         ));
         modeItem.setItemMeta(modeItemMeta);
 
-        addItem(11, modeItem, () -> {
-            new OperationMenu(main, player, house, action, event).open();
-        });
+//        addItem(11, modeItem, () -> {
+//            new OperationMenu(main, player, house, action, event).open();
+//        });
 
         ItemStack valueItem = new ItemStack(Material.BOOK);
         ItemMeta valueItemMeta = valueItem.getItemMeta();

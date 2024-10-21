@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.ExpressionOperation;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -72,6 +73,13 @@ public class ActionEnumMenu extends Menu {
             Material.MAGENTA_STAINED_GLASS,
             Material.WHITE_STAINED_GLASS,
             Material.BROWN_STAINED_GLASS,
+    };
+
+    private static Material[] EXPRESSION_OPERATION_MATERIALS = new Material[]{
+            Material.GREEN_STAINED_GLASS,
+            Material.RED_STAINED_GLASS,
+            Material.ORANGE_STAINED_GLASS,
+            Material.BLUE_STAINED_GLASS,
     };
 
     @Override
@@ -207,6 +215,9 @@ public class ActionEnumMenu extends Menu {
 
                 if (value instanceof StatOperation)
                     items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
+
+                if (value instanceof ExpressionOperation)
+                    items.add(new ItemBuilder().material(EXPRESSION_OPERATION_MATERIALS[i]).name("&e" + name));
 
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));

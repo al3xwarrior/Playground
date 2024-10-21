@@ -1,6 +1,7 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -23,6 +24,13 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0, 20 * 5L));
+
+        runnables.put("updateScoreboard", new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().forEach(HousingScoreboard::updateScoreboard);
+            }
+        }.runTaskTimer(main, 0, 20L));
 
         runnables.put("saveAll", new BukkitRunnable() {
             @Override

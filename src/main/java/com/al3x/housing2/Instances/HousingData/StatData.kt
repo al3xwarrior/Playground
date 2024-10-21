@@ -7,15 +7,28 @@ import kotlin.collections.HashMap
 data class StatData(
     val id: String,
     val name: String,
-    val value: Double
+    val value: String //Can be a string, double, or int
 ) {
+    //Current 3 types of values that can be stored in a StatData object
+    fun ofString(): String {
+        return value
+    }
+
+    fun ofDouble(): Double {
+        return value.toDouble()
+    }
+
+    fun ofInt(): Int {
+        return value.toInt()
+    }
+
     companion object {
         fun fromHashMap(statMap: HashMap<UUID, List<Stat>>): HashMap<String, List<StatData>> {
             val map = hashMapOf<String, List<StatData>>()
             statMap.forEach { (uuid, statList) ->
                 val list = mutableListOf<StatData>()
                 statList.forEach {
-                    list.add(StatData(it.uuid.toString(), it.statName, it.statNum))
+                    list.add(StatData(it.uuid.toString(), it.statName, it.value))
                 }
                 map[uuid.toString()] = list
             }
@@ -37,7 +50,7 @@ data class StatData(
         fun fromList(statList: List<Stat>): List<StatData> {
             val list = mutableListOf<StatData>()
             statList.forEach {
-                list.add(StatData(it.uuid.toString(), it.statName, it.statNum))
+                list.add(StatData(it.uuid.toString(), it.statName, it.value))
             }
             return list
         }

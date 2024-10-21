@@ -3,6 +3,7 @@ package com.al3x.housing2.Listeners;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -46,26 +47,15 @@ public class JoinLeaveHouse implements Listener {
         player.setMaximumNoDamageTicks(10); // 10 i think?
     }
 
-    private void updateScoreboard(Player player, HousingWorld house) {
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = board.registerNewObjective("houseboard", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName(colorize("&e&lHOUSING V2"));
-
-        List<String> scoreboard = new ArrayList<>(house.getScoreboard());
-        Collections.reverse(scoreboard);
-        for (int i = 0; i < scoreboard.size(); i++) {
-            String line = scoreboard.get(i) + "&" + (i % 10); // add a color code to the end because scoreboards dont render 2 of the same line
-            objective.getScore(colorize(parsePlaceholders(player, house, line))).setScore(i);
-        }
-        player.setScoreboard(board);
-    }
-
     private void joinHouse(Player player) {
+        //Set the scoreboard
+        HousingScoreboard scoreboard = new HousingScoreboard();
+        scoreboard.setScoreboard(player);
+
         HousingWorld house = housesManager.getHouse(UUID.fromString(player.getWorld().getName()));
         if (house == null) { return; }
 
-        house.incGuests();
+        house.setGuests();
         player.teleport(house.getSpawn());
 
         resetPlayer(player);
@@ -88,20 +78,11 @@ public class JoinLeaveHouse implements Listener {
             menu.setItemMeta(menuMeta);
             player.getInventory().setItem(8, menu);
         }
-
-        BukkitTask[] task = new BukkitTask[1];
-        task[0] = Bukkit.getScheduler().runTaskTimer(main, () -> {
-            if (!player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                task[0].cancel();
-                return;
-            }
-            updateScoreboard(player, house);
-        }, 0, 5);
     }
 
     private void leaveHouse(Player player, HousingWorld from) {
         if (from == null) return;
-        from.decGuests();
+        from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
     }
 
@@ -119,14 +100,6 @@ public class JoinLeaveHouse implements Listener {
             joinHouse(player);
         } else {
             resetPlayer(player);
-
-            // Scoreboard
-            Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-            Objective objective = board.registerNewObjective("houseboard", "dummy");
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-            objective.setDisplayName(colorize("&e&lHOUSING V2"));
-            objective.getScore(colorize("&fTemp Hub Scoreboard")).setScore(1);
-            player.setScoreboard(board);
         }
     }
 

@@ -65,7 +65,10 @@ public class HypixelLoreFormatter {
             lines.add("");
             for (Duple<String, Object> key : info) {
                 if (key.getFirst() == null) {
-                    lines.add("§f" + key.getSecond());
+                    String[] split = key.getSecond().toString().split("\n");
+                    for (String s : split) {
+                        lines.add("§f" + s);
+                    }
                     continue;
                 }
                 switch (key.getSecond()) {
