@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
+import com.al3x.housing2.Menus.MyHousesMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -57,6 +58,11 @@ public class Housing implements CommandExecutor {
                 player.sendMessage(colorize("&cDeleting..."));
                 housesManager.deleteHouse(player);
                 player.sendMessage(colorize("&cHouse Deleted!"));
+                return true;
+            }
+
+            if (strings[0].equalsIgnoreCase("home")) {
+                new MyHousesMenu(main, player).open();
                 return true;
             }
 
@@ -126,6 +132,7 @@ public class Housing implements CommandExecutor {
 
             if (strings[0].equalsIgnoreCase("menu")) {
                 new HouseBrowserMenu(player, housesManager).open();
+                return true;
             }
 
             if (strings[0].equalsIgnoreCase("playerstats")) {
@@ -168,16 +175,17 @@ public class Housing implements CommandExecutor {
             }
         }
 
-        player.sendMessage(colorize("&7&m----------------------------------------------"));
+        player.sendMessage(colorize("&7&m---------------------------------------"));
         player.sendMessage(colorize("&6&lHousing Commands:"));
         player.sendMessage(colorize("&7- &f/housing create &7&o- start the creation process"));
         player.sendMessage(colorize("&7- &f/housing delete &7&o- delete your housing"));
+        player.sendMessage(colorize("&7- &f/housing home &7&o- open the my houses menu"));
         player.sendMessage(colorize("&7- &f/housing name <name> &7&o- rename your housing"));
         player.sendMessage(colorize("&7- &f/housing goto &7&o- teleport to your housing"));
         player.sendMessage(colorize("&7- &f/housing visit <player> &7&o- visit another users housing"));
         player.sendMessage(colorize("&7- &f/housing hub &7&o- go back to the lobby"));
         player.sendMessage(colorize("&7- &f/housing menu &7&o- view the housing browser"));
-        player.sendMessage(colorize("&7&m----------------------------------------------"));
+        player.sendMessage(colorize("&7&m---------------------------------------"));
 
         return true;
     }
