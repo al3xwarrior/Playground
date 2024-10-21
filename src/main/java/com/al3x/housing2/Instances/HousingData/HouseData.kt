@@ -12,7 +12,7 @@ data class HouseData(
     var description: String,
     var size: Int,
 //    var guests: Int,
-    var cookies: Double,
+    var cookies: Int,
     var timeCreated: Long,
     var eventActions: HashMap<EventType, List<ActionData>>,
     var spawnLocation: LocationData,

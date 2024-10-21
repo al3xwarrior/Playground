@@ -19,7 +19,6 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class HousingScoreboard {
     public static HashMap<UUID, FastBoard> boards = new HashMap<>();
 
-
     public void setScoreboard(Player p) {
         Main main = Main.getInstance();
 
