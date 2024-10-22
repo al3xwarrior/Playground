@@ -76,7 +76,9 @@ public class ActionEnumMenu extends Menu {
             FEATHER, // GET STAT
             BOOK, // CONCAT
             CHAIN, // INDEX_OF
-            PAPER // SET_STRING
+            PAPER, // SET_STRING
+            BREEZE_ROD, // LENGTH_OF
+            SPYGLASS, // CHAT_AT
     };
 
     private static Material[] STRING_OPERATION_MATERIALS = new Material[]{

@@ -125,6 +125,8 @@ public class Stat {
             case CONCAT -> numStr + valueStr;
             case INDEX_OF -> String.valueOf(numStr.indexOf(valueStr));
             case SET_STRING -> valueStr;
+            case LENGTH_OF -> String.valueOf(valueStr.length());
+            case CHAR_AT -> String.valueOf(numStr.charAt(Integer.parseInt(valueStr)));
             default -> null;
         };
     }
