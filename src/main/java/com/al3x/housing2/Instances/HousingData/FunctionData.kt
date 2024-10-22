@@ -9,7 +9,7 @@ data class FunctionData(
     val name: String,
     val id: String,
     val description: String,
-    val ticks: Double?,
+    val ticks: Int?,
     val material: String,
     val global: Boolean = false,
     val actions: List<ActionData>

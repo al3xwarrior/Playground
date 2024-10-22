@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -228,6 +229,10 @@ public class ActionEnumMenu extends Menu {
 
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));
+
+                if (value instanceof EnumMaterial enumMaterial) {
+                    items.add(new ItemBuilder().material(enumMaterial.getMaterial()).name("&e" + name));
+                }
             }
         }
 

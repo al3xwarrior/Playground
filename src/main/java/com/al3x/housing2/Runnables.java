@@ -25,6 +25,20 @@ public class Runnables {
             }
         }.runTaskTimer(main, 0, 20 * 5L));
 
+        runnables.put("despawnProjectiles", new BukkitRunnable() {
+            @Override
+            public void run() {
+                Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
+                for (HousingWorld house : houses) {
+                    house.getWorld().getEntities().forEach(entity -> {
+                        if (entity.hasMetadata("projectile")) {
+                            entity.remove();
+                        }
+                    });
+                }
+            }
+        }.runTaskTimer(main, 0, 20 * 5L));
+
         runnables.put("updateScoreboard", new BukkitRunnable() {
             @Override
             public void run() {
@@ -45,17 +59,19 @@ public class Runnables {
         //Run function actions
         //Reason we are using a thread is because we want more flexibility with the ticks
         runnables.put("runFunctionActions", new BukkitRunnable() {
+            public static int TICKS = 0;
             @Override
             public void run() {
                 Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
                 for (HousingWorld house : houses) {
                     if (house == null || house.getFunctions() == null) continue;
                     house.getFunctions().forEach(function -> {
-                        if (function.getTicks() != null && System.currentTimeMillis() - function.getLastRun() > function.getTicks() * 50) {
+                        if (function.getTicks() != null && TICKS % function.getTicks() == 0) {
                             Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, house));
                         }
                     });
                 }
+                TICKS++;
             }
         }.runTaskTimerAsynchronously(main, 0L, 1L));
     }

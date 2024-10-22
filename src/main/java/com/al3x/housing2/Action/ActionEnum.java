@@ -28,6 +28,7 @@ public enum ActionEnum {
     //Name of the action and the class that has the name of the action need to be the exact same
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
+    LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
     // Add new actions here
     ;
     private String name;

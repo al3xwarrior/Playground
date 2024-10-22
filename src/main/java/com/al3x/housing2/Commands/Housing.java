@@ -164,6 +164,28 @@ public class Housing implements CommandExecutor {
                 return true;
             }
 
+            if (strings[0].equalsIgnoreCase("globalstats")) {
+                if (strings.length == 1) {
+                    HousingWorld house = housesManager.getHouse(player.getWorld());
+                    if (house == null) {
+                        player.sendMessage(colorize("&cYou are not in a house!"));
+                        return true;
+                    }
+                    if (house.getStatManager().getGlobalStats() == null || house.getStatManager().getGlobalStats().isEmpty()) {
+                        player.sendMessage(colorize("&cThat player has no stats!"));
+                        return true;
+                    }
+                    player.sendMessage(colorize("&aGlobal stats for " + house.getName() + ":"));
+                    house.getStatManager().getGlobalStats().forEach((stat) -> {
+                        player.sendMessage(colorize("&a" + stat.getStatName() + ": &f" + stat.getValue()));
+                    });
+                    return true;
+                }
+
+                player.sendMessage(colorize("&cUsage: /housing globalstats"));
+                return true;
+            }
+
             if (strings[0].equalsIgnoreCase("save") && player.hasPermission("housing.save")) {
                 if (housesManager.getHouse(player.getWorld()) == null) {
                     player.sendMessage(colorize("&cYou are not in a house!"));
@@ -185,6 +207,8 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7- &f/housing visit <player> &7&o- visit another users housing"));
         player.sendMessage(colorize("&7- &f/housing hub &7&o- go back to the lobby"));
         player.sendMessage(colorize("&7- &f/housing menu &7&o- view the housing browser"));
+        player.sendMessage(colorize("&7- &f/housing playerstats <player> &7&o- view a players stats"));
+        player.sendMessage(colorize("&7- &f/housing globalstats &7&o- view the global stats"));
         player.sendMessage(colorize("&7&m---------------------------------------"));
 
         return true;

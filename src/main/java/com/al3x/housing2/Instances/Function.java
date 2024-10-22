@@ -14,14 +14,14 @@ import java.util.UUID;
 public class Function {
     private String name;
     private UUID id;//probably not needed?
-    private Double ticks; //Null is not active, 2-100?
+    private Integer ticks; //Null is not active, 2-100?
     private Material material;
     private String description;
     private List<Action> actions;
     private boolean global = false;
     private boolean loaded = true;
 
-    private long lastRun = 0;
+    private int lastRun = 0;
 
     public Function(String name) {
         this.name = name;
@@ -30,17 +30,15 @@ public class Function {
         this.ticks = null;
         this.material = Material.MAP;
         this.actions = new ArrayList<>();
-        this.lastRun = System.currentTimeMillis();
     }
 
-    public Function(String name, UUID id, Double ticks, Material material, String description, List<Action> actions, boolean global) {
+    public Function(String name, UUID id, Integer ticks, Material material, String description, List<Action> actions, boolean global) {
         this.name = name;
         this.id = id;
         this.ticks = ticks;
         this.material = material;
         this.description = description;
         this.actions = actions;
-        this.lastRun = System.currentTimeMillis();
         this.global = global;
     }
 
@@ -65,7 +63,6 @@ public class Function {
                 action.execute(p, house);
             }
         }
-        lastRun = System.currentTimeMillis();
     }
 
     public String getName() {
@@ -76,11 +73,11 @@ public class Function {
         this.name = name;
     }
 
-    public Double getTicks() {
+    public Integer getTicks() {
         return ticks;
     }
 
-    public void setTicks(Double ticks) {
+    public void setTicks(Integer ticks) {
         this.ticks = ticks;
     }
 
@@ -128,7 +125,7 @@ public class Function {
         this.loaded = loaded;
     }
 
-    public long getLastRun() {
+    public int getLastRun() {
         return lastRun;
     }
 }
