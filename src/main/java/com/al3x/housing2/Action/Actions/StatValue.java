@@ -53,7 +53,7 @@ public class StatValue extends Action {
         if (isExpression) {
             if (value1 == null && mode != StatOperation.GET_STAT) value1 = new StatValue(isGlobal);
             if (value2 == null) value2 = new StatValue(isGlobal);
-            if (mode == StatOperation.GET_STAT) value1 = null;
+            if (mode == StatOperation.GET_STAT || mode == StatOperation.LENGTH_OF) value1 = null;
             literalValue = null;
             items = new ArrayList<>(Arrays.asList(
                     new ActionEditor.ActionItem("isExpression",
@@ -80,14 +80,14 @@ public class StatValue extends Action {
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                             ActionEditor.ActionItem.ActionType.ENUM, StatOperation.values(), null
                     ),
-                    //This entire thing is kinda scuffed lol :)
+                    //This entire thing is kinda scuffed lol :) //told u it was :)
                     new ActionEditor.ActionItem("value2",
                             ItemBuilder.create(Material.BOOK)
-                                    .name("&eAmount 2")
+                                    .name("&eAmount " + ((value1 == null) ? "" : "2"))
                                     .info("&7Current Value", "")
                                     .info(null, "&a" + value2.asString())
                                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                             ActionEditor.ActionItem.ActionType.ACTION_SETTING
+                            ActionEditor.ActionItem.ActionType.ACTION_SETTING
                     )
             ));
         } else {
@@ -140,10 +140,17 @@ public class StatValue extends Action {
             }
         }
 
-        //Get the stat value of value1
+        //Get the stat value of value2
         if (mode == StatOperation.GET_STAT) {
-            Stat stat = world.getStatManager().getPlayerStatByName(player, value1.calculate(player, world));
+            Stat stat = world.getStatManager().getPlayerStatByName(player, value2.calculate(player, world));
             if (stat != null) return stat.getValue();
+        }
+        if (mode == StatOperation.CHAR_AT) {
+            try {
+                Integer.parseInt(value2.calculate(player, world));
+            } catch (NumberFormatException ex) {
+                return "";
+            }
         }
 
         if (value1 == null || value2 == null) return "0.0";
@@ -161,7 +168,7 @@ public class StatValue extends Action {
     }
 
     public String asString() {
-        if (isExpression) return (value1 != null ? "&fValue 1: &a\n" + value1 : "") + "&fMode: &6" + mode + "\n&fValue 2: &a" + value2;
+        if (isExpression) return (value1 != null ? "&fValue 1: &a" + value1 + "\n" : "") + "&fMode: &6" + mode + "\n&fValue 2: &a" + value2;
         else return literalValue;
     }
 

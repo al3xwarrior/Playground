@@ -13,7 +13,9 @@ public enum StatOperation {
     GET_STAT,
     CONCAT,
     INDEX_OF,
-    SET_STRING
+    SET_STRING,
+    LENGTH_OF,
+    CHAR_AT,
     ;
 
     public String asString() {
@@ -30,6 +32,8 @@ public enum StatOperation {
             case CONCAT -> "concat";
             case INDEX_OF -> "indexOf";
             case SET_STRING -> "set";
+            case LENGTH_OF -> "lengthOf";
+            case CHAR_AT -> "charAt";
         };
     }
 }
