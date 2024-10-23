@@ -1,10 +1,7 @@
 package com.al3x.housing2.Utils
 
-import org.bukkit.Bukkit
-import java.lang.Double.*
-import java.lang.Float.parseFloat
-import java.lang.Integer.*
-import java.lang.Long.parseLong
+import java.lang.Double.parseDouble
+import java.lang.Integer.parseInt
 
 fun Double.toInt(): Int {
     return this.toInt()

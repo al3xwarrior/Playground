@@ -3,12 +3,14 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -47,15 +49,24 @@ public class MyHousesMenu extends Menu {
                 newHouse.sendPlayerToHouse(player);
             });
         } else {
+            long houseCreationDate = house.getTimeCreated();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            Date date = new Date(houseCreationDate);
+            String formattedDate = formatter.format(date);
+
             addItem(13, ItemBuilder.create(house.getIcon())
                     .name(colorize(house.getName()))
                     .description(colorize("&7" + house.getDescription() +
-                            "\n\n&2Players: &a" + house.getGuests() +
-                            "\n&6Cookies: &e" + house.getCookies() +
+                            "\n\n&7Created: &a" + formattedDate +
+                            "\n\n&7Players: &a" + house.getGuests() +
+                            "\n&7Cookies: &6" + house.getCookies() +
                             "\n\n&7Privacy: " + ((house.getPrivacy().equals(HousePrivacy.PUBLIC)) ? "&aPublic" : "&cPrivate" +
-                            "\n\n&eClick to Join"))).punctuation(false)
+                            "\n\n&eClick to Join!") +
+                            "\n&eRight Click to Manage!")).punctuation(false)
                     .build(), () -> {
                 house.sendPlayerToHouse(player);
+            }, () -> {
+                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player)).open();
             });
         }
     }

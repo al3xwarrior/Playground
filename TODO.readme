@@ -10,8 +10,7 @@ Ender:
 
 Al3xWarrior:
 - Conditions
-- House Menu/Housing Browser (almost done)
-  - player whitelist
+- House Menu/Housing Browser (done but i will add to it)
 
 Cacti:
 - To do...To do
@@ -32,7 +31,7 @@ Bugs:
   - to replicate, make a chat action with a placeholder like %stat.player/kills% followed by a bunch of characters
   - the characters will be cut off
 - lines dupe in scoreboard (leave to alex)
-- weird tick timing in execution (leave to alex)
+- weird tick timing in execution (done)
 - colors not working in title (done)
 - setting times in title not working (done)
 - change held item doesnt work (done)

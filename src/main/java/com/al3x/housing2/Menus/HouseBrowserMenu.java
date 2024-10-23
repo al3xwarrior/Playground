@@ -1,16 +1,12 @@
 package com.al3x.housing2.Menus;
 
-import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.HousingComparison;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -33,24 +29,22 @@ public class HouseBrowserMenu extends Menu{
 
         for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
             HousingWorld house = houses.get(i);
-            ItemStack head = new ItemStack(house.getIcon());
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            ItemStack icon = new ItemStack(house.getIcon());
+            ItemMeta meta = icon.getItemMeta();
 
             meta.setDisplayName(colorize(house.getName()));
             meta.setLore(Arrays.asList(
                     colorize(house.getDescription()),
                     "",
-                    colorize("&2Players: &a" + house.getGuests()),
-                    colorize("&6Cookies: &e" + house.getCookies()),
+                    colorize("&7Players: &a" + house.getGuests()),
+                    colorize("&7Cookies: &6" + house.getCookies()),
                     "",
-                    colorize("&7Privacy: " + ((house.getPrivacy().equals(HousePrivacy.PUBLIC)) ? "&aPublic" : "&cPrivate")),
-                    "",
-                    colorize("&eClick to Join")
+                    colorize("&eClick to Join!")
             ));
 
-            head.setItemMeta(meta);
+            icon.setItemMeta(meta);
 
-            addItem(i, head, () -> {
+            addItem(i, icon, () -> {
                 house.sendPlayerToHouse(player);
             });
         }

@@ -1,6 +1,7 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.CancelInput;
+import com.al3x.housing2.Commands.Home;
 import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -28,6 +29,7 @@ public final class Main extends JavaPlugin {
         this.housesManager = new HousesManager(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
+        getCommand("home").setExecutor(new Home(this));
         getCommand("cancelinput").setExecutor(new CancelInput(this));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);

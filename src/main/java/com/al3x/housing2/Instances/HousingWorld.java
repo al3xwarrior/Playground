@@ -553,6 +553,9 @@ public class HousingWorld {
     public Material getIcon() {
         return icon;
     }
+    public void setIcon(Material icon) {
+        this.icon = icon;
+    }
 
     public void setMaterial(Material material) {
         this.icon = material;

@@ -44,8 +44,9 @@ public class ScoreboardMenu extends Menu {
                     .build(), () -> {
                 player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
                 openChat(main, line[0], (message) -> {
-                    scoreboard.add(message);
+                    scoreboard.set(finalI, message);
                     player.sendMessage(colorize("&aLine set to: " + message));
+                    new ScoreboardMenu(main, player, house).open();
                 });
             }, () -> {
                 scoreboard.remove(finalI);

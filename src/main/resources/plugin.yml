@@ -7,4 +7,6 @@ depend: [Citizens]
 commands:
   housing:
     aliases: ["h"]
+  home:
+    aliases: ["house", "homes"]
   cancelinput:
