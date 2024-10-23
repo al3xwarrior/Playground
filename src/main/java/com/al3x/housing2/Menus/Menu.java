@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -48,9 +49,13 @@ public abstract class Menu implements Listener {
     public void open() {
         this.inventory = Bukkit.createInventory(null, size, colorize(title));
         setupItems();
+        if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+        }
         MenuManager.setMenu(player, this);
         player.openInventory(inventory);
     }
+
 
     // Handles the click event by running the corresponding action
     @EventHandler

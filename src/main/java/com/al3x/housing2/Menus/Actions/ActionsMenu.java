@@ -179,14 +179,14 @@ public class ActionsMenu extends Menu {
         addAction.setItemMeta(addActionMeta);
         addItem(50, addAction, () -> {
             if (function != null) {
-                new AddActionMenu(main, player, 1, house, function, this).open();
+                new AddActionMenu(main, player, house, function, this).open();
                 return;
             }
             if (event != null) {
-                new AddActionMenu(main, player, 1, house, event, this).open();
+                new AddActionMenu(main, player, house, event, this).open();
                 return;
             }
-            new AddActionMenu(main, player, 1, house, this.actions, this).open();
+            new AddActionMenu(main, player, house, this.actions, this).open();
         });
     }
 

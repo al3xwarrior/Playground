@@ -235,6 +235,13 @@ public class HousingWorld {
         save();
     }
 
+    private void killAllEntities() {
+        houseWorld.getEntities().forEach(entity -> {
+            if (entity instanceof Player) return;
+            entity.remove();
+        });
+    }
+
     private void createTemplatePlatform() {
         int platformSize = 15; // 13x13 platform
         int startX = -platformSize / 2;
@@ -315,6 +322,10 @@ public class HousingWorld {
         for (HousingNPC npc : housingNPCS) {
             npc.getCitizensNPC().destroy();
         }
+
+        // Kill all entities in the world
+        killAllEntities();
+
         Bukkit.unloadWorld(houseWorld, false);
     }
 
@@ -348,7 +359,11 @@ public class HousingWorld {
                 for (Action action : actions) {
                     // Check if the action is null or if the event is allowed
                     if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
-                    if (event == null) action.execute(player, this);
+                    if (action.mustBeSync()) {
+                        Bukkit.getScheduler().runTask(main, () -> action.execute(player, this));
+                    } else {
+                        action.execute(player, this);
+                    }
                 }
             });
         }

@@ -91,6 +91,10 @@ public class FunctionsMenu extends Menu {
             openChat(main, (s) -> {
                 Bukkit.getScheduler().runTask(main, () -> {
                     Function function = house.createFunction(s);
+                    if (function == null) {
+                        player.sendMessage(colorize("&cA function with that name already exists!"));
+                        return;
+                    }
                     Bukkit.getScheduler().runTaskLater(main, () -> {
                         new ActionsMenu(main, player, house, function, this).open();
                     }, 1L);

@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
@@ -131,6 +132,8 @@ public class SendTitleAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        String title = HandlePlaceholders.parsePlaceholders(player, house, this.title);
+        String subtitle = HandlePlaceholders.parsePlaceholders(player, house, this.subtitle);
         player.sendTitle(colorize(title), colorize(subtitle), NumberUtilsKt.toInt(fadeIn), NumberUtilsKt.toInt(stay), NumberUtilsKt.toInt(fadeOut));
         return true;
     }

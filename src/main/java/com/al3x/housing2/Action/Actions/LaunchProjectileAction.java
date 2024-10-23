@@ -124,6 +124,11 @@ public class LaunchProjectileAction extends Action {
     }
 
     @Override
+    public boolean mustBeSync() {
+        return true;
+    }
+
+    @Override
     public HashMap<String, Object> data() {
         HashMap<String, Object> data = new HashMap<>();
         data.put("projectile", projectile);

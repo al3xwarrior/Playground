@@ -28,13 +28,13 @@ public class HousingScoreboard {
         FastBoard board = new FastBoard(p);
         board.updateTitle(colorize("&e&lHOUSING TUAH"));
 
-        if (main.getHousesManager().getLoadedHouse(p) == null) {
+        if (main.getHousesManager().getHouse(p.getWorld()) == null) {
             ArrayList<String> lines = new ArrayList<>();
             lobbyThing(p, dtf, now).forEach(line -> lines.add(colorize(line)));
             board.updateLines(lines);
             return;
         } else {
-            HousingWorld house = main.getHousesManager().getLoadedHouse(p);
+            HousingWorld house = main.getHousesManager().getHouse(p.getWorld());
             ArrayList<String> lines = new ArrayList<>();
             houseThing(p, house, dtf, now).forEach(line -> lines.add(colorize(line)));
             board.updateLines(lines);
@@ -64,13 +64,13 @@ public class HousingScoreboard {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
         LocalDateTime now = LocalDateTime.now();
 
-        if (main.getHousesManager().getLoadedHouse(p) == null) {
+        if (main.getHousesManager().getHouse(p.getWorld()) == null) {
             ArrayList<String> lines = new ArrayList<>();
             lobbyThing(p, dtf, now).forEach(line -> lines.add(colorize(line)));
             board.updateLines(lines);
             return;
         } else {
-            HousingWorld house = main.getHousesManager().getLoadedHouse(p);
+            HousingWorld house = main.getHousesManager().getHouse(p.getWorld());
             ArrayList<String> lines = new ArrayList<>();
             houseThing(p, house, dtf, now).forEach(line -> lines.add(colorize(line)));
             board.updateLines(lines);

@@ -74,6 +74,10 @@ public abstract class Action {
         return new HashMap<>();
     }
 
+    public boolean mustBeSync() {
+        return false;
+    }
+
     public void fromData(HashMap<String, Object> data, Class< ? extends Action> actionClass) {
         for (String key : data.keySet()) {
             try {

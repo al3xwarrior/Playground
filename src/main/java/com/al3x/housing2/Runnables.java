@@ -57,7 +57,6 @@ public class Runnables {
         }.runTaskTimerAsynchronously(main, 0L, 20 * 60L));
 
         //Run function actions
-        //Reason we are using a thread is because we want more flexibility with the ticks
         runnables.put("runFunctionActions", new BukkitRunnable() {
             public static int TICKS = 0;
             @Override
