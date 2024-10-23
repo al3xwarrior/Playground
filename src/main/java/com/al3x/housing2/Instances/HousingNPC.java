@@ -7,6 +7,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.HologramTrait;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +58,7 @@ public class HousingNPC {
 
     private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
-    public HousingNPC(Main main, Player player, Location location, HousingWorld house, NPCData data) {
+    public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
         this.main = main;
         this.house = house;
         this.name = data.getNpcName();

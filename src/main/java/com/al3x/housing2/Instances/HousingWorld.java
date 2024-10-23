@@ -18,10 +18,7 @@ import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -78,7 +75,7 @@ public class HousingWorld {
 
 
     // Loading a house that already exists
-    public HousingWorld(Main main, Player owner, String name) {
+    public HousingWorld(Main main, OfflinePlayer owner, String name) {
         main.getLogger().info("Loading house for " + owner.getName() + "...");
         this.main = main;
         try {
@@ -92,7 +89,11 @@ public class HousingWorld {
         // Grab the house data from the file
         File file = new File(main.getDataFolder(), "houses/" + name + ".json");
         if (!file.exists()) {
-            owner.sendMessage(colorize("&cFailed to load your house!"));
+            if (owner.isOnline()) {
+                owner.getPlayer().sendMessage(colorize("&cFailed to load your house!"));
+            } else {
+                Bukkit.getLogger().info("Failed to load house for " + owner.getName() + "!");
+            }
             return;
         }
         // Load the house data from the file
@@ -148,7 +149,11 @@ public class HousingWorld {
         //Raed and load the world
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
-            owner.sendMessage(colorize("&cFailed to load your house!"));
+            if (owner.isOnline()) {
+                owner.getPlayer().sendMessage(colorize("&cFailed to load your house!"));
+            } else {
+                Bukkit.getLogger().info("Failed to load house for " + owner.getName() + "!");
+            }
             return;
         }
         slimeWorld = world;
@@ -375,7 +380,7 @@ public class HousingWorld {
         housingNPCS.add(npc);
     }
 
-    public void loadNPC(Player player, Location location, NPCData data) {
+    public void loadNPC(OfflinePlayer player, Location location, NPCData data) {
         HousingNPC npc = new HousingNPC(main, player, location, this, data);
         housingNPCS.add(npc);
     }

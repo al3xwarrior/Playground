@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -80,6 +81,14 @@ public class HousesManager {
 
     public HashMap<UUID, List<String>> getPlayerHouses() {
         return playerHouses;
+    }
+
+    public List<HouseData> getAllHouseData() {
+        List<HouseData> houseData = new ArrayList<>();
+        for (String houseID : housesById) {
+            houseData.add(getHouseData(houseID));
+        }
+        return houseData;
     }
 
     public HousingWorld getHouse(Player owner) {
@@ -196,5 +205,12 @@ public class HousesManager {
             loadedHouses.remove(house);
             concurrentLoadedHouses.remove(house.getHouseUUID().toString());
         }
+    }
+
+    public HousingWorld loadHouse(OfflinePlayer player, String houseID) {
+        HousingWorld house = new HousingWorld(main, player, houseID);
+        loadedHouses.add(house);
+        concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
+        return house;
     }
 }
