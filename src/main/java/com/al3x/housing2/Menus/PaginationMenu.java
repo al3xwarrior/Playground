@@ -85,6 +85,7 @@ public class PaginationMenu<E> extends Menu {
                     .name(colorize("&ePrevious Page"))
                     .description("&ePage " + (currentPage - 1))
                     .build(), (event) -> {
+                if (currentPage < 1) return;
                 currentPage--;
                 open();
             });
@@ -96,6 +97,7 @@ public class PaginationMenu<E> extends Menu {
                     .name(colorize("&eNext Page"))
                     .description("&ePage " + (currentPage + 1))
                     .build(), (event) -> {
+                if (currentPage > paginationList.getPageCount()) return;
                 currentPage++;
                 open();
             });

@@ -1,0 +1,52 @@
+package com.al3x.housing2.Action.Actions;
+
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+
+public class ClearGlobalStatsAction extends Action {
+
+    public ClearGlobalStatsAction() {
+        super("Clear Global Stats Action");
+    }
+
+    @Override
+    public String toString() {
+        return "ClearGlobalStatsAction";
+    }
+
+    @Override
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.BARRIER);
+        builder.name("&eClear Global Stats Action");
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.BARRIER);
+        builder.name("&aClear Global Stats");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house) {
+        house.getStatManager().getGlobalStats().clear();
+        return true;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
+}

@@ -149,17 +149,6 @@ public class ActionsMenu extends Menu {
                 }
             }
 
-            if (currentPage < paginationList.getPageCount()) {
-                ItemStack next = new ItemStack(Material.ARROW);
-                ItemMeta nextMeta = next.getItemMeta();
-                nextMeta.setDisplayName(colorize("&aNext Page"));
-                next.setItemMeta(nextMeta);
-                addItem(53, next, () -> {
-                    currentPage++;
-                    setupItems();
-                });
-            }
-
             ItemStack addCondition = new ItemStack(Material.PAPER);
             ItemMeta addActionMeta = addCondition.getItemMeta();
             addActionMeta.setDisplayName(colorize("&aAdd Action"));
@@ -205,6 +194,7 @@ public class ActionsMenu extends Menu {
                 nextMeta.setDisplayName(colorize("&aNext Page"));
                 next.setItemMeta(nextMeta);
                 addItem(53, next, () -> {
+                    if (currentPage >= paginationList.getPageCount()) return;
                     currentPage++;
                     setupItems();
                 });
@@ -233,6 +223,7 @@ public class ActionsMenu extends Menu {
             prevMeta.setDisplayName(colorize("&aPrevious Page"));
             previous.setItemMeta(prevMeta);
             addItem(45, previous, () -> {
+                if (currentPage <= 1) return;
                 currentPage--;
                 setupItems();
             });

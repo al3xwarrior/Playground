@@ -18,6 +18,7 @@ public class FishCaught implements Listener {
 
     @EventHandler
     public void onCatch(PlayerFishEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer(), e);
+        if (e.getState() != PlayerFishEvent.State.CAUGHT_FISH) {return;}
+        sendEventExecution(housesManager, EventType.FISH_CAUGHT, e.getPlayer(), e);
     }
 }

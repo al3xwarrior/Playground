@@ -24,6 +24,7 @@ public enum ActionEnum {
     CHANGE_MAX_HEALTH("Change Max Health Action", ChangeMaxHealthAction.class),
     SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
+    CLEAR_GLOBALSTATS("Clear Global Stats Action", ClearGlobalStatsAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
     //Name of the action and the class that has the name of the action need to be the exact same
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),

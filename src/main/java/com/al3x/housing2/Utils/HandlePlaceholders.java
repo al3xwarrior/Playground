@@ -2,12 +2,14 @@ package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
 import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -54,6 +56,13 @@ public class HandlePlaceholders {
             if (ChatEvent.lastChatEvent.containsKey(player.getUniqueId())) {
                 AsyncPlayerChatEvent event = ChatEvent.lastChatEvent.get(player.getUniqueId());
                 replaceAll(result, "%event.chat/message%", event.getMessage());
+            }
+
+            if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) {
+                Entity entity = AttackEvent.lastAttacked.get(player.getUniqueId());
+                replaceAll(result, "%event.attack/attacker%", player.getName());
+                replaceAll(result, "%event.attack/victim%", entity.getName());
+                replaceAll(result, "%event.attack/victim.type%", (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name());
             }
         }
 

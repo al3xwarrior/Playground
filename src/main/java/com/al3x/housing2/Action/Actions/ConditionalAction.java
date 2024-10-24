@@ -3,6 +3,8 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Instances.HousingData.ActionData;
+import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
@@ -163,7 +165,10 @@ public class ConditionalAction extends Action {
     @Override
     public HashMap<String, Object> data() {
         HashMap<String, Object> data = new HashMap<>();
-        //data.put("conditions", Companion.fromList(conditions));
+        data.put("conditions", ConditionData.Companion.fromList(conditions));
+        data.put("matchAnyCondition", matchAnyCondition);
+        data.put("ifActions", Companion.fromList(ifActions));
+        data.put("elseActions", Companion.fromList(elseActions));
         return data;
     }
 
@@ -173,19 +178,37 @@ public class ConditionalAction extends Action {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (!data.containsKey("subActions")) return;
-        // I don't know how this works lol
-        Object subActions = data.get("subActions");
-        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        if (data.containsKey("conditions")) {
+            //Imma just assume this will work
+            conditionDataToList(gson.toJsonTree(data.get("conditions")).getAsJsonArray());
+        }
+        if (data.containsKey("matchAnyCondition")) {
+            matchAnyCondition = (boolean) data.get("matchAnyCondition");
+        }
+        if (data.containsKey("ifActions")) {
+            ifActions = dataToList(gson.toJsonTree(data.get("ifActions")).getAsJsonArray());
+        }
+        if (data.containsKey("elseActions")) {
+            elseActions = dataToList(gson.toJsonTree(data.get("elseActions")).getAsJsonArray());
+        }
+    }
+
+    private List<Condition> conditionDataToList(JsonArray jsonArray) {
+        ArrayList<ConditionData> conditions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
-            actions.add(action);
+            conditions.add(gson.fromJson(jsonObject, ConditionData.class));
         }
+        return ConditionData.Companion.toList(conditions);
+    }
 
-        //this.conditions = Companion.toList(actions);
+    private List<Action> dataToList(JsonArray jsonArray) {
+        ArrayList<ActionData> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            actions.add(gson.fromJson(jsonObject, ActionData.class));
+        }
+        return Companion.toList(actions);
     }
 }

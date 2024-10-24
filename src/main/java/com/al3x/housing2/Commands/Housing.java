@@ -143,12 +143,13 @@ public class Housing implements CommandExecutor {
                         return true;
                     }
 
-                    if (!housesManager.playerHasHouse(target)) {
-                        player.sendMessage(colorize("&cThat player doesn't have a house!"));
+                    HousingWorld house = housesManager.getHouse(player.getWorld());
+
+                    if (house.getOwnerUUID() != player.getUniqueId() && !player.hasPermission("housing.playerstats")) {
+                        player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
                         return true;
                     }
 
-                    HousingWorld house = housesManager.getHouse(target);
                     if (house.getStatManager().getPlayerStats(target) == null || house.getStatManager().getPlayerStats(target).isEmpty()) {
                         player.sendMessage(colorize("&cThat player has no stats!"));
                         return true;
@@ -171,8 +172,13 @@ public class Housing implements CommandExecutor {
                         player.sendMessage(colorize("&cYou are not in a house!"));
                         return true;
                     }
+                    if (house.getOwnerUUID() != player.getUniqueId() && !player.hasPermission("housing.globalstats")) {
+                        player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
+                        return true;
+                    }
+
                     if (house.getStatManager().getGlobalStats() == null || house.getStatManager().getGlobalStats().isEmpty()) {
-                        player.sendMessage(colorize("&cThat player has no stats!"));
+                        player.sendMessage(colorize("&cThe current house has no stats"));
                         return true;
                     }
                     player.sendMessage(colorize("&aGlobal stats for " + house.getName() + ":"));

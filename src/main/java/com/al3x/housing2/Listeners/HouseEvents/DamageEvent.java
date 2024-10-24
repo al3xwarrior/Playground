@@ -22,7 +22,7 @@ public class DamageEvent implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) {return;}
+        if (!(e.getEntity() instanceof Player)) return;
         sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity(), e);
     }
 }

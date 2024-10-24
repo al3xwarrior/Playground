@@ -82,6 +82,7 @@ public class AddConditionMenu extends Menu {
             forwardArrow.name("&aNext Page");
             forwardArrow.description("&ePage " + (page + 1));
             addItem(53, forwardArrow.build(), () -> {
+                if (page + 1 > paginationList.getPageCount()) return;
                 page++;
                 open();
             });
@@ -93,6 +94,7 @@ public class AddConditionMenu extends Menu {
             backArrow.name("&aPrevious Page");
             backArrow.description("&ePage " + (page - 1));
             addItem(45, backArrow.build(), () -> {
+                if (page - 1 < 1) return;
                 page--;
                 open();
             });

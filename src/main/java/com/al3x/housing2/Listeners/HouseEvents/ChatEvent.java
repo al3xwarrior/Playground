@@ -4,8 +4,8 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
@@ -21,8 +21,9 @@ public class ChatEvent implements Listener {
         this.housesManager = housesManager;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent e) {
+        if (e.isCancelled()) return;
         lastChatEvent.put(e.getPlayer().getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_CHAT, e.getPlayer(), e);
     }
