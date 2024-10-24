@@ -29,6 +29,7 @@ public enum ActionEnum {
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
+    CONDITIONAL("Conditional Action", ConditionalAction.class),
     // Add new actions here
     ;
     private String name;

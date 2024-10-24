@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public enum ConditionEnum {
     IS_SNEAKING("Is Sneaking", IsSneakingCondition.class),
+    IS_FLYING("Is Flying", IsFlyingCondition.class),
     ;
     
     private String name;

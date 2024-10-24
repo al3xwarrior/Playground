@@ -1,11 +1,13 @@
 package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.AddConditionMenu;
 import com.al3x.housing2.Menus.HousingMenu.EventActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
@@ -21,11 +23,11 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ActionsMenu extends Menu {
-
     private Main main;
     private Player player;
     private HousingWorld house;
     private List<Action> actions;
+    private List<Condition> conditions;
     private HousingNPC housingNPC;
     private EventType event;
     private Function function;
@@ -83,11 +85,22 @@ public class ActionsMenu extends Menu {
         this.player = player;
         this.house = house;
         this.actions = actions;
+        this.conditions = null;
         this.backMenu = backMenu;
 
         if (actions == null) {
             this.actions = house.getEventActions(event);
         }
+    }
+
+    public ActionsMenu(Main main, Player player, HousingWorld house, List<Condition> conditions, Menu backMenu, boolean isConditionAllMenu) {
+        super(player, colorize("&7Edit Conditions"), 54);
+        this.main = main;
+        this.player = player;
+        this.house = house;
+        this.conditions = conditions;
+        this.actions = null;
+        this.backMenu = backMenu;
     }
 
     private void removeAction(Action action) {
@@ -98,41 +111,120 @@ public class ActionsMenu extends Menu {
         setupItems();
     }
 
+    public void removeCondition(Condition condition) {
+        conditions.remove(condition);
+        setupItems();
+    }
+
     @Override
     public void setupItems() {
         clearItems();
 
         int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
-        PaginationList<Action> paginationList = new PaginationList<>(actions, allowedSlots.length);
-        List<Action> actions = paginationList.getPage(currentPage);
+        // Conditions
+        if (actions == null) {
+            PaginationList<Condition> paginationList = new PaginationList<>(conditions, allowedSlots.length);
+            List<Condition> conditions = paginationList.getPage(currentPage);
 
-        if (actions == null || actions.isEmpty()) {
-            ItemStack noActions = new ItemStack(Material.BEDROCK);
-            ItemMeta noActionsMeta = noActions.getItemMeta();
-            noActionsMeta.setDisplayName(colorize("&cNo Actions!"));
-            noActions.setItemMeta(noActionsMeta);
-            addItem(22, noActions, () -> {
-                player.sendMessage(colorize("&eAdd an action using the &aAdd Action &eitem below!"));
-            });
-        } else {
-            for (int i = 0; i < actions.size(); i++) {
-                Action action = actions.get(i);
-                int slot = allowedSlots[i];
-                ItemBuilder item = new ItemBuilder();
-                action.createDisplayItem(item);
-                addItem(slot, item.build(), () -> {
-                    if (housingNPC != null) {
-                        new ActionEditMenu(action, main, player, house, housingNPC).open();
-                    }
-                    if (event != null) {
-                        new ActionEditMenu(action, main, player, house, event).open();
-                    }
-                    new ActionEditMenu(action, main, player, house, this).open();
-                }, () -> {
-                    removeAction(action);
+            if (conditions == null || conditions.isEmpty()) {
+                ItemStack noActions = new ItemStack(Material.BEDROCK);
+                ItemMeta noActionsMeta = noActions.getItemMeta();
+                noActionsMeta.setDisplayName(colorize("&cNo Actions!"));
+                noActions.setItemMeta(noActionsMeta);
+                addItem(22, noActions, () -> {
+                    player.sendMessage(colorize("&eAdd an action using the &aAdd Action &eitem below!"));
+                });
+            } else {
+                for (int i = 0; i < conditions.size(); i++) {
+                    Condition condition = conditions.get(i);
+                    int slot = allowedSlots[i];
+                    ItemBuilder item = new ItemBuilder();
+                    condition.createDisplayItem(item);
+                    addItem(slot, item.build(), () -> {
+                        new ActionEditMenu(condition, main, player, house, this).open();
+                    }, () -> {
+                        removeCondition(condition);
+                    });
+                }
+            }
+
+            if (currentPage < paginationList.getPageCount()) {
+                ItemStack next = new ItemStack(Material.ARROW);
+                ItemMeta nextMeta = next.getItemMeta();
+                nextMeta.setDisplayName(colorize("&aNext Page"));
+                next.setItemMeta(nextMeta);
+                addItem(53, next, () -> {
+                    currentPage++;
+                    setupItems();
                 });
             }
+
+            ItemStack addCondition = new ItemStack(Material.PAPER);
+            ItemMeta addActionMeta = addCondition.getItemMeta();
+            addActionMeta.setDisplayName(colorize("&aAdd Action"));
+            addCondition.setItemMeta(addActionMeta);
+            addItem(50, addCondition, () -> {
+                new AddConditionMenu(main, player, house, this.conditions, this).open();
+            });
+        } else { // Actions
+            PaginationList<Action> paginationList = new PaginationList<>(actions, allowedSlots.length);
+            List<Action> actions = paginationList.getPage(currentPage);
+
+            if (actions == null || actions.isEmpty()) {
+                ItemStack noActions = new ItemStack(Material.BEDROCK);
+                ItemMeta noActionsMeta = noActions.getItemMeta();
+                noActionsMeta.setDisplayName(colorize("&cNo Actions!"));
+                noActions.setItemMeta(noActionsMeta);
+                addItem(22, noActions, () -> {
+                    player.sendMessage(colorize("&eAdd an action using the &aAdd Action &eitem below!"));
+                });
+            } else {
+                for (int i = 0; i < actions.size(); i++) {
+                    Action action = actions.get(i);
+                    int slot = allowedSlots[i];
+                    ItemBuilder item = new ItemBuilder();
+                    action.createDisplayItem(item);
+                    addItem(slot, item.build(), () -> {
+                        if (housingNPC != null) {
+                            new ActionEditMenu(action, main, player, house, housingNPC).open();
+                        }
+                        if (event != null) {
+                            new ActionEditMenu(action, main, player, house, event).open();
+                        }
+                        new ActionEditMenu(action, main, player, house, this).open();
+                    }, () -> {
+                        removeAction(action);
+                    });
+                }
+            }
+
+            if (currentPage < paginationList.getPageCount()) {
+                ItemStack next = new ItemStack(Material.ARROW);
+                ItemMeta nextMeta = next.getItemMeta();
+                nextMeta.setDisplayName(colorize("&aNext Page"));
+                next.setItemMeta(nextMeta);
+                addItem(53, next, () -> {
+                    currentPage++;
+                    setupItems();
+                });
+            }
+
+            ItemStack addAction = new ItemStack(Material.PAPER);
+            ItemMeta addActionMeta = addAction.getItemMeta();
+            addActionMeta.setDisplayName(colorize("&aAdd Action"));
+            addAction.setItemMeta(addActionMeta);
+            addItem(50, addAction, () -> {
+                if (function != null) {
+                    new AddActionMenu(main, player, house, function, this).open();
+                    return;
+                }
+                if (event != null) {
+                    new AddActionMenu(main, player, house, event, this).open();
+                    return;
+                }
+                new AddActionMenu(main, player, house, this.actions, this).open();
+            });
         }
 
         if (currentPage > 1) {
@@ -142,17 +234,6 @@ public class ActionsMenu extends Menu {
             previous.setItemMeta(prevMeta);
             addItem(45, previous, () -> {
                 currentPage--;
-                setupItems();
-            });
-        }
-
-        if (currentPage < paginationList.getPageCount()) {
-            ItemStack next = new ItemStack(Material.ARROW);
-            ItemMeta nextMeta = next.getItemMeta();
-            nextMeta.setDisplayName(colorize("&aNext Page"));
-            next.setItemMeta(nextMeta);
-            addItem(53, next, () -> {
-                currentPage++;
                 setupItems();
             });
         }
@@ -171,22 +252,6 @@ public class ActionsMenu extends Menu {
             if (backMenu != null) {
                 backMenu.open();
             }
-        });
-
-        ItemStack addAction = new ItemStack(Material.PAPER);
-        ItemMeta addActionMeta = addAction.getItemMeta();
-        addActionMeta.setDisplayName(colorize("&aAdd Action"));
-        addAction.setItemMeta(addActionMeta);
-        addItem(50, addAction, () -> {
-            if (function != null) {
-                new AddActionMenu(main, player, house, function, this).open();
-                return;
-            }
-            if (event != null) {
-                new AddActionMenu(main, player, house, event, this).open();
-                return;
-            }
-            new AddActionMenu(main, player, house, this.actions, this).open();
         });
     }
 

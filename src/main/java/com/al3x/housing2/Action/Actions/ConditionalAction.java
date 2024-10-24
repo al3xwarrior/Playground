@@ -20,24 +20,29 @@ import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 public class ConditionalAction extends Action {
     private static final Gson gson = new Gson();
     private List<Condition> conditions;
+    private boolean matchAnyCondition;
     private List<Action> ifActions;
     private List<Action> elseActions;
 
-    public ConditionalAction(ArrayList<Action> ifActions, ArrayList<Action> elseActions) {
+    public ConditionalAction(ArrayList<Condition> conditions, boolean matchAnyCondition, ArrayList<Action> ifActions, ArrayList<Action> elseActions) {
         super("Conditional Action");
+        this.conditions = conditions;
+        this.matchAnyCondition = matchAnyCondition;
         this.ifActions = ifActions;
         this.elseActions = elseActions;
     }
 
     public ConditionalAction() {
         super("Conditional Action");
+        this.conditions = new ArrayList<>();
+        this.matchAnyCondition = false;
         this.ifActions = new ArrayList<>();
         this.elseActions = new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return "f";
+        return "ConditionalAction(conditions=" + this.conditions + ", matchAnyCondition=" + this.matchAnyCondition + ", ifActions=" + this.ifActions + ", elseActions=" + this.elseActions + ")";
     }
 
     @Override
@@ -58,45 +63,101 @@ public class ConditionalAction extends Action {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.REDSTONE);
         builder.name("&aConditional");
-        builder.description("Executes a single random action form the selected actions.");
+        builder.description("Executes actions based on certain conditions.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house) {
         List<ActionEditor.ActionItem> items = List.of(
-                new ActionEditor.ActionItem("subActions",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
+                new ActionEditor.ActionItem("conditions",
+                        ItemBuilder.create(Material.COMPARATOR)
                                 .name("&aActions")
                                 .info("&7Current Value", "")
                                 .info(null, (conditions.isEmpty() ? "&cNo Actions" : "&a" + conditions.size() + " Action"))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.CONDITION
+                ),
+                new ActionEditor.ActionItem("matchAnyCondition", ItemBuilder.create((matchAnyCondition ? Material.LIME_DYE : Material.RED_DYE))
+                        .name("&aMatch Any Condition")
+                        .description("When enabled ony one condition needs to match, otherwise all conditions must match.")
+                        .info("&7Current Value", "")
+                        .info(null, matchAnyCondition ? "&aYes" : "&cNo"),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
+                ),
+                new ActionEditor.ActionItem("ifActions",
+                        ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
+                                .name("&aIf Actions")
+                                .description("Actions to execute if the conditions &nare&r&7 met.")
+                                .info("&7Current Value", "")
+                                .info(null, (ifActions.isEmpty() ? "&cNo Actions" : "&a" + ifActions.size() + " Action"))
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.ACTION
+                ),
+                new ActionEditor.ActionItem("elseActions",
+                        ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
+                                .name("&aElse Actions")
+                                .description("Actions to execute if the conditions are &nnot&r&7 met.")
+                                .info("&7Current Value", "")
+                                .info(null, (elseActions.isEmpty() ? "&cNo Actions" : "&a" + elseActions.size() + " Action"))
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.ACTION
                 )
+
         );
-        return new ActionEditor(4, "&eChat Action Settings", items);
+        return new ActionEditor(4, "&eConditional Settings", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        /*
-        if (subActions.isEmpty()) {
-            return true;
+        boolean result = false;
+        if (conditions.isEmpty()) {
+            result = true;
+        } else {
+            for (Condition condition : conditions) {
+                if (condition.execute(player, house)) {
+                    result = true;
+                    if (matchAnyCondition) break;
+                } else {
+                    if (!matchAnyCondition) {
+                        result = false;
+                        break;
+                    }
+                }
+            }
         }
 
-         */
-
-        //Action action = conditions.get((int) (house.getRandom().nextDouble() * conditions.size()));
-        //return action.execute(player, house);
+        if (result) {
+            for (Action action : ifActions) {
+                action.execute(player, house);
+                return true;
+            }
+        } else {
+            for (Action action : elseActions) {
+                action.execute(player, house);
+                return true;
+            }
+        }
         return false;
     }
 
     public List<Condition> getConditions() {
         return conditions;
     }
-
-    public void setSubActions(ArrayList<Condition> conditions) {
+    public void setConditions(ArrayList<Condition> conditions) {
         this.conditions = conditions;
+    }
+    public List<Action> getIfActions() {
+        return ifActions;
+    }
+    public void setIfActions(List<Action> ifActions) {
+        this.ifActions = ifActions;
+    }
+    public List<Action> getElseActions() {
+        return elseActions;
+    }
+    public void setElseActions(List<Action> elseActions) {
+        this.elseActions = elseActions;
     }
 
     @Override

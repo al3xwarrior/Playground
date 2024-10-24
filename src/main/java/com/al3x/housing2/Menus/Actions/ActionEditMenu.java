@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -26,6 +27,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class ActionEditMenu extends Menu {
     private Main main;
     private Action action;
+    private Condition condition;
     private Player player;
     private HousingWorld house;
     private HousingNPC housingNPC;
@@ -34,6 +36,10 @@ public class ActionEditMenu extends Menu {
 
     private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
         return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, player);
+    }
+
+    private static ActionEditor getEditor(Condition condition, HousingWorld house, ActionEditMenu menu, Player player) {
+        return condition.editorMenu(house) != null ? condition.editorMenu(house) : condition.editorMenu(house, menu) != null ? condition.editorMenu(house, menu) : condition.editorMenu(house, player);
     }
 
     // NPC
@@ -65,7 +71,16 @@ public class ActionEditMenu extends Menu {
         this.backMenu = backMenu;
     }
 
-
+    // Conditions
+    public ActionEditMenu(Condition condition, Main main, Player player, HousingWorld house, Menu backMenu) {
+        super(player, colorize(getEditor(condition, house, null, player).getTitle()), getEditor(condition, house, null, player).getRows() * 9);
+        this.main = main;
+        this.action = null;
+        this.condition = condition;
+        this.player = player;
+        this.house = house;
+        this.backMenu = backMenu;
+    }
 
     @Override
     public void setupItems() {
@@ -178,6 +193,19 @@ public class ActionEditMenu extends Menu {
                             field.setAccessible(true);
                             List<Action> subActions = (List<Action>) field.get(action);
                             new ActionsMenu(main, player, house, subActions, this).open();
+                        } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
+                            player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));
+                        }
+                        break;
+                    }
+                    case CONDITION: {
+                        try {
+                            //Get the sub actions field and open the ActionsMenu
+                            Field field = action.getClass().getDeclaredField(item.getVarName());
+                            field.setAccessible(true);
+                            List<Condition> subActions = (List<Condition>) field.get(action);
+                            new ActionsMenu(main, player, house, subActions, this, true).open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));
