@@ -26,7 +26,9 @@ public class LeaveHouse implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        leaveHouse(e.getPlayer(), e.getFrom());
+        if (!e.getFrom().getName().equals("world")) {
+            leaveHouse(e.getPlayer(), e.getFrom());
+        }
     }
 
     @EventHandler
