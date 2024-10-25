@@ -90,10 +90,6 @@ public class HousingNPC {
         citizensNPC.spawn(location);
         citizensNPC.faceLocation(player.getLocation());
 
-        main.getServer().getScheduler().runTaskLaterAsynchronously(main, () -> {
-            this.location = citizensNPC.getEntity().getLocation();
-        }, 80L); // 4 seconds
-
         // Update it because weird
         this.npcID = citizensNPC.getId();
         this.npcUUID = citizensNPC.getUniqueId();
@@ -161,6 +157,7 @@ public class HousingNPC {
     }
 
     public Location getLocation() {
+        if (citizensNPC.isSpawned()) return citizensNPC.getEntity().getLocation();
         return location;
     }
 

@@ -4,6 +4,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -36,9 +37,10 @@ public class ScoreboardMenu extends Menu {
             final String[] line = {scoreboard.get(i)};
 
             int finalI = i;
+            boolean hasPlaceholders = line[0].contains("%");
             addItem(avaliableSlots[finalI], ItemBuilder.create(Material.PAPER)
                     .name("&eLine #" + finalI)
-                    .description("\n&eLine: \n" + colorize(line[0]) + "\n\n&7How this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])))
+                    .description("\n&eLine: \n" + colorize(line[0]) + (hasPlaceholders ? "\n\n&eHow this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])) : ""))
                     .punctuation(false)
                     .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                     .build(), () -> {
@@ -46,7 +48,7 @@ public class ScoreboardMenu extends Menu {
                 openChat(main, line[0], (message) -> {
                     scoreboard.set(finalI, message);
                     player.sendMessage(colorize("&aLine set to: " + message));
-                    new ScoreboardMenu(main, player, house).open();
+                    Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
                 });
             }, () -> {
                 scoreboard.remove(finalI);
@@ -73,7 +75,7 @@ public class ScoreboardMenu extends Menu {
 
         addItem(40, ItemBuilder.create(Material.ARROW)
                 .name("&cGo Back")
-                .build(), (e) -> new OwnerHousingMenu(main, player, house).open()
+                .build(), (e) -> new SystemsMenu(main, player, house).open()
         );
     }
 }
