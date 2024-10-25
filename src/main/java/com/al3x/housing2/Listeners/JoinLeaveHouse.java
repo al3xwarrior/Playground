@@ -4,6 +4,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
+import com.al3x.housing2.Utils.tablist.HousingTabList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -52,8 +53,11 @@ public class JoinLeaveHouse implements Listener {
         HousingScoreboard scoreboard = new HousingScoreboard();
         scoreboard.setScoreboard(player);
 
-        HousingWorld house = housesManager.getHouse(UUID.fromString(player.getWorld().getName()));
+        HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) { return; }
+
+        //Set the tablist
+        HousingTabList.setTabList(player, house);
 
         house.setGuests();
         player.teleport(house.getSpawn());

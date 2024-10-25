@@ -483,6 +483,10 @@ public class HousingWorld {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
 
+    public String getOwnerName() {
+        return Bukkit.getOfflinePlayer(ownerUUID).getName();
+    }
+
     public void setGuests() {
         guests = Bukkit.getWorld(houseUUID.toString()).getPlayers().size();
     }
