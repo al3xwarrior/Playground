@@ -3,6 +3,7 @@ package com.al3x.housing2.Utils;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
+import com.al3x.housing2.Listeners.HouseEvents.ChangeHeldItem;
 import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
@@ -12,6 +13,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -63,6 +66,25 @@ public class HandlePlaceholders {
                 replaceAll(result, "%event.attack/attacker%", player.getName());
                 replaceAll(result, "%event.attack/victim%", entity.getName());
                 replaceAll(result, "%event.attack/victim.type%", (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name());
+            }
+
+            // ChangeHeldItem event data per player (this is a lot of placeholders :P)
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+
+                ItemStack previousItem = player.getInventory().getItem(event.getPreviousSlot());
+                String previousItemName = (previousItem != null && previousItem.hasItemMeta()) ? previousItem.getItemMeta().getDisplayName() : "null";
+                ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
+                String newItemName = (newItem != null  && newItem.hasItemMeta()) ? newItem.getItemMeta().getDisplayName() : "null";
+
+                replaceAll(result, "%event.change/previousSlot%", String.valueOf(event.getPreviousSlot()));
+                replaceAll(result, "%event.change/newSlot%", String.valueOf(event.getNewSlot()));
+
+                replaceAll(result, "%event.change/previousItem%", previousItemName);
+                replaceAll(result, "%event.change/newItem%", newItemName);
+
+                replaceAll(result, "%event.change/previousItem.type%", (previousItem == null) ? "null" : previousItem.getType().name());
+                replaceAll(result, "%event.change/newItem.type%", (newItem == null) ? "null" : newItem.getType().name());
             }
         }
 

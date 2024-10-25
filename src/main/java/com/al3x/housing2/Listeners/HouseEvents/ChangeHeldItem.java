@@ -8,9 +8,13 @@ import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 
 public class ChangeHeldItem implements Listener {
+    public static HashMap<UUID, PlayerItemHeldEvent> playerItemHeldEvent = new HashMap<>();
     private HousesManager housesManager;
 
     public ChangeHeldItem(HousesManager housesManager) {
@@ -20,6 +24,7 @@ public class ChangeHeldItem implements Listener {
     @EventHandler
     public void onChangeHeldItem(PlayerItemHeldEvent e) {
         //I think you just used the wrong event?
-        sendEventExecution(housesManager, EventType.PLAYER_CHANGE_HELD_ITEM, e.getPlayer(), null);
+        playerItemHeldEvent.put(e.getPlayer().getUniqueId(), e);
+        sendEventExecution(housesManager, EventType.PLAYER_CHANGE_HELD_ITEM, e.getPlayer(), e);
     }
 }
