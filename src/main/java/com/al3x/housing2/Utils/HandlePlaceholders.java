@@ -205,7 +205,7 @@ public class HandlePlaceholders {
             return (stat == null) ? "0" : stat.formatValue();
         });
 
-        registerPlaceholder("regex:%round/(.+),([0-9]+)%", "&6%round/&7[placeholder=],[places]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%round/(.+) ([0-9]+)%", "&6%round/&7[placeholder=] [places]&6%", (player, house, match) -> {
             String value = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
             if (NumberUtilsKt.isDouble(value)) {
                 double val = Double.parseDouble(value);
@@ -213,6 +213,18 @@ public class HandlePlaceholders {
                 return String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
             }
             return value;// If the value is not a number, return the original value
+        });
+
+        //random number between 2 numbers
+        registerPlaceholder("regex:%random.int/([0-9]+) ([0-9]+)%", "&6%random.int/&7[min] [max]&6%", (player, house, match) -> {
+            int min = Integer.parseInt(match.getGroups().get(1).getValue());
+            int max = Integer.parseInt(match.getGroups().get(2).getValue());
+            return String.valueOf((int) (Math.random() * (max - min + 1) + min));
+        });
+        registerPlaceholder("regex:%random.double/([0-9.]+) ([0-9.]+)%", "&6%random.double/&7[min] [max]&6%", (player, house, match) -> {
+            double min = Integer.parseInt(match.getGroups().get(1).getValue());
+            double max = Integer.parseInt(match.getGroups().get(2).getValue());
+            return String.valueOf(Math.random() * (max - min) + min);
         });
     }
 
