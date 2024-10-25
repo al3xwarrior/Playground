@@ -2,6 +2,7 @@ package com.al3x.housing2;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
+import com.al3x.housing2.Utils.tablist.HousingTabList;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -42,7 +43,14 @@ public class Runnables {
         runnables.put("updateScoreboard", new BukkitRunnable() {
             @Override
             public void run() {
+                //Update scoreboard
                 Bukkit.getOnlinePlayers().forEach(HousingScoreboard::updateScoreboard);
+
+                //Update tablist
+                Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
+                for (HousingWorld house : houses) {
+                    house.getWorld().getPlayers().forEach(player -> HousingTabList.setTabList(player, house));
+                }
             }
         }.runTaskTimer(main, 0, 20L));
 
