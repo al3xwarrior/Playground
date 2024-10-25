@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 
@@ -17,7 +18,8 @@ public class ChangeHeldItem implements Listener {
     }
 
     @EventHandler
-    public void onChangeHeldItem(PlayerChangedMainHandEvent e) {
+    public void onChangeHeldItem(PlayerItemHeldEvent e) {
+        //I think you just used the wrong event?
         sendEventExecution(housesManager, EventType.PLAYER_CHANGE_HELD_ITEM, e.getPlayer(), null);
     }
 }
