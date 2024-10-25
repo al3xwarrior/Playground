@@ -5,7 +5,9 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -67,7 +69,8 @@ public class Placeholders implements CommandExecutor {
                             " &7(" + HandlePlaceholders.parsePlaceholders(player, house, placeholder.getPlaceholder()) + "&7)" :
                             "") //Basically with this we are just checking if the placeholder has a unique display name, if it does we show the parsed value
             ));
-            comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, placeholder.getPlaceholder()));
+            comp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, placeholder.getPlaceholder()));
+            comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("&eInsert " + placeholder.getDisplayName() + " into chat")));
             player.spigot().sendMessage(comp);
         }
 

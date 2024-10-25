@@ -205,7 +205,7 @@ public class HandlePlaceholders {
             return (stat == null) ? "0" : stat.formatValue();
         });
 
-        registerPlaceholder("regex:%round/(.+),([0-9]+)%", "&6%round/&7[placeholder no %],[places]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%round/(.+),([0-9]+)%", "&6%round/&7[placeholder=],[places]&6%", (player, house, match) -> {
             String value = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
             if (NumberUtilsKt.isDouble(value)) {
                 double val = Double.parseDouble(value);
