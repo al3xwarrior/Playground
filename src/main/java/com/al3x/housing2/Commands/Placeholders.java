@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.HandlePlaceholders.displayNamePlaceholders;
 
 public class Placeholders implements CommandExecutor {
 
@@ -54,28 +53,24 @@ public class Placeholders implements CommandExecutor {
         player.sendMessage(colorize("&eHousing Placeholders:"));
         player.sendMessage(colorize("&7Use &e/placeholders <filter> &7to filter the list."));
 
-        List<String> placeholders = HandlePlaceholders.getPlaceholders();
-        // Support for regex placeholders
-        for (int i = 0; i < placeholders.size(); i++) {
-            String key = placeholders.get(i);
-            if (key.startsWith("regex:") && displayNamePlaceholders.containsKey(key)) {
-                placeholders.set(i, displayNamePlaceholders.get(key));
-            }
-        }
-
+        List<HandlePlaceholders.Placeholder> placeholders = HandlePlaceholders.getPlaceholders();
         // Filter placeholders
         if (!filter.isEmpty()) {
             String search = filter.toLowerCase();
-            placeholders = placeholders.stream().filter(i -> Color.removeColor(i.toLowerCase()).contains(search)).toList();
+            placeholders = placeholders.stream().filter(i -> Color.removeColor(i.getDisplayName().toLowerCase()).contains(search)).toList();
         }
 
         //Go through all placeholders and send them to the player
-        for (String placeholder : placeholders) {
-            TextComponent comp = new TextComponent(colorize("&7- &6" + placeholder + " &7(" + HandlePlaceholders.parsePlaceholders(player, house, placeholder) + "&7)"));
-            comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, placeholder));
+        for (HandlePlaceholders.Placeholder placeholder : placeholders) {
+            TextComponent comp = new TextComponent(colorize("&7- &6" + placeholder +
+                    (placeholder.getDisplayName().equals(placeholder.getPlaceholder()) ?
+                            " &7(" + HandlePlaceholders.parsePlaceholders(player, house, placeholder.getPlaceholder()) + "&7)" :
+                            "") //Basically with this we are just checking if the placeholder has a unique display name, if it does we show the parsed value
+            ));
+            comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, placeholder.getPlaceholder()));
             player.spigot().sendMessage(comp);
         }
 
-        return false;
+        return true;
     }
 }

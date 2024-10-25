@@ -33,24 +33,57 @@ I just vomited opening this file. It's a mess.
 
  */
 public class HandlePlaceholders {
-    private static HashMap<String, TriFunction<Player, HousingWorld, MatchResult, String>> placeholders = new HashMap<>();
-    public static HashMap<String, String> displayNamePlaceholders = new HashMap<>();
+    public static class Placeholder {
+        String placeholder;
+        String displayName;
+        TriFunction<Player, HousingWorld, MatchResult, String> runnable;
+
+        public Placeholder(String placeholder, String displayName, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
+            this.placeholder = placeholder;
+            this.displayName = displayName;
+            this.runnable = runnable;
+        }
+
+        public Placeholder(String placeholder, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
+            this.placeholder = placeholder;
+            this.displayName = placeholder;
+            this.runnable = runnable;
+        }
+
+        public String getPlaceholder() {
+            return placeholder;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        @Override
+        public String toString() {
+            return displayName;
+        }
+
+        public String run(Player player, HousingWorld house, MatchResult match) {
+            return runnable.apply(player, house, match);
+        }
+    }
+
+    private static List<Placeholder> placeholders = new ArrayList<>();
 
     public static void registerPlaceholder(String placeholder, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
-        placeholders.put(placeholder, runnable);
+        placeholders.add(new Placeholder(placeholder, runnable));
     }
 
     public static void registerPlaceholder(String placeholder, BiFunction<Player, HousingWorld, String> runnable) {
-        placeholders.put(placeholder, (Player player, HousingWorld house, MatchResult match) -> runnable.apply(player, house));
+        placeholders.add(new Placeholder(placeholder, (player, house, match) -> runnable.apply(player, house)));
     }
 
     public static void registerPlaceholder(String placeholder, String displayName, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
-        placeholders.put(placeholder, runnable);
-        displayNamePlaceholders.put(placeholder, displayName);
+        placeholders.add(new Placeholder(placeholder, displayName, runnable));
     }
 
-    public static List<String> getPlaceholders() {
-        List<String> list = new ArrayList<>(placeholders.keySet());
+    public static List<Placeholder> getPlaceholders() {
+        List<Placeholder> list = new ArrayList<>(placeholders);
         return list;
     }
 
@@ -187,17 +220,17 @@ public class HandlePlaceholders {
     public static String parsePlaceholders(Player player, HousingWorld house, String s) {
         StringBuilder result = new StringBuilder(s);
 
-        for (String placeholder : placeholders.keySet()) {
-            if (placeholder.startsWith("regex:")) {
-                String regex = placeholder.substring(6);
+        for (Placeholder placeholder : placeholders) {
+            if (placeholder.getPlaceholder().startsWith("regex:")) {
+                String regex = placeholder.getPlaceholder().substring(6);
                 Regex pattern = new Regex(regex);
                 MatchResult match = pattern.find(result.toString(), 0);
                 while (match != null) {
-                    replaceAll(result, match.getValue(), placeholders.get(placeholder).apply(player, house, match));
+                    replaceAll(result, match.getValue(), placeholder.run(player, house, match));
                     match = match.next();
                 }
             } else {
-                replaceAll(result, placeholder, placeholders.get(placeholder).apply(player, house, null));
+                replaceAll(result, placeholder.getPlaceholder(), placeholder.run(player, house, null));
             }
         }
 

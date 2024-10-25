@@ -6,10 +6,8 @@ authors: [ Al3x ]
 depend: [Citizens]
 commands:
   housing:
-    usage: "/housing help"
     aliases: ["h"]
   home:
-    usage: "/home [name]"
     aliases: ["house", "homes"]
 
   cancelinput:
@@ -17,4 +15,5 @@ commands:
   testplaceholder:
     usage: "/testplaceholder <string>"
   placeholders:
-    usage: "/placeholders [filter]"
+
+

@@ -44,6 +44,6 @@ public class TestPlaceholder implements CommandExecutor {
         String message = String.join(" ", strings);
         player.sendMessage(colorize("&e" + HandlePlaceholders.parsePlaceholders(player, house, message)));
 
-        return false;
+        return true;
     }
 }
