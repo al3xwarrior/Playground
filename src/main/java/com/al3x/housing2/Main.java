@@ -1,12 +1,11 @@
 package com.al3x.housing2;
 
-import com.al3x.housing2.Commands.CancelInput;
-import com.al3x.housing2.Commands.Home;
-import com.al3x.housing2.Commands.Housing;
+import com.al3x.housing2.Commands.*;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import net.citizensnpcs.api.CitizensAPI;
@@ -31,6 +30,8 @@ public final class Main extends JavaPlugin {
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("home").setExecutor(new Home(this));
         getCommand("cancelinput").setExecutor(new CancelInput(this));
+        getCommand("testplaceholder").setExecutor(new TestPlaceholder(this));
+        getCommand("placeholders").setExecutor(new Placeholders(this));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
@@ -57,6 +58,8 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ChatEvent(housesManager), this);
 
         Runnables.startRunnables(this);
+
+        HandlePlaceholders.registerPlaceholders();
 
         getServer().getLogger().info("[Housing2] Enabled");
     }

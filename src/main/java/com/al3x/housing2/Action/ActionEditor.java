@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -20,6 +21,12 @@ public class ActionEditor {
         this.rows = rows;
         this.title = title;
         this.items = items;
+    }
+
+    public ActionEditor(int rows, String title, ActionItem... items) {
+        this.rows = rows;
+        this.title = title;
+        this.items = Arrays.asList(items);
     }
 
     public int getRows() {

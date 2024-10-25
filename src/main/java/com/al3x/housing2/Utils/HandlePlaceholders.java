@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
 import com.al3x.housing2.Listeners.HouseEvents.ChangeHeldItem;
 import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
+import kotlin.Function;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
@@ -17,7 +18,12 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,85 +33,172 @@ I just vomited opening this file. It's a mess.
 
  */
 public class HandlePlaceholders {
+    private static HashMap<String, TriFunction<Player, HousingWorld, MatchResult, String>> placeholders = new HashMap<>();
+    public static HashMap<String, String> displayNamePlaceholders = new HashMap<>();
+
+    public static void registerPlaceholder(String placeholder, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
+        placeholders.put(placeholder, runnable);
+    }
+
+    public static void registerPlaceholder(String placeholder, BiFunction<Player, HousingWorld, String> runnable) {
+        placeholders.put(placeholder, (Player player, HousingWorld house, MatchResult match) -> runnable.apply(player, house));
+    }
+
+    public static void registerPlaceholder(String placeholder, String displayName, TriFunction<Player, HousingWorld, MatchResult, String> runnable) {
+        placeholders.put(placeholder, runnable);
+        displayNamePlaceholders.put(placeholder, displayName);
+    }
+
+    public static List<String> getPlaceholders() {
+        List<String> list = new ArrayList<>(placeholders.keySet());
+        return list;
+    }
+
+    public static void registerPlaceholders() {
+        registerPlaceholder("%%player%%", (player, house) -> {
+            //Pjma wanted this so I added it
+            return player.getName();
+        });
+        registerPlaceholder("%player.name%", (player, house) -> player.getName());
+        registerPlaceholder("%player.displayname%", (player, house) -> player.getDisplayName());
+        registerPlaceholder("%player.ping%", (player, house) -> String.valueOf(player.getPing()));
+        registerPlaceholder("%player.isSprinting%", (player, house) -> String.valueOf(player.isSprinting()));
+        registerPlaceholder("%player.location.x%", (player, house) -> String.valueOf(player.getLocation().getX()));
+        registerPlaceholder("%player.location.y%", (player, house) -> String.valueOf(player.getLocation().getY()));
+        registerPlaceholder("%player.location.z%", (player, house) -> String.valueOf(player.getLocation().getZ()));
+        registerPlaceholder("%player.location.pitch%", (player, house) -> String.valueOf(player.getLocation().getPitch()));
+        registerPlaceholder("%player.location.yaw%", (player, house) -> String.valueOf(player.getLocation().getYaw()));
+
+        // Regex for capturing stat placeholders like %stat.player/<stat>%
+        registerPlaceholder("regex:%stat\\.player/([a-zA-Z0-9_]+)%", "&6%stat.player/&7[stat]&6%", (player, house, match) -> {
+            String statName = match.getGroups().get(1).getValue(); // The captured <stat>
+            Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
+            return (stat == null) ? "0" : stat.formatValue();
+        });
+
+        // Event Data per player
+        registerPlaceholder("%event.chat/message%", (player, house) -> {
+            if (ChatEvent.lastChatEvent.containsKey(player.getUniqueId())) {
+                AsyncPlayerChatEvent event = ChatEvent.lastChatEvent.get(player.getUniqueId());
+                return event.getMessage();
+            }
+            return "";
+        });
+
+        registerPlaceholder("%event.attack/attacker%", (player, house) -> {
+            if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) return player.getName();
+            return "";
+        });
+        registerPlaceholder("%event.attack/victim%", (player, house) -> {
+            if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) {
+                Entity entity = AttackEvent.lastAttacked.get(player.getUniqueId());
+                return entity.getName();
+            }
+            return "";
+        });
+        registerPlaceholder("%event.attack/victim.type%", (player, house) -> {
+            if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) {
+                Entity entity = AttackEvent.lastAttacked.get(player.getUniqueId());
+                return (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name();
+            }
+            return "";
+        });
+
+        // ChangeHeldItem event data per player (this is a lot of placeholders :P)
+        registerPlaceholder("%event.change/previousSlot%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                return String.valueOf(event.getPreviousSlot());
+            }
+            return "";
+        });
+        registerPlaceholder("%event.change/newSlot%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                return String.valueOf(event.getNewSlot());
+            }
+            return "";
+        });
+        registerPlaceholder("%event.change/previousItem%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                ItemStack previousItem = player.getInventory().getItem(event.getPreviousSlot());
+                return (previousItem != null && previousItem.hasItemMeta()) ? previousItem.getItemMeta().getDisplayName() : "null";
+            }
+            return "";
+        });
+        registerPlaceholder("%event.change/newItem%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
+                return (newItem != null && newItem.hasItemMeta()) ? newItem.getItemMeta().getDisplayName() : "null";
+            }
+            return "";
+        });
+        registerPlaceholder("%event.change/previousItem.type%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                ItemStack previousItem = player.getInventory().getItem(event.getPreviousSlot());
+                return (previousItem == null) ? "null" : previousItem.getType().name();
+            }
+            return "";
+        });
+        registerPlaceholder("%event.change/newItem.type%", (player, house) -> {
+            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
+                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
+                ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
+                return (newItem == null) ? "null" : newItem.getType().name();
+            }
+            return "";
+        });
+
+        // House placeholders
+        registerPlaceholder("%%house%%", (player, house) -> house.getName());
+        registerPlaceholder("%house.name%", (player, house) -> house.getName());
+        registerPlaceholder("%house.cookies%", (player, house) -> String.valueOf(house.getCookies()));
+        registerPlaceholder("%house.guests%", (player, house) -> String.valueOf(house.getGuests()));
+
+        // Misc
+        registerPlaceholder("%unix.time%", (player, house) -> String.valueOf(System.currentTimeMillis() / 1000));
+        registerPlaceholder("%time.unix%", (player, house) -> String.valueOf(System.currentTimeMillis() / 1000));
+        registerPlaceholder("%unix.date%", (player, house) -> String.valueOf(System.currentTimeMillis()));
+        registerPlaceholder("%date.unix%", (player, house) -> String.valueOf(System.currentTimeMillis()));
+        registerPlaceholder("%server.tps%", (player, house) -> new DecimalFormat("#.##").format(Bukkit.getServerTickManager().getTickRate()));
+
+        // Regex for capturing stat placeholders like %stat.global/<stat>%
+        registerPlaceholder("regex:%stat\\.global/([a-zA-Z0-9_]+)%", "&6%stat.global/&7[stat]&6%", (player, house, match) -> {
+            String statName = player.getDisplayName(); // The captured <stat>
+            Stat stat = house.getStatManager().getGlobalStatByName(statName);
+            return (stat == null) ? "0" : stat.formatValue();
+        });
+
+        registerPlaceholder("regex:%round/(.+),([0-9]+)%", "&6%round/&7[placeholder no %],[places]&6%", (player, house, match) -> {
+            String value = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
+            if (NumberUtilsKt.isDouble(value)) {
+                double val = Double.parseDouble(value);
+                int places = Integer.parseInt(match.getGroups().get(2).getValue());
+                return String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
+            }
+            return value;// If the value is not a number, return the original value
+        });
+    }
+
 
     public static String parsePlaceholders(Player player, HousingWorld house, String s) {
         StringBuilder result = new StringBuilder(s);
 
-        // Player placeholders
-        if (player != null) {
-            replaceAll(result, "%%player%%", player.getName()); //Pjma wanted this so I added it
-            replaceAll(result, "%player.name%", player.getName());
-            replaceAll(result, "%player.displayname%", player.getDisplayName());
-            replaceAll(result, "%player.ping%", String.valueOf(player.getPing()));
-            replaceAll(result, "%player.isSprinting%", String.valueOf(player.isSprinting()));
-            replaceAll(result, "%player.location.x%", String.valueOf(player.getLocation().getX()));
-            replaceAll(result, "%player.location.y%", String.valueOf(player.getLocation().getY()));
-            replaceAll(result, "%player.location.z%", String.valueOf(player.getLocation().getZ()));
-            replaceAll(result, "%player.location.pitch%", String.valueOf(player.getLocation().getPitch()));
-            replaceAll(result, "%player.location.yaw%", String.valueOf(player.getLocation().getYaw()));
-
-            // Regex for capturing stat placeholders like %stat.player/<stat>%
-            Regex statPattern = new Regex("%stat\\.player/([a-zA-Z0-9_]+)%");
-            MatchResult playerMatch = statPattern.find(result.toString(), 0);
-            while (playerMatch != null) {
-                String statName = playerMatch.getGroups().get(1).getValue(); // The captured <stat>
-                Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
-                String replacement = (stat == null) ? "0" : stat.formatValue();
-                replaceAll(result, playerMatch.getValue(), replacement);
-                playerMatch = playerMatch.next();
+        for (String placeholder : placeholders.keySet()) {
+            if (placeholder.startsWith("regex:")) {
+                String regex = placeholder.substring(6);
+                Regex pattern = new Regex(regex);
+                MatchResult match = pattern.find(result.toString(), 0);
+                while (match != null) {
+                    replaceAll(result, match.getValue(), placeholders.get(placeholder).apply(player, house, match));
+                    match = match.next();
+                }
+            } else {
+                replaceAll(result, placeholder, placeholders.get(placeholder).apply(player, house, null));
             }
-
-            // Event Data per player
-            if (ChatEvent.lastChatEvent.containsKey(player.getUniqueId())) {
-                AsyncPlayerChatEvent event = ChatEvent.lastChatEvent.get(player.getUniqueId());
-                replaceAll(result, "%event.chat/message%", event.getMessage());
-            }
-
-            if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) {
-                Entity entity = AttackEvent.lastAttacked.get(player.getUniqueId());
-                replaceAll(result, "%event.attack/attacker%", player.getName());
-                replaceAll(result, "%event.attack/victim%", entity.getName());
-                replaceAll(result, "%event.attack/victim.type%", (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name());
-            }
-
-            // ChangeHeldItem event data per player (this is a lot of placeholders :P)
-            if (ChangeHeldItem.playerItemHeldEvent.containsKey(player.getUniqueId())) {
-                PlayerItemHeldEvent event = ChangeHeldItem.playerItemHeldEvent.get(player.getUniqueId());
-
-                ItemStack previousItem = player.getInventory().getItem(event.getPreviousSlot());
-                String previousItemName = (previousItem != null && previousItem.hasItemMeta()) ? previousItem.getItemMeta().getDisplayName() : "null";
-                ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
-                String newItemName = (newItem != null  && newItem.hasItemMeta()) ? newItem.getItemMeta().getDisplayName() : "null";
-
-                replaceAll(result, "%event.change/previousSlot%", String.valueOf(event.getPreviousSlot()));
-                replaceAll(result, "%event.change/newSlot%", String.valueOf(event.getNewSlot()));
-
-                replaceAll(result, "%event.change/previousItem%", previousItemName);
-                replaceAll(result, "%event.change/newItem%", newItemName);
-
-                replaceAll(result, "%event.change/previousItem.type%", (previousItem == null) ? "null" : previousItem.getType().name());
-                replaceAll(result, "%event.change/newItem.type%", (newItem == null) ? "null" : newItem.getType().name());
-            }
-        }
-
-        // House placeholders
-        replaceAll(result, "%%house%%", house.getName()); //Added this one just because :)
-        replaceAll(result, "%house.name%", house.getName());
-        replaceAll(result, "%house.cookies%", String.valueOf(house.getCookies()));
-        replaceAll(result, "%house.guests%", String.valueOf(house.getGuests()));
-
-        // Misc
-        replaceAll(result, "%unix.time%", String.valueOf(System.currentTimeMillis() / 1000));
-
-        // Regex for capturing stat placeholders like %stat.global/<stat>%
-        Regex globalPattern = new Regex("%stat\\.global/([a-zA-Z0-9_]+)%");
-        MatchResult globalMatch = globalPattern.find(result.toString(), 0);
-        while (globalMatch != null) {
-            String statName = globalMatch.getGroups().get(1).getValue(); // The captured <stat>
-            Stat stat = house.getStatManager().getGlobalStatByName(statName);
-            String replacement = (stat == null) ? "0" : stat.formatValue();
-            replaceAll(result, globalMatch.getValue(), replacement);
-            globalMatch = globalMatch.next();
         }
 
         return result.toString();

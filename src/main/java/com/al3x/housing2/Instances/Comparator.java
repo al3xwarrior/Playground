@@ -19,7 +19,7 @@ public class Comparator {
             return switch (comparator) {
                 case LESS_THAN -> value1.compareTo(value2) < 0;
                 case LESS_THAN_OR_EQUAL -> value1.compareTo(value2) <= 0;
-                case EQUAL -> value1.equals(value2);
+                case EQUALS -> value1.equals(value2);
                 case GREATER_THAN_OR_EQUAL -> value1.compareTo(value2) >= 0;
                 case GREATER_THAN -> value1.compareTo(value2) > 0;
             };
@@ -30,7 +30,7 @@ public class Comparator {
         return switch (comparator) {
             case LESS_THAN -> value1 < value2;
             case LESS_THAN_OR_EQUAL -> value1 <= value2;
-            case EQUAL -> value1 == value2;
+            case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
         };
@@ -40,7 +40,7 @@ public class Comparator {
         return switch (comparator) {
             case LESS_THAN -> value1 < value2;
             case LESS_THAN_OR_EQUAL -> value1 <= value2;
-            case EQUAL -> value1 == value2;
+            case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
         };
@@ -50,7 +50,7 @@ public class Comparator {
         return switch (comparator) {
             case LESS_THAN -> value1 < value2;
             case LESS_THAN_OR_EQUAL -> value1 <= value2;
-            case EQUAL -> value1 == value2;
+            case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
         };
@@ -60,7 +60,7 @@ public class Comparator {
         return switch (comparator) {
             case LESS_THAN -> value1 < value2;
             case LESS_THAN_OR_EQUAL -> value1 <= value2;
-            case EQUAL -> value1 == value2;
+            case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
         };
