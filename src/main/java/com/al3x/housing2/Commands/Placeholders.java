@@ -69,8 +69,8 @@ public class Placeholders implements CommandExecutor {
                             " &7(" + HandlePlaceholders.parsePlaceholders(player, house, placeholder.getPlaceholder()) + "&7)" :
                             "") //Basically with this we are just checking if the placeholder has a unique display name, if it does we show the parsed value
             ));
-            comp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, placeholder.getPlaceholder()));
-            comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("&eInsert " + placeholder.getDisplayName() + " into chat")));
+            comp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, Color.removeColor(placeholder.getDisplayName())));
+            comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(colorize("&eInsert " + Color.removeColor(placeholder.getDisplayName()) + "&e into chat"))));
             player.spigot().sendMessage(comp);
         }
 

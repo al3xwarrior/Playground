@@ -31,6 +31,7 @@ public enum ActionEnum {
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
+    EXIT("Exit Action", ExitAction.class),
     // Add new actions here
     ;
     private String name;
@@ -61,6 +62,7 @@ public enum ActionEnum {
     }
 
     public Action getActionInstance() {
+        if (name.equals("Exit Action")) return null;
         try {
             return this.action.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

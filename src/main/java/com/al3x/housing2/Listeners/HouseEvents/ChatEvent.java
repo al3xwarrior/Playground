@@ -21,7 +21,7 @@ public class ChatEvent implements Listener {
         this.housesManager = housesManager;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent e) {
         if (e.isCancelled()) return;
         lastChatEvent.put(e.getPlayer().getUniqueId(), e);

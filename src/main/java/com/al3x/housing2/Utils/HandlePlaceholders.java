@@ -205,12 +205,22 @@ public class HandlePlaceholders {
             return (stat == null) ? "0" : stat.formatValue();
         });
 
-        registerPlaceholder("regex:%round/(.+) ([0-9]+)%", "&6%round/&7[placeholder=] [places]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%round/(.+) ([0-9]+)%", "&6%round/&7[placeholder] [places]&6%", (player, house, match) -> {
             String value = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
             if (NumberUtilsKt.isDouble(value)) {
                 double val = Double.parseDouble(value);
                 int places = Integer.parseInt(match.getGroups().get(2).getValue());
-                return String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
+                if (places == 0) {//If the places is 0, round the value to the nearest whole number
+                    return String.valueOf((int) Math.round(val));
+                }
+
+                //Round the value to the specified number of decimal places
+                String returning =  String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
+                //If the value is a decimal, and the decimal is not the same as the places, add 0's to the end
+                if (returning.contains(".") && returning.split("\\.")[1].length() < places) {
+                    returning += "0".repeat(places - returning.split("\\.")[1].length());
+                }
+                return returning;
             }
             return value;// If the value is not a number, return the original value
         });

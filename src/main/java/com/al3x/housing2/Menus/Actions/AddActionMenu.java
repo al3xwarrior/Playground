@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -33,6 +35,7 @@ public class AddActionMenu extends Menu {
     private Function function;
     private EventType event;
     private List<Action> actions;
+    private String varName;
     private String search = "";
 
     public AddActionMenu(Main main, Player player, HousingWorld house, Function function, Menu backMenu) {
@@ -62,13 +65,14 @@ public class AddActionMenu extends Menu {
     }
 
     //Will be used for random actions and conditions
-    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu) {
+    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, String varName) {
         super(player, colorize("&aAdd Action"), 54);
         this.main = main;
         this.player = player;
         this.house = house;
         this.actions = actions;
         this.backMenu = backMenu;
+        this.varName = varName;
         setupItems();
     }
 
@@ -155,12 +159,12 @@ public class AddActionMenu extends Menu {
                 backMenu.open();
                 return;
             }
-            new ActionsMenu(main, player, house, actions, null).open();
+            new ActionsMenu(main, player, house, actions, null, null).open();
         });
     }
 
     public PaginationList<Action> getActions() {
-        List<Action> actionArray = Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).toList();
+        List<Action> actionArray = Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(Objects::nonNull).toList();
         List<Action> newActions = new ArrayList<>();
         for (Action action : actionArray) {
             if (action == null) continue;
@@ -180,6 +184,11 @@ public class AddActionMenu extends Menu {
             if (action.allowedEvents() != null) continue;
 
             newActions.add(action);
+        }
+
+        //Add before the search filter lol :)
+        if (varName != null && !varName.isEmpty()) { //Basically if, else, and random actions
+            newActions.add(new ExitAction());//Add the exit action
         }
 
         if (search != null) {

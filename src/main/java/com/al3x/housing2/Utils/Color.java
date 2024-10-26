@@ -35,7 +35,7 @@ public class Color {
     }
 
     public static String removeColor(String s) {
-        return ChatColor.stripColor(s);
+        return ChatColor.stripColor(s.replaceAll("&", "§"));
     }
 
 }

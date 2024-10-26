@@ -192,7 +192,16 @@ public class ActionEditMenu extends Menu {
                             Field field = action.getClass().getDeclaredField(item.getVarName());
                             field.setAccessible(true);
                             List<Action> subActions = (List<Action>) field.get(action);
-                            new ActionsMenu(main, player, house, subActions, this).open();
+                            ActionsMenu actionMenu = new ActionsMenu(main, player, house, subActions, this, item.getVarName());
+                            //Add this to check for events and such
+                            if (event != null) {
+                                actionMenu.setEvent(event);
+                            }
+                            if (housingNPC != null) {
+                                actionMenu.setHousingNPC(housingNPC);
+                            }
+
+                            actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));
@@ -205,7 +214,14 @@ public class ActionEditMenu extends Menu {
                             Field field = action.getClass().getDeclaredField(item.getVarName());
                             field.setAccessible(true);
                             List<Condition> subActions = (List<Condition>) field.get(action);
-                            new ActionsMenu(main, player, house, subActions, this, true).open();
+                            ActionsMenu actionMenu = new ActionsMenu(main, player, house, subActions, this, true);
+                            if (event != null) {
+                                actionMenu.setEvent(event);
+                            }
+                            if (housingNPC != null) {
+                                actionMenu.setHousingNPC(housingNPC);
+                            }
+                            actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));

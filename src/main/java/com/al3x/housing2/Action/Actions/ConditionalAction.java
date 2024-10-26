@@ -129,18 +129,17 @@ public class ConditionalAction extends Action {
             }
         }
 
+        boolean returnResult = true;
         if (result) {
             for (Action action : ifActions) {
-                action.execute(player, house);
-                return true;
+                returnResult = action.execute(player, house);
             }
         } else {
             for (Action action : elseActions) {
-                action.execute(player, house);
-                return true;
+                returnResult = action.execute(player, house);
             }
         }
-        return false;
+        return returnResult;
     }
 
     public List<Condition> getConditions() {
@@ -170,6 +169,14 @@ public class ConditionalAction extends Action {
         data.put("ifActions", Companion.fromList(ifActions));
         data.put("elseActions", Companion.fromList(elseActions));
         return data;
+    }
+
+    @Override
+    public HashMap<String, List<Action>> getActions() {
+        HashMap<String, List<Action>> actions = new HashMap<>();
+        actions.put("ifActions", ifActions);
+        actions.put("elseActions", elseActions);
+        return actions;
     }
 
     @Override

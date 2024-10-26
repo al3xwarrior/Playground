@@ -367,7 +367,9 @@ public class HousingWorld {
                     if (action.mustBeSync()) {
                         Bukkit.getScheduler().runTask(main, () -> action.execute(player, this));
                     } else {
-                        action.execute(player, this);
+                        if (!action.execute(player, this)) {
+                            break; //exit action will return false and will be the only action that will return false
+                        }
                     }
                 }
             });

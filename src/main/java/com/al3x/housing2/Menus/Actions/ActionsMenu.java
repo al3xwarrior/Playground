@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -32,6 +33,7 @@ public class ActionsMenu extends Menu {
     private EventType event;
     private Function function;
     private Menu backMenu;
+    private String varName;
     //1 is the new 0
     private int currentPage = 1;
     private final int itemsPerPage = 45;
@@ -55,6 +57,7 @@ public class ActionsMenu extends Menu {
         this.event = event;
         this.actions = house.getEventActions(event);
     }
+
     public ActionsMenu(Main main, Player player, HousingWorld house, EventType event, List<Action> actions, Menu backMenu) {
         super(player, colorize("&7Edit Actions"), 54);
         this.main = main;
@@ -79,21 +82,21 @@ public class ActionsMenu extends Menu {
         this.backMenu = backMenu;
     }
 
-    public ActionsMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu) {
+    public ActionsMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, String varName) {
         super(player, colorize("&7Edit Actions"), 54);
         this.main = main;
         this.player = player;
         this.house = house;
         this.actions = actions;
-        this.conditions = null;
         this.backMenu = backMenu;
+        this.varName = varName;
 
         if (actions == null) {
             this.actions = house.getEventActions(event);
         }
     }
 
-    public ActionsMenu(Main main, Player player, HousingWorld house, List<Condition> conditions, Menu backMenu, boolean isConditionAllMenu) {
+    public ActionsMenu(Main main, Player player, HousingWorld house, List<Condition> conditions, Menu backMenu, boolean isConditionalMenu) {
         super(player, colorize("&7Edit Conditions"), 54);
         this.main = main;
         this.player = player;
@@ -141,10 +144,19 @@ public class ActionsMenu extends Menu {
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
                     condition.createDisplayItem(item);
-                    addItem(slot, item.build(), () -> {
-                        new ActionEditMenu(condition, main, player, house, this).open();
-                    }, () -> {
-                        removeCondition(condition);
+                    int finalI = i;
+                    addItem(slot, item.build(), (e) -> {
+                        if (e.isShiftClick()) {
+                            //shift actions around
+                            shiftCondition(condition, e.isRightClick());
+                            return;
+                        }
+
+                        if (e.isLeftClick()) {
+                            new ActionEditMenu(condition, main, player, house, this).open();
+                        } else {
+                            removeCondition(condition);
+                        }
                     });
                 }
             }
@@ -174,16 +186,25 @@ public class ActionsMenu extends Menu {
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
                     action.createDisplayItem(item);
-                    addItem(slot, item.build(), () -> {
-                        if (housingNPC != null) {
-                            new ActionEditMenu(action, main, player, house, housingNPC).open();
+                    int finalI = i;
+                    addItem(slot, item.build(), (e) -> {
+                        if (e.isShiftClick()) {
+                            //shift actions around
+                            shiftAction(action, e.isRightClick());
+                            return;
                         }
-                        if (event != null) {
-                            new ActionEditMenu(action, main, player, house, event).open();
+
+                        if (e.isLeftClick()) {
+                            if (housingNPC != null) {
+                                new ActionEditMenu(action, main, player, house, housingNPC).open();
+                            }
+                            if (event != null) {
+                                new ActionEditMenu(action, main, player, house, event).open();
+                            }
+                            new ActionEditMenu(action, main, player, house, this).open();
+                        } else {
+                            removeAction(action);
                         }
-                        new ActionEditMenu(action, main, player, house, this).open();
-                    }, () -> {
-                        removeAction(action);
                     });
                 }
             }
@@ -213,7 +234,7 @@ public class ActionsMenu extends Menu {
                     new AddActionMenu(main, player, house, event, this).open();
                     return;
                 }
-                new AddActionMenu(main, player, house, this.actions, this).open();
+                new AddActionMenu(main, player, house, this.actions, this, varName).open();
             });
         }
 
@@ -246,4 +267,80 @@ public class ActionsMenu extends Menu {
         });
     }
 
+    public void setEvent(EventType event) {
+        this.event = event;
+    }
+
+    public void setFunction(Function function) {
+        this.function = function;
+    }
+
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
+    }
+
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
+    public void setBackMenu(Menu backMenu) {
+        this.backMenu = backMenu;
+    }
+
+    public void setHousingNPC(HousingNPC housingNPC) {
+        this.housingNPC = housingNPC;
+    }
+
+    public void shiftAction(Action action, boolean forward) {
+        if (actions == null) return;
+        if (actions.size() < 2) return;
+
+        int index = actions.indexOf(action);
+        if (forward) {
+            if (index == actions.size() - 1) {
+                //Move to the first position
+                actions.remove(index);
+                actions.add(0, action);
+                return;
+            }
+            actions.remove(index);
+            actions.add(index + 1, action);
+        } else {
+            if (index == 0) {
+                //Move to the last position
+                actions.remove(index);
+                actions.add(actions.size(), action);
+                return;
+            }
+            actions.remove(index);
+            actions.add(index - 1, action);
+        }
+        setupItems();
+    }
+
+    public void shiftCondition(Condition condition, boolean forward) {
+        int index = conditions.indexOf(condition);
+
+        if (conditions == null) return;
+        if (conditions.size() < 2) return;
+
+        if (forward) {
+            if (index == conditions.size() - 1) {
+                //Move to the first position
+                conditions.remove(index);
+                conditions.add(0, condition);
+            }
+            conditions.remove(index);
+            conditions.add(index + 1, condition);
+        } else {
+            if (index == 0) {
+                //Move to the last position
+                conditions.remove(index);
+                conditions.add(conditions.size(), condition);
+            }
+            conditions.remove(index);
+            conditions.add(index - 1, condition);
+        }
+        setupItems();
+    }
 }
