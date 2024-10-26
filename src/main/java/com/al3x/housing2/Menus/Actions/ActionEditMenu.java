@@ -42,26 +42,7 @@ public class ActionEditMenu extends Menu {
         return condition.editorMenu(house) != null ? condition.editorMenu(house) : condition.editorMenu(house, menu) != null ? condition.editorMenu(house, menu) : condition.editorMenu(house, player);
     }
 
-    // NPC
-    public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, HousingNPC housingNPC) {
-        super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
-        this.main = main;
-        this.action = action;
-        this.player = player;
-        this.house = house;
-        this.housingNPC = housingNPC;
-    }
-
-    // Events
-    public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, EventType event) {
-        super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
-        this.main = main;
-        this.action = action;
-        this.player = player;
-        this.house = house;
-        this.event = event;
-    }
-
+    //Action
     public ActionEditMenu(Action action, Main main, Player player, HousingWorld house, Menu backMenu) {
         super(player, colorize(getEditor(action, house, null, player).getTitle()), getEditor(action, house, null, player).getRows() * 9);
         this.main = main;
@@ -71,7 +52,7 @@ public class ActionEditMenu extends Menu {
         this.backMenu = backMenu;
     }
 
-    // Conditions
+    // Condition
     public ActionEditMenu(Condition condition, Main main, Player player, HousingWorld house, Menu backMenu) {
         super(player, colorize(getEditor(condition, house, null, player).getTitle()), getEditor(condition, house, null, player).getRows() * 9);
         this.main = main;
@@ -107,11 +88,26 @@ public class ActionEditMenu extends Menu {
                 var o = new Object() {
                     Field field = null;
                     Object value = null;
+
+                    public void setValue(Object value) {
+                        try {
+                            field.set((action == null) ? condition : action, value);
+                        } catch (IllegalAccessException ex) {
+                            Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                            player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                        }
+                    }
                 };
                 try {
-                    o.field = action.getClass().getDeclaredField(item.getVarName());
-                    o.field.setAccessible(true);
-                    o.value = o.field.get(action);
+                    if (action != null) {
+                        o.field = action.getClass().getDeclaredField(item.getVarName());
+                        o.field.setAccessible(true);
+                        o.value = o.field.get(action);
+                    } else {
+                        o.field = condition.getClass().getDeclaredField(item.getVarName());
+                        o.field.setAccessible(true);
+                        o.value = o.field.get(condition);
+                    }
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
                     Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
                     player.sendMessage(colorize("&cFailed to get field " + item.getBuilder().getName() + " in " + action.getName()));
@@ -120,15 +116,10 @@ public class ActionEditMenu extends Menu {
                     case STRING: {
                         player.sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
                         openChat(main, o.value.toString(), (input) -> {
-                            try {
-                                // Set the field
-                                if (o.field == null) return;
-                                o.field.set(action, input);
-                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (IllegalAccessException ex) {
-                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
-                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
-                            }
+                            // Set the field
+                            if (o.field == null) return;
+                            o.setValue(input);
+                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
                         });
                         break;
                     }
@@ -148,11 +139,8 @@ public class ActionEditMenu extends Menu {
                                 }
                                 // Set the field
                                 if (o.field == null) return;
-                                o.field.set(action, num);
+                                o.setValue(num);
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (IllegalAccessException ex) {
-                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
-                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                             } catch (NumberFormatException ex) {
                                 player.sendMessage(colorize("&cInvalid number! Please enter a valid number."));
                             }
@@ -176,11 +164,8 @@ public class ActionEditMenu extends Menu {
                                 }
                                 // Set the field
                                 if (o.field == null) return;
-                                o.field.set(action, num);
+                                o.setValue(num);
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + input));
-                            } catch (IllegalAccessException ex) {
-                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
-                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
                             } catch (NumberFormatException ex) {
                                 player.sendMessage(colorize("&cInvalid number! Please enter a valid number."));
                             }
@@ -199,12 +184,8 @@ public class ActionEditMenu extends Menu {
                             List<Action> subActions = (List<Action>) field.get(action);
                             ActionsMenu actionMenu = new ActionsMenu(main, player, house, subActions, this, item.getVarName());
                             //Add this to check for events and such
-                            if (event != null) {
-                                actionMenu.setEvent(event);
-                            }
-                            if (housingNPC != null) {
-                                actionMenu.setHousingNPC(housingNPC);
-                            }
+                            actionMenu.setEvent(event);
+                            actionMenu.setHousingNPC(housingNPC);
 
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -254,16 +235,11 @@ public class ActionEditMenu extends Menu {
                         break;
                     }
                     case BOOLEAN: {
-                        try {
-                            if (o.field == null) return;
-                            boolean value = (boolean) o.field.get(action);
-                            o.field.set(action, !value);
-                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + !value));
-                            open();
-                        } catch (IllegalAccessException ex) {
-                            Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
-                            player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
-                        }
+                        if (o.field == null) return;
+                        boolean value = o.value instanceof Boolean ? (boolean) o.value : false;
+                        o.setValue(!value);
+                        player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + !value));
+                        open();
                         break;
                     }
                     case ACTION_SETTING: {
@@ -287,14 +263,6 @@ public class ActionEditMenu extends Menu {
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(31, backArrow, () -> {
-            if (housingNPC != null) {
-                new ActionsMenu(main, player, house, housingNPC).open();
-                return;
-            }
-            if (event != null) {
-                new ActionsMenu(main, player, house, event).open();
-                return;
-            }
             if (backMenu != null) {
                 backMenu.open();
                 return;
@@ -302,5 +270,13 @@ public class ActionEditMenu extends Menu {
             player.sendMessage(colorize("&cError: No back menu found"));
             player.closeInventory();
         });
+    }
+
+    public void setEvent(EventType event) {
+        this.event = event;
+    }
+
+    public void setHousingNPC(HousingNPC housingNPC) {
+        this.housingNPC = housingNPC;
     }
 }

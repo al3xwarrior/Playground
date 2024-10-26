@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -47,9 +48,17 @@ public abstract class Action {
 
     public abstract boolean execute(Player player, HousingWorld house);
 
+    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+        return execute(player, house);
+    }
+
     public abstract HashMap<String, Object> data();
 
     public abstract boolean requiresPlayer();
+
+    public int limit() {
+        return -1;
+    }
 
     /**
      * Returns a list of events that are allowed for this action.

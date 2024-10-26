@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,6 +113,11 @@ public class ConditionalAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return false; //does nothing
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event) {
         boolean result = false;
         if (conditions.isEmpty()) {
             result = true;
@@ -132,11 +138,11 @@ public class ConditionalAction extends Action {
         boolean returnResult = true;
         if (result) {
             for (Action action : ifActions) {
-                returnResult = action.execute(player, house);
+                returnResult = action.execute(player, house, event);
             }
         } else {
             for (Action action : elseActions) {
-                returnResult = action.execute(player, house);
+                returnResult = action.execute(player, house, event);
             }
         }
         return returnResult;
@@ -188,7 +194,7 @@ public class ConditionalAction extends Action {
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         if (data.containsKey("conditions")) {
             //Imma just assume this will work
-            conditionDataToList(gson.toJsonTree(data.get("conditions")).getAsJsonArray());
+            conditions = conditionDataToList(gson.toJsonTree(data.get("conditions")).getAsJsonArray());
         }
         if (data.containsKey("matchAnyCondition")) {
             matchAnyCondition = (boolean) data.get("matchAnyCondition");

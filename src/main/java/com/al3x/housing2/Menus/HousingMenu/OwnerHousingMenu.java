@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus.HousingMenu;
 
+import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
@@ -171,7 +172,13 @@ public class OwnerHousingMenu extends Menu {
         visitingRulesMeta.setDisplayName(colorize("&aVisiting Rules"));
         visitingRules.setItemMeta(visitingRulesMeta);
         addItem(38, visitingRules, () -> {
-            player.sendMessage("Visiting Rules");
+            if (house.getPrivacy().equals(HousePrivacy.PRIVATE)) {
+                house.setPrivacy(HousePrivacy.PUBLIC);
+                player.sendMessage(colorize("&aYour house is now public."));
+            } else {
+                house.setPrivacy(HousePrivacy.PRIVATE);
+                player.sendMessage(colorize("&aYour house is now private."));
+            }
         });
 
         ItemStack houseSettings = new ItemStack(Material.COMPARATOR);

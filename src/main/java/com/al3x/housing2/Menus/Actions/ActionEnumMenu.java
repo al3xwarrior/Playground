@@ -126,14 +126,6 @@ public class ActionEnumMenu extends Menu {
                         field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
 
                         player.sendMessage(colorize("&aUpdated " + item.getBuilder().getName() + " to " + pageItems.get(finalI).getName()));
-                        if (housingNPC != null) {
-                            new ActionEditMenu(action, main, player, house, housingNPC).open();
-                            return;
-                        }
-                        if (event != null) {
-                            new ActionEditMenu(action, main, player, house, event).open();
-                            return;
-                        }
                         if (backMenu != null) {
                             backMenu.open();
                             return;
@@ -193,15 +185,6 @@ public class ActionEnumMenu extends Menu {
         addItem(49, new ItemBuilder().material(ARROW).name("&cGo Back")
                 .description((backMenu != null) ? "&7Back to " + backMenu.getTitle() : "&7Back to previous menu")
                 .build(), (e) -> {
-            if (housingNPC != null) {
-                new ActionEditMenu(action, main, player, house, housingNPC).open();
-                return;
-            }
-            if (event != null) {
-                new ActionEditMenu(action, main, player, house, event).open();
-                return;
-            }
-
             // not sure why this wasnt here? (prob bald) si
             if (backMenu != null) {
                 backMenu.open();

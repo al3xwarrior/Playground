@@ -23,7 +23,7 @@ public class PlaceholderRequirement extends Condition {
 
     public PlaceholderRequirement() {
         super("Placeholder Requirement");
-        this.placeholder = "%stat.player/Kills";
+        this.placeholder = "%stat.player/Kills%";
         this.comparator = StatComparator.EQUALS;
         this.compareValue = "1.0";
     }

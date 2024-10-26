@@ -1,7 +1,9 @@
 package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
+import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -76,6 +78,10 @@ public class AddActionMenu extends Menu {
         setupItems();
     }
 
+    public void setEvent(EventType event) {
+        this.event = event;
+    }
+
     @Override
     public void open() {
         this.inventory = Bukkit.createInventory(null, 54, "§aAdd Action (" + page + "/" + getActions().getPageCount() + ")");
@@ -91,12 +97,34 @@ public class AddActionMenu extends Menu {
         PaginationList<Action> paginationList = getActions();
         List<Action> actionsList = paginationList.getPage(page);
 
+        final boolean[] hasPause = {false};
         if (actionsList != null && !actionsList.isEmpty()) {
             for (int i = 0; i < actionsList.size(); i++) {
                 Action action = actionsList.get(i);
                 ItemBuilder item = new ItemBuilder();
                 action.createAddDisplayItem(item);
                 addItem(slots[i] - 1, item.build(), () -> {
+                    if (action.limit() != -1) {
+                        int count = 0;
+                        for (Action a : this.actions) {
+                            if (a.toString().equals(action.toString())) {
+                                count++;
+                            }
+                        }
+                        if (count >= action.limit()) {
+                            player.sendMessage(colorize("&cYou can only have " + action.limit() + " of this action!"));
+                            return;
+                        }
+                    }
+
+                    if (action instanceof PauseAction) {
+                        hasPause[0] = true;
+                    }
+
+                    if (action instanceof CancelAction && hasPause[0]) {
+                        player.sendMessage(colorize("&cJust know any cancel action after a pause action will not work!"));
+                    }
+
                     actions.add(action);
                     if (backMenu != null) {
                         backMenu.open();
@@ -159,7 +187,10 @@ public class AddActionMenu extends Menu {
                 backMenu.open();
                 return;
             }
-            new ActionsMenu(main, player, house, actions, null, null).open();
+            ActionsMenu menu = new ActionsMenu(main, player, house, actions, null, null);
+            menu.setEvent(event);
+            menu.setFunction(function);
+            menu.open();
         });
     }
 
@@ -191,5 +222,9 @@ public class AddActionMenu extends Menu {
         }
 
         return new PaginationList<>(newActions, 21);
+    }
+
+    public void setFunction(Function function) {
+        this.function = function;
     }
 }

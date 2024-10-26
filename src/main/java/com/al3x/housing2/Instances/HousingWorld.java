@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.Actions.CancelAction;
+import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
@@ -372,14 +373,42 @@ public class HousingWorld {
         List<Action> actions = eventActions.get(eventType);
         boolean cancelled = false;
         if (actions != null) {
-            //Look and see if there is a cancel action
-            CancelAction cancelAction = Action.getCancelAction(actions);
-            if (cancelAction != null && cancelAction.allowedEvents().contains(eventType)) {
-                cancelled = true;
-                event.setCancelled(true);
+
+            List<Action> beforePauseActions = new ArrayList<>();
+            List<Action> afterPauseActions = new ArrayList<>();
+
+            //Pause actions will break events into two parts
+            for (Action action : actions) {
+                beforePauseActions.add(action);
+                if (action instanceof PauseAction) {
+                    beforePauseActions.remove(action);
+                    afterPauseActions.add(action);
+                    afterPauseActions.addAll(actions.subList(actions.indexOf(action) + 1, actions.size()));
+                    break;
+                }
             }
+
+            //Before pause action, looking for things like cancel
+            for (Action action : beforePauseActions) {
+                // Check if the action is null or if the event is allowed
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
+                if (action.mustBeSync()) {
+                    action.execute(player, this);
+                } else {
+                    if (action instanceof CancelAction) {
+                        event.setCancelled(true);
+                        cancelled = true;
+                    } else {
+                        if (!action.execute(player, this, event)) {
+                            return false; //exit action will return false and will be the only action that will return false
+                        }
+                    }
+                }
+            }
+
+            //Then after pause actions will be executed asynchronously
             Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-                for (Action action : actions) {
+                for (Action action : afterPauseActions) {
                     // Check if the action is null or if the event is allowed
                     if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
                     if (action.mustBeSync()) {

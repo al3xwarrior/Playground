@@ -51,6 +51,11 @@ public class ExitAction extends Action {
     }
 
     @Override
+    public int limit() {
+        return 1;
+    }
+
+    @Override
     public boolean requiresPlayer() {
         return false;
     }

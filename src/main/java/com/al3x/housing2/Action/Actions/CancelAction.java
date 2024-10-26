@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -45,6 +46,12 @@ public class CancelAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return true;
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+        event.setCancelled(true);
         return true;
     }
 

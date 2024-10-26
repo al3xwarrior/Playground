@@ -56,20 +56,7 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.event = event;
         this.actions = house.getEventActions(event);
-    }
-
-    public ActionsMenu(Main main, Player player, HousingWorld house, EventType event, List<Action> actions, Menu backMenu) {
-        super(player, colorize("&7Edit Actions"), 54);
-        this.main = main;
-        this.player = player;
-        this.house = house;
-        this.event = event;
-        this.actions = actions;
-        this.backMenu = backMenu;
-
-        if (actions == null) {
-            this.actions = house.getEventActions(event);
-        }
+        this.backMenu = new EventActionsMenu(main, player, house);
     }
 
     public ActionsMenu(Main main, Player player, HousingWorld house, Function function, Menu backMenu) {
@@ -195,13 +182,10 @@ public class ActionsMenu extends Menu {
                         }
 
                         if (e.isLeftClick()) {
-                            if (housingNPC != null) {
-                                new ActionEditMenu(action, main, player, house, housingNPC).open();
-                            }
-                            if (event != null) {
-                                new ActionEditMenu(action, main, player, house, event).open();
-                            }
-                            new ActionEditMenu(action, main, player, house, this).open();
+                            ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
+                            menu.setEvent(event);
+                            menu.setHousingNPC(housingNPC);
+                            menu.open();
                         } else {
                             removeAction(action);
                         }
@@ -226,15 +210,10 @@ public class ActionsMenu extends Menu {
             addActionMeta.setDisplayName(colorize("&aAdd Action"));
             addAction.setItemMeta(addActionMeta);
             addItem(50, addAction, () -> {
-                if (function != null) {
-                    new AddActionMenu(main, player, house, function, this).open();
-                    return;
-                }
-                if (event != null) {
-                    new AddActionMenu(main, player, house, event, this).open();
-                    return;
-                }
-                new AddActionMenu(main, player, house, this.actions, this, varName).open();
+                AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, varName);
+                menu.setEvent(event);
+                menu.setFunction(function);
+                menu.open();
             });
         }
 
