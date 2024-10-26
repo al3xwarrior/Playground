@@ -102,6 +102,10 @@ public class HandlePlaceholders {
         registerPlaceholder("%player.location.z%", (player, house) -> String.valueOf(player.getLocation().getZ()));
         registerPlaceholder("%player.location.pitch%", (player, house) -> String.valueOf(player.getLocation().getPitch()));
         registerPlaceholder("%player.location.yaw%", (player, house) -> String.valueOf(player.getLocation().getYaw()));
+        registerPlaceholder("%player.health%", (player, house) -> String.valueOf(player.getHealth()));
+        registerPlaceholder("%player.maxHealth%", (player, house) -> String.valueOf(player.getMaxHealth()));
+        registerPlaceholder("%player.hunger%", (player, house) -> String.valueOf(player.getFoodLevel()));
+        registerPlaceholder("%player.level%", (player, house) -> String.valueOf(player.getLevel()));
 
         // Regex for capturing stat placeholders like %stat.player/<stat>%
         registerPlaceholder("regex:%stat\\.player/([a-zA-Z0-9_]+)%", "&6%stat.player/&7[stat]&6%", (player, house, match) -> {

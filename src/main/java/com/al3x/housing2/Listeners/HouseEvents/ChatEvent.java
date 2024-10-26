@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -26,5 +27,10 @@ public class ChatEvent implements Listener {
         if (e.isCancelled()) return;
         lastChatEvent.put(e.getPlayer().getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_CHAT, e.getPlayer(), e);
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent e) {
+        lastChatEvent.remove(e.getPlayer().getUniqueId());
     }
 }

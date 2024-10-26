@@ -469,6 +469,9 @@ public class HousingWorld {
             removeNPC(npc.getNpcID());
         }
 
+        // would this work? - Al3x
+        commands.clear();
+
         File file = new File(main.getDataFolder(), "houses/" + houseUUID.toString() + ".json");
         if (file.exists()) {
             file.delete();

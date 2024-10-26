@@ -1,6 +1,5 @@
 package com.al3x.housing2.Condition;
 
-import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.Conditions.*;
 import com.al3x.housing2.Condition.Conditions.IsSneakingCondition;
 
@@ -10,7 +9,13 @@ import java.util.HashMap;
 public enum ConditionEnum {
     IS_SNEAKING("Is Sneaking", IsSneakingCondition.class),
     IS_FLYING("Is Flying", IsFlyingCondition.class),
-    PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirement.class),
+    PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
+    GLOBALSTAT_REQUIREMENT("Global Stat Requirement", GlobalStatRequirementCondition.class),
+    STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
+    HEALTH_REQUIREMENT("Health Requirement", HealthRequirementCondition.class),
+    MAXHEALTH_REQUIREMENT("Max Health Requirement", MaxHealthRequirementCondition.class),
+    HUNGER_REQUIREMENT("Hunger Requirement", HungerRequirementCondition.class),
+    GAMEMODE_REQUIREMENT("Gamemode Requirement", GamemodeRequirementCondition.class),
     ;
     
     private String name;

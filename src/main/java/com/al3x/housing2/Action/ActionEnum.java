@@ -27,12 +27,13 @@ public enum ActionEnum {
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
     CLEAR_GLOBALSTATS("Clear Global Stats Action", ClearGlobalStatsAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
-    //Name of the action and the class that has the name of the action need to be the exact same
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
+    SET_GAMEMODE("Set Gamemode Action", SetGamemodeAction.class),
     EXIT("Exit Action", ExitAction.class),
     // Add new actions here
+    // Name of the action and the class that has the name of the action need to be the exact same
     ;
     private String name;
     private Class<? extends Action> action;

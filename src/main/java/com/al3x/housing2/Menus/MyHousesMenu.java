@@ -62,6 +62,10 @@ public class MyHousesMenu extends Menu {
         }
 
         List<String> houseIDs = housesManager.getPlayerHouses().get(target.getUniqueId());
+        if (houseIDs == null) {
+            player.sendMessage(colorize("&cThis player does not have a house!"));
+            return;
+        }
         int[] slots = getSlots(houseIDs.size());
 
         for (int i = 0; i < houseIDs.size(); i++) {
