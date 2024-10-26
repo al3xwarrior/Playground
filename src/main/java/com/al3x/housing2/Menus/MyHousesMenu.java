@@ -89,6 +89,12 @@ public class MyHousesMenu extends Menu {
                             (house.getOwnerID().equals(player.getUniqueId().toString()) ? colorize("\n&eRight Click to Manage!") : "")))
                     .punctuation(false)
                     .build(), () -> {
+                if (HousePrivacy.valueOf(house.getPrivacy()) != HousePrivacy.PUBLIC) {
+                    if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
+                        player.sendMessage(colorize("&cThis house is private!"));
+                        return;
+                    }
+                }
                 if (world[0] != null) {
                     world[0].sendPlayerToHouse(player);
                 } else {
