@@ -19,6 +19,8 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -67,6 +69,9 @@ public class HousingWorld {
 
     // Stats
     private StatManager statManager;
+
+    //Commands
+    private List<Command> commands;
 
     // Random Seed and Random instance
     private String seed;
@@ -122,6 +127,8 @@ public class HousingWorld {
 
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
+
+        this.commands = CommandData.Companion.toList(houseData.getCommands());
 
         this.scoreboard = houseData.getScoreboard();
 
@@ -195,10 +202,12 @@ public class HousingWorld {
         this.functions = new ArrayList<>();
         this.privacy = HousePrivacy.PRIVATE;
         this.icon = Material.OAK_DOOR;
+        this.commands = new ArrayList<>();
 
         // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
+
 
         switch (size) {
             case MEDIUM -> this.size = 50;
@@ -334,11 +343,6 @@ public class HousingWorld {
         Bukkit.unloadWorld(houseWorld, false);
     }
 
-    public void addEventAction(EventType eventType, Action action) {
-        // Shoutout to chatgippity cause i have 0 clue what this means
-        eventActions.computeIfAbsent(eventType, k -> new ArrayList<>()).add(action);
-    }
-
     public Function createFunction(String name) {
         if (name == null) return null;
         for (Function function : functions) {
@@ -347,6 +351,20 @@ public class HousingWorld {
 
         Function function = new Function(name);
         functions.add(function);
+        return function;
+    }
+
+    public Command createCommand(String name) {
+        if (name == null) return null;
+        for (Command command : commands) {
+            if (command.getName().equals(name)) return null;
+        }
+
+        Command function = new Command(name);
+        commands.add(function);
+
+        main.getCommandFramework().registerCommand(function.getName(), function.getCommand());
+
         return function;
     }
 
@@ -475,6 +493,10 @@ public class HousingWorld {
     public void sendPlayerToHouse(Player player) {
         player.teleport(spawn);
         player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+    }
+
+    public List<Command> getCommands() {
+        return commands;
     }
 
     public StatManager getStatManager() {

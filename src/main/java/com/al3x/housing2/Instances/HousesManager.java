@@ -109,7 +109,26 @@ public class HousesManager {
         return null;
     }
 
+    public boolean playerHasHouse(OfflinePlayer player) {
+        for (HousingWorld house : loadedHouses) {
+            if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
+        }
+        if (playerHouses.containsKey(player.getUniqueId())) {
+            return !playerHouses.get(player.getUniqueId()).isEmpty();
+        }
+        return false;
+    }
+
     public HousingWorld getLoadedHouse(Player owner) {
+        for (HousingWorld house : getLoadedHouses()) {
+            if (house.getOwnerUUID().equals(owner.getUniqueId())) {
+                return house;
+            }
+        }
+        return null;
+    }
+
+    public HousingWorld getLoadedHouse(OfflinePlayer owner) {
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
                 return house;

@@ -68,7 +68,7 @@ public class EditHouseMenu extends Menu{
                 .name(colorize("&cGo Back"))
                 .description("Go back to the house menu")
                 .build(), () -> {
-            new MyHousesMenu(main, player).open();
+            new MyHousesMenu(main, player, player).open();
         });
 
     }

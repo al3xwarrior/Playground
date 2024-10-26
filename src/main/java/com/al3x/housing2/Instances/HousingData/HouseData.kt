@@ -24,6 +24,7 @@ data class HouseData(
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
     var playerStats: HashMap<String, List<StatData>>,
+    var commands: List<CommandData> = arrayListOf(),
     val seed: String,
     var functions: List<FunctionData> = arrayListOf()
 ) {
@@ -45,6 +46,7 @@ data class HouseData(
                 NPCData.fromList(world.npCs),
                 fromList(world.statManager.globalStats),
                 fromHashMap(world.statManager.playerStats),
+                CommandData.fromList(world.commands),
                 world.seed,
                 FunctionData.fromList(world.functions)
             )
