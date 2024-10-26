@@ -62,7 +62,6 @@ public enum ActionEnum {
     }
 
     public Action getActionInstance() {
-        if (name.equals("Exit Action")) return null;
         try {
             return this.action.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

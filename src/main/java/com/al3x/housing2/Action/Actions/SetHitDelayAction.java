@@ -6,6 +6,7 @@ import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class SetHitDelayAction extends Action {
 
-    private int delay;
+    private double delay;
 
     public SetHitDelayAction() {
         super("Set Hit Delay Action");
@@ -71,8 +72,8 @@ public class SetHitDelayAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         if (player != null) {
-            player.setMaximumNoDamageTicks(delay);
-            player.setNoDamageTicks(delay);
+            player.setMaximumNoDamageTicks(NumberUtilsKt.toInt(delay));
+            player.setNoDamageTicks(NumberUtilsKt.toInt(delay));
         }
         return true;
     }

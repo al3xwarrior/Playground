@@ -5,7 +5,6 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Material;
@@ -47,12 +46,19 @@ public class CommandArgumentsEditMenu extends Menu {
                 item.description("Type: " + arg.getType().name() + "\n" + "Required: " + arg.isRequired());
                 item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
                 item.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-                addItem(slots[j], item.build(), () -> {
-                    new CommandArugmentEditMenu(main, player, house, command, arg).open();
-                }, () -> {
-                    currentPage = 1;
-                    command.getArgs().remove(arg);
-                    setupItems();
+                item.shiftClick();
+                addItem(slots[j], item.build(), (e) -> {
+                    if (e.isShiftClick()) {
+                        shiftArg(arg, e.isLeftClick());
+                        return;
+                    }
+
+                    if (e.isLeftClick()) {
+                        new CommandArugmentEditMenu(main, player, house, command, arg).open();
+                    } else {
+                        command.getArgs().remove(arg);
+                        setupItems();
+                    }
                 });
             }
         } else {
@@ -78,5 +84,33 @@ public class CommandArgumentsEditMenu extends Menu {
                 .build(), (e) -> {
             new CommandEditMenu(main, player, house, command).open();
         });
+    }
+
+    public void shiftArg(Command.CommandArg arg, boolean forward) {
+        List<Command.CommandArg> args = command.getArgs();
+        if (args == null) return;
+        if (args.size() < 2) return;
+
+        int index = args.indexOf(arg);
+        if (forward) {
+            if (index == args.size() - 1) {
+                //Move to the first position
+                args.remove(index);
+                args.add(0, arg);
+                return;
+            }
+            args.remove(index);
+            args.add(index + 1, arg);
+        } else {
+            if (index == 0) {
+                //Move to the last position
+                args.remove(index);
+                args.add(args.size(), arg);
+                return;
+            }
+            args.remove(index);
+            args.add(index - 1, arg);
+        }
+        setupItems();
     }
 }
