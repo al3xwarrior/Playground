@@ -201,7 +201,7 @@ public class HandlePlaceholders {
 
         // Regex for capturing stat placeholders like %stat.global/<stat>%
         registerPlaceholder("regex:%stat\\.global/([a-zA-Z0-9_]+)%", "&6%stat.global/&7[stat]&6%", (player, house, match) -> {
-            String statName = player.getDisplayName(); // The captured <stat>
+            String statName = match.getGroupValues().get(1); // The captured <stat>
             Stat stat = house.getStatManager().getGlobalStatByName(statName);
             return (stat == null) ? "0" : stat.formatValue();
         });
