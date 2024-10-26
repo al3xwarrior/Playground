@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import net.citizensnpcs.api.CitizensAPI;
@@ -18,6 +19,7 @@ public final class Main extends JavaPlugin {
     private static Main INSTANCE;
     private SlimeLoader loader;
     private HousesManager housesManager;
+    private HousingCommandFramework commandFramework;
 
     @Override
     public void onEnable() {
@@ -26,6 +28,8 @@ public final class Main extends JavaPlugin {
         loader = new FileLoader(new File("./slime_worlds"));
 
         this.housesManager = new HousesManager(this);
+
+        commandFramework = new HousingCommandFramework(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("home").setExecutor(new Home(this));
@@ -70,6 +74,10 @@ public final class Main extends JavaPlugin {
 
     public SlimeLoader getLoader() {
         return loader;
+    }
+
+    public HousingCommandFramework getCommandFramework() {
+        return commandFramework;
     }
 
     @Override

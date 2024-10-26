@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.HousingMenu;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.commands.CommandsMenu;
 import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -55,7 +56,7 @@ public class SystemsMenu extends Menu {
         commandsMeta.setDisplayName(colorize("&aCommands"));
         commands.setItemMeta(commandsMeta);
         addItem(13, commands, () -> {
-            player.sendMessage("Opening Commands Menu...");
+            new CommandsMenu(main, player, house).open();
         });
 
         ItemStack functions = new ItemStack(Material.ACTIVATOR_RAIL);

@@ -1,5 +1,6 @@
 package com.al3x.housing2.Utils;
 
+import com.al3x.housing2.Instances.CommandRegistry;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
@@ -203,6 +204,18 @@ public class HandlePlaceholders {
             String statName = player.getDisplayName(); // The captured <stat>
             Stat stat = house.getStatManager().getGlobalStatByName(statName);
             return (stat == null) ? "0" : stat.formatValue();
+        });
+
+        // Regex for command args placeholders like %command.args/<index>%
+        registerPlaceholder("regex:%command\\.args/([0-9]+)%", "&6%command.args/&7[index 0-∞]&6%", (player, house, match) -> {
+            int index = Integer.parseInt(match.getGroups().get(1).getValue());
+            if (CommandRegistry.commandArgsResults.containsKey(player.getUniqueId())) {
+                List<String> args = CommandRegistry.commandArgsResults.get(player.getUniqueId());
+                if (args.size() > index) {
+                    return args.get(index);
+                }
+            }
+            return "";
         });
 
         registerPlaceholder("regex:%round/(.+) ([0-9]+)%", "&6%round/&7[placeholder] [places]&6%", (player, house, match) -> {

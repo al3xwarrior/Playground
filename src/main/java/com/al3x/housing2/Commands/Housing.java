@@ -7,6 +7,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -62,7 +63,7 @@ public class Housing implements CommandExecutor {
             }
 
             if (strings[0].equalsIgnoreCase("home")) {
-                new MyHousesMenu(main, player).open();
+                new MyHousesMenu(main, player, player).open();
                 return true;
             }
 
@@ -102,7 +103,7 @@ public class Housing implements CommandExecutor {
 
             if (strings[0].equalsIgnoreCase("visit")) {
                 if (strings.length == 2) {
-                    Player target = Bukkit.getPlayer(strings[1]);
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(strings[1]);
                     if (target == null) {
                         player.sendMessage(colorize("&cThere is no player with that username online!"));
                         return true;
@@ -113,9 +114,8 @@ public class Housing implements CommandExecutor {
                         return true;
                     }
 
-                    player.sendMessage(colorize("&aSending you to that players house..."));
-                    HousingWorld house = housesManager.getHouse(target);
-                    house.sendPlayerToHouse(player);
+                    MyHousesMenu menu = new MyHousesMenu(main, player, target);
+                    menu.open();
                     return true;
                 }
 

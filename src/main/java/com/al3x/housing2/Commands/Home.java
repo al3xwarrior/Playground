@@ -25,7 +25,7 @@ public class Home implements CommandExecutor {
 
         Player player = (Player) commandSender;
 
-        new MyHousesMenu(main, player).open();
+        new MyHousesMenu(main, player, player).open();
 
         return false;
     }

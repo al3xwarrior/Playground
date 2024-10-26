@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Color;
@@ -53,17 +54,20 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
         }
 
         //I really shouldn't have made this, but I did :)
-        for (int i = 0; i < pageItems.size(); i++) {
-            E e = pageItems.get(i);
-            if (e instanceof Material) material = (Material) e;
-            if (material == null) continue;
-            if (material.equals(Material.AIR)) continue;
-            addItem(slots[i], ItemBuilder.create((material))
-                    .name(colorize("&a" + e.name()))
-                    .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                    .build(), (event) -> {
-                con.accept(e);
-            });
+        if (pageItems != null) {
+            for (int i = 0; i < pageItems.size(); i++) {
+                E e = pageItems.get(i);
+                if (e instanceof Material) material = (Material) e;
+                if (e instanceof EnumMaterial) material = ((EnumMaterial) e).getMaterial();
+                if (material == null) continue;
+                if (material.equals(Material.AIR)) continue;
+                addItem(slots[i], ItemBuilder.create((material))
+                        .name(colorize("&a" + e.name()))
+                        .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
+                        .build(), (event) -> {
+                    con.accept(e);
+                });
+            }
         }
 
         // Search
@@ -87,7 +91,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
         });
 
         //Previous Page
-        if (currentPage > 0) {
+        if (currentPage > 1) {
             addItem(45, ItemBuilder.create(Material.ARROW)
                     .name(colorize("&ePrevious Page"))
                     .description("&ePage " + (currentPage - 1))
