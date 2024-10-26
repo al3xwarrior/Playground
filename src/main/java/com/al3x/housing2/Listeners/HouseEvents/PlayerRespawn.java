@@ -29,6 +29,7 @@ public class PlayerRespawn implements Listener {
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
+        e.setRespawnLocation(house.getSpawn());
 
         Bukkit.getScheduler().runTaskLater(main, () -> {
             player.teleport(house.getSpawn());

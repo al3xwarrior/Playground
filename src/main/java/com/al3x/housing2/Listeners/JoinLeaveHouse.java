@@ -100,7 +100,7 @@ public class JoinLeaveHouse implements Listener {
         }
 
         // They are entering a house, not the hub
-        if (!player.getWorld().getName().equals("world")) {
+        if (!player.getWorld().getName().equals("world") && e.getFrom().getName().equals("world")) {
             joinHouse(player);
         } else {
             resetPlayer(player);
