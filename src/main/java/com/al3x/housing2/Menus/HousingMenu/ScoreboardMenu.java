@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus.HousingMenu;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -43,17 +44,28 @@ public class ScoreboardMenu extends Menu {
                     .description("\n&eLine: \n" + colorize(line[0]) + (hasPlaceholders ? "\n\n&eHow this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])) : ""))
                     .punctuation(false)
                     .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                    .build(), () -> {
-                player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
-                openChat(main, line[0], (message) -> {
-                    scoreboard.set(finalI, message);
-                    player.sendMessage(colorize("&aLine set to: " + message));
+                    .rClick(ItemBuilder.ActionType.DELETE_YELLOW)
+                    .shiftClick()
+                    .build(), (e) -> {
+
+                if (e.isShiftClick()) {
+                    shiftLine(line[0], e.isLeftClick());
+                    return;
+                }
+
+                if (e.isLeftClick()) {
+                    player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
+                    openChat(main, line[0], (message) -> {
+                        scoreboard.set(finalI, message);
+                        player.sendMessage(colorize("&aLine set to: " + message));
+                        Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
+                    });
+                } else {
+                    scoreboard.remove(finalI);
+                    house.setScoreboard(scoreboard);
+                    player.sendMessage(colorize("&cLine removed!"));
                     Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
-                });
-            }, () -> {
-                scoreboard.remove(finalI);
-                player.sendMessage(colorize("&aLine removed!"));
-                new ScoreboardMenu(main, player, house).open();
+                }
             });
         }
 
@@ -77,5 +89,33 @@ public class ScoreboardMenu extends Menu {
                 .name("&cGo Back")
                 .build(), (e) -> new SystemsMenu(main, player, house).open()
         );
+    }
+
+    public void shiftLine(String line, boolean forward) {
+        List<String> scoreboard = house.getScoreboard();
+        if (scoreboard == null) return;
+        if (scoreboard.size() < 2) return;
+
+        int index = scoreboard.indexOf(line);
+        if (forward) {
+            if (index == scoreboard.size() - 1) {
+                //Move to the first position
+                scoreboard.remove(index);
+                scoreboard.add(0, line);
+                return;
+            }
+            scoreboard.remove(index);
+            scoreboard.add(index + 1, line);
+        } else {
+            if (index == 0) {
+                //Move to the last position
+                scoreboard.remove(index);
+                scoreboard.add(scoreboard.size(), line);
+                return;
+            }
+            scoreboard.remove(index);
+            scoreboard.add(index - 1, line);
+        }
+        setupItems();
     }
 }

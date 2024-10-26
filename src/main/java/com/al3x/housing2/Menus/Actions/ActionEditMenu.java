@@ -86,7 +86,12 @@ public class ActionEditMenu extends Menu {
     public void setupItems() {
         clearItems();
         //Only needed for actions that need their own custom menu
-        ActionEditor editor = getEditor(action, house, this, player);
+        ActionEditor editor;
+        if (action == null) {
+            editor = getEditor(condition, house, this, player);
+        } else {
+            editor = getEditor(action, house, this, player);
+        }
         List<ActionEditor.ActionItem> items = editor.getItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 

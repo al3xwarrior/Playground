@@ -73,7 +73,7 @@ public class CommandEditMenu extends Menu {
                 .build(), (e) -> {
             command.setLoaded(false);
             house.getCommands().remove(command);
-            new FunctionsMenu(main, player, house).open();
+            new CommandsMenu(main, player, house).open();
         });
 
         //Back

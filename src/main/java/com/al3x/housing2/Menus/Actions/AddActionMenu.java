@@ -186,11 +186,6 @@ public class AddActionMenu extends Menu {
             newActions.add(action);
         }
 
-        //Add before the search filter lol :)
-        if (varName != null && !varName.isEmpty()) { //Basically if, else, and random actions
-            newActions.add(new ExitAction());//Add the exit action
-        }
-
         if (search != null) {
             newActions = newActions.stream().filter(i -> Color.removeColor(i.getName().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
         }
