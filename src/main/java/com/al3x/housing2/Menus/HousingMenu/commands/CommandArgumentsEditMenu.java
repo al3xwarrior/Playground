@@ -88,29 +88,18 @@ public class CommandArgumentsEditMenu extends Menu {
 
     public void shiftArg(Command.CommandArg arg, boolean forward) {
         List<Command.CommandArg> args = command.getArgs();
-        if (args == null) return;
-        if (args.size() < 2) return;
-
         int index = args.indexOf(arg);
+
+        if (args == null || args.size() < 2) return;
+
+        args.remove(index);
+
         if (forward) {
-            if (index == args.size() - 1) {
-                //Move to the first position
-                args.remove(index);
-                args.add(0, arg);
-                return;
-            }
-            args.remove(index);
-            args.add(index + 1, arg);
+            args.add((index == args.size()) ? 0 : index + 1, arg);
         } else {
-            if (index == 0) {
-                //Move to the last position
-                args.remove(index);
-                args.add(args.size(), arg);
-                return;
-            }
-            args.remove(index);
-            args.add(index - 1, arg);
+            args.add((index == 0) ? args.size() : index - 1, arg);
         }
+
         setupItems();
     }
 }

@@ -7,6 +7,7 @@ import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HouseSettingsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -167,18 +168,15 @@ public class OwnerHousingMenu extends Menu {
             player.sendMessage("Search");
         });
 
-        ItemStack visitingRules = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta visitingRulesMeta = visitingRules.getItemMeta();
-        visitingRulesMeta.setDisplayName(colorize("&aVisiting Rules"));
-        visitingRules.setItemMeta(visitingRulesMeta);
-        addItem(38, visitingRules, () -> {
-            if (house.getPrivacy().equals(HousePrivacy.PRIVATE)) {
-                house.setPrivacy(HousePrivacy.PUBLIC);
-                player.sendMessage(colorize("&aYour house is now public."));
-            } else {
-                house.setPrivacy(HousePrivacy.PRIVATE);
-                player.sendMessage(colorize("&aYour house is now private."));
-            }
+        ItemBuilder visitingRules = ItemBuilder.create(Material.PLAYER_HEAD);
+        visitingRules.name("&aVisiting Rules");
+        visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
+        visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
+        addItem(38, visitingRules.build(), () -> {
+            //thanks chatgippity lol, I would have made this a lot more complicated
+            house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
+            player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
+            setupItems();
         });
 
         ItemStack houseSettings = new ItemStack(Material.COMPARATOR);

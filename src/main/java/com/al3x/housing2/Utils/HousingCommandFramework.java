@@ -26,6 +26,10 @@ public class HousingCommandFramework {
         }
     }
 
+    public boolean hasCommand(String command) {
+        return map.getCommand(command) != null;
+    }
+
     public void registerCommand(String fallback, Command command) {
         map.register(fallback, command);
     }

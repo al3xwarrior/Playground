@@ -83,7 +83,7 @@ public class CommandsMenu extends Menu {
                 Bukkit.getScheduler().runTask(main, () -> {
                     Command command = house.createCommand(s);
                     if (command == null) {
-                        player.sendMessage(colorize("&cA function with that name already exists!"));
+                        player.sendMessage(colorize("&cA command with that name already exists or is invalid!"));
                         return;
                     }
                     Bukkit.getScheduler().runTaskLater(main, () -> {

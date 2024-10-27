@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatOperation;
@@ -30,6 +31,7 @@ import static org.bukkit.Material.*;
 public class ActionEnumMenu extends Menu {
     private Main main;
     private Action action;
+    private Condition condition;
     private ActionEditor.ActionItem item;
     private Player player;
     private HousingWorld house;
@@ -57,6 +59,18 @@ public class ActionEnumMenu extends Menu {
         super(player, "§eSelect Option (" + 1 + "/" + getItems(item, "").getPageCount() + ")", 54);
         this.main = main;
         this.action = action;
+        this.item = item;
+        this.player = player;
+        this.house = house;
+        this.event = event;
+        this.backMenu = backMenu;
+    }
+
+    // Events conditional
+    public ActionEnumMenu(Condition condition, ActionEditor.ActionItem item, Main main, Player player, HousingWorld house, EventType event, Menu backMenu) {
+        super(player, "§eSelect Option (" + 1 + "/" + getItems(item, "").getPageCount() + ")", 54);
+        this.main = main;
+        this.condition = condition;
         this.item = item;
         this.player = player;
         this.house = house;
@@ -121,9 +135,16 @@ public class ActionEnumMenu extends Menu {
                     if (!e.getCurrentItem().hasItemMeta()) return;
                     String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(" ", "_").toUpperCase().replaceAll("§[A-F0-9]", "");
                     try {
-                        Field field = action.getClass().getDeclaredField(item.getVarName());
-                        field.setAccessible(true);
-                        field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
+                        Field field;
+                        if (action != null) {
+                            field = action.getClass().getDeclaredField(item.getVarName());
+                            field.setAccessible(true);
+                            field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
+                        } else if (condition != null) {
+                            field = condition.getClass().getDeclaredField(item.getVarName());
+                            field.setAccessible(true);
+                            field.set(condition, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
+                        }
 
                         player.sendMessage(colorize("&aUpdated " + item.getBuilder().getName() + " to " + pageItems.get(finalI).getName()));
                         if (backMenu != null) {
@@ -133,8 +154,13 @@ public class ActionEnumMenu extends Menu {
                         player.sendMessage(colorize("&cError: No back menu found"));
                         player.closeInventory();
                     } catch (NoSuchFieldException | IllegalAccessException ex) {
-                        Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
-                        player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                        if (action != null) {
+                            Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                            player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                        } else {
+                            Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + condition.getName());
+                            player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + condition.getName()));
+                        }
                     }
                 });
             }

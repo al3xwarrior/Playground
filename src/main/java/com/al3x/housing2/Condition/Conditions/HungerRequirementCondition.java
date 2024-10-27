@@ -15,12 +15,12 @@ import java.util.List;
 
 public class HungerRequirementCondition extends Condition {
     private StatComparator comparator;
-    private String compareValue;
+    private Double compareValue;
 
     public HungerRequirementCondition() {
         super("Hunger Requirement");
         this.comparator = StatComparator.EQUALS;
-        this.compareValue = "20";
+        this.compareValue = 20.0;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class HungerRequirementCondition extends Condition {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        return Comparator.compare(comparator, String.valueOf(player.getFoodLevel()), compareValue);
+        return Comparator.compare(comparator, player.getFoodLevel(), compareValue);
     }
 
     @Override

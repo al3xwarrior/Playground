@@ -271,55 +271,34 @@ public class ActionsMenu extends Menu {
     }
 
     public void shiftAction(Action action, boolean forward) {
-        if (actions == null) return;
-        if (actions.size() < 2) return;
-
         int index = actions.indexOf(action);
+
+        if (actions == null || actions.size() < 2) return;
+
+        actions.remove(index);
+
         if (forward) {
-            if (index == actions.size() - 1) {
-                //Move to the first position
-                actions.remove(index);
-                actions.add(0, action);
-                return;
-            }
-            actions.remove(index);
-            actions.add(index + 1, action);
+            actions.add((index == actions.size()) ? 0 : index + 1, action);
         } else {
-            if (index == 0) {
-                //Move to the last position
-                actions.remove(index);
-                actions.add(actions.size(), action);
-                return;
-            }
-            actions.remove(index);
-            actions.add(index - 1, action);
+            actions.add((index == 0) ? actions.size() : index - 1, action);
         }
+
         setupItems();
     }
 
     public void shiftCondition(Condition condition, boolean forward) {
         int index = conditions.indexOf(condition);
 
-        if (conditions == null) return;
-        if (conditions.size() < 2) return;
+        if (conditions == null || conditions.size() < 2) return;
+
+        conditions.remove(index);
 
         if (forward) {
-            if (index == conditions.size() - 1) {
-                //Move to the first position
-                conditions.remove(index);
-                conditions.add(0, condition);
-            }
-            conditions.remove(index);
-            conditions.add(index + 1, condition);
+            conditions.add((index == conditions.size()) ? 0 : index + 1, condition);
         } else {
-            if (index == 0) {
-                //Move to the last position
-                conditions.remove(index);
-                conditions.add(conditions.size(), condition);
-            }
-            conditions.remove(index);
-            conditions.add(index - 1, condition);
+            conditions.add((index == 0) ? conditions.size() : index - 1, condition);
         }
+
         setupItems();
     }
 }

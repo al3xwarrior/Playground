@@ -6,6 +6,7 @@ import com.al3x.housing2.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.HologramTrait;
+import net.citizensnpcs.trait.LookClose;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
@@ -72,6 +73,8 @@ public class HousingNPC {
         this.actions = Companion.toList(data.getActions());
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
+        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
+        if (lookAtPlayer && !trait.isEnabled()) trait.toggle(); else if (!lookAtPlayer && trait.isEnabled()) trait.toggle();
         citizensNPC.spawn(location);
     }
 
@@ -87,6 +90,8 @@ public class HousingNPC {
         this.actions = new ArrayList<>();
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
+        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
+        if (lookAtPlayer && !trait.isEnabled()) trait.toggle(); else if (!lookAtPlayer && trait.isEnabled()) trait.toggle();
         citizensNPC.spawn(location);
         citizensNPC.faceLocation(player.getLocation());
 
@@ -104,7 +109,7 @@ public class HousingNPC {
     public void sendExecuteActions(HousingWorld house, Player player) {
         if (actions != null) {
             for (Action action : actions) {
-                action.execute(player, house);
+                action.execute(player, house, null);
             }
         }
     }
@@ -163,6 +168,12 @@ public class HousingNPC {
 
     public boolean isLookAtPlayer() {
         return lookAtPlayer;
+    }
+
+    public void setLookAtPlayer(boolean lookAtPlayer) {
+        this.lookAtPlayer = lookAtPlayer;
+        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
+        if (trait.isEnabled() != lookAtPlayer) trait.toggle();
     }
 
     public void setName(String newMessage) {

@@ -173,6 +173,10 @@ public class ActionEditMenu extends Menu {
                         break;
                     }
                     case ENUM: {
+                        if (action == null) {
+                            new ActionEnumMenu(condition, item, main, player, house, event, this).open();
+                            break;
+                        }
                         new ActionEnumMenu(action, item, main, player, house, event, this).open();
                         break;
                     }

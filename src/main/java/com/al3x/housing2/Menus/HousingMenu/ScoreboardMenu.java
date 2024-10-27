@@ -91,31 +91,20 @@ public class ScoreboardMenu extends Menu {
         );
     }
 
-    public void shiftLine(String line, boolean forward) {
-        List<String> scoreboard = house.getScoreboard();
-        if (scoreboard == null) return;
-        if (scoreboard.size() < 2) return;
+    public void shiftLine(String action, boolean forward) {
+        List<String> actions = house.getScoreboard();
+        int index = actions.indexOf(action);
 
-        int index = scoreboard.indexOf(line);
+        if (actions == null || actions.size() < 2) return;
+
+        actions.remove(index);
+
         if (forward) {
-            if (index == scoreboard.size() - 1) {
-                //Move to the first position
-                scoreboard.remove(index);
-                scoreboard.add(0, line);
-                return;
-            }
-            scoreboard.remove(index);
-            scoreboard.add(index + 1, line);
+            actions.add((index == actions.size()) ? 0 : index + 1, action);
         } else {
-            if (index == 0) {
-                //Move to the last position
-                scoreboard.remove(index);
-                scoreboard.add(scoreboard.size(), line);
-                return;
-            }
-            scoreboard.remove(index);
-            scoreboard.add(index - 1, line);
+            actions.add((index == 0) ? actions.size() : index - 1, action);
         }
+
         setupItems();
     }
 }

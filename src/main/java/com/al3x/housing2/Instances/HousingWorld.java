@@ -9,6 +9,7 @@ import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
+import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
@@ -62,7 +63,7 @@ public class HousingWorld {
     private Material icon;
 
     // NPCs
-    private List<HousingNPC> housingNPCS;
+    private ConcurrentHashMultiset<HousingNPC> housingNPCS;
 
     // Action Stuff
     private HashMap<EventType, List<Action>> eventActions;
@@ -118,7 +119,7 @@ public class HousingWorld {
         this.cookies = (int) houseData.getCookies(); // casting to an int for now cause i dont wanna mess with the data storage stuff
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
-        this.housingNPCS = new ArrayList<>();
+        this.housingNPCS = ConcurrentHashMultiset.create();
 
         // doesnt save yet ender do yo thing okie :)
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
@@ -130,6 +131,11 @@ public class HousingWorld {
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
 
         this.commands = CommandData.Companion.toList(houseData.getCommands());
+
+        for (Command command: commands) {
+            if (!command.isLoaded()) continue;
+            main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
+        }
 
         this.scoreboard = houseData.getScoreboard();
 
@@ -194,11 +200,15 @@ public class HousingWorld {
         this.ownerUUID = owner.getUniqueId();
         this.name = owner.getName() + "'s House";
         this.houseUUID = UUID.randomUUID();
+        if (main.getHousesManager().getHouseData(houseUUID.toString()) != null) { //Check and make sure the UUID is unique
+            //even though this is a very low chance of happening, we still need to check
+            this.houseUUID = UUID.randomUUID();
+        }
         this.guests = 0;
         this.cookies = 0;
         this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
-        this.housingNPCS = new ArrayList<>();
+        this.housingNPCS = ConcurrentHashMultiset.create();
         this.statManager = new StatManager(this);
         this.functions = new ArrayList<>();
         this.privacy = HousePrivacy.PRIVATE;
@@ -356,15 +366,20 @@ public class HousingWorld {
     }
 
     public Command createCommand(String name) {
+        //Check for null, duplicate, and if the command already exists
         if (name == null) return null;
         for (Command command : commands) {
             if (command.getName().equals(name)) return null;
         }
+        if (!name.matches("^[a-zA-Z0-9]*$")) return null;
+        if (main.getCommandFramework().hasCommand(name)) return null;
 
+        // and then create the command
         Command function = new Command(name);
         commands.add(function);
 
-        main.getCommandFramework().registerCommand(function.getName(), function.getCommand());
+        // /houseid:commandname <args>
+        main.getCommandFramework().registerCommand(houseUUID.toString(), function.getCommand());
 
         return function;
     }
@@ -393,7 +408,7 @@ public class HousingWorld {
                 // Check if the action is null or if the event is allowed
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
                 if (action.mustBeSync()) {
-                    action.execute(player, this);
+                    action.execute(player, this, event);
                 } else {
                     if (action instanceof CancelAction) {
                         event.setCancelled(true);
@@ -412,9 +427,9 @@ public class HousingWorld {
                     // Check if the action is null or if the event is allowed
                     if (action.allowedEvents() != null && !action.allowedEvents().contains(eventType)) continue;
                     if (action.mustBeSync()) {
-                        Bukkit.getScheduler().runTask(main, () -> action.execute(player, this));
+                        Bukkit.getScheduler().runTask(main, () -> action.execute(player, this, event));
                     } else {
-                        if (!action.execute(player, this)) {
+                        if (!action.execute(player, this, event)) {
                             break; //exit action will return false and will be the only action that will return false
                         }
                     }
@@ -460,7 +475,7 @@ public class HousingWorld {
     }
 
     public List<HousingNPC> getNPCs() {
-        return housingNPCS;
+        return housingNPCS.stream().toList();
     }
 
     // Helper Method for delete()
@@ -470,6 +485,10 @@ public class HousingWorld {
         }
 
         // would this work? - Al3x
+//        commands.clear(); no sir
+        for (Command command: commands) {
+            main.getCommandFramework().unregisterCommand(command.getCommand());
+        }
         commands.clear();
 
         File file = new File(main.getDataFolder(), "houses/" + houseUUID.toString() + ".json");

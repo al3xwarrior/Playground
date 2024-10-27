@@ -36,10 +36,6 @@ public class Command {
         this.args = args;
         this.priorityRequired = priorityRequired;
         this.actions = actions;
-
-        if (loaded) {
-            Main.getInstance().getCommandFramework().registerCommand(name, getCommand());
-        }
     }
 
     public List<Action> getActions() {
@@ -74,9 +70,9 @@ public class Command {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             for (Action action : actions) {
                 if (action.mustBeSync()) {
-                    Bukkit.getScheduler().runTask(main, () -> action.execute(player, world));
+                    Bukkit.getScheduler().runTask(main, () -> action.execute(player, world, null));
                 } else {
-                    if (!action.execute(player, world)) {
+                    if (!action.execute(player, world, null)) {
                         break; //exit action will return false and will be the only action that will return false
                     }
                 }

@@ -79,14 +79,8 @@ public class NPCMenu extends Menu {
         lookAtPlayers.setItemMeta(lookAtPlayersMeta);
         addItem(28, lookAtPlayers, () -> {
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(housingNPC.getNpcID());
-            boolean newStatus = !citizensNPC.hasTrait(LookClose.class);
-            if (newStatus) {
-                player.sendMessage(colorize("&aNPC will now look towards nearby players."));
-                citizensNPC.addTrait(LookClose.class);
-            } else {
-                player.sendMessage(colorize("&aNPC will no longer look towards nearby players."));
-                citizensNPC.removeTrait(LookClose.class);
-            }
+            boolean newStatus = citizensNPC.getOrAddTrait(LookClose.class).toggle();
+            player.sendMessage(colorize("&aLook at Players set to: " + newStatus));
         });
 
         ItemStack entityType = new ItemStack(Material.WOLF_SPAWN_EGG);

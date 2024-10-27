@@ -16,12 +16,12 @@ import java.util.List;
 
 public class HealthRequirementCondition extends Condition {
     private StatComparator comparator;
-    private String compareValue;
+    private Double compareValue;
 
     public HealthRequirementCondition() {
         super("Health Requirement");
         this.comparator = StatComparator.EQUALS;
-        this.compareValue = "20.0";
+        this.compareValue = 20.0;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class HealthRequirementCondition extends Condition {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        return Comparator.compare(comparator, String.valueOf(player.getHealth()), compareValue);
+        return Comparator.compare(comparator, player.getHealth(), compareValue);
     }
 
     @Override

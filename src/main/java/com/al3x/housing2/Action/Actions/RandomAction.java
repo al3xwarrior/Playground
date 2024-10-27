@@ -81,7 +81,7 @@ public class RandomAction extends Action {
         }
 
         Action action = subActions.get((int) (house.getRandom().nextDouble() * subActions.size()));
-        return action.execute(player, house);
+        return action.execute(player, house, null);
     }
 
     public List<Action> getSubActions() {

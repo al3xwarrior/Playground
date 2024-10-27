@@ -61,7 +61,7 @@ public class Function {
                 //Null check for allowed events, if null then all events are allowed, if the list contains null then its actually a function in disguise :D
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) return;
 
-                if (!action.execute(p, house)) {
+                if (!action.execute(p, house, null)) {
                     return; //Stop everything if it finds an action that returns false aka exit action
                 }
             }

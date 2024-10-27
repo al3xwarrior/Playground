@@ -78,7 +78,7 @@ public class StatRequirementCondition extends Condition {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + compareValue)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE
+                        ActionEditor.ActionItem.ActionType.STRING
                 )
         );
         return new ActionEditor(4, "Stat Requirement", items);
