@@ -49,7 +49,7 @@ public class ScoreboardMenu extends Menu {
                     .build(), (e) -> {
 
                 if (e.isShiftClick()) {
-                    shiftLine(line[0], e.isLeftClick());
+                    shiftLine(line[0], e.isRightClick());
                     return;
                 }
 

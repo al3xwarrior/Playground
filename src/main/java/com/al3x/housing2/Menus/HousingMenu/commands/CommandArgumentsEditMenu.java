@@ -49,7 +49,7 @@ public class CommandArgumentsEditMenu extends Menu {
                 item.shiftClick();
                 addItem(slots[j], item.build(), (e) -> {
                     if (e.isShiftClick()) {
-                        shiftArg(arg, e.isLeftClick());
+                        shiftArg(arg, e.isRightClick());
                         return;
                     }
 
