@@ -17,6 +17,7 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
 
@@ -128,12 +129,21 @@ public class ActionEnumMenu extends Menu {
         if (pageItems != null) {
             for (int i = 0; i < pageItems.size(); i++) {
                 ItemBuilder itemBuilder = pageItems.get(i);
+                if (item.getEnumClass() instanceof Sound[]) {
+                    itemBuilder.rClick(ItemBuilder.ActionType.PLAY_SOUND);
+                }
                 int slot = slots[i] - 1;
                 int finalI = i;
                 addItem(slot, itemBuilder.build(), (e) -> {
                     if (e.getCurrentItem() == null) return;
                     if (!e.getCurrentItem().hasItemMeta()) return;
                     String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(" ", "_").toUpperCase().replaceAll("§[A-F0-9]", "");
+
+                    if (item.getEnumClass() instanceof Sound[] && e.getClick().isRightClick()) {
+                        player.playSound(player.getLocation(), Sound.valueOf(name), 1, 1);
+                        return;
+                    }
+
                     try {
                         Field field;
                         if (action != null) {

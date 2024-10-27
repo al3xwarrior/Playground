@@ -348,6 +348,7 @@ public class ItemBuilder {
         SELECT_YELLOW("select", YELLOW),
         DELETE_YELLOW("delete", YELLOW),
         TOGGLE_YELLOW("toggle", YELLOW),
+        PLAY_SOUND("preview sound", YELLOW),
         ;
 
         private String action;
