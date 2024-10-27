@@ -139,10 +139,12 @@ public class ConditionalAction extends Action {
         if (result) {
             for (Action action : ifActions) {
                 returnResult = action.execute(player, house, event);
+                if (!returnResult) break;
             }
         } else {
             for (Action action : elseActions) {
                 returnResult = action.execute(player, house, event);
+                if (!returnResult) break;
             }
         }
         return returnResult;
