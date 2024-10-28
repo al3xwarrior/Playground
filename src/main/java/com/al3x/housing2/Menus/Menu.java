@@ -35,6 +35,7 @@ public abstract class Menu implements Listener {
     private Player player;
 
     public Menu(Player player, String title, int size) {
+        this.inventory = Bukkit.createInventory(null, size, colorize(title));
         this.player = player;
         this.title = title;
         this.size = size;
