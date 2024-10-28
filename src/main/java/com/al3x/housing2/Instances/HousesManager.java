@@ -61,8 +61,15 @@ public class HousesManager {
 
     public HousingWorld createHouse(Player owner, HouseSize size) {
         HousingWorld house = new HousingWorld(main, owner, size);
+
         concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
-        playerHouses.getOrDefault(owner.getUniqueId(), new ArrayList<>()).add(house.getHouseUUID().toString());
+
+        List<String> houses = playerHouses.getOrDefault(owner.getUniqueId(), new ArrayList<>());
+        houses.add(house.getHouseUUID().toString());
+        playerHouses.put(owner.getUniqueId(), houses);
+
+        housesById.add(house.getHouseUUID().toString());
+
         return house;
     }
 
