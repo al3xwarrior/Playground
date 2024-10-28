@@ -5,6 +5,7 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
@@ -55,6 +56,15 @@ public abstract class Action {
     public abstract HashMap<String, Object> data();
 
     public abstract boolean requiresPlayer();
+
+    public Object getField(String name) throws NoSuchFieldException, IllegalAccessException, NumberFormatException {
+        Field field = this.getClass().getDeclaredField(name.split(" ")[0]);
+        field.setAccessible(true);
+        if(field.getType() == List.class && name.contains(" ")) {
+            return ((List<?>) field.get(this)).get(Integer.parseInt(name.split(" ")[1]));
+        }
+        return field.get(this);
+    }
 
     public int limit() {
         return -1;

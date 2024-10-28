@@ -248,10 +248,8 @@ public class ActionEditMenu extends Menu {
                     }
                     case ACTION_SETTING: {
                         try {
-                            Field field = action.getClass().getDeclaredField(item.getVarName());
-                            field.setAccessible(true);
-                            new ActionEditMenu((Action) field.get(action), main, player, house, this).open();
-                        } catch (NoSuchFieldException | IllegalAccessException ex) {
+                            new ActionEditMenu((Action) action.getField(item.getVarName()), main, player, house, this).open();
+                        } catch (NoSuchFieldException | IllegalAccessException | NumberFormatException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
                             player.sendMessage(colorize("&cFailed to get field " + item.getVarName() + " in " + action.getName()));
                         }
