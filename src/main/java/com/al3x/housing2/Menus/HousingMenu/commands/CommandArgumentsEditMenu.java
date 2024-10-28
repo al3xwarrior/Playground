@@ -8,6 +8,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -72,6 +73,8 @@ public class CommandArgumentsEditMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.ADD_YELLOW)
                 .build(), (e) -> {
             new EnumMenu<>(main, "&7Select Argument type", Command.ArgType.values(), null, player, house, this, (type) -> {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
+
                 command.getArgs().add(new Command.CommandArg(type, "arg" + command.getArgs().size(), false, false));
                 open();
             }).open();

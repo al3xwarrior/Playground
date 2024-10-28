@@ -487,7 +487,7 @@ public class HousingWorld {
         // would this work? - Al3x
 //        commands.clear(); no sir
         for (Command command: commands) {
-            main.getCommandFramework().unregisterCommand(command.getCommand());
+            main.getCommandFramework().unregisterCommand(command.getCommand(), this);
         }
         commands.clear();
 

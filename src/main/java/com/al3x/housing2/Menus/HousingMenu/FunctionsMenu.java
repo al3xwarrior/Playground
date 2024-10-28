@@ -11,6 +11,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -95,6 +96,8 @@ public class FunctionsMenu extends Menu {
                         player.sendMessage(colorize("&cA function with that name already exists!"));
                         return;
                     }
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
+
                     Bukkit.getScheduler().runTaskLater(main, () -> {
                         new ActionsMenu(main, player, house, function, this).open();
                     }, 1L);

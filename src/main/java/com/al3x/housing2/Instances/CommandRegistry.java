@@ -37,7 +37,7 @@ public class CommandRegistry extends BukkitCommand {
             Command.CommandArg arg = command.getArgs().get(i);
 
             // Check if the argument is required and if it is, check if it exists
-            if (args.size() < i) {
+            if (args.size() < i + 1) {
                 if (arg.isRequired()) {
                     player.sendMessage(colorize("&cUsage: " + command.getUsage()));
                     return true;

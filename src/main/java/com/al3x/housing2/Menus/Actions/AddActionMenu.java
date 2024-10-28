@@ -15,6 +15,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -124,6 +125,9 @@ public class AddActionMenu extends Menu {
                     if (action instanceof CancelAction && hasPause[0]) {
                         player.sendMessage(colorize("&cJust know any cancel action after a pause action will not work!"));
                     }
+
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
+
 
                     actions.add(action);
                     if (backMenu != null) {

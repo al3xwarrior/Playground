@@ -42,11 +42,11 @@ public class Command {
         return actions;
     }
 
-    public void setLoaded(boolean b) {
+    public void setLoaded(boolean b, HousingWorld world) {
         this.loaded = b;
 
         if (!b) {
-            Main.getInstance().getCommandFramework().unregisterCommand(getCommand());
+            Main.getInstance().getCommandFramework().unregisterCommand(getCommand(), world);
         }
     }
 

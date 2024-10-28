@@ -40,7 +40,7 @@ public class JoinLeaveHouse implements Listener {
     }
 
     // Actions that modify the player's "profile" need to be reset.
-    private void resetPlayer(Player player) {
+    public static void resetPlayer(Player player) {
         player.setMaximumAir(20);
         player.setHealth(20);
         player.setFoodLevel(20);

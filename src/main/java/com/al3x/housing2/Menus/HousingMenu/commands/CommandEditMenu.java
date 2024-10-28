@@ -71,7 +71,7 @@ public class CommandEditMenu extends Menu {
                 .name(colorize("&aDelete Command"))
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
                 .build(), (e) -> {
-            command.setLoaded(false);
+            command.setLoaded(false, house);
             house.getCommands().remove(command);
             new CommandsMenu(main, player, house).open();
         });

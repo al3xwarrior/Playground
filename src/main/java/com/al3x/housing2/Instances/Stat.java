@@ -39,6 +39,7 @@ public class Stat {
 
     public String modifyStat(StatOperation operation, String value) {
         this.value = modifyStat(operation, this.value, value);
+
         return this.value;
     }
 

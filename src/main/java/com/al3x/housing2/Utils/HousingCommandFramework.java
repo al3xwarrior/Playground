@@ -1,5 +1,6 @@
 package com.al3x.housing2.Utils;
 
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -8,6 +9,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class HousingCommandFramework {
     private SimpleCommandMap map;
@@ -34,7 +38,20 @@ public class HousingCommandFramework {
         map.register(fallback, command);
     }
 
-    public void unregisterCommand(Command command) {
+    public void unregisterCommand(Command command, HousingWorld world) {
         command.unregister(map);
+
+        //I am not 100% sure if this is the best way, but it works :)
+        try {
+            Field field = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            field.setAccessible(true);
+            Map<String, Command> knownCommands = (Map<String, Command>) field.get(map);
+            knownCommands.remove(world.getName() + ":" + command.getName(), command);
+            knownCommands.remove(command.getName(), command);
+            field.set(map, knownCommands);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 }

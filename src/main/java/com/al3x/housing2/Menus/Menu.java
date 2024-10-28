@@ -35,7 +35,6 @@ public abstract class Menu implements Listener {
     private Player player;
 
     public Menu(Player player, String title, int size) {
-        this.inventory = Bukkit.createInventory(null, size, colorize(title));
         this.player = player;
         this.title = title;
         this.size = size;
@@ -74,19 +73,13 @@ public abstract class Menu implements Listener {
             if (leftAction != null && rightAction == null) {
                 leftAction.accept(event); // Run the left-click action
 
-                // Will remove if it becomes annoying
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
 
                 return;
             }
 
             if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
-                // Will remove if it becomes annoying
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                 leftAction.accept(event); // Run the left-click action
             } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
-                // Will remove if it becomes annoying
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                 rightAction.accept(event); // Run the right-click action
             }
         }
@@ -134,8 +127,8 @@ public abstract class Menu implements Listener {
         Bukkit.getPluginManager().registerEvents(MenuManager.setListener(player, new Listener() {
             @EventHandler(priority = EventPriority.LOWEST)
             public void onPlayerChat(AsyncPlayerChatEvent e) {
-                e.setCancelled(true);
                 if (e.getPlayer().equals(player)) {
+                    e.setCancelled(true);
                     String input = e.getMessage();
                     consumer.accept(input);
 

@@ -27,8 +27,9 @@ public class StatManager {
 
         // If no stat found, return a default stat with value 0
         Stat defaultStat = new Stat(player.getUniqueId(), name, "0.0");
-        playerStats.add(defaultStat);
-        this.playerStats.put(player.getUniqueId(), playerStats);
+//        playerStats.add(defaultStat);
+//
+//        this.playerStats.put(player.getUniqueId(), playerStats);
         return defaultStat;
     }
 
@@ -41,7 +42,7 @@ public class StatManager {
 
         // If no stat found, return a default stat with value 0
         Stat defaultStat = new Stat(UUID.randomUUID(), name, "0.0");
-        globalStats.add(defaultStat);
+//        globalStats.add(defaultStat);
         return defaultStat;
     }
 
@@ -50,6 +51,28 @@ public class StatManager {
             return playerStats.get(player.getUniqueId());
         }
         return null;
+    }
+
+    public boolean hasStat(Player player, String name) {
+        List<Stat> playerStats = this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+
+        for (Stat stat : playerStats) {
+            if (stat.getStatName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean hasGlobalStat(String name) {
+        for (Stat stat : globalStats) {
+            if (stat.getStatName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public HashMap<UUID, List<Stat>> getPlayerStats() {

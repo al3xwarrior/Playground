@@ -7,6 +7,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ScoreboardMenu extends Menu {
 
     @Override
     public void setupItems() {
-        int[] avaliableSlots = {10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29};
+        int[] avaliableSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29};
 
         List<String> scoreboard = house.getScoreboard();
         for (int i = 0; i < scoreboard.size(); i++) {
@@ -70,13 +71,16 @@ public class ScoreboardMenu extends Menu {
         }
 
         addItem(41, ItemBuilder.create(Material.PAPER)
-                .name("&aAdd Line")
-                .description("&7Add a new line to the scoreboard. The max lines are 15")
-                .build(), () -> {
+                        .name("&aAdd Line")
+                        .description("&7Add a new line to the scoreboard. The max lines are 15")
+                        .build(), () -> {
                     if (house.getScoreboard().size() >= 15) {
                         player.sendMessage(colorize("&cYou are at the max lines!"));
                         return;
                     }
+
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
+
 
                     List<String> newScoreboard = new ArrayList<>(house.getScoreboard());
                     newScoreboard.add("&eHello World!");

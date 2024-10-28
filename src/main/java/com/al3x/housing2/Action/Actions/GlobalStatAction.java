@@ -110,9 +110,15 @@ public class GlobalStatAction extends Action {
             player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + mode + " and value: " + value));
         }
 
-        if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
+        if ((stat.getValue().equals("0") || stat.getValue().equals("0.0")) && house.getStatManager().hasGlobalStat(statName)) {
             house.getStatManager().getGlobalStats().remove(stat);
+            return true;
         }
+
+        if (!house.getStatManager().hasGlobalStat(statName)) {
+            house.getStatManager().getGlobalStats().add(stat);
+        }
+
         return true;
     }
 
