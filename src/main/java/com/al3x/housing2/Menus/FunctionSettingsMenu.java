@@ -108,10 +108,6 @@ public class FunctionSettingsMenu extends Menu {
                         player.sendMessage(colorize("&cDisabled automatic execution."));
                         return;
                     }
-                    if (ticks < 2) {
-                        player.sendMessage(colorize("&cInvalid number!"));
-                        return;
-                    }
                     function.setTicks(ticks);
                 } catch (NumberFormatException ex) {
                     function.setTicks(null);

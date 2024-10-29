@@ -79,7 +79,7 @@ public class ApplyPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&6" + potionEffectType.getName())
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        () -> {
+                        (event) -> {
                             //Create a list of all the potion effects
                             List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
                             for (PotionEffectType type : PotionEffectType.values()) {
@@ -91,6 +91,8 @@ public class ApplyPotionEffectAction extends Action {
                                     Bukkit.getPlayer(house.getOwnerUUID()), house, backMenu, (potion) -> {
                                 potionEffectType = potion;
                             }).open();
+
+                            return true;
                         }
                 ),
                 new ActionItem("level",

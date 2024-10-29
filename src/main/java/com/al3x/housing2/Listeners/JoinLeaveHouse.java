@@ -41,11 +41,10 @@ public class JoinLeaveHouse implements Listener {
 
     // Actions that modify the player's "profile" need to be reset.
     public static void resetPlayer(Player player) {
-        player.setMaximumAir(20);
+        player.setMaximumAir(300); // 300 is the default
         player.setHealth(20);
         player.setFoodLevel(20);
-        player.setNoDamageTicks(10);
-        player.setMaximumNoDamageTicks(10); // 10 i think?
+        player.setMaximumNoDamageTicks(20); // 10 i think?
     }
 
     private void joinHouse(Player player) {

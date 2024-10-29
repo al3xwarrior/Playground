@@ -159,33 +159,33 @@ public class StatValue extends Action {
 
     public String toString() {
         if(isExpression) {
-            String str = "&7(";
-            for(int i = 0; i < mode.getArgs().size(); i++) {
-                if(mode.getArgs().get(i).equals("MODE")) {
-                    str += "&6" + mode.asString();
-                } else {
-                    str += "&a" + values.get(i);
-                }
-                if(i < mode.getArgs().size() - 1) str += " ";
-            }
-            str += "&7)";
-            return str;
+//            String str = "&7(";
+//            for(int i = 0; i < mode.getArgs().size(); i++) {
+//                if(mode.getArgs().get(i).equals("MODE")) {
+//                    str += "&6" + mode.asString();
+//                } else {
+//                    str += "&a" + values.get(i);
+//                }
+//                if(i < mode.getArgs().size() - 1) str += " ";
+//            }
+//            str += "&7)";
+            return "str";
         }
         else return literalValue;
     }
 
     public String asString() {
         if(isExpression) {
-            String str = "";
-            for(int i = 0; i < mode.getArgs().size(); i++) {
-                if(mode.getArgs().get(i).equals("MODE")) {
-                    str += "&fMode: &6" + mode;
-                } else {
-                    str += "&f" + mode.getArgs().get(i) + ": &a" + values.get(i);
-                }
-                if(i < mode.getArgs().size() - 1) str += "\n";
-            }
-            return str;
+//            String str = "";
+//            for(int i = 0; i < mode.getArgs().size(); i++) {
+//                if(mode.getArgs().get(i).equals("MODE")) {
+//                    str += "&fMode: &6" + mode;
+//                } else {
+//                    str += "&f" + mode.getArgs().get(i) + ": &a" + values.get(i);
+//                }
+//                if(i < mode.getArgs().size() - 1) str += "\n";
+//            }
+            return "str";
         }
         else return literalValue;
     }
@@ -209,8 +209,23 @@ public class StatValue extends Action {
         return isExpression;
     }
 
+    public void setExpression(boolean expression) {
+        isExpression = expression;
+
+        if (isExpression) {
+            literalValue = null;
+        } else {
+            values.clear();
+            if (literalValue == null) literalValue = "1.0";
+        }
+    }
+
     public String getLiteralValue() {
         return literalValue;
+    }
+
+    public void setLiteralValue(String literalValue) {
+        this.literalValue = literalValue;
     }
 
     public StatOperation getMode() {

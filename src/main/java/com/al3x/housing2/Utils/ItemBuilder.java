@@ -3,6 +3,7 @@ package com.al3x.housing2.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,8 +43,7 @@ public class ItemBuilder {
     private String name;
     private String description;
     private List<String> extraLore;
-    private ActionType leftClickAction;
-    private ActionType rightClickAction;
+    private HashMap<ClickType, ActionType> actions;
     //Key: String, Value: Object (String, Int or Double)
     private List<Duple<String, Object>> info;
     private boolean glow;
@@ -56,8 +56,7 @@ public class ItemBuilder {
         this.data = 0;
         this.name = "";
         this.description = "";
-        this.leftClickAction = null;
-        this.rightClickAction = null;
+        this.actions = new HashMap<>();
         this.info = new ArrayList<>();
         this.glow = false;
         this.changeOrderLore = false;
@@ -103,7 +102,12 @@ public class ItemBuilder {
      * <color>Click to <action>! (if only left click action is present)
      */
     public ItemBuilder lClick(ActionType leftClickAction) {
-        this.leftClickAction = leftClickAction;
+        this.actions.put(ClickType.LEFT, leftClickAction);
+        return this;
+    }
+
+    public ItemBuilder mClick(ActionType middleClickAction) {
+        this.actions.put(ClickType.MIDDLE, middleClickAction);
         return this;
     }
 
@@ -112,7 +116,7 @@ public class ItemBuilder {
      * <color>Right Click to <action>!
      */
     public ItemBuilder rClick(ActionType rightClickAction) {
-        this.rightClickAction = rightClickAction;
+        this.actions.put(ClickType.RIGHT, rightClickAction);
         return this;
     }
 
@@ -254,20 +258,20 @@ public class ItemBuilder {
         return stack;
     }
 
+    public static ClickType[] order = new ClickType[]{ClickType.LEFT, ClickType.MIDDLE, ClickType.RIGHT};
 
     private List<String> getLore() {
         List<String> labels = new ArrayList<>();
         //Action labels
         //<color>Click to <action>!
-        if (leftClickAction != null && rightClickAction == null) {
-            labels.add(colorize(leftClickAction.color + "Click to " + leftClickAction + "!"));
+        if (actions.containsKey(ClickType.LEFT) && actions.size() == 1) {
+            labels.add(colorize( actions.get(ClickType.LEFT).color + "Click to " + actions.get(ClickType.LEFT).toString() + "!"));
         } else {
-            //<color>Left Click to <action>!
-            if (leftClickAction != null)
-                labels.add(colorize(leftClickAction.color + "Left Click to " + leftClickAction));
-            //<color>Right Click to <action>!
-            if (rightClickAction != null)
-                labels.add(colorize(rightClickAction.color + "Right Click to " + rightClickAction));
+            for (ClickType clickType : order) {
+                if (actions.containsKey(clickType)) {
+                    labels.add(colorize(actions.get(clickType).color + StringUtilsKt.formatCapitalize(clickType.name().toLowerCase()) + " Click to " + actions.get(clickType).toString() + "!"));
+                }
+            }
         }
         //Lore formatting
         List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation);
@@ -313,12 +317,12 @@ public class ItemBuilder {
         return description;
     }
 
-    public ActionType getLeftClickAction() {
-        return leftClickAction;
+    public List<String> getExtraLore() {
+        return extraLore;
     }
 
-    public ActionType getRightClickAction() {
-        return rightClickAction;
+    public HashMap<ClickType, ActionType> getActions() {
+        return actions;
     }
 
     public List<Duple<String, Object>> getInfo() {
@@ -348,6 +352,7 @@ public class ItemBuilder {
         SELECT_YELLOW("select", YELLOW),
         DELETE_YELLOW("delete", YELLOW),
         TOGGLE_YELLOW("toggle", YELLOW),
+        TOGGLE_EXPRESSION("toggle expression", YELLOW),
         PLAY_SOUND("preview sound", YELLOW),
         ;
 

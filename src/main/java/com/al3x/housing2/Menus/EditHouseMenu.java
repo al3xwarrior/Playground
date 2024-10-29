@@ -36,7 +36,7 @@ public class EditHouseMenu extends Menu{
                 .name(colorize("&eChange Icon"))
                 .description("Change the icon used when displaying this house")
                 .build(), () -> {
-                    EnumMenu<Material> enumMenu = new EnumMenu<>(main, "Select Icon", Material.values(), Material.GRASS_BLOCK, player, house, this, (material) -> {
+                    EnumMenu<Material> enumMenu = new EnumMenu<>(main, "&aSelect Icon", Material.values(), Material.GRASS_BLOCK, player, house, this, (material) -> {
                         house.setIcon(material);
                         open();
                     });

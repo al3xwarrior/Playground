@@ -25,7 +25,7 @@ public class MyHousesMenu extends Menu {
     private HousesManager housesManager;
 
     public MyHousesMenu(Main main, Player player, OfflinePlayer target) {
-        super(player, colorize("&7My Houses"), 27);
+        super(player, colorize((target.getUniqueId().equals(target.getUniqueId()) ? "My Houses" : target.getName() + "'s Houses") ), 27);
         this.main = main;
         this.target = target;
         this.player = player;

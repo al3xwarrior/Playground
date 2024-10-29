@@ -78,10 +78,13 @@ public class ActionEditMenu extends Menu {
 
         for (int i = 0; i < items.size(); i++) {
             ActionEditor.ActionItem item = items.get(i);
-            addItem(slots[i] - 1, item.getBuilder().build(), (e) -> {
+            int slot = slots[i] - 1;
+            if (item.getSlot() != -1) {
+                slot = item.getSlot();
+            }
+            addItem(slot, item.getBuilder().build(), (e) -> {
                 if (item.getCustomRunnable() != null) {
-                    item.getCustomRunnable().run();
-                    return;
+                    if (item.getCustomRunnable().apply(e)) return;
                 }
 
                 //I don't understand java
@@ -264,7 +267,7 @@ public class ActionEditMenu extends Menu {
         ItemMeta backArrowMeta = backArrow.getItemMeta();
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
-        addItem(31, backArrow, () -> {
+        addItem((editor.getRows() * 9) - 5, backArrow, () -> {
             if (backMenu != null) {
                 backMenu.open();
                 return;

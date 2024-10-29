@@ -47,10 +47,13 @@ public class StatManager {
     }
 
     public List<Stat> getPlayerStats(Player player) {
-        if (playerStats.containsKey(player.getUniqueId())) {
-            return playerStats.get(player.getUniqueId());
-        }
-        return null;
+        return this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+    }
+
+    public void addPlayerStat(Player player, Stat stat) {
+        List<Stat> playerStats = this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        playerStats.add(stat);
+        this.playerStats.put(player.getUniqueId(), playerStats);
     }
 
     public boolean hasStat(Player player, String name) {

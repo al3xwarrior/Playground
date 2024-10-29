@@ -90,6 +90,10 @@ public abstract class Menu implements Listener {
         return title;
     }
 
+    public Player getOwner() {
+        return player;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -111,11 +115,11 @@ public abstract class Menu implements Listener {
         rightClickActions.put(slot, (e) -> rightClickAction.run());
     }
 
-    protected void openChat(Main main, Consumer<String> consumer) {
+    public void openChat(Main main, Consumer<String> consumer) {
         openChat(main, "", consumer);
     }
 
-    protected void openChat(Main main, String previous, Consumer<String> consumer) {
+    public void openChat(Main main, String previous, Consumer<String> consumer) {
         player.closeInventory();
         TextComponent cancelComp = new TextComponent(" §c[CANCEL]");
         cancelComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cancelinput"));

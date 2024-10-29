@@ -146,7 +146,7 @@ public class Housing implements CommandExecutor {
                     HousingWorld house = housesManager.getHouse(player.getWorld());
 
                     if (house.getOwnerUUID() != player.getUniqueId() && !player.hasPermission("housing.playerstats")) {
-                        player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
+                        player.sendMessage(colorize("&cYou do not have permission to view player stats!"));
                         return true;
                     }
 

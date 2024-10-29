@@ -3,11 +3,13 @@ package com.al3x.housing2.Action;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ActionEditor {
     private int rows = 4;
@@ -56,13 +58,13 @@ public class ActionEditor {
     public static class ActionItem {
         private ItemBuilder builder;
         private ActionType type;
-        private int slot;
+        private int slot = -1;
         private double min = 0;
         private double max = Double.MAX_VALUE;
         private Enum[] enumClass;
         private Material enumMaterial;
         private String varName;
-        private Runnable customRunnable;
+        private Function<InventoryClickEvent, Boolean> customRunnable;
 
         public ActionItem(String varName, ItemBuilder builder, ActionType type) {
             this.varName = varName;
@@ -71,6 +73,28 @@ public class ActionEditor {
 
             if (type == ActionType.ENUM) {
                 Bukkit.getLogger().warning(varName + " is an enum type, but no enum class was provided.");
+            }
+        }
+
+        public ActionItem(String varName, ItemBuilder builder, ActionType type, Function<InventoryClickEvent, Boolean> runnable) {
+            this.varName = varName;
+            this.builder = builder;
+            this.type = type;
+            this.customRunnable = runnable;
+
+            if (type == ActionType.ENUM) {
+                Bukkit.getLogger().warning(varName + " is an enum type, but no enum class was provided.");
+            }
+        }
+
+        public ActionItem(ItemBuilder builder, ActionType type, int slot, Function<InventoryClickEvent, Boolean> consumer) {
+            this.builder = builder;
+            this.type = type;
+            this.slot = slot;
+            this.customRunnable = consumer;
+
+            if (type != ActionType.CUSTOM) {
+                Bukkit.getLogger().warning("Slot provided for non-custom action item.");
             }
         }
 
@@ -94,7 +118,7 @@ public class ActionEditor {
             this.enumMaterial = enumMaterial;
         }
 
-        public ActionItem(String varName, ItemBuilder builder, Runnable customRunnable) {
+        public ActionItem(String varName, ItemBuilder builder, Function<InventoryClickEvent, Boolean> customRunnable) {
             this.varName = varName;
             this.builder = builder;
             this.customRunnable = customRunnable;
@@ -112,6 +136,10 @@ public class ActionEditor {
             return enumClass;
         }
 
+        public int getSlot() {
+            return slot;
+        }
+
         public Material getEnumMaterial() {
             return enumMaterial;
         }
@@ -120,7 +148,7 @@ public class ActionEditor {
             return varName;
         }
 
-        public Runnable getCustomRunnable() {
+        public Function<InventoryClickEvent, Boolean> getCustomRunnable() {
             return customRunnable;
         }
 
@@ -132,7 +160,7 @@ public class ActionEditor {
             return max;
         }
 
-        public void setCustomRunnable(Runnable customRunnable) {
+        public void setCustomRunnable(Function<InventoryClickEvent, Boolean> customRunnable) {
             this.customRunnable = customRunnable;
         }
 
@@ -145,7 +173,7 @@ public class ActionEditor {
         }
 
         public enum ActionType {
-            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, ACTION, ACTION_SETTING, FUNCTION, CONDITION
+            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, ACTION, ACTION_SETTING, FUNCTION, CONDITION, CUSTOM
         }
 
         public interface EnumInterface {
