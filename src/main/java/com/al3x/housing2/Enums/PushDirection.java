@@ -10,5 +10,6 @@ public enum PushDirection {
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    CUSTOM
 }

@@ -6,6 +6,7 @@ import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,9 +18,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class LaunchProjectileAction extends Action {
     private Projectile projectile;
     private PushDirection direction;
+    private String customDirection;
     private double amount;
 
     public LaunchProjectileAction() {
@@ -47,7 +51,7 @@ public class LaunchProjectileAction extends Action {
         builder.name("&eLaunch Projectile Action");
         builder.info("&eSettings", "");
         builder.info("Projectile", "&a" + projectile);
-        builder.info("Direction", "&a" + direction);
+        builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
         builder.info("Velocity", "&a" + amount);
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -64,7 +68,7 @@ public class LaunchProjectileAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
         List<ActionEditor.ActionItem> items = Arrays.asList(
                 new ActionEditor.ActionItem("projectile",
                         ItemBuilder.create(Material.ARROW)
@@ -80,8 +84,36 @@ public class LaunchProjectileAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + direction)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS
-                ),
+                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS, (event, obj) -> {
+                    if (obj instanceof PushDirection direction && direction == PushDirection.CUSTOM) {
+                        event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom direction in the chat. (pitch,yaw)"));
+                        editMenu.openChat(Main.getInstance(), (message) -> {
+                            //pitch,yaw
+                            String[] split = message.split(",");
+                            if (split.length != 2) {
+                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                                return;
+                            }
+
+                            try {
+                                float pitch = Float.parseFloat(split[0]);
+                                float yaw = Float.parseFloat(split[1]);
+                                customDirection = pitch + "," + yaw;
+                                this.direction = PushDirection.CUSTOM;
+                                event.getWhoClicked().sendMessage(colorize("&aCustom direction set to " + customDirection));
+                            } catch (NumberFormatException e) {
+                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                            }
+                        });
+                    }
+
+                    if ((obj instanceof PushDirection direction) && direction != PushDirection.CUSTOM) {
+                        customDirection = null;
+                        this.direction = direction;
+                    }
+
+                    return false;
+                }),
                 new ActionEditor.ActionItem("amount",
                         ItemBuilder.create(Material.SLIME_BALL)
                                 .name("&eVelocity")
@@ -117,6 +149,36 @@ public class LaunchProjectileAction extends Action {
                 break;
             case RIGHT:
                 velocity = new Vector(-velocity.getZ(), 0, velocity.getX());
+                break;
+            case EAST:
+                velocity = new Vector(amount, 0, 0);
+                break;
+            case WEST:
+                velocity = new Vector(-amount, 0, 0);
+                break;
+            case NORTH:
+                velocity = new Vector(0, 0, -amount);
+                break;
+            case SOUTH:
+                velocity = new Vector(0, 0, amount);
+                break;
+            case CUSTOM:
+                String[] split = customDirection.split(",");
+                if (split.length != 2) {
+                    return true;
+                }
+
+                try {
+                    float pitch = Float.parseFloat(split[0]);
+                    float yaw = Float.parseFloat(split[1]);
+                    Vector custom = player.getLocation().getDirection().setY(0).normalize().multiply(amount);
+                    custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
+                    custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
+                    custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
+                    velocity = custom;
+                } catch (NumberFormatException e) {
+                    return true;
+                }
                 break;
         }
         proj.setVelocity(velocity);

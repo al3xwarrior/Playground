@@ -5,6 +5,8 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PushPlayerAction extends Action {
     private PushDirection direction;
+    private String customDirection;
     private double amount;
 
     public PushPlayerAction() {
@@ -44,7 +47,7 @@ public class PushPlayerAction extends Action {
         builder.material(Material.PISTON);
         builder.name("&ePush Player Action");
         builder.info("&eSettings", "");
-        builder.info("Direction", "&a" + direction);
+        builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
         builder.info("Velocity", "&a" + amount);
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -62,7 +65,7 @@ public class PushPlayerAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
         List<ActionEditor.ActionItem> items = Arrays.asList(
                 new ActionEditor.ActionItem("direction",
                         ItemBuilder.create(Material.COMPASS)
@@ -70,8 +73,36 @@ public class PushPlayerAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + direction)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS
-                ),
+                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS, (event, obj) -> {
+                    if (obj instanceof PushDirection direction && direction == PushDirection.CUSTOM) {
+                        event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom direction in the chat. (pitch,yaw)"));
+                        editMenu.openChat(Main.getInstance(), (message) -> {
+                            //pitch,yaw
+                            String[] split = message.split(",");
+                            if (split.length != 2) {
+                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                                return;
+                            }
+
+                            try {
+                                float pitch = Float.parseFloat(split[0]);
+                                float yaw = Float.parseFloat(split[1]);
+                                customDirection = pitch + "," + yaw;
+                                this.direction = PushDirection.CUSTOM;
+                                event.getWhoClicked().sendMessage(colorize("&aCustom direction set to " + customDirection));
+                            } catch (NumberFormatException e) {
+                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                            }
+                        });
+                    }
+
+                    if ((obj instanceof PushDirection direction) && direction != PushDirection.CUSTOM) {
+                        customDirection = null;
+                        this.direction = direction;
+                    }
+
+                    return false;
+                }),
                 new ActionEditor.ActionItem("amount",
                         ItemBuilder.create(Material.SLIME_BALL)
                                 .name("&eVelocity")
@@ -109,6 +140,24 @@ public class PushPlayerAction extends Action {
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
                 playerVelocity.add(right);
             }
+            case CUSTOM -> {
+                String[] split = customDirection.split(",");
+                if (split.length != 2) {
+                    return true;
+                }
+
+                try {
+                    float pitch = Float.parseFloat(split[0]);
+                    float yaw = Float.parseFloat(split[1]);
+                    Vector custom = player.getLocation().getDirection().setY(0).normalize().multiply(amount);
+                    custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
+                    custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
+                    custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
+                    playerVelocity.add(custom);
+                } catch (NumberFormatException e) {
+                    return true;
+                }
+            }
         }
         //This way it can get two different velocities at the same time
         //ex. UP and FORWARD
@@ -119,13 +168,16 @@ public class PushPlayerAction extends Action {
     public double getAmount() {
         return amount;
     }
+
     public PushDirection getDirection() {
         return direction;
     }
+
     //Won't do anything since it doesn't use this function
     public void setAmount(double amount) {
         this.amount = Math.max(amount, 100.0); // cant go over 100
     }
+
     public void setDirection(PushDirection direction) {
         this.direction = direction;
     }
