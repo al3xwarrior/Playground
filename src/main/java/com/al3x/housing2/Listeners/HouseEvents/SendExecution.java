@@ -9,6 +9,11 @@ import org.bukkit.event.Cancellable;
 
 public class SendExecution {
 
+    public static boolean sendEventExecution(EventType event, Player player, HousingWorld house, Cancellable e) {
+        if (house == null) return false;
+        return house.executeEventActions(event, player, e);
+    }
+
     public static boolean sendEventExecution(HousesManager housesManager, EventType event, Player player, Cancellable e) {
         World world = player.getWorld();
         if (world.getName().equals("world")) return false;

@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -85,9 +86,9 @@ public class PushPlayerAction extends Action {
                             }
 
                             try {
-                                float pitch = Float.parseFloat(split[0]);
-                                float yaw = Float.parseFloat(split[1]);
-                                customDirection = pitch + "," + yaw;
+                                float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[0]));
+                                float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[1]));
+                                customDirection = message;
                                 this.direction = PushDirection.CUSTOM;
                                 event.getWhoClicked().sendMessage(colorize("&aCustom direction set to " + customDirection));
                             } catch (NumberFormatException e) {
@@ -147,8 +148,8 @@ public class PushPlayerAction extends Action {
                 }
 
                 try {
-                    float pitch = Float.parseFloat(split[0]);
-                    float yaw = Float.parseFloat(split[1]);
+                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
+                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
                     Vector custom = player.getLocation().getDirection().setY(0).normalize().multiply(amount);
                     custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
                     custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));

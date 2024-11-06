@@ -12,11 +12,15 @@ import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -27,6 +31,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /*
 I just vomited opening this file. It's a mess.
@@ -190,6 +197,71 @@ public class HandlePlaceholders {
             return "";
         });
 
+
+        // Raycast placeholders
+        registerPlaceholder("regex:%raycast.block/([0-9]+)%", "&6%raycast.block/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return loc.getBlock().getType().name();
+        });
+        registerPlaceholder("regex:%raycast.block.x/([0-9]+)%", "&6%raycast.block.x/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return String.valueOf(loc.getBlockX());
+        });
+        registerPlaceholder("regex:%raycast.block.y/([0-9]+)%", "&6%raycast.block.y/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return String.valueOf(loc.getBlockY());
+        });
+        registerPlaceholder("regex:%raycast.block.z/([0-9]+)%", "&6%raycast.block.z/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return String.valueOf(loc.getBlockZ());
+        });
+        registerPlaceholder("regex:%raycast.block.type/([0-9]+)%", "&6%raycast.block.type/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return loc.getBlock().getType().name();
+        });
+
+        registerPlaceholder("regex:%raycast.entity/([0-9]+)%", "&6%raycast.entity/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return entity.getName();
+        });
+        registerPlaceholder("regex:%raycast.entity.type/([0-9]+)%", "&6%raycast.entity.type/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name();
+        });
+        registerPlaceholder("regex:%raycast.entity.x/([0-9]+)%", "&6%raycast.entity.x/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return String.valueOf((int) entity.getLocation().getX());
+        });
+        registerPlaceholder("regex:%raycast.entity.y/([0-9]+)%", "&6%raycast.entity.y/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return String.valueOf((int) entity.getLocation().getY());
+        });
+        registerPlaceholder("regex:%raycast.entity.z/([0-9]+)%", "&6%raycast.entity.z/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return String.valueOf((int) entity.getLocation().getZ());
+        });
+
         // House placeholders
         registerPlaceholder("%%house%%", (player, house) -> house.getName());
         registerPlaceholder("%house.name%", (player, house) -> house.getName());
@@ -232,7 +304,7 @@ public class HandlePlaceholders {
                 }
 
                 //Round the value to the specified number of decimal places
-                String returning =  String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
+                String returning = String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
                 //If the value is a decimal, and the decimal is not the same as the places, add 0's to the end
                 if (returning.contains(".") && returning.split("\\.")[1].length() < places) {
                     returning += "0".repeat(places - returning.split("\\.")[1].length());
@@ -254,11 +326,14 @@ public class HandlePlaceholders {
             return String.valueOf(Math.random() * (max - min) + min);
         });
 
+        //Regex for placeholders in placeholders
         registerPlaceholder("regex:%(.+)%(.+)%%", "&6%&7[placeholder]%&7[placeholder]&6%", (player, house, match) -> {
             String placeholder = match.getGroups().get(1).getValue();
             String value = parsePlaceholders(player, house, match.getGroups().get(2).getValue());
             return parsePlaceholders(player, house, "%" + placeholder + value + "%");
         });
+
+
     }
 
 
@@ -288,5 +363,48 @@ public class HandlePlaceholders {
             builder.replace(start, start + target.length(), replacement);
             start += replacement.length();
         }
+    }
+
+    private static Entity getEntityLookingAt(Player player, int range) {
+        Location loc = player.getEyeLocation();
+        Vector dir = loc.getDirection();
+        double rad = range, minDis = Double.POSITIVE_INFINITY;
+        Entity result = null;
+        for (Entity entity : loc.getWorld().getNearbyEntities(loc, rad, rad, rad)) {
+            if (entity == player)
+                continue;
+            BoundingBox bb = entity.getBoundingBox();
+            Vector min = bb.getMin(), max = bb.getMax();
+            double pMin = Double.NEGATIVE_INFINITY, pMax = Double.POSITIVE_INFINITY, p1, p2;
+            if (dir.getX() != 0) {
+                p1 = (min.getX() - loc.getX()) / dir.getX();
+                p2 = (max.getX() - loc.getX()) / dir.getX();
+                pMin = max(pMin, min(p1, p2));
+                pMax = min(pMax, max(p1, p2));
+            } else if (loc.getX() < min.getX() || loc.getX() > max.getX())
+                continue;
+            if (dir.getY() != 0) {
+                p1 = (min.getY() - loc.getY()) / dir.getY();
+                p2 = (max.getY() - loc.getY()) / dir.getY();
+                pMin = max(pMin, min(p1, p2));
+                pMax = min(pMax, max(p1, p2));
+            } else if (loc.getY() < min.getY() || loc.getY() > max.getY())
+                continue;
+            if (dir.getZ() != 0) {
+                p1 = (min.getZ() - loc.getZ()) / dir.getZ();
+                p2 = (max.getZ() - loc.getZ()) / dir.getZ();
+                pMin = max(pMin, min(p1, p2));
+                pMax = min(pMax, max(p1, p2));
+            } else if (loc.getZ() < min.getZ() || loc.getZ() > max.getZ())
+                continue;
+            if (pMin > pMax)
+                continue;
+            double dis = pMin * Math.sqrt(Math.pow(dir.getX(), 2) + Math.pow(dir.getY(), 2) + Math.pow(dir.getZ(), 2));
+            if (dis >= minDis)
+                continue;
+            minDis = dis;
+            result = entity;
+        }
+        return result;
     }
 }
