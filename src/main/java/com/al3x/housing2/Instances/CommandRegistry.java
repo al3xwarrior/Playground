@@ -92,9 +92,11 @@ public class CommandRegistry extends BukkitCommand {
             // Add the argument to the results
             results.add(argValue);
         }
+        commandArgsResults.remove(player.getUniqueId());
+
         commandArgsResults.put(player.getUniqueId(), results);
 
-        command.execute(player, world, results);
+        command.execute(player, world);
 
         return true;
     }

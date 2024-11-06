@@ -1,14 +1,12 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,19 +63,10 @@ public class Command {
         return command;
     }
 
-    public void execute(Player player, HousingWorld world, List<String> results) {
-        Main main = Main.getInstance();
-        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            for (Action action : actions) {
-                if (action.mustBeSync()) {
-                    Bukkit.getScheduler().runTask(main, () -> action.execute(player, world, null));
-                } else {
-                    if (!action.execute(player, world, null)) {
-                        break; //exit action will return false and will be the only action that will return false
-                    }
-                }
-            }
-        });
+    public void execute(Player player, HousingWorld world) {
+        ActionExecutor executor = new ActionExecutor();
+        executor.addActions(actions);
+        executor.execute(player, world, null);
     }
 
 

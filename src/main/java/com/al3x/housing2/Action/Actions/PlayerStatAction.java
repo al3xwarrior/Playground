@@ -219,22 +219,23 @@ public class PlayerStatAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
+        String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
+        Stat stat = house.getStatManager().getPlayerStatByName(player, name);
 
         for (StatInstance instance : statInstances) {
             if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
-                player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + instance.mode + " and value: " + instance.value));
+                player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
             }
         }
 
         if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
-            if (house.getStatManager().hasStat(player, statName)) {
+            if (house.getStatManager().hasStat(player, name)) {
                 house.getStatManager().getPlayerStats(player).remove(stat);
             }
             return true;
         }
 
-        if (!house.getStatManager().hasStat(player, statName)) {
+        if (!house.getStatManager().hasStat(player, name)) {
             house.getStatManager().addPlayerStat(player, stat);
         }
 

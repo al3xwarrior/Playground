@@ -56,12 +56,13 @@ public class StatValue extends Action {
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
         //If they are somehow seeing it then it's an error
-        if (editMenu == null) return new ActionEditor(6, "&e" + (isGlobal ? "Global" : "Player") + " Stat > Value", new ActionEditor.ActionItem(
-                ItemBuilder.create(Material.BARRIER)
-                        .name("&cError")
-                        .description("There was an error creating this menu, please contact an admin if this issue persists."),
-                ActionEditor.ActionItem.ActionType.CUSTOM, 5, (event, obj) -> false
-        ));
+        if (editMenu == null)
+            return new ActionEditor(6, "&e" + (isGlobal ? "Global" : "Player") + " Stat > Value", new ActionEditor.ActionItem(
+                    ItemBuilder.create(Material.BARRIER)
+                            .name("&cError")
+                            .description("There was an error creating this menu, please contact an admin if this issue persists."),
+                    ActionEditor.ActionItem.ActionType.CUSTOM, 5, (event, obj) -> false
+            ));
         ArrayList<ActionEditor.ActionItem> items = new ArrayList<>();
         if (isExpression) {
             literalValue = null;
@@ -77,7 +78,7 @@ public class StatValue extends Action {
                 ItemBuilder valueItem = ItemBuilder.create(Material.BOOK)
                         .name("&e" + statInstances.getFirst().mode.getArgs().getFirst())
                         .info("&7Current Value", "")
-                        .info(null, "&a" + previousValue)
+                        .info(null, "&a" + previousValue.asString())
                         .info(null, "")
                         .info("Expression", (previousValue.isExpression() ? "&aEnabled" : "&cDisabled"))
                         .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
@@ -92,12 +93,18 @@ public class StatValue extends Action {
                         return true;
                     }
 
-                    editMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat: "));
-                    editMenu.openChat(Main.getInstance(), previousValue.getLiteralValue(), (value) -> {
-                        previousValue.setLiteralValue(value);
-                        editMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
-                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), editMenu::open, 1L);
-                    });
+                    if (event.getClick() != ClickType.LEFT) return false;
+
+                    if (previousValue.isExpression()) {
+                        new ActionEditMenu(previousValue, Main.getInstance(), editMenu.getOwner(), house, editMenu).open();
+                    } else {
+                        editMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat: "));
+                        editMenu.openChat(Main.getInstance(), previousValue.getLiteralValue(), (value) -> {
+                            previousValue.setLiteralValue(value);
+                            editMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
+                            Bukkit.getScheduler().runTaskLater(Main.getInstance(), editMenu::open, 1L);
+                        });
+                    }
 
                     return true;
                 }
@@ -213,6 +220,10 @@ public class StatValue extends Action {
                         .name("&aAdd Stat Expression")
                         .description("Add a new stat expression instance.\n\nBasically adds a new mode and value to the expression."),
                 ActionEditor.ActionItem.ActionType.CUSTOM, 50, (event, obj) -> {
+            if (statInstances.getLast().mode.expressionOnly()) {
+                editMenu.getOwner().sendMessage(colorize("&cYou can't add another stat change to this expression."));
+                return false;
+            }
             if (statInstances.size() >= 6) {
                 editMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
                 return false;
@@ -283,7 +294,7 @@ public class StatValue extends Action {
     }
 
     public String toString() {
-        if(isExpression) {
+        if (isExpression) {
             StringBuilder str = new StringBuilder("&7(");
 
             if (!statInstances.isEmpty() && statInstances.getFirst().mode.getArgs().indexOf("MODE") != 0) {
@@ -300,13 +311,12 @@ public class StatValue extends Action {
             }
             str.append("&7)");
             return str.toString();
-        }
-        else return literalValue;
+        } else return literalValue;
     }
 
     //This is used for the display item
     public String asString() {
-        if(isExpression) {
+        if (isExpression) {
             StringBuilder str = new StringBuilder("");
             if (!statInstances.isEmpty() && statInstances.getFirst().mode.getArgs().indexOf("MODE") != 0) {
                 str.append("&f").append(statInstances.getFirst().mode.getArgs().getFirst()).append(": &a").append(value).append("\n");
@@ -314,11 +324,10 @@ public class StatValue extends Action {
             for (StatInstance statInstance : statInstances) {
                 StatOperation mode = statInstance.mode;
                 str.append("&fMode: &6").append(mode);
-                str.append("\n&f").append(mode.getArgs().get(2)).append(": &a").append(statInstance.value);
+                str.append("\n&f").append(mode.getArgs().get((mode.getArgs().indexOf("MODE") == 0 ? 1 : 2))).append(": &a").append(statInstance.value);
             }
             return str.toString();
-        }
-        else return literalValue;
+        } else return literalValue;
     }
 
     public void createDisplayItem(ItemBuilder builder) {

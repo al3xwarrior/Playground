@@ -19,12 +19,14 @@ public class StatRequirementCondition extends Condition {
     private String stat;
     private StatComparator comparator;
     private String compareValue;
+    private boolean ignoreCase;
 
     public StatRequirementCondition() {
         super("Stat Requirement");
         this.stat = "Kills";
         this.comparator = StatComparator.EQUALS;
         this.compareValue = "1.0";
+        this.ignoreCase = false;
     }
 
     @Override
@@ -40,6 +42,7 @@ public class StatRequirementCondition extends Condition {
         builder.info("Stat", stat);
         builder.info("Comparator", comparator.name());
         builder.info("Value", compareValue);
+        builder.info("Ignores Case", ignoreCase ? "Yes" : "No");
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -79,6 +82,14 @@ public class StatRequirementCondition extends Condition {
                                 .info(null, "&a" + compareValue)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.STRING
+                ),
+                new ActionEditor.ActionItem("ignoreCase",
+                        ItemBuilder.create((ignoreCase ? Material.LIME_DYE : Material.RED_DYE))
+                                .name((ignoreCase ? "&aIgnore Case" : "&cIgnore Case"))
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + ignoreCase)
+                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
         return new ActionEditor(4, "Stat Requirement", items);

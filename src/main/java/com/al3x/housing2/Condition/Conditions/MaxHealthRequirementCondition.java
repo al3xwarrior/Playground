@@ -43,7 +43,7 @@ public class MaxHealthRequirementCondition extends Condition {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.GOLDEN_APPLE);
-        builder.name("&eHealth Requirement");
+        builder.name("&eMax Health Requirement");
         builder.description("Requires the users current max health to match the provided condition.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }

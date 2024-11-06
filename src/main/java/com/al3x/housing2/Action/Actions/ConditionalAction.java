@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -135,36 +136,31 @@ public class ConditionalAction extends Action {
             }
         }
 
-        boolean returnResult = true;
-        if (result) {
-            for (Action action : ifActions) {
-                returnResult = action.execute(player, house, event);
-                if (!returnResult) return false;
-            }
-        } else {
-            for (Action action : elseActions) {
-                returnResult = action.execute(player, house, event);
-                if (!returnResult) return false;
-            }
-        }
-        return returnResult;
+        ActionExecutor executor = new ActionExecutor();
+        executor.addActions((result ? ifActions : elseActions));
+        return executor.execute(player, house, event);
     }
 
     public List<Condition> getConditions() {
         return conditions;
     }
+
     public void setConditions(ArrayList<Condition> conditions) {
         this.conditions = conditions;
     }
+
     public List<Action> getIfActions() {
         return ifActions;
     }
+
     public void setIfActions(List<Action> ifActions) {
         this.ifActions = ifActions;
     }
+
     public List<Action> getElseActions() {
         return elseActions;
     }
+
     public void setElseActions(List<Action> elseActions) {
         this.elseActions = elseActions;
     }

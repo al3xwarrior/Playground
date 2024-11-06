@@ -18,12 +18,14 @@ public class PlaceholderRequirementCondition extends Condition {
     private String placeholder;
     private StatComparator comparator;
     private String compareValue;
+    private boolean ignoreCase;
 
     public PlaceholderRequirementCondition() {
         super("Placeholder Requirement");
         this.placeholder = "%stat.player/Kills%";
         this.comparator = StatComparator.EQUALS;
         this.compareValue = "1.0";
+        this.ignoreCase = false;
     }
 
     @Override
@@ -39,6 +41,7 @@ public class PlaceholderRequirementCondition extends Condition {
         builder.info("Placeholder", placeholder);
         builder.info("Comparator", comparator.name());
         builder.info("Value", compareValue);
+        builder.info("Ignores Case", ignoreCase ? "Yes" : "No");
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -78,6 +81,14 @@ public class PlaceholderRequirementCondition extends Condition {
                                 .info(null, "&a" + compareValue)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.STRING
+                ),
+                new ActionEditor.ActionItem("ignoreCase",
+                        ItemBuilder.create((ignoreCase ? Material.LIME_DYE : Material.RED_DYE))
+                                .name((ignoreCase ? "&aIgnore Case" : "&cIgnore Case"))
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + ignoreCase)
+                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
         return new ActionEditor(4, "Placeholder Requirement", items);

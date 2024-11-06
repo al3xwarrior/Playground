@@ -225,22 +225,29 @@ public class GlobalStatAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getGlobalStatByName(statName);
+        String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
+
+        if (name.contains(" ")) {
+            player.sendMessage(colorize("&cStat name cannot contain spaces!"));
+            return false;
+        }
+
+        Stat stat = house.getStatManager().getGlobalStatByName(name);
 
         for (StatInstance instance : statInstances) {
             if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
-                player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + instance.mode + " and value: " + instance.value));
+                player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
             }
         }
 
         if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
-            if (house.getStatManager().hasGlobalStat(statName)) {
+            if (house.getStatManager().hasGlobalStat(name)) {
                 house.getStatManager().getGlobalStats().remove(stat);
             }
             return true;
         }
 
-        if (!house.getStatManager().hasGlobalStat(statName)) {
+        if (!house.getStatManager().hasGlobalStat(name)) {
             house.getStatManager().getGlobalStats().add(stat);
         }
 

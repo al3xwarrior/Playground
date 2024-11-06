@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
@@ -55,16 +56,15 @@ public class Function {
                 players = house.getWorld().getPlayers();
             }
         }
-        for (Player p : players) {
-            for (Action action : actions) {
-                if (action.requiresPlayer() && p == null) continue;
-                //Null check for allowed events, if null then all events are allowed, if the list contains null then its actually a function in disguise :D
-                if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) return;
+        ActionExecutor executor = new ActionExecutor();
 
-                if (!action.execute(p, house, null)) {
-                    return; //Stop everything if it finds an action that returns false aka exit action
-                }
-            }
+        for (Player p : players) {
+            List<Action> actions = new ArrayList<>(this.actions).stream()
+                    .filter((action) -> action.allowedEvents() == null || action.allowedEvents().contains(EventType.FUNCTION))
+                    .filter((action) -> !action.requiresPlayer() || p != null)
+                    .toList();
+            executor.addActions(actions);
+            executor.execute(p, house, null);
         }
     }
 
