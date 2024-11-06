@@ -51,7 +51,7 @@ public abstract class Menu implements Listener {
 
     // Opens the menu for the player
     public void open() {
-        this.inventory = Bukkit.createInventory(null, size, colorize(title));
+        this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
         setupItems();
         if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
                 AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));

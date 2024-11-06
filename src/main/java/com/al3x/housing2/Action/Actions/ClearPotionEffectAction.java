@@ -71,7 +71,7 @@ public class ClearPotionEffectAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&6" + potionEffectType.getName())
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        (event) -> {
+                        (event, obj) -> {
                             //Create a list of all the potion effects
                             List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
                             for (PotionEffectType type : PotionEffectType.values()) {

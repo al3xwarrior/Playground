@@ -14,7 +14,7 @@ public class StatInstance {
 
     public StatInstance(boolean global) {
         this.mode = StatOperation.INCREASE;
-        this.value = new StatValue(false);
+        this.value = new StatValue(global);
     }
 
     public void fromData(HashMap<String, Object> data, Class<? extends StatInstance> actionClass) {

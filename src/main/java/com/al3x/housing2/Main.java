@@ -31,9 +31,11 @@ public final class Main extends JavaPlugin {
         this.commandFramework = new HousingCommandFramework(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
+        getCommand("housing").setTabCompleter(new Housing.TabCompleter());
         getCommand("home").setExecutor(new Home(this));
         getCommand("cancelinput").setExecutor(new CancelInput(this));
         getCommand("testplaceholder").setExecutor(new TestPlaceholder(this));
+        getCommand("testplaceholder").setTabCompleter(new TestPlaceholder.TabCompleter());
         getCommand("placeholders").setExecutor(new Placeholders(this));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);

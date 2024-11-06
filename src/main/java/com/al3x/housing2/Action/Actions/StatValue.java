@@ -2,101 +2,199 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.StatInstance;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionEditMenu;
+import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class StatValue extends Action {
     private boolean isGlobal;
     private boolean isExpression;
     private String literalValue;
-    private StatOperation mode;
-    private StatOperation previousMode;
-    private StatValue value1;
-    private StatValue value2;
-    private List<StatValue> values;
+    private StatValue value;
+    private List<StatInstance> statInstances = new ArrayList<>();
 
     public StatValue(boolean isGlobal) {
         super("StatValue");
         this.literalValue = "1.0";
-        this.mode = StatOperation.INCREASE;
-        this.previousMode = this.mode;
-        this.values = new ArrayList<>();
+        this.value = null;
         this.isExpression = false;
         this.isGlobal = isGlobal;
     }
 
-    public StatValue(boolean isGlobal, boolean isExpression, String literalValue, StatOperation mode, StatValue value1, StatValue value2) {
+    public StatValue(boolean isGlobal, boolean isExpression, String literalValue, StatValue value, List<StatInstance> statInstances) {
         super("StatValue");
         this.isGlobal = isGlobal;
         this.isExpression = isExpression;
         this.literalValue = literalValue;
-        this.mode = mode;
-        this.previousMode = this.mode;
-        this.value1 = value1;
-        this.value2 = value2;
-        this.values = new ArrayList<>();
+        this.value = value;
+        this.statInstances = statInstances;
     }
 
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        //if mode enum gets changed, clear all args; otherwise, leave them as they were
-        if(!mode.getArgs().toString().equals(previousMode.getArgs().toString())) values.clear();
-        previousMode = mode;
-
-        ArrayList<ActionEditor.ActionItem> items = new ArrayList<>(Arrays.asList(
-                new ActionEditor.ActionItem("isExpression",
-                        ItemBuilder.create((isExpression ? Material.LIME_DYE : Material.RED_DYE))
-                                .name("&aIs expression")
-                                .description("Stat set to expression or literal")
-                                .info("&7Current Value", "")
-                                .info(null, isExpression ? "&aExpression" : "&cLiteral"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )));
+    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
+        //If they are somehow seeing it then it's an error
+        if (editMenu == null) return new ActionEditor(6, "&e" + (isGlobal ? "Global" : "Player") + " Stat > Value", new ActionEditor.ActionItem(
+                ItemBuilder.create(Material.BARRIER)
+                        .name("&cError")
+                        .description("There was an error creating this menu, please contact an admin if this issue persists."),
+                ActionEditor.ActionItem.ActionType.CUSTOM, 5, (event, obj) -> false
+        ));
+        ArrayList<ActionEditor.ActionItem> items = new ArrayList<>();
         if (isExpression) {
             literalValue = null;
-            for(int i = 0; i < mode.getArgs().size(); i++) {
-                if(mode.getArgs().get(i).equals("MODE")) {
-                    values.add(null);
-                    items.add(
-                            new ActionEditor.ActionItem("mode",
-                                    ItemBuilder.create(Material.COMPASS)
-                                            .name("&eMode")
-                                            .info("&7Current Value", "")
-                                            .info(null, "&a" + mode)
-                                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                                    ActionEditor.ActionItem.ActionType.ENUM, StatOperation.values(), null
-                            )
-                    );
-                } else {
-                    values.add(new StatValue(isGlobal));
-                    items.add(
-                        new ActionEditor.ActionItem("values " + i,
-                            ItemBuilder.create(Material.BOOK)
-                                .name("&e" + mode.getArgs().get(i))
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + values.get(i).asString())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            ActionEditor.ActionItem.ActionType.ACTION_SETTING
-                        ));
-                }
+            if (statInstances.isEmpty()) { //contains the mode and second value
+                value = new StatValue(isGlobal);
+                statInstances.add(new StatInstance(isGlobal));
             }
 
+            StatValue previousValue = value;
+
+            //If the first mode is not a MODE operation, add a value1 item
+            if (!statInstances.isEmpty() && statInstances.getFirst().mode.getArgs().indexOf("MODE") != 0) {
+                ItemBuilder valueItem = ItemBuilder.create(Material.BOOK)
+                        .name("&e" + statInstances.getFirst().mode.getArgs().getFirst())
+                        .info("&7Current Value", "")
+                        .info(null, "&a" + previousValue)
+                        .info(null, "")
+                        .info("Expression", (previousValue.isExpression() ? "&aEnabled" : "&cDisabled"))
+                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                        .mClick(ItemBuilder.ActionType.TOGGLE_EXPRESSION);
+
+                items.add(new ActionEditor.ActionItem("value",
+                        valueItem,
+                        ActionEditor.ActionItem.ActionType.CUSTOM, (event, obj) -> {
+                    if (event.getClick() == ClickType.MIDDLE) {
+                        previousValue.setExpression(!previousValue.isExpression());
+                        editMenu.open();
+                        return true;
+                    }
+
+                    editMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat: "));
+                    editMenu.openChat(Main.getInstance(), previousValue.getLiteralValue(), (value) -> {
+                        previousValue.setLiteralValue(value);
+                        editMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
+                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), editMenu::open, 1L);
+                    });
+
+                    return true;
+                }
+                ));
+            }
+
+            for (int i = 0; i < statInstances.size(); i++) {
+                StatInstance statInstance = statInstances.get(i);
+                StatOperation mode = statInstance.mode;
+
+                int finalI = i;
+
+                ItemBuilder modeItem = ItemBuilder.create(Material.COMPASS)
+                        .name("&eMode")
+                        .info("&7Current Value", "")
+                        .info(null, "&a" + statInstance.mode)
+                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
+                if (i > 0) { //Basically if it's not the first item
+                    modeItem.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+                }
+
+                items.add(new ActionEditor.ActionItem("",
+                        modeItem,
+                        ActionEditor.ActionItem.ActionType.CUSTOM,
+                        (event, obj) -> {
+                            if (event.getClick() == ClickType.RIGHT && finalI > 0) {
+                                statInstances.remove(statInstance);
+                                editMenu.open();
+                                return true;
+                            }
+
+                            if (event.getClick() != ClickType.LEFT) return true;
+
+                            List<Duple<StatOperation, ItemBuilder>> modes = new ArrayList<>();
+                            for (StatOperation statOperation : StatOperation.values()) {
+                                modes.add(new Duple<>(statOperation, ItemBuilder.create(statOperation.getMaterial()).name("&a" + StringUtilsKt.formatCapitalize(statOperation.name()))));
+                            }
+                            new PaginationMenu<>(Main.getInstance(), "&eSelect a mode", modes, editMenu.getOwner(), house, editMenu, (output) -> {
+                                statInstance.mode = output;
+                                editMenu.open();
+                            }).open();
+                            return true;
+                        }
+                ));
+
+                int argIndex = (mode.getArgs().indexOf("MODE") == 0) ? 1 : 2;
+                ItemBuilder valueItem = ItemBuilder.create(Material.BOOK)
+                        .name("&e" + mode.getArgs().get(argIndex))
+                        .info("&7Current Value", "")
+                        .info(null, "&a" + statInstance.value.asString())
+                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
+
+                if (!mode.expressionOnly()) {
+                    valueItem.info(null, "");
+                    valueItem.info("Expression", (statInstance.value.isExpression() ? "&aEnabled" : "&cDisabled"));
+                    valueItem.mClick(ItemBuilder.ActionType.TOGGLE_EXPRESSION);
+                }
+
+                if (i > 0) { //Basically if it's not the first item
+                    valueItem.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+                }
+
+                items.add(new ActionEditor.ActionItem("value1",
+                        valueItem,
+                        ActionEditor.ActionItem.ActionType.CUSTOM,
+                        (event, obj) -> {
+                            if (event.getClick() == ClickType.MIDDLE && !mode.expressionOnly()) {
+                                statInstance.value.setExpression(!statInstance.value.isExpression());
+                                editMenu.open();
+                                return true;
+                            }
+
+                            if (event.getClick() == ClickType.RIGHT && finalI > 0) {
+                                statInstances.remove(statInstance);
+                                editMenu.open();
+                                return true;
+                            }
+
+                            if (event.getClick() != ClickType.LEFT) return false;
+
+                            if (statInstance.value.isExpression()) {
+                                new ActionEditMenu(statInstance.value, Main.getInstance(), editMenu.getOwner(), house, editMenu).open();
+                            } else {
+                                editMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
+                                editMenu.openChat(Main.getInstance(), statInstance.value.getLiteralValue(), (value) -> {
+                                    statInstance.value.setLiteralValue(value);
+                                    editMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
+                                    Bukkit.getScheduler().runTaskLater(Main.getInstance(), editMenu::open, 1L);
+                                });
+                            }
+                            return true;
+                        }
+                ));
+            }
         } else {
-            values.clear();
+            statInstances.clear();
+            value = null;
             if (literalValue == null) literalValue = "1.0";
             items.addAll(Arrays.asList(
                     new ActionEditor.ActionItem("literalValue",
@@ -109,48 +207,75 @@ public class StatValue extends Action {
                     )
             ));
         }
+
+        items.add(new ActionEditor.ActionItem(
+                ItemBuilder.create(Material.PAPER)
+                        .name("&aAdd Stat Expression")
+                        .description("Add a new stat expression instance.\n\nBasically adds a new mode and value to the expression."),
+                ActionEditor.ActionItem.ActionType.CUSTOM, 50, (event, obj) -> {
+            if (statInstances.size() >= 6) {
+                editMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
+                return false;
+            }
+            statInstances.add(new StatInstance(false));
+            editMenu.open();
+            return true;
+        }
+        ));
+
         items.remove(null);
-        return new ActionEditor(4, "&ePlayer Stat Action Settings", items);
+        return new ActionEditor(6, getTitle((ActionEditMenu) editMenu), items);
     }
 
-    //Need to move over the changes from Stat.java to here
     public String calculate(Player player, HousingWorld world) throws NumberFormatException {
         if (!isExpression) return HandlePlaceholders.parsePlaceholders(player, world, literalValue);
         //Look for a stat in value1 and modify it with value2
-        if (mode == StatOperation.SET) {
-            if (values.get(0).isExpression) {
-                Stat stat = world.getStatManager().getPlayerStatByName(player, values.get(0).calculate(player, world));
-                if (stat != null) return stat.modifyStat(StatOperation.SET, values.get(2).calculate(player, world));
-            }
+        StatValue value1 = this.value;
 
-            Regex statPattern = new Regex("(.+|)%stat\\.player/([a-zA-Z0-9_]+)%(.+?|)");
-            MatchResult playerMatch = statPattern.find(values.get(0).literalValue, 0);
-            if (playerMatch != null && playerMatch.getGroups().size() == 4) {
-                String prefix = playerMatch.getGroups().get(1).getValue();
-                String statName = playerMatch.getGroups().get(2).getValue();
-                String suffix = playerMatch.getGroups().get(3).getValue();
-                if (prefix.isEmpty() && suffix.isEmpty()) {
-                    Stat stat = world.getStatManager().getPlayerStatByName(player, statName);
-                    if (stat != null) return stat.modifyStat(StatOperation.SET, values.get(2).calculate(player, world));
+        if (value1 == null) return "0.0";
+        String result = value1.calculate(player, world);
+        for (StatInstance statInstance : statInstances) {
+            StatOperation mode = statInstance.mode;
+            StatValue value2 = statInstance.value;
+
+            if (mode == StatOperation.SET) {
+                if (value1.isExpression) {
+                    Stat stat = world.getStatManager().getPlayerStatByName(player, value1.calculate(player, world));
+                    if (stat != null) return stat.modifyStat(StatOperation.SET, value2.calculate(player, world));
+                }
+
+                Regex statPattern = new Regex("(.+|)%stat\\.player/([a-zA-Z0-9_]+)%(.+?|)");
+                MatchResult playerMatch = statPattern.find(value1.literalValue, 0);
+                if (playerMatch != null && playerMatch.getGroups().size() == 4) {
+                    String prefix = playerMatch.getGroups().get(1).getValue();
+                    String statName = playerMatch.getGroups().get(2).getValue();
+                    String suffix = playerMatch.getGroups().get(3).getValue();
+                    if (prefix.isEmpty() && suffix.isEmpty()) {
+                        Stat stat = world.getStatManager().getPlayerStatByName(player, statName);
+                        if (stat != null) return stat.modifyStat(StatOperation.SET, value2.calculate(player, world));
+                    }
                 }
             }
-        }
 
-        if (mode == StatOperation.GET_STAT) {
-            Stat stat = world.getStatManager().getPlayerStatByName(player, values.get(1).calculate(player, world));
-            if (stat != null) return stat.getValue();
-        }
-        if (mode == StatOperation.CHAR_AT) {
-            try {
-                Integer.parseInt(values.get(2).calculate(player, world));
-            } catch (NumberFormatException ex) {
-                return "";
+            if (mode == StatOperation.PLAYER_STAT) {
+                Stat stat = world.getStatManager().getPlayerStatByName(player, value2.calculate(player, world));
+                if (stat != null) return stat.getValue();
             }
+            if (mode == StatOperation.GLOBAL_STAT) {
+                Stat stat = world.getStatManager().getGlobalStatByName(value2.calculate(player, world));
+                if (stat != null) return stat.getValue();
+            }
+            if (mode == StatOperation.CHAR_AT) {
+                try {
+                    Integer.parseInt(value2.calculate(player, world));
+                } catch (NumberFormatException ex) {
+                    return "";
+                }
+            }
+            if (result == null || value2 == null) return "0.0";
+            result = Stat.modifyStat(mode, result, value2.calculate(player, world));
         }
-
-//        if (value1 == null || value2 == null) return "0.0";
-
-        return Stat.modifyStat(mode, value1.calculate(player, world), value2.calculate(player, world));
+        return result;
     }
 
     public boolean requiresPlayer() {
@@ -159,33 +284,39 @@ public class StatValue extends Action {
 
     public String toString() {
         if(isExpression) {
-//            String str = "&7(";
-//            for(int i = 0; i < mode.getArgs().size(); i++) {
-//                if(mode.getArgs().get(i).equals("MODE")) {
-//                    str += "&6" + mode.asString();
-//                } else {
-//                    str += "&a" + values.get(i);
-//                }
-//                if(i < mode.getArgs().size() - 1) str += " ";
-//            }
-//            str += "&7)";
-            return "str";
+            StringBuilder str = new StringBuilder("&7(");
+
+            if (!statInstances.isEmpty() && statInstances.getFirst().mode.getArgs().indexOf("MODE") != 0) {
+                str.append("&a").append(value).append(" ");
+            }
+
+            for (StatInstance statInstance : statInstances) {
+                StatOperation mode = statInstance.mode;
+                str.append("&6").append(mode.asString()).append(" &a").append(statInstance.value);
+
+                if (statInstances.indexOf(statInstance) < statInstances.size() - 1) {
+                    str.append(" ");
+                }
+            }
+            str.append("&7)");
+            return str.toString();
         }
         else return literalValue;
     }
 
+    //This is used for the display item
     public String asString() {
         if(isExpression) {
-//            String str = "";
-//            for(int i = 0; i < mode.getArgs().size(); i++) {
-//                if(mode.getArgs().get(i).equals("MODE")) {
-//                    str += "&fMode: &6" + mode;
-//                } else {
-//                    str += "&f" + mode.getArgs().get(i) + ": &a" + values.get(i);
-//                }
-//                if(i < mode.getArgs().size() - 1) str += "\n";
-//            }
-            return "str";
+            StringBuilder str = new StringBuilder("");
+            if (!statInstances.isEmpty() && statInstances.getFirst().mode.getArgs().indexOf("MODE") != 0) {
+                str.append("&f").append(statInstances.getFirst().mode.getArgs().getFirst()).append(": &a").append(value).append("\n");
+            }
+            for (StatInstance statInstance : statInstances) {
+                StatOperation mode = statInstance.mode;
+                str.append("&fMode: &6").append(mode);
+                str.append("\n&f").append(mode.getArgs().get(2)).append(": &a").append(statInstance.value);
+            }
+            return str.toString();
         }
         else return literalValue;
     }
@@ -214,8 +345,13 @@ public class StatValue extends Action {
 
         if (isExpression) {
             literalValue = null;
+            if (statInstances.isEmpty()) {
+                value = new StatValue(isGlobal);
+                statInstances.add(new StatInstance(isGlobal));
+            }
         } else {
-            values.clear();
+            statInstances.clear();
+            value = null;
             if (literalValue == null) literalValue = "1.0";
         }
     }
@@ -228,15 +364,30 @@ public class StatValue extends Action {
         this.literalValue = literalValue;
     }
 
-    public StatOperation getMode() {
-        return mode;
+    public StatValue getValue() {
+        return value;
     }
 
-    public StatValue getValue1() {
-        return value1;
+    public List<StatInstance> getStatInstances() {
+        return statInstances;
     }
 
-    public StatValue getValue2() {
-        return value2;
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+
+    public String getTitle(ActionEditMenu currentMenu) {
+        StringBuilder title = new StringBuilder("&e" + (isGlobal ? "Global" : "Player") + " Stat > Value");
+        int count = 1;
+        while (currentMenu.getBackMenu() != null && currentMenu.getBackMenu() instanceof ActionEditMenu back && back.getAction() instanceof StatValue) {
+            title.append(" > Value");
+            count++;
+            currentMenu = back;
+        }
+        if (count > 2) {
+            title = new StringBuilder("&e" + (isGlobal ? "Global" : "Player") + " Stat > Value > " + (count - 1) + " Values");
+        }
+        return title.toString();
     }
 }

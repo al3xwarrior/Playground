@@ -83,7 +83,7 @@ public class PlayerStatAction extends Action {
             builder.info("&eStat Changes", "");
             for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
                 builder.info("Mode", "&6" + statInstances.get(i).mode);
-                builder.info("Value", "&a" + statInstances.get(i).value.asString());
+                builder.info("Value", "&a" + statInstances.get(i).value);
             }
         }
 
@@ -106,8 +106,6 @@ public class PlayerStatAction extends Action {
         if (backMenu == null) {
             return new ActionEditor(6, "&ePlayer Stat Action Settings");
         }
-        Stat stat = house.getStatManager().getPlayerStatByName(backMenu.getOwner(), statName);
-
         List<ActionEditor.ActionItem> items = new ArrayList<>();
 
         items.add(new ActionEditor.ActionItem("statName",
@@ -133,15 +131,18 @@ public class PlayerStatAction extends Action {
             int finalI = i;
             items.add(new ActionEditor.ActionItem("mode",
                     modeItem,
-                    (event) -> {
+                    (event, obj) -> {
                         if (event.getClick() == ClickType.RIGHT && finalI > 0) {
                             statInstances.remove(instance);
                             backMenu.open();
                             return true;
                         }
 
+                        if (event.getClick() != ClickType.LEFT) return false;
+
                         List<Duple<StatOperation, ItemBuilder>> modes = new ArrayList<>();
                         for (StatOperation mode : StatOperation.values()) {
+                            if (mode.expressionOnly()) continue;
                             modes.add(new Duple<>(mode, ItemBuilder.create(mode.getMaterial()).name("&a" + mode)));
                         }
                         new PaginationMenu<>(Main.getInstance(), "&eSelect a mode", modes, backMenu.getOwner(), house, backMenu, (mode) -> {
@@ -156,7 +157,7 @@ public class PlayerStatAction extends Action {
             ItemBuilder valueItem = ItemBuilder.create(Material.BOOK)
                     .name("&eAmount")
                     .info("&7Current Value", "")
-                    .info(null, "&a" + instance.value.asString())
+                    .info(null, "&a" + instance.value)
                     .info(null, "")
                     .info("Expression", (instance.value.isExpression() ? "&aEnabled" : "&cDisabled"))
                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
@@ -168,7 +169,7 @@ public class PlayerStatAction extends Action {
 
             items.add(new ActionEditor.ActionItem("value",
                     valueItem,
-                    ActionEditor.ActionItem.ActionType.CUSTOM, (event) -> {
+                    ActionEditor.ActionItem.ActionType.CUSTOM, (event, obj) -> {
                 if (event.getClick() == ClickType.MIDDLE) {
                     instance.value.setExpression(!instance.value.isExpression());
                     backMenu.open();
@@ -181,11 +182,13 @@ public class PlayerStatAction extends Action {
                     return true;
                 }
 
+                if (event.getClick() != ClickType.LEFT) return false;
+
                 if (instance.value.isExpression()) {
                     new ActionEditMenu(instance.value, Main.getInstance(), backMenu.getOwner(), house, backMenu).open();
                 } else {
                     backMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                    backMenu.openChat(Main.getInstance(), instance.value.asString(), (value) -> {
+                    backMenu.openChat(Main.getInstance(), instance.value.getLiteralValue(), (value) -> {
                         instance.value.setLiteralValue(value);
                         backMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
                         Bukkit.getScheduler().runTaskLater(Main.getInstance(), backMenu::open, 1L);
@@ -199,8 +202,8 @@ public class PlayerStatAction extends Action {
         items.add(new ActionEditor.ActionItem(
                 ItemBuilder.create(Material.PAPER)
                         .name("&aAdd Stat Expression")
-                        .description("Add a new stat expression instance."),
-                ActionEditor.ActionItem.ActionType.CUSTOM, 50, (event) -> {
+                        .description("Add a new stat expression instance.\n\nBasically adds a new mode and value to the expression."),
+                ActionEditor.ActionItem.ActionType.CUSTOM, 50, (event, obj) -> {
             if (statInstances.size() >= 6) {
                 backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
                 return false;
@@ -271,22 +274,12 @@ public class PlayerStatAction extends Action {
         return true;
     }
 
-//    @Override
-//    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-//        if (!data.containsKey("statName") || !data.containsKey("mode") || !data.containsKey("value")) {
-//            return;
-//        }
-//        this.statName = (String) data.get("statName");
-//        this.mode = StatOperation.valueOf((String) data.get("mode"));
-//        this.value = (String) data.get("value");
-//    }
-
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         statName = (String) data.get("statName");
 
         if (data.containsKey("statInstances")) {
-            this.statInstances = dataToList(gson.toJsonTree(data.get("statInstances")).getAsJsonArray());
+            this.statInstances = dataToList(gson.toJsonTree(data.get("statInstances")).getAsJsonArray(), StatInstance.class);
         } else {
             statInstances = new ArrayList<>();
             StatInstance statInstance = new StatInstance(false);
@@ -296,14 +289,5 @@ public class PlayerStatAction extends Action {
             statInstance.value = value;
             statInstance.mode = mode;
         }
-    }
-
-    private List<StatInstance> dataToList(JsonArray jsonArray) {
-        ArrayList<StatInstance> actions = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            actions.add(gson.fromJson(jsonObject, StatInstance.class));
-        }
-        return actions;
     }
 }

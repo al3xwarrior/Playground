@@ -73,12 +73,12 @@ public class HouseBrowserMenu extends Menu{
         }
     }
 
-    private @NotNull List<HouseData> getSortedHouses() {
-        List<HouseData> houses = new ArrayList<>(housesManager.getAllHouseData());
+    public static @NotNull List<HouseData> getSortedHouses() {
+        List<HouseData> houses = new ArrayList<>(Main.getInstance().getHousesManager().getAllHouseData());
 
         houses.sort((house1, house2) -> {
-            HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house1.getHouseID()));
-            HousingWorld housingWorld2 = housesManager.getHouse(UUID.fromString(house2.getHouseID()));
+            HousingWorld housingWorld = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house1.getHouseID()));
+            HousingWorld housingWorld2 = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house2.getHouseID()));
             
             if (housingWorld != null && housingWorld2 != null) {
                 return Integer.compare(housingWorld.getWorld().getPlayers().size(), housingWorld2.getWorld().getPlayers().size());

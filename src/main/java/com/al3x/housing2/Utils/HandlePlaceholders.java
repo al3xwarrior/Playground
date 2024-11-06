@@ -108,7 +108,7 @@ public class HandlePlaceholders {
         registerPlaceholder("%player.level%", (player, house) -> String.valueOf(player.getLevel()));
 
         // Regex for capturing stat placeholders like %stat.player/<stat>%
-        registerPlaceholder("regex:%stat\\.player/([a-zA-Z0-9_#]+)%", "&6%stat.player/&7[stat]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%stat\\.player/([a-zA-Z0-9_#]+)%", "&6%stat.player/&7[player_stat]&6%", (player, house, match) -> {
             String statName = match.getGroups().get(1).getValue(); // The captured <stat>
             Stat stat = house.getStatManager().getPlayerStatByName(player, statName);
             return (stat == null) ? "0" : stat.formatValue();
@@ -204,7 +204,7 @@ public class HandlePlaceholders {
         registerPlaceholder("%server.tps%", (player, house) -> new DecimalFormat("#.##").format(Bukkit.getServerTickManager().getTickRate()));
 
         // Regex for capturing stat placeholders like %stat.global/<stat>%
-        registerPlaceholder("regex:%stat\\.global/([a-zA-Z0-9_#]+)%", "&6%stat.global/&7[stat]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%stat\\.global/([a-zA-Z0-9_#]+)%", "&6%stat.global/&7[global_stat]&6%", (player, house, match) -> {
             String statName = match.getGroupValues().get(1); // The captured <stat>
             Stat stat = house.getStatManager().getGlobalStatByName(statName);
             return (stat == null) ? "0" : stat.formatValue();

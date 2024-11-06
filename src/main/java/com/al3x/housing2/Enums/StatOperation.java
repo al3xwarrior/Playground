@@ -1,7 +1,6 @@
 package com.al3x.housing2.Enums;
 
-
-import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -9,63 +8,50 @@ import java.util.Arrays;
 
 import static org.bukkit.Material.*;
 
-public enum StatOperation implements EnumMaterial{
-    INCREASE(GREEN_STAINED_GLASS),
-    DECREASE(RED_STAINED_GLASS),
-    SET(YELLOW_STAINED_GLASS),
-    MULTIPLY(ORANGE_STAINED_GLASS),
-    DIVIDE(BLUE_STAINED_GLASS),
-    MOD(MAGENTA_STAINED_GLASS),
-    FLOOR(WHITE_STAINED_GLASS),
-    ROUND(BROWN_STAINED_GLASS),
-    GET_STAT(FEATHER),
-    CONCAT(BOOK),
-    INDEX_OF(CHAIN),
-    SET_STRING(PAPER),
-    LENGTH_OF(BREEZE_ROD),
-    CHAR_AT(SPYGLASS),
-    ;
+public enum StatOperation implements EnumMaterial {
+    INCREASE(GREEN_STAINED_GLASS, "+", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    DECREASE(RED_STAINED_GLASS, "-", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    SET(YELLOW_STAINED_GLASS, "=", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    MULTIPLY(ORANGE_STAINED_GLASS, "*", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    DIVIDE(BLUE_STAINED_GLASS, "/", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    MOD(MAGENTA_STAINED_GLASS, "%", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    FLOOR(WHITE_STAINED_GLASS, "floor", new ArrayList<>(Arrays.asList("MODE", "Number"))),
+    ROUND(BROWN_STAINED_GLASS, "round", new ArrayList<>(Arrays.asList("MODE", "Number"))),
+    PLAYER_STAT(FEATHER, "pStat", new ArrayList<>(Arrays.asList("MODE", "Stat Name"))),
+    GLOBAL_STAT(PLAYER_HEAD, "gStat", new ArrayList<>(Arrays.asList("MODE", "Stat Name"))),
+    CONCAT(BOOK, "concat", new ArrayList<>(Arrays.asList("String 1", "MODE", "String 2"))),
+    INDEX_OF(CHAIN, "indexOf", new ArrayList<>(Arrays.asList("String", "MODE", "Target"))),
+    SET_STRING(PAPER, "set", new ArrayList<>(Arrays.asList("MODE", "String"))),
+    LENGTH_OF(BREEZE_ROD, "lengthOf", new ArrayList<>(Arrays.asList("MODE", "String"))),
+    CHAR_AT(SPYGLASS, "charAt", new ArrayList<>(Arrays.asList("String", "MODE", "Index")));
 
-    Material material;
+    private final Material material;
+    private final String asString;
+    private final ArrayList<String> args;
 
-    StatOperation(Material material) {
+    StatOperation(Material material, String asString, ArrayList<String> args) {
         this.material = material;
+        this.asString = asString;
+        this.args = args;
     }
 
     public String asString() {
-        return switch (this) {
-            case INCREASE -> "+";
-            case DECREASE -> "-";
-            case SET -> "=";
-            case MULTIPLY -> "*";
-            case DIVIDE -> "/";
-            case MOD -> "%";
-            case FLOOR -> "floor";
-            case ROUND -> "round";
-            case GET_STAT -> "get";
-            case CONCAT -> "concat";
-            case INDEX_OF -> "indexOf";
-            case SET_STRING -> "set";
-            case LENGTH_OF -> "lengthOf";
-            case CHAR_AT -> "charAt";
-        };
+        return asString;
+    }
+
+    public String toString() {
+        return StringUtilsKt.formatCapitalize(name());
     }
 
     public ArrayList<String> getArgs() {
-        return switch (this) {
-            case INCREASE, DECREASE, SET, MULTIPLY, DIVIDE, MOD -> new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"));
-            case FLOOR, ROUND -> new ArrayList<>(Arrays.asList("MODE", "Number"));
-            case GET_STAT -> new ArrayList<>(Arrays.asList("MODE", "Stat Name"));
-            case CONCAT -> new ArrayList<>(Arrays.asList("String 1", "MODE", "String 2"));
-            case INDEX_OF -> new ArrayList<>(Arrays.asList("String", "MODE", "Target"));
-            case SET_STRING -> new ArrayList<>(Arrays.asList("MODE", "String"));
-            case LENGTH_OF -> new ArrayList<>(Arrays.asList("MODE", "String"));
-            case CHAR_AT -> new ArrayList<>(Arrays.asList("String", "MODE", "Index"));
-        };
+        return args;
     }
 
     public boolean expressionOnly() {
-        return this == GET_STAT || this == INDEX_OF || this == LENGTH_OF || this == CHAR_AT;
+        return switch (this) {
+            case PLAYER_STAT, GLOBAL_STAT, INDEX_OF, LENGTH_OF, CHAR_AT -> true;
+            default -> false;
+        };
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
@@ -34,6 +35,10 @@ public class ActionEditMenu extends Menu {
     private EventType event;
     private Menu backMenu;
 
+    public Menu getBackMenu() {
+        return backMenu;
+    }
+
     private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
         return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, player);
     }
@@ -64,6 +69,18 @@ public class ActionEditMenu extends Menu {
     }
 
     @Override
+    public String getTitle() {
+        ActionEditor editor;
+        if (action == null) {
+            editor = getEditor(condition, house, this, player);
+        } else {
+            editor = getEditor(action, house, this, player);
+        }
+
+        return editor.getTitle();
+    }
+
+    @Override
     public void setupItems() {
         clearItems();
         //Only needed for actions that need their own custom menu
@@ -73,6 +90,7 @@ public class ActionEditMenu extends Menu {
         } else {
             editor = getEditor(action, house, this, player);
         }
+        setTitle(colorize(editor.getTitle()));
         List<ActionEditor.ActionItem> items = editor.getItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
@@ -83,8 +101,8 @@ public class ActionEditMenu extends Menu {
                 slot = item.getSlot();
             }
             addItem(slot, item.getBuilder().build(), (e) -> {
-                if (item.getCustomRunnable() != null) {
-                    if (item.getCustomRunnable().apply(e)) return;
+                if (item.getCustomRunnable() != null && (item.getType() == null || item.getType() == ActionType.CUSTOM)) {
+                    if (item.getCustomRunnable().apply(e, null)) return;
                 }
 
                 //I don't understand java
@@ -93,6 +111,10 @@ public class ActionEditMenu extends Menu {
                     Object value = null;
 
                     public void setValue(Object value) {
+                        if (item.getCustomRunnable() != null) {
+                            if (!item.getCustomRunnable().apply(e, value)) return;
+                            return;
+                        }
                         try {
                             field.set((action == null) ? condition : action, value);
                         } catch (IllegalAccessException ex) {
@@ -283,5 +305,9 @@ public class ActionEditMenu extends Menu {
 
     public void setHousingNPC(HousingNPC housingNPC) {
         this.housingNPC = housingNPC;
+    }
+
+    public Action getAction() {
+        return action;
     }
 }

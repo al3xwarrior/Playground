@@ -126,6 +126,7 @@ public class ActionEnumMenu extends Menu {
         PaginationList<ItemBuilder> paginationList = getItems(item, search);
         List<ItemBuilder> pageItems = paginationList.getPage(currentPage);
 
+
         if (pageItems != null) {
             for (int i = 0; i < pageItems.size(); i++) {
                 ItemBuilder itemBuilder = pageItems.get(i);
@@ -149,10 +150,16 @@ public class ActionEnumMenu extends Menu {
                         if (action != null) {
                             field = action.getClass().getDeclaredField(item.getVarName());
                             field.setAccessible(true);
+                            if (item.getCustomRunnable() != null) {
+                                if (!item.getCustomRunnable().apply(e, Enum.valueOf(field.getType().asSubclass(Enum.class), name))) return;
+                            }
                             field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
                         } else if (condition != null) {
                             field = condition.getClass().getDeclaredField(item.getVarName());
                             field.setAccessible(true);
+                            if (item.getCustomRunnable() != null) {
+                                if (!item.getCustomRunnable().apply(e, Enum.valueOf(field.getType().asSubclass(Enum.class), name))) return;
+                            }
                             field.set(condition, Enum.valueOf(field.getType().asSubclass(Enum.class), name));
                         }
 
@@ -244,9 +251,6 @@ public class ActionEnumMenu extends Menu {
                 //Are there better ways to do this? Probably, do I care? No
                 if (value instanceof BarColor)
                     items.add(new ItemBuilder().material(Color.fromColor((BarColor) value)).name("&e" + name));
-
-                if (value instanceof StatOperation)
-                    items.add(new ItemBuilder().material(STAT_OPERATION_MATERIALS[i]).name("&e" + name));
 
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));

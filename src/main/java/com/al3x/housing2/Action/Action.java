@@ -5,6 +5,9 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -19,6 +22,7 @@ import java.util.List;
  * Represents an action that can be executed by a player.
  */
 public abstract class Action {
+    private static final Gson gson = new Gson();
     protected String name;
 
     public Action(String name) {
@@ -113,13 +117,12 @@ public abstract class Action {
         }
     }
 
-
-    public static CancelAction getCancelAction(List<Action> actions) {
-        for (Action action : actions) {
-            if (action instanceof CancelAction) {
-                return (CancelAction) action;
-            }
+    protected <T> List<T> dataToList(JsonArray jsonArray, Class<T> clazz) {
+        ArrayList<T> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            actions.add(gson.fromJson(jsonObject, clazz));
         }
-        return null;
+        return actions;
     }
 }

@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -64,7 +65,7 @@ public class ActionEditor {
         private Enum[] enumClass;
         private Material enumMaterial;
         private String varName;
-        private Function<InventoryClickEvent, Boolean> customRunnable;
+        private BiFunction<InventoryClickEvent, Object, Boolean> customRunnable;
 
         public ActionItem(String varName, ItemBuilder builder, ActionType type) {
             this.varName = varName;
@@ -76,7 +77,7 @@ public class ActionEditor {
             }
         }
 
-        public ActionItem(String varName, ItemBuilder builder, ActionType type, Function<InventoryClickEvent, Boolean> runnable) {
+        public ActionItem(String varName, ItemBuilder builder, ActionType type, BiFunction<InventoryClickEvent, Object, Boolean> runnable) {
             this.varName = varName;
             this.builder = builder;
             this.type = type;
@@ -87,7 +88,7 @@ public class ActionEditor {
             }
         }
 
-        public ActionItem(ItemBuilder builder, ActionType type, int slot, Function<InventoryClickEvent, Boolean> consumer) {
+        public ActionItem(ItemBuilder builder, ActionType type, int slot, BiFunction<InventoryClickEvent, Object, Boolean> consumer) {
             this.builder = builder;
             this.type = type;
             this.slot = slot;
@@ -118,7 +119,16 @@ public class ActionEditor {
             this.enumMaterial = enumMaterial;
         }
 
-        public ActionItem(String varName, ItemBuilder builder, Function<InventoryClickEvent, Boolean> customRunnable) {
+        public ActionItem(String varName, ItemBuilder builder, ActionType type, Enum[] enumClass, Material enumMaterial, BiFunction<InventoryClickEvent, Object, Boolean> customRunnable) {
+            this.varName = varName;
+            this.builder = builder;
+            this.type = type;
+            this.enumClass = enumClass;
+            this.enumMaterial = enumMaterial;
+            this.customRunnable = customRunnable;
+        }
+
+        public ActionItem(String varName, ItemBuilder builder, BiFunction<InventoryClickEvent, Object, Boolean> customRunnable) {
             this.varName = varName;
             this.builder = builder;
             this.customRunnable = customRunnable;
@@ -148,7 +158,7 @@ public class ActionEditor {
             return varName;
         }
 
-        public Function<InventoryClickEvent, Boolean> getCustomRunnable() {
+        public BiFunction<InventoryClickEvent, Object, Boolean> getCustomRunnable() {
             return customRunnable;
         }
 
@@ -160,7 +170,7 @@ public class ActionEditor {
             return max;
         }
 
-        public void setCustomRunnable(Function<InventoryClickEvent, Boolean> customRunnable) {
+        public void setCustomRunnable(BiFunction<InventoryClickEvent, Object, Boolean> customRunnable) {
             this.customRunnable = customRunnable;
         }
 

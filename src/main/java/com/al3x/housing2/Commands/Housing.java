@@ -12,8 +12,11 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -218,5 +221,28 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7&m---------------------------------------"));
 
         return true;
+    }
+
+    public static class TabCompleter implements org.bukkit.command.TabCompleter {
+        @Override
+        public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
+            if (args.length == 1) {
+                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "menu", "playerstats", "globalstats", "save").stream().filter(i -> i.startsWith(args[0])).toList();
+            }
+
+            if (args.length == 2) {
+                if (args[0].equalsIgnoreCase("visit")) {
+                    return HouseBrowserMenu.getSortedHouses().stream()
+                            .map((h) -> Bukkit.getOfflinePlayer(UUID.fromString(h.getOwnerID())).getName())
+                            .filter(i -> i.startsWith(args[1])).limit(20).toList();
+                }
+
+                if (args[0].equalsIgnoreCase("playerstats")) {
+                    return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList().stream().filter(i -> i.startsWith(args[1])).toList();
+                }
+            }
+
+            return java.util.List.of();
+        }
     }
 }
