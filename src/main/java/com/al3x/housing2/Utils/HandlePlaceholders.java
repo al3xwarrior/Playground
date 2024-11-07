@@ -262,6 +262,43 @@ public class HandlePlaceholders {
             return String.valueOf((int) entity.getLocation().getZ());
         });
 
+        // Standing on placeholders
+        registerPlaceholder("%standing.block%", (player, house) -> {
+            Location loc = player.getLocation().clone().add(0, -1, 0);
+            return loc.getBlock().getType().name();
+        });
+        //Touching block (left, right, front, back, up, down)
+        registerPlaceholder("%touching.block/left%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location left = loc.clone().add(-1, 0, 0);
+            return left.getBlock().getType().name();
+        });
+        registerPlaceholder("%touching.block/right%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location right = loc.clone().add(1, 0, 0);
+            return right.getBlock().getType().name();
+        });
+        registerPlaceholder("%touching.block/front%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location front = loc.clone().add(0, 0, -1);
+            return front.getBlock().getType().name();
+        });
+        registerPlaceholder("%touching.block/back%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location back = loc.clone().add(0, 0, 1);
+            return back.getBlock().getType().name();
+        });
+        registerPlaceholder("%touching.block/up%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location up = loc.clone().add(0, 2, 0);
+            return up.getBlock().getType().name();
+        });
+        registerPlaceholder("%touching.block/down%", (player, house) -> {
+            Location loc = player.getLocation();
+            Location down = loc.clone().add(0, -1, 0);
+            return down.getBlock().getType().name();
+        });
+
         // House placeholders
         registerPlaceholder("%%house%%", (player, house) -> house.getName());
         registerPlaceholder("%house.name%", (player, house) -> house.getName());

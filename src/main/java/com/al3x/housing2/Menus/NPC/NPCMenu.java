@@ -7,6 +7,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.HologramEditorMenu;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
@@ -69,9 +70,7 @@ public class NPCMenu extends Menu {
         ItemMeta changeEquipmentMeta = changeEquipment.getItemMeta();
         changeEquipmentMeta.setDisplayName(colorize("&aChange Equipment"));
         changeEquipment.setItemMeta(changeEquipmentMeta);
-        addItem(16, changeEquipment, () -> {
-            player.sendMessage("Change Equipment selected");
-        });
+        addItem(16, changeEquipment, () -> new EquipmentMenu(main, player, housingNPC).open());
 
         ItemStack lookAtPlayers = new ItemStack(Material.COMPASS);
         ItemMeta lookAtPlayersMeta = lookAtPlayers.getItemMeta();
@@ -117,6 +116,14 @@ public class NPCMenu extends Menu {
                     }
                 }
             }, main);
+        });
+
+        ItemBuilder navigation = ItemBuilder.create(Material.BLAZE_POWDER)
+                .name("&aNavigation")
+                .description("Add navigation to the NPC")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        addItem(34, navigation.build(), () -> {
+            new NavigationMenu(main, player, housingNPC).open();
         });
 
 

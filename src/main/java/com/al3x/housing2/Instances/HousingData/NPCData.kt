@@ -10,8 +10,13 @@ data class NPCData(
     val npcLocation: LocationData,
     val npcSkin: String,
     val actions: List<ActionData>,
-    val lookAtPlayer: Boolean
+    val lookAtPlayer: Boolean,
+    val equipment: List<String>,
+    val navigationType: String? = "null",
+    val waypoints: List<LocationData>? = listOf(),
+    val speed: Float? = 1.0f
 ) {
+
     companion object {
         fun fromList(npcList: List<HousingNPC>): List<NPCData> {
             val list = mutableListOf<NPCData>()
@@ -25,7 +30,11 @@ data class NPCData(
                         LocationData.fromLocation(it.location),
                         "null", 
                         ActionData.fromList(it.actions),
-                        it.isLookAtPlayer
+                        it.isLookAtPlayer,
+                        it.equipment,
+                        it.navigationType.name,
+                        LocationData.fromLocationList(it.waypoints),
+                        it.speed.toFloat()
                     )
                 )
             }
