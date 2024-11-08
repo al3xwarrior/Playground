@@ -16,4 +16,10 @@ commands:
     usage: "/testplaceholder <string>"
   placeholders:
 
-
+  wand:
+    usage: "/wand"
+    aliases: ["wand", "housingwand", "/"]
+  set:
+    aliases: ["/set"]
+  sphere:
+    aliases: ["/sphere"]

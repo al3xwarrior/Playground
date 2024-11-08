@@ -2,7 +2,6 @@ package com.al3x.housing2.Utils.scoreboard;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import fr.mrmicky.fastboard.FastBoard;
 import org.bukkit.entity.Player;

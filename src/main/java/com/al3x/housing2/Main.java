@@ -1,15 +1,18 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
+import com.al3x.housing2.Commands.Protools.Set;
+import com.al3x.housing2.Commands.Protools.Sphere;
+import com.al3x.housing2.Commands.Protools.Wand;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Listeners.HouseEvents.*;
+import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
-import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,6 +23,7 @@ public final class Main extends JavaPlugin {
     private SlimeLoader loader;
     private HousesManager housesManager;
     private HousingCommandFramework commandFramework;
+    private ProtoolsManager protoolsManager;
 
     @Override
     public void onEnable() {
@@ -28,6 +32,7 @@ public final class Main extends JavaPlugin {
         loader = new FileLoader(new File("./slime_worlds"));
 
         this.housesManager = new HousesManager(this);
+        this.protoolsManager = new ProtoolsManager(housesManager);
         this.commandFramework = new HousingCommandFramework(this);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
@@ -38,11 +43,17 @@ public final class Main extends JavaPlugin {
         getCommand("testplaceholder").setTabCompleter(new TestPlaceholder.TabCompleter());
         getCommand("placeholders").setExecutor(new Placeholders(this));
 
+        // Protools
+        this.getCommand("wand").setExecutor(new Wand(this));
+        this.getCommand("set").setExecutor(new Set(housesManager, protoolsManager));
+        this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
+
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
 
         // House Events
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
