@@ -79,7 +79,10 @@ public class NPCMenu extends Menu {
         addItem(28, lookAtPlayers, () -> {
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(housingNPC.getNpcID());
             boolean newStatus = citizensNPC.getOrAddTrait(LookClose.class).toggle();
+
+            housingNPC.setLookAtPlayer(newStatus);
             player.sendMessage(colorize("&aLook at Players set to: " + newStatus));
+            setupItems();
         });
 
         ItemStack entityType = new ItemStack(Material.WOLF_SPAWN_EGG);
@@ -134,6 +137,17 @@ public class NPCMenu extends Menu {
         addItem(53, removeNPC, () -> {
             house.removeNPC(housingNPC.getNpcID());
             player.closeInventory();
+        });
+
+        ItemBuilder npcInfo = ItemBuilder.create(Material.PAPER)
+                .name("&aNPC Info")
+                .description("Information about this NPC")
+                .info("Name", housingNPC.getName())
+                .info("ID", "&a" + housingNPC.getNpcID())
+                .info("Entity Type", "&b" + housingNPC.getEntityType().name())
+                .info("Navigation Type", "&6" + housingNPC.getNavigationType().name())
+                .info("Look at Players", housingNPC.isLookAtPlayer() ? "&aYes" : "&cNo");
+        addItem(48, npcInfo.build(), () -> {
         });
 
         ItemStack close = new ItemStack(Material.BARRIER);

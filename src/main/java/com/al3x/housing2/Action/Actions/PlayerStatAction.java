@@ -228,7 +228,7 @@ public class PlayerStatAction extends Action {
             }
         }
 
-        if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
+        if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
             if (house.getStatManager().hasStat(player, name)) {
                 house.getStatManager().getPlayerStats(player).remove(stat);
             }

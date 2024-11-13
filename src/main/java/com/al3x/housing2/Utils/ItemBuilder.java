@@ -355,6 +355,7 @@ public class ItemBuilder {
         TOGGLE_EXPRESSION("toggle expression", YELLOW),
         PLAY_SOUND("preview sound", YELLOW),
         GIVE_ITEM("give item", YELLOW),
+        CLEAR_SEARCH("clear search", YELLOW),
         ;
 
         private String action;

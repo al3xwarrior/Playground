@@ -99,8 +99,14 @@ public class StatRequirementCondition extends Condition {
     public boolean execute(Player player, HousingWorld house) {
         Stat stat = house.getStatManager().getPlayerStatByName(player, this.stat);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
+        String statValue = stat.getValue();
 
-        return Comparator.compare(comparator, stat.getValue(), compareValue);
+        if (ignoreCase) {
+            statValue = statValue.toLowerCase();
+            compareValue = compareValue.toLowerCase();
+        }
+
+        return Comparator.compare(comparator, statValue, compareValue);
     }
 
     @Override
@@ -109,6 +115,7 @@ public class StatRequirementCondition extends Condition {
         data.put("stat", stat);
         data.put("comparator", comparator.name());
         data.put("compareValue", compareValue);
+        data.put("ignoreCase", ignoreCase);
         return data;
     }
 

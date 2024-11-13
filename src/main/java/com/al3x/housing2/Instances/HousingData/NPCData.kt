@@ -28,7 +28,7 @@ data class NPCData(
                         it.name, 
                         it.entityType.name, 
                         LocationData.fromLocation(it.location),
-                        "null", 
+                        it.skinUUID,
                         ActionData.fromList(it.actions),
                         it.isLookAtPlayer,
                         it.equipment,

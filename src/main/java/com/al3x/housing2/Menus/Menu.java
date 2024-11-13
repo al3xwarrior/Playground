@@ -109,6 +109,10 @@ public abstract class Menu implements Listener {
         leftClickActions.put(slot, (e) -> leftClickAction.run());
     }
 
+    public void addItem(int slot, ItemStack item) {
+        addItem(slot, item, (e) -> {});
+    }
+
     public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction) {
         inventory.setItem(slot, item);
         leftClickActions.put(slot, (e) -> leftClickAction.run());

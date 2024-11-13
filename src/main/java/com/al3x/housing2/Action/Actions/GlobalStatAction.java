@@ -240,7 +240,7 @@ public class GlobalStatAction extends Action {
             }
         }
 
-        if (stat.getValue().equals("0") || stat.getValue().equals("0.0")) {
+        if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
             if (house.getStatManager().hasGlobalStat(name)) {
                 house.getStatManager().getGlobalStats().remove(stat);
             }

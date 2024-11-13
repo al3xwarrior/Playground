@@ -56,8 +56,7 @@ public class EquipmentMenu extends Menu {
             equipment.setItemMeta(equipmentMeta);
             addItem(slots[i], equipment, () -> {
                 new ItemSelectMenu(player, this, (item) -> {
-                    ItemStack itemClone = new ItemStack(item.getType());
-                    housingNPC.setEquipment(name, itemClone);
+                    housingNPC.setEquipment(name, item);
                     open();
                 }).open();
             });

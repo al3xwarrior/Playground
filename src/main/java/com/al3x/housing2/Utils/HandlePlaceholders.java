@@ -12,6 +12,7 @@ import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
 import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -403,45 +404,10 @@ public class HandlePlaceholders {
     }
 
     private static Entity getEntityLookingAt(Player player, int range) {
-        Location loc = player.getEyeLocation();
-        Vector dir = loc.getDirection();
-        double rad = range, minDis = Double.POSITIVE_INFINITY;
-        Entity result = null;
-        for (Entity entity : loc.getWorld().getNearbyEntities(loc, rad, rad, rad)) {
-            if (entity == player)
-                continue;
-            BoundingBox bb = entity.getBoundingBox();
-            Vector min = bb.getMin(), max = bb.getMax();
-            double pMin = Double.NEGATIVE_INFINITY, pMax = Double.POSITIVE_INFINITY, p1, p2;
-            if (dir.getX() != 0) {
-                p1 = (min.getX() - loc.getX()) / dir.getX();
-                p2 = (max.getX() - loc.getX()) / dir.getX();
-                pMin = max(pMin, min(p1, p2));
-                pMax = min(pMax, max(p1, p2));
-            } else if (loc.getX() < min.getX() || loc.getX() > max.getX())
-                continue;
-            if (dir.getY() != 0) {
-                p1 = (min.getY() - loc.getY()) / dir.getY();
-                p2 = (max.getY() - loc.getY()) / dir.getY();
-                pMin = max(pMin, min(p1, p2));
-                pMax = min(pMax, max(p1, p2));
-            } else if (loc.getY() < min.getY() || loc.getY() > max.getY())
-                continue;
-            if (dir.getZ() != 0) {
-                p1 = (min.getZ() - loc.getZ()) / dir.getZ();
-                p2 = (max.getZ() - loc.getZ()) / dir.getZ();
-                pMin = max(pMin, min(p1, p2));
-                pMax = min(pMax, max(p1, p2));
-            } else if (loc.getZ() < min.getZ() || loc.getZ() > max.getZ())
-                continue;
-            if (pMin > pMax)
-                continue;
-            double dis = pMin * Math.sqrt(Math.pow(dir.getX(), 2) + Math.pow(dir.getY(), 2) + Math.pow(dir.getZ(), 2));
-            if (dis >= minDis)
-                continue;
-            minDis = dis;
-            result = entity;
-        }
-        return result;
+        Location eye = player.getEyeLocation();
+        Vector direction = eye.getDirection();
+        RayTraceResult result = player.getWorld().rayTrace(eye, direction, range, FluidCollisionMode.NEVER, true, 0.0D, (entity) -> !entity.equals(player));
+        if (result == null || result.getHitEntity() == null) return null;
+        return result.getHitEntity();
     }
 }

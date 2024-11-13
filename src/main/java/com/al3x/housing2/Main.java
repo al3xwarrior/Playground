@@ -12,8 +12,12 @@ import com.infernalsuite.aswm.loaders.file.FileLoader;
 import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mineskin.Java11RequestHandler;
+import org.mineskin.MineSkinClient;
+import org.mineskin.MineSkinClientImpl;
 
 import java.io.File;
+import java.util.Objects;
 
 public final class Main extends JavaPlugin {
     private static Main INSTANCE;
@@ -21,11 +25,27 @@ public final class Main extends JavaPlugin {
     private HousesManager housesManager;
     private HousingCommandFramework commandFramework;
 
+    private MineSkinClientImpl mineSkinClient;
+    private String mineSkinKey;
+
     @Override
     public void onEnable() {
         INSTANCE = this;
         // The location of the worlds folder is relative to the server's root directory
         loader = new FileLoader(new File("./slime_worlds"));
+
+        saveDefaultConfig();
+
+        if (getConfig().contains("mineskin_key") && !Objects.equals(getConfig().getString("mineskin_key"), "your-mineskin-key")) {
+            mineSkinClient = (MineSkinClientImpl) MineSkinClient.builder()
+                    .apiKey(getConfig().getString("mineskin_key"))
+                    .userAgent("Housing2")
+                    .requestHandler(Java11RequestHandler::new)
+                    .build();
+            mineSkinKey = getConfig().getString("mineskin_key");
+        } else {
+            getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
+        }
 
         this.housesManager = new HousesManager(this);
         this.commandFramework = new HousingCommandFramework(this);
@@ -80,6 +100,14 @@ public final class Main extends JavaPlugin {
 
     public HousingCommandFramework getCommandFramework() {
         return commandFramework;
+    }
+
+    public MineSkinClientImpl getMineSkinClient() {
+        return mineSkinClient;
+    }
+
+    public String getMineSkinKey() {
+        return mineSkinKey;
     }
 
     @Override

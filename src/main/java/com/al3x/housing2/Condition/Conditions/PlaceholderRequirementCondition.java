@@ -5,6 +5,7 @@ import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
@@ -19,6 +20,7 @@ public class PlaceholderRequirementCondition extends Condition {
     private StatComparator comparator;
     private String compareValue;
     private boolean ignoreCase;
+    private boolean ignoreColor;
 
     public PlaceholderRequirementCondition() {
         super("Placeholder Requirement");
@@ -26,6 +28,7 @@ public class PlaceholderRequirementCondition extends Condition {
         this.comparator = StatComparator.EQUALS;
         this.compareValue = "1.0";
         this.ignoreCase = false;
+        this.ignoreColor = false;
     }
 
     @Override
@@ -42,6 +45,7 @@ public class PlaceholderRequirementCondition extends Condition {
         builder.info("Comparator", comparator.name());
         builder.info("Value", compareValue);
         builder.info("Ignores Case", ignoreCase ? "Yes" : "No");
+        builder.info("Ignores Color", ignoreColor ? "Yes" : "No");
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -89,6 +93,14 @@ public class PlaceholderRequirementCondition extends Condition {
                                 .info(null, "&a" + ignoreCase)
                                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
                         ActionEditor.ActionItem.ActionType.BOOLEAN
+                ),
+                new ActionEditor.ActionItem("ignoreColor",
+                        ItemBuilder.create((ignoreColor ? Material.LIME_DYE : Material.RED_DYE))
+                                .name((ignoreColor ? "&aIgnore Color" : "&cIgnore Color"))
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + ignoreColor)
+                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
         return new ActionEditor(4, "Placeholder Requirement", items);
@@ -99,6 +111,16 @@ public class PlaceholderRequirementCondition extends Condition {
         String placeholderValue = HandlePlaceholders.parsePlaceholders(player, house, placeholder);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
 
+        if (ignoreCase) {
+            placeholderValue = placeholderValue.toLowerCase();
+            compareValue = compareValue.toLowerCase();
+        }
+
+        if (ignoreColor) {
+            placeholderValue = Color.removeColor(placeholderValue);
+            compareValue = Color.removeColor(compareValue);
+        }
+
         return Comparator.compare(comparator, placeholderValue, compareValue);
     }
 
@@ -108,6 +130,8 @@ public class PlaceholderRequirementCondition extends Condition {
         data.put("placeholder", placeholder);
         data.put("comparator", comparator.name());
         data.put("compareValue", compareValue);
+        data.put("ignoreCase", ignoreCase);
+        data.put("ignoreColor", ignoreColor);
         return data;
     }
 

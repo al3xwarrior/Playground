@@ -5,8 +5,13 @@ import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.MineSkin.BiggerSkinData;
+import com.al3x.housing2.MineSkin.BiggerSkinResponse;
+import com.al3x.housing2.MineSkin.SkinData;
+import com.al3x.housing2.MineSkin.SkinResponse;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
+import com.google.gson.Gson;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
@@ -14,6 +19,7 @@ import net.citizensnpcs.api.trait.trait.Equipment;
 import net.citizensnpcs.trait.FollowTrait;
 import net.citizensnpcs.trait.HologramTrait;
 import net.citizensnpcs.trait.LookClose;
+import net.citizensnpcs.trait.SkinTrait;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
 import net.citizensnpcs.trait.waypoint.Waypoint;
 import net.citizensnpcs.trait.waypoint.Waypoints;
@@ -28,6 +34,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
@@ -36,13 +48,16 @@ import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
 public class HousingNPC {
 
+    private static final Gson gson = new Gson();
+
     public static ItemStack getNPCItem() {
         ItemStack npc = getCustomSkull("a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
         ItemMeta meta = npc.getItemMeta();
-        meta.setItemName(colorize("&aNPC"));
+        meta.setDisplayName(colorize("&aNPC"));
         npc.setItemMeta(meta);
         return npc;
     }
+    public static List<SkinData> loadedSkins = new ArrayList<>();
 
     private NPC citizensNPC;
     private HousingWorld house;
@@ -56,7 +71,8 @@ public class HousingNPC {
     private boolean lookAtPlayer;
     private Location location;
     private EntityType entityType;
-    
+    private String skinUUID;
+
     // Equipment
     private ItemStack hand;
     private ItemStack offHand;
@@ -72,7 +88,7 @@ public class HousingNPC {
 
     private List<Action> actions;
 
-    private String[] npcNames = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
+    private static final String[] NPC_NAMES = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
     public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
         this.main = main;
@@ -83,157 +99,147 @@ public class HousingNPC {
         this.npcID = data.getNpcID();
         this.npcUUID = UUID.fromString(data.getNpcUUID());
         this.entityType = EntityType.valueOf(data.getNpcType());
-
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
 
-
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
-        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
-        if (lookAtPlayer && !trait.isEnabled()) trait.toggle(); else if (!lookAtPlayer && trait.isEnabled()) trait.toggle();
+        configureLookCloseTrait();
+        configureEquipment(data.getEquipment());
+        configureNavigation(data);
 
+        setSkin(data.getNpcSkin());
+
+        citizensNPC.spawn(location);
+        startFollowTask();
+    }
+
+    public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
+        this.main = main;
+        this.house = house;
+        this.name = NPC_NAMES[new Random().nextInt(NPC_NAMES.length)];
+        this.lookAtPlayer = true;
+        this.location = location;
+        this.creatorUUID = player.getUniqueId();
+        this.entityType = EntityType.PLAYER;
+        this.speed = 1.0;
+        this.navigationType = NavigationType.STATIONARY;
+        this.actions = new ArrayList<>();
+
+        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
+        configureLookCloseTrait();
+        citizensNPC.spawn(location);
+        citizensNPC.faceLocation(player.getLocation());
+        this.npcID = citizensNPC.getId();
+        this.npcUUID = citizensNPC.getUniqueId();
+
+        startFollowTask();
+    }
+
+    private void configureLookCloseTrait() {
+        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
+        if (lookAtPlayer && !trait.isEnabled()) trait.toggle();
+        else if (!lookAtPlayer && trait.isEnabled()) trait.toggle();
+    }
+
+    private void configureEquipment(List<String> dataEquipment) {
         Equipment equipment = citizensNPC.getOrAddTrait(Equipment.class);
-        if (data.getEquipment() != null) {
-            List<String> dataEquipment = data.getEquipment();
+        if (dataEquipment != null) {
             for (int i = 0; i < dataEquipment.size(); i++) {
                 String base64 = dataEquipment.get(i);
                 if (base64 != null) {
                     try {
                         ItemStack item = Serialization.itemStackFromBase64(base64);
-                        switch (i) {
-                            case 0: helmet = item; equipment.set(Equipment.EquipmentSlot.HELMET, item); break;
-                            case 1: chestplate = item; equipment.set(Equipment.EquipmentSlot.CHESTPLATE, item); break;
-                            case 2: leggings = item; equipment.set(Equipment.EquipmentSlot.LEGGINGS, item); break;
-                            case 3: boots = item; equipment.set(Equipment.EquipmentSlot.BOOTS, item); break;
-                            case 4: hand = item; equipment.set(Equipment.EquipmentSlot.HAND, item); break;
-                            case 5: offHand = item; equipment.set(Equipment.EquipmentSlot.OFF_HAND, item); break;
-                        }
+                        setEquipmentSlot(equipment, i, item);
                     } catch (IOException e) {
                         main.getLogger().warning("Failed to load equipment for NPC: " + name);
                     }
                 }
             }
         }
+    }
 
+    private void setEquipmentSlot(Equipment equipment, int slot, ItemStack item) {
+        switch (slot) {
+            case 0 -> helmet = item;
+            case 1 -> chestplate = item;
+            case 2 -> leggings = item;
+            case 3 -> boots = item;
+            case 4 -> hand = item;
+            case 5 -> offHand = item;
+        }
+        equipment.set(Equipment.EquipmentSlot.values()[slot], item);
+    }
+
+    private void configureNavigation(NPCData data) {
         navigationType = data.getNavigationType() == null ? NavigationType.STATIONARY : NavigationType.valueOf(data.getNavigationType());
         speed = data.getSpeed() == null ? 1.0 : data.getSpeed();
-
         citizensNPC.getNavigator().getDefaultParameters().speedModifier((float) speed);
-        // Set waypoints
+        configureWaypoints(data.getWaypoints());
+        updateNavigationState();
+    }
+
+    private void configureWaypoints(List<LocationData> dataWaypoints) {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         waypoints.setWaypointProvider("linear");
-        if (data.getWaypoints() != null) {
-            List<Location> dataWaypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
-            for (Location loc : dataWaypoints) {
+        if (dataWaypoints != null) {
+            for (Location loc : dataWaypoints.stream().map(LocationData::toLocation).toList()) {
                 ((LinearWaypointProvider) waypoints.getCurrentProvider()).addWaypoint(new Waypoint(loc));
             }
         }
+    }
+
+    private void updateNavigationState() {
+        Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         if (navigationType == NavigationType.WANDER) {
             waypoints.setWaypointProvider("wander");
             waypoints.getCurrentProvider().setPaused(false);
+            citizensNPC.getNavigator().setPaused(false);
         } else if (navigationType == NavigationType.PATH) {
             waypoints.setWaypointProvider("linear");
             waypoints.getCurrentProvider().setPaused(false);
+            citizensNPC.getNavigator().setPaused(false);
         } else {
-            waypoints.getCurrentProvider().setPaused(true);
+            //I dont know why I need to do this, but it works :shrug:
+            Bukkit.getScheduler().runTaskLater(main, () -> {
+                waypoints.getCurrentProvider().setPaused(true);
+                citizensNPC.getNavigator().setPaused(true);
+            }, 1);
         }
-
-
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (citizensNPC.isSpawned()) {
-
-                    if (navigationType == NavigationType.PLAYER) {
-                        FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
-                        followTrait.setProtect(false);
-                        //get closest player to the npc but only if they are 20 blocks away
-                        Player closest = null;
-                        double closestDistance = 20;
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player.getWorld().equals(citizensNPC.getEntity().getWorld())) {
-                                double distance = player.getLocation().distance(citizensNPC.getEntity().getLocation());
-                                if (distance < closestDistance) {
-                                    closest = player;
-                                    closestDistance = distance;
-                                }
-                            }
-                        }
-
-                        if (closest != null) {
-                            followTrait.follow(closest);
-                        }
-                    } else {
-                        FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
-                        followTrait.setProtect(false);
-                        followTrait.follow(null);
-                    }
-                }
-            }
-        };
-
-        runnable.runTaskTimer(main, 0, 20);
-
-        citizensNPC.spawn(location);
     }
 
-    public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
-        this.main = main;
-        this.house = house;
-        this.name = npcNames[new Random().nextInt(npcNames.length)];
-        this.lookAtPlayer = true;
-        this.location = location;
-        this.creatorUUID = player.getUniqueId();
-        this.entityType = EntityType.PLAYER;
-
-        this.speed = 1.0;
-        this.navigationType = NavigationType.STATIONARY;
-
-        this.actions = new ArrayList<>();
-
-        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
-        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
-        if (lookAtPlayer && !trait.isEnabled()) trait.toggle(); else if (!lookAtPlayer && trait.isEnabled()) trait.toggle();
-        citizensNPC.spawn(location);
-        citizensNPC.faceLocation(player.getLocation());
-        // Update it because weird
-        this.npcID = citizensNPC.getId();
-        this.npcUUID = citizensNPC.getUniqueId();
-
-        BukkitRunnable runnable = new BukkitRunnable() {
+    private void startFollowTask() {
+        new BukkitRunnable() {
             @Override
             public void run() {
                 if (citizensNPC.isSpawned()) {
-
+                    FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
+                    followTrait.setProtect(false);
                     if (navigationType == NavigationType.PLAYER) {
-                        FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
-                        followTrait.setProtect(false);
-                        //get closest player to the npc but only if they are 20 blocks away
-                        Player closest = null;
-                        double closestDistance = 20;
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player.getWorld().equals(citizensNPC.getEntity().getWorld())) {
-                                double distance = player.getLocation().distance(citizensNPC.getEntity().getLocation());
-                                if (distance < closestDistance) {
-                                    closest = player;
-                                    closestDistance = distance;
-                                }
-                            }
-                        }
-
+                        Player closest = getClosestPlayer();
                         if (closest != null) {
                             followTrait.follow(closest);
                         }
                     } else {
-                        FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
-                        followTrait.setProtect(false);
                         followTrait.follow(null);
                     }
                 }
             }
-        };
+        }.runTaskTimer(main, 0, 20);
+    }
 
-        runnable.runTaskTimer(main, 0, 20);
+    private Player getClosestPlayer() {
+        Player closest = null;
+        double closestDistance = 20;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld().equals(citizensNPC.getEntity().getWorld())) {
+                double distance = player.getLocation().distance(citizensNPC.getEntity().getLocation());
+                if (distance < closestDistance) {
+                    closest = player;
+                    closestDistance = distance;
+                }
+            }
+        }
+        return closest;
     }
 
     public void setEntity(EntityType entityType) {
@@ -253,11 +259,7 @@ public class HousingNPC {
     public void setHologramLines(List<String> lines) {
         HologramTrait hologram = citizensNPC.getOrAddTrait(HologramTrait.class);
         hologram.clear();
-
-        for (String line : lines) {
-            hologram.addLine(line);
-        }
-
+        lines.forEach(hologram::addLine);
         citizensNPC.addTrait(hologram);
     }
 
@@ -297,9 +299,12 @@ public class HousingNPC {
         return name;
     }
 
+    public String getSkinUUID() {
+        return skinUUID;
+    }
+
     public Location getLocation() {
-        if (citizensNPC.isSpawned()) return citizensNPC.getEntity().getLocation();
-        return location;
+        return citizensNPC.isSpawned() ? citizensNPC.getEntity().getLocation() : location;
     }
 
     public boolean isLookAtPlayer() {
@@ -308,8 +313,7 @@ public class HousingNPC {
 
     public void setLookAtPlayer(boolean lookAtPlayer) {
         this.lookAtPlayer = lookAtPlayer;
-        LookClose trait = citizensNPC.getOrAddTrait(LookClose.class);
-        if (trait.isEnabled() != lookAtPlayer) trait.toggle();
+        configureLookCloseTrait();
     }
 
     public void setName(String newMessage) {
@@ -320,36 +324,43 @@ public class HousingNPC {
     public void setEquipment(String type, ItemStack item) {
         Equipment equipment = citizensNPC.getOrAddTrait(Equipment.class);
         switch (type) {
-            case "Helmet": helmet = item; equipment.set(Equipment.EquipmentSlot.HELMET, item); break;
-            case "Chestplate": chestplate = item; equipment.set(Equipment.EquipmentSlot.CHESTPLATE, item); break;
-            case "Leggings": leggings = item; equipment.set(Equipment.EquipmentSlot.LEGGINGS, item); break;
-            case "Boots": boots = item; equipment.set(Equipment.EquipmentSlot.BOOTS, item); break;
-            case "Main Hand": hand = item; equipment.set(Equipment.EquipmentSlot.HAND, item); break;
-            case "Off Hand": offHand = item; equipment.set(Equipment.EquipmentSlot.OFF_HAND, item); break;
+            case "Helmet" -> helmet = item;
+            case "Chestplate" -> chestplate = item;
+            case "Leggings" -> leggings = item;
+            case "Boots" -> boots = item;
+            case "Main Hand" -> hand = item;
+            case "Off Hand" -> offHand = item;
+        }
+        if (type.equals("Main Hand")) {
+            equipment.set(Equipment.EquipmentSlot.HAND, item);
+        } else if (type.equals("Off Hand")) {
+            equipment.set(Equipment.EquipmentSlot.OFF_HAND, item);
+        } else {
+            equipment.set(Equipment.EquipmentSlot.valueOf(type.toUpperCase().replace(" ", "_")), item);
         }
     }
 
     public ItemStack getEquipment(String type) {
-        switch (type) {
-            case "Helmet": return helmet;
-            case "Chestplate": return chestplate;
-            case "Leggings": return leggings;
-            case "Boots": return boots;
-            case "Main Hand": return hand;
-            case "Off Hand": return offHand;
-        }
-        return null;
+        return switch (type) {
+            case "Helmet" -> helmet;
+            case "Chestplate" -> chestplate;
+            case "Leggings" -> leggings;
+            case "Boots" -> boots;
+            case "Main Hand" -> hand;
+            case "Off Hand" -> offHand;
+            default -> null;
+        };
     }
 
     public List<String> getEquipment() {
-        List<String> equipment = new ArrayList<>();
-        if (helmet != null) equipment.add(Serialization.itemStackToBase64(helmet)); else equipment.add(null);
-        if (chestplate != null) equipment.add(Serialization.itemStackToBase64(chestplate)); else equipment.add(null);
-        if (leggings != null) equipment.add(Serialization.itemStackToBase64(leggings)); else equipment.add(null);
-        if (boots != null) equipment.add(Serialization.itemStackToBase64(boots)); else equipment.add(null);
-        if (hand != null) equipment.add(Serialization.itemStackToBase64(hand)); else equipment.add(null);
-        if (offHand != null) equipment.add(Serialization.itemStackToBase64(offHand)); else equipment.add(null);
-        return equipment;
+        return Arrays.asList(
+                helmet != null ? Serialization.itemStackToBase64(helmet) : null,
+                chestplate != null ? Serialization.itemStackToBase64(chestplate) : null,
+                leggings != null ? Serialization.itemStackToBase64(leggings) : null,
+                boots != null ? Serialization.itemStackToBase64(boots) : null,
+                hand != null ? Serialization.itemStackToBase64(hand) : null,
+                offHand != null ? Serialization.itemStackToBase64(offHand) : null
+        );
     }
 
     public NavigationType getNavigationType() {
@@ -373,37 +384,72 @@ public class HousingNPC {
         this.speed = speed;
     }
 
-
     public void addPath(Location loc) {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
-        if (!(waypoints.getCurrentProvider() instanceof LinearWaypointProvider)) return;
-
-        LinearWaypointProvider provider = (LinearWaypointProvider) waypoints.getCurrentProvider();
-        provider.addWaypoint(new Waypoint(loc));
+        if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
+            provider.addWaypoint(new Waypoint(loc));
+        }
     }
 
     public Location removePath() {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
-        if (!(waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider)) return null;
-        AbstractList<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
-        if (path.isEmpty()) return null;
-        Location loc = path.get(path.size() - 1).getLocation();
-        path.remove(path.size() - 1);
-        return loc;
+        if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
+            List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
+            if (!path.isEmpty()) {
+                return path.remove(path.size() - 1).getLocation();
+            }
+        }
+        return null;
     }
 
-    public AbstractList<Waypoint> getPath() {
+    public List<Waypoint> getPath() {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
-        if (!(waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider)) return null;
-        return (AbstractList<Waypoint>) provider.waypoints();
+        if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
+            return (AbstractList<Waypoint>) provider.waypoints();
+        }
+        return null;
     }
 
     public List<Location> getWaypoints() {
         List<Location> waypoints = new ArrayList<>();
-        if (getPath() == null) return waypoints;
-        for (Waypoint waypoint : getPath()) {
-            waypoints.add(waypoint.getLocation());
-        }
+        Bukkit.getScheduler().runTask(main, () ->{
+            if (getPath() != null) {
+                for (Waypoint waypoint : getPath()) {
+                    waypoints.add(waypoint.getLocation());
+                }
+            }
+        });
         return waypoints;
+    }
+
+    public void setSkin(String skin) {
+        this.skinUUID = skin;
+        if (main.getMineSkinClient() != null) {
+            BiggerSkinData skinData = getSkinData(skin);
+            if (skinData != null && skinData.getTexture() != null) {
+                SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
+                skinTrait.setSkinPersistent(skinData.getUuid(), skinData.getTexture().getData().getSignature(), skinData.getTexture().getData().getValue());
+            }
+        }
+    }
+
+    private BiggerSkinData getSkinData(String uuid)  {
+        try {
+            HttpClient client = HttpClient.newBuilder().build();
+            HttpResponse<String> response = client.send(
+                    HttpRequest.newBuilder()
+                            .GET()
+                            .header("Accept", "application/json")
+                            .header("User-Agent", "Housing2")
+                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
+                            .uri(new URI("https://api.mineskin.org/v2/skins/" + uuid))
+                            .build(),
+                    responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
+            );
+            return gson.fromJson(response.body(), BiggerSkinResponse.class).getSkin();
+        } catch (Exception e) {
+            main.getLogger().warning("Failed to get skin data for NPC: " + name);
+        }
+        return null;
     }
 }

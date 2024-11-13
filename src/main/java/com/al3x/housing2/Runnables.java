@@ -1,17 +1,30 @@
 package com.al3x.housing2;
 
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.MineSkin.SkinData;
+import com.al3x.housing2.MineSkin.SkinResponse;
+import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
+import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class Runnables {
     //Description, Runnable
     private static HashMap<String, BukkitTask> runnables = new HashMap<>();
+    private static Gson gson = new Gson();
 
     public static void startRunnables(Main main) {
         runnables.put("unloadIfEmpty", new BukkitRunnable() {
@@ -81,6 +94,50 @@ public class Runnables {
                 TICKS++;
             }
         }.runTaskTimerAsynchronously(main, 0L, 1L));
+
+        //Start loading npc skins
+        runnables.put("loadNPCSkins", new BukkitRunnable() {
+            int page = 1;
+            @Override
+            public void run() {
+                if (main.getMineSkinClient() != null) {
+                    PaginationList<SkinData> skins = new PaginationList<>(HousingNPC.loadedSkins, 21);
+                    List<SkinData> currentSkins = skins.getPage(page);
+                    if (currentSkins == null) {
+                        sendRequest(skins.isEmpty() ? null : skins.getLast().getUuid());
+                        page++;
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(main, 0L, 10L)); // Every 10 ticks load a new page of skins
+    }
+
+    private static void sendRequest(String after) {
+        List<SkinData> previousSkins = HousingNPC.loadedSkins;
+        HttpClient client = HttpClient.newBuilder().build();
+        try {
+            HttpResponse<String> response = client.send(
+                    HttpRequest.newBuilder()
+                            .GET()
+                            .header("Accept", "application/json")
+                            .header("User-Agent", "Housing2")
+                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
+                            .uri(new URI("https://api.mineskin.org/v2/skins?size=21" + ((after != null && !after.isEmpty()) ? "&after=" + after : "")))
+                            .build(),
+                    responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
+            );
+            SkinResponse skinResponse = gson.fromJson(response.body(), SkinResponse.class);
+            if (skinResponse.getSuccess()) {
+                for (SkinData skin : skinResponse.getSkins()) {
+                    if (skin == null) continue;
+                    if (previousSkins.stream().noneMatch(s -> s.getUuid().equals(skin.getUuid()))) {
+                        previousSkins.add(skin);
+                    }
+                }
+            }
+        } catch (IOException | InterruptedException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void stopRunnables() {
