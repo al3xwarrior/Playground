@@ -171,6 +171,11 @@ public class HousesManager {
         return null;
     }
 
+    public boolean playerIsInOwnHouse(Player player) {
+        HousingWorld house = getHouse(player.getWorld());
+        return house != null && house.getOwnerUUID().equals(player.getUniqueId());
+    }
+
     public boolean playerHasHouse(Player player) {
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
