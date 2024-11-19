@@ -1,8 +1,10 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -157,7 +159,36 @@ public class ProtoolsManager {
                 .name("&bRegion Selection Tool")
                 .description("&7Selects a region with left and right clicks, which can them be modified with other tools.\n\n&7Command alias: &b//\n\n&eLeft click to select point A.\n&eRight click to select point B.")
                 .punctuation(false)
+                .textWitdh(34)
                 .build();
+    }
+
+    public void drawParticles(Player player, Location pos1, Location pos2) {
+        if (pos1 == null || pos2 == null) {
+            return;
+        }
+        //Draw the outline of the region
+        int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
+        int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
+        int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+        int maxX = Math.max(pos1.getBlockX(), pos2.getBlockX());
+        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
+        int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
+                        player.spawnParticle(Particle.DUST, x + 0.5, y + 0.5, z + 0.5, 0, 0, 0, 0, new Particle.DustOptions(org.bukkit.Color.RED, 2));
+                    }
+                }
+            }
+        }
+
+    }
+
+    public Duple<Location, Location> getSelection(Player player) {
+        return this.selections.get(player.getUniqueId());
     }
 
     public Map<UUID, Long> getCooldowns() {

@@ -49,6 +49,7 @@ public class ItemBuilder {
     private boolean glow;
     private boolean changeOrderLore;
     private boolean punctuation;
+    private int textWidth;
 
     public ItemBuilder() {
         this.material = Material.AIR;
@@ -61,6 +62,7 @@ public class ItemBuilder {
         this.glow = false;
         this.changeOrderLore = false;
         this.punctuation = true;
+        this.textWidth = 28;
     }
 
     public ItemBuilder material(Material material) {
@@ -223,6 +225,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder textWitdh(int textWidth) {
+        this.textWidth = textWidth;
+        return this;
+    }
+
     public ItemStack build() {
         //Make the skull or item stack
         if (skullTexture != null) {
@@ -274,7 +281,7 @@ public class ItemBuilder {
             }
         }
         //Lore formatting
-        List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation);
+        List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation, textWidth);
 
         //Action menu label
         if (changeOrderLore) {

@@ -57,6 +57,7 @@ public class HousingNPC {
         npc.setItemMeta(meta);
         return npc;
     }
+
     public static List<SkinData> loadedSkins = new ArrayList<>();
 
     private NPC citizensNPC;
@@ -412,13 +413,11 @@ public class HousingNPC {
 
     public List<Location> getWaypoints() {
         List<Location> waypoints = new ArrayList<>();
-        Bukkit.getScheduler().runTask(main, () ->{
-            if (getPath() != null) {
-                for (Waypoint waypoint : getPath()) {
-                    waypoints.add(waypoint.getLocation());
-                }
+        if (getPath() != null) {
+            for (Waypoint waypoint : getPath()) {
+                waypoints.add(waypoint.getLocation());
             }
-        });
+        }
         return waypoints;
     }
 
@@ -433,7 +432,7 @@ public class HousingNPC {
         }
     }
 
-    private BiggerSkinData getSkinData(String uuid)  {
+    private BiggerSkinData getSkinData(String uuid) {
         try {
             HttpClient client = HttpClient.newBuilder().build();
             HttpResponse<String> response = client.send(

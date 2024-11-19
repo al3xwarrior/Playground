@@ -76,6 +76,9 @@ public class HousingWorld {
     //Commands
     private List<Command> commands;
 
+    //Regions
+    private List<Regions> regions;
+
     // Random Seed and Random instance
     private String seed;
     private Random random;
@@ -126,11 +129,13 @@ public class HousingWorld {
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
         this.icon = houseData.getIcon() != null ? Material.valueOf(houseData.getIcon()) : Material.OAK_DOOR;
 
+        //stats
         this.statManager = new StatManager(this);
 
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
 
+        //Commands
         this.commands = CommandData.Companion.toList(houseData.getCommands());
 
         for (Command command: commands) {
@@ -138,8 +143,13 @@ public class HousingWorld {
             main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
         }
 
+        //regions
+        this.regions = RegionData.Companion.toList(houseData.getRegions());
+
+        //scoreboard
         this.scoreboard = houseData.getScoreboard();
 
+        // Load the event actions
         eventActions = new HashMap<>();
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
@@ -157,6 +167,7 @@ public class HousingWorld {
             functions = FunctionData.Companion.toList(houseData.getFunctions());
         }
 
+        // Load the seed and random instance
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
@@ -240,6 +251,9 @@ public class HousingWorld {
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         createTemplatePlatform();
+
+        this.houseWorld.getWorldBorder().setCenter(this.spawn);
+        this.houseWorld.getWorldBorder().setSize(this.size);
 
         // Actions, Scoreboard, Default Stuff ya know?
         this.scoreboard = new ArrayList<>();
@@ -618,5 +632,9 @@ public class HousingWorld {
 
     public void setMaterial(Material material) {
         this.icon = material;
+    }
+
+    public List<Regions> getRegions() {
+        return regions;
     }
 }

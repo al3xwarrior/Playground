@@ -27,7 +27,7 @@ public class HypixelLoreFormatter {
      * @param labels Additional labels for the bottom (e.g. "Left Click to edit!")
      * @return The formatted lines with colour codes
      */
-    public static List<String> hypixelLore(String description, List<Duple<String, Object>> info, List<String> labels, boolean punctuation) {
+    public static List<String> hypixelLore(String description, List<Duple<String, Object>> info, List<String> labels, boolean punctuation, int maxLength) {
         List<String> lines = new ArrayList<>();
 
         for (String str : description.split("\n")) {
@@ -47,7 +47,7 @@ public class HypixelLoreFormatter {
             for (String word : str.split(" ")) {
                 line.append(word).append(" ");
 
-                if (line.length() > MAX_LENGTH) {
+                if (line.length() > maxLength) {
                     lines.add(line.toString().trim());
                     line.setLength(0);
                 }

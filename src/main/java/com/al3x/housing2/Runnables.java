@@ -4,11 +4,14 @@ import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.MineSkin.SkinResponse;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -110,6 +113,20 @@ public class Runnables {
                 }
             }
         }.runTaskTimerAsynchronously(main, 0L, 10L)); // Every 10 ticks load a new page of skins
+
+        runnables.put("protoolsParticles", new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
+                    for (Player player : house.getWorld().getPlayers()) {
+                        Duple<Location, Location> selection = main.getProtoolsManager().getSelection(player);
+                        if (selection != null) {
+                            main.getProtoolsManager().drawParticles(player, selection.getFirst(), selection.getSecond());
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0L, 5L));
     }
 
     private static void sendRequest(String after) {

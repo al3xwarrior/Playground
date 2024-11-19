@@ -9,6 +9,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
@@ -41,11 +42,11 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
 
         if (getConfig().contains("mineskin_key") && !Objects.equals(getConfig().getString("mineskin_key"), "your-mineskin-key")) {
-            mineSkinClient = (MineSkinClientImpl) MineSkinClient.builder()
-                    .apiKey(getConfig().getString("mineskin_key"))
-                    .userAgent("Housing2")
-                    .requestHandler(Java11RequestHandler::new)
-                    .build();
+//            mineSkinClient = (MineSkinClientImpl) MineSkinClient.builder()
+//                    .apiKey(getConfig().getString("mineskin_key"))
+//                    .userAgent("Housing2")
+//                    .requestHandler(Java11RequestHandler::new)
+//                    .build();
             mineSkinKey = getConfig().getString("mineskin_key");
         } else {
             getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
@@ -66,7 +67,9 @@ public final class Main extends JavaPlugin {
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
         this.getCommand("set").setExecutor(new Set(housesManager, protoolsManager));
+        this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
         this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
+        this.getCommand("sphere").setTabCompleter(new BlockList.TabCompleter());
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
@@ -103,6 +106,10 @@ public final class Main extends JavaPlugin {
 
     public HousesManager getHousesManager() {
         return housesManager;
+    }
+
+    public ProtoolsManager getProtoolsManager() {
+        return protoolsManager;
     }
 
     public SlimeLoader getLoader() {
