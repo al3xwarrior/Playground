@@ -1,0 +1,146 @@
+package com.al3x.housing2.Action.Actions;
+
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
+
+public class RepeatAction extends Action {
+    private static final Gson gson = new Gson();
+    private List<Action> subActions;
+    private String times;
+
+    public RepeatAction(ArrayList<Action> subactions, String times) {
+        super("Repeat Action");
+        this.subActions = subactions;
+        this.times = times;
+    }
+
+    public RepeatAction() {
+        super("Repeat Action");
+        this.subActions = new ArrayList<>();
+        this.times = "1";
+    }
+
+    @Override
+    public String toString() {
+        return "RepeatAction (SubActions: " + subActions.stream().map(Action::toString).reduce((a, b) -> a + ", " + b).orElse("") + "times: " + times + ")";
+    }
+
+    @Override
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.REPEATER);
+        builder.name("&eRepeat Action");
+        builder.description("Change the settings for this action");
+        builder.info("&eSettings", "");
+        builder.info("Actions", subActions.size());
+        builder.info("Times", times);
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.REPEATER);
+        builder.name("&aRepeat Action");
+        builder.description("Execute actions in the list multiple times");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
+
+    @Override
+    public ActionEditor editorMenu(HousingWorld house) {
+        List<ActionEditor.ActionItem> items = List.of(
+                new ActionEditor.ActionItem("subActions",
+                        ItemBuilder.create(Material.WRITTEN_BOOK)
+                                .name("&aActions")
+                                .info("&7Current Value", "")
+                                .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.ACTION
+                ),
+                new ActionEditor.ActionItem("times",
+                        ItemBuilder.create(Material.CLOCK)
+                                .name("&aTimes")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + times)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.STRING
+                )
+        );
+        return new ActionEditor(4, "&eChat Action Settings", items);
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house) {
+        if (subActions.isEmpty()) {
+            return true;
+        }
+
+        String times = HandlePlaceholders.parsePlaceholders(player, house, this.times);
+
+        if (!NumberUtilsKt.isInt(times)) {
+            return true;
+        }
+
+        ActionExecutor executor = new ActionExecutor();
+        for (int i = 0; i < Integer.parseInt(times); i++) {
+            executor.addActions(subActions);
+            executor.execute(player, house, null);
+        }
+        return true;
+    }
+
+    public List<Action> getSubActions() {
+        return subActions;
+    }
+
+    public void setSubActions(ArrayList<Action> subActions) {
+        this.subActions = subActions;
+    }
+
+    @Override
+    public HashMap<String, Object> data() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("subActions", Companion.fromList(subActions));
+        data.put("times", times);
+        return data;
+    }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        if (!data.containsKey("subActions")) return;
+        // I don't know how this works lol
+        Object subActions = data.get("subActions");
+        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
+        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            actions.add(action);
+        }
+
+        this.subActions = Companion.toList(actions);
+        this.times = data.get("times").toString();
+    }
+}

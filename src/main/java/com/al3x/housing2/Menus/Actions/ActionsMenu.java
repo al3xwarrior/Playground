@@ -95,9 +95,6 @@ public class ActionsMenu extends Menu {
 
     private void removeAction(Action action) {
         actions.remove(action);
-        if (event != null) {
-            house.setEventActions(event, actions);
-        }
         setupItems();
     }
 

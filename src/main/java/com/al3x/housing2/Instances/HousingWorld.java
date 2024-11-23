@@ -3,13 +3,12 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.Actions.CancelAction;
-import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.BlockList;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,21 +36,16 @@ import java.util.logging.Level;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    transient private Main main;
-    transient private SlimeLoader loader;
-    transient private AdvancedSlimePaperAPI asp;
-    transient private World houseWorld;
-    transient private SlimeWorld slimeWorld;
+    private transient Main main;
+    private transient SlimeLoader loader;
+    private transient AdvancedSlimePaperAPI asp;
+    private transient World houseWorld;
+    private transient SlimeWorld slimeWorld;
 
-    // The actual owners UUID
     private UUID ownerUUID;
-
-    // Randomly generated House UUID
     private UUID houseUUID;
-
-    // Stats about the house. More public data
     private String name;
     private String description;
     private int size;
@@ -62,95 +56,87 @@ public class HousingWorld {
     private List<String> scoreboard;
     private HousePrivacy privacy;
     private Material icon;
-
-    // NPCs
     private ConcurrentHashMultiset<HousingNPC> housingNPCS;
-
-    // Action Stuff
     private HashMap<EventType, List<Action>> eventActions;
     private List<Function> functions;
-
-    // Stats
     private StatManager statManager;
-
-    //Commands
     private List<Command> commands;
-
-    //Regions
     private List<Regions> regions;
-
-    // Random Seed and Random instance
     private String seed;
     private Random random;
     public HouseData houseData;
 
+    public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
+        initialize(main, owner, null);
+        loadHouseData(owner, houseID);
+        setupHouseData(owner);
+        loadWorld(owner);
+        loadNPCs(owner);
+        save();
+    }
 
-    // Loading a house that already exists
-    public HousingWorld(Main main, OfflinePlayer owner, String name) {
-        main.getLogger().info("Loading house for " + owner.getName() + "...");
+    public HousingWorld(Main main, Player owner, HouseSize size) {
+        initialize(main, owner, owner.getName() + "'s House");
+        setupNewHouse(owner, size);
+        createTemplatePlatform();
+        setupWorldBorder();
+        setupDefaultScoreboard();
+        save();
+    }
+
+    private void initialize(Main main, OfflinePlayer owner, String name) {
         this.main = main;
+        this.name = name;
+        this.ownerUUID = owner.getUniqueId();
+        this.housingNPCS = ConcurrentHashMultiset.create();
+        this.eventActions = new HashMap<>();
+        this.functions = new ArrayList<>();
+        this.commands = new ArrayList<>();
+        this.regions = new ArrayList<>();
+        this.statManager = new StatManager(this);
         try {
             this.loader = main.getLoader();
             this.asp = AdvancedSlimePaperAPI.instance();
         } catch (Exception e) {
             main.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
         }
+    }
 
-        // Grab the house data from the file
+    private void loadHouseData(OfflinePlayer owner, String name) {
         File file = new File(main.getDataFolder(), "houses/" + name + ".json");
         if (!file.exists()) {
-            if (owner.isOnline()) {
-                owner.getPlayer().sendMessage(colorize("&cFailed to load your house!"));
-            } else {
-                Bukkit.getLogger().info("Failed to load house for " + owner.getName() + "!");
-            }
+            notifyOwnerOfFailure(owner);
             return;
         }
-        // Load the house data from the file
         try {
             String json = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-            houseData = gson.fromJson(json, HouseData.class);
+            houseData = GSON.fromJson(json, HouseData.class);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            return;
         }
-        //Go kaboom with the data
-        this.ownerUUID = owner.getUniqueId();
-        this.name = houseData.getHouseName();
+    }
+
+    private void setupHouseData(OfflinePlayer owner) {
         this.houseUUID = UUID.fromString(houseData.getHouseID());
-        // this.guests = houseData.getGuests(); we dont like guests right now :D
-        this.cookies = (int) houseData.getCookies(); // casting to an int for now cause i dont wanna mess with the data storage stuff
+        this.name = houseData.getHouseName();
+        this.cookies = (int) houseData.getCookies();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
-        this.housingNPCS = ConcurrentHashMultiset.create();
-
-        // doesnt save yet ender do yo thing okie :)
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
         this.icon = houseData.getIcon() != null ? Material.valueOf(houseData.getIcon()) : Material.OAK_DOOR;
-
-        //stats
-        this.statManager = new StatManager(this);
-
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
-
-        //Commands
-        this.commands = CommandData.Companion.toList(houseData.getCommands());
-
-        for (Command command: commands) {
-            if (!command.isLoaded()) continue;
-            main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
-        }
-
-        //regions
-        this.regions = RegionData.Companion.toList(houseData.getRegions());
-
-        //scoreboard
+        this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
+        this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
         this.scoreboard = houseData.getScoreboard();
+        loadEventActions();
+        this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
+        this.seed = houseData.getSeed();
+        this.random = new Random(seed.hashCode());
+        this.size = houseData.getSize();
+    }
 
-        // Load the event actions
-        eventActions = new HashMap<>();
+    private void loadEventActions() {
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
             List<ActionData> actions = houseData.getEventActions().get(type);
@@ -160,143 +146,94 @@ public class HousingWorld {
                 }
             }
         }
+    }
 
-        // Load functions and since its a new feature, we need to check if the functions are null
-        functions = new ArrayList<>();
-        if (houseData.getFunctions() != null) {
-            functions = FunctionData.Companion.toList(houseData.getFunctions());
-        }
-
-        // Load the seed and random instance
-        this.seed = houseData.getSeed();
-        this.random = new Random(seed.hashCode());
-        this.size = houseData.getSize();
-
-        //Raed and load the world
+    private void loadWorld(OfflinePlayer owner) {
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
-            if (owner.isOnline()) {
-                owner.getPlayer().sendMessage(colorize("&cFailed to load your house!"));
-            } else {
-                Bukkit.getLogger().info("Failed to load house for " + owner.getName() + "!");
-            }
+            notifyOwnerOfFailure(owner);
             return;
         }
         slimeWorld = world;
-
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+    }
 
-        // Load NPCs into the world, the reason we do this after the world is loaded is because we need the world to spawn the NPCs
+    private void loadNPCs(OfflinePlayer owner) {
         for (NPCData npc : houseData.getHouseNPCs()) {
             Location location = npc.getNpcLocation().toLocation();
             loadNPC(owner, location, npc);
         }
-
-        save();
     }
 
-    // Creating a new house
-    public HousingWorld(Main main, Player owner, HouseSize size) {
-        main.getLogger().info("Creating a new house for " + owner.getName() + "...");
-        this.main = main;
-        try {
-            this.loader = main.getLoader();
-            this.asp = AdvancedSlimePaperAPI.instance();
-        } catch (Exception e) {
-            main.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
-        }
-
-        // Set up the Information
-        this.ownerUUID = owner.getUniqueId();
-        this.name = owner.getName() + "'s House";
+    private void setupNewHouse(Player owner, HouseSize size) {
         this.houseUUID = UUID.randomUUID();
-        if (main.getHousesManager().getHouseData(houseUUID.toString()) != null) { //Check and make sure the UUID is unique
-            //even though this is a very low chance of happening, we still need to check
-            this.houseUUID = UUID.randomUUID();
-        }
-        this.guests = 0;
-        this.cookies = 0;
+        ensureUniqueHouseUUID();
         this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
-        this.housingNPCS = ConcurrentHashMultiset.create();
-        this.statManager = new StatManager(this);
-        this.functions = new ArrayList<>();
         this.privacy = HousePrivacy.PRIVATE;
         this.icon = Material.OAK_DOOR;
-        this.commands = new ArrayList<>();
-        this.regions = new ArrayList<>();
-
-        // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
-
-
-        switch (size) {
-            case MEDIUM -> this.size = 50;
-            case LARGE -> this.size = 75;
-            case XLARGE -> this.size = 100;
-            case MASSIVE -> this.size = 255;
-            default -> this.size = 30;
-        }
-
-        // Create the actual world
+        this.size = determineHouseSize(size);
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
             return;
         }
         slimeWorld = world;
-
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
-        createTemplatePlatform();
+    }
 
+    private void ensureUniqueHouseUUID() {
+        if (main.getHousesManager().getHouseData(houseUUID.toString()) != null) {
+            this.houseUUID = UUID.randomUUID();
+        }
+    }
+
+    private int determineHouseSize(HouseSize size) {
+        return switch (size) {
+            case MEDIUM -> 50;
+            case LARGE -> 75;
+            case XLARGE -> 100;
+            case MASSIVE -> 255;
+            default -> 30;
+        };
+    }
+
+    private void setupWorldBorder() {
         this.houseWorld.getWorldBorder().setCenter(this.spawn);
         this.houseWorld.getWorldBorder().setSize(this.size);
+    }
 
-        // Actions, Scoreboard, Default Stuff ya know?
+    private void setupDefaultScoreboard() {
         this.scoreboard = new ArrayList<>();
         this.scoreboard.add("%house.name%:");
         this.scoreboard.add("&7- &eCookies: &6%house.cookies%");
         this.scoreboard.add("&7- &aPlayers: &2%house.guests%");
         this.scoreboard.add("&7");
         this.scoreboard.add("&7Edit the scoreboard in the");
-        this.scoreboard.add(("&7systems menu!"));
-
-        eventActions = new HashMap<>();
-        //Bad Al3x for not doing this the first time
-        // flip you buddy - Al3x
-        for (EventType type : EventType.values()) {
-            eventActions.put(type, new ArrayList<>());
-        }
-
-        // Save the house
-        save();
+        this.scoreboard.add("&7systems menu!");
     }
 
-    private void killAllEntities() {
-        houseWorld.getEntities().forEach(entity -> {
-            if (entity instanceof Player) return;
-            entity.remove();
-        });
+    private void notifyOwnerOfFailure(OfflinePlayer owner) {
+        if (owner.isOnline()) {
+            owner.getPlayer().sendMessage(colorize("&cFailed to load your house!"));
+        } else {
+            Bukkit.getLogger().info("Failed to load house for " + owner.getName() + "!");
+        }
     }
 
     private void createTemplatePlatform() {
-        int platformSize = 15; // 13x13 platform
+        int platformSize = 15;
         int startX = -platformSize / 2;
         int startZ = -platformSize / 2;
 
         for (int x = startX; x <= -startX; x++) {
             for (int z = startZ; z <= -startZ; z++) {
-                // Place stone as the base (one block below the grass)
                 houseWorld.getBlockAt(x, 59, z).setType(Material.STONE);
-
-                // Place grass block on top of the stone
                 houseWorld.getBlockAt(x, 60, z).setType((Math.random() > 0.25) ? Material.GRASS_BLOCK : Material.COARSE_DIRT);
-
-                // Place grass on top of grass block
                 if (Math.random() < 0.2) houseWorld.getBlockAt(x, 61, z).setType(Material.SHORT_GRASS);
             }
         }
@@ -304,25 +241,18 @@ public class HousingWorld {
 
     private SlimePropertyMap getProperties() {
         SlimePropertyMap properties = new SlimePropertyMap();
-
         properties.setValue(SlimeProperties.DIFFICULTY, "normal");
         properties.setValue(SlimeProperties.SPAWN_X, 0);
         properties.setValue(SlimeProperties.SPAWN_Y, 61);
         properties.setValue(SlimeProperties.SPAWN_Z, 0);
-//            properties.setValue(SlimeProperties.ALLOW_ANIMALS, false);
-//            properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
-//            properties.setValue(SlimeProperties.DRAGON_BATTLE, false);
-//            properties.setValue(SlimeProperties.PVP, false);
         properties.setValue(SlimeProperties.ENVIRONMENT, "normal");
         properties.setValue(SlimeProperties.WORLD_TYPE, "default");
         properties.setValue(SlimeProperties.DEFAULT_BIOME, "minecraft:plains");
-
         return properties;
     }
 
     private SlimeWorld createOrReadWorld() {
         SlimeWorld world = null;
-
         try {
             if (!loader.worldExists(houseUUID.toString())) {
                 world = asp.createEmptyWorld(houseUUID.toString(), false, getProperties(), loader);
@@ -330,25 +260,21 @@ public class HousingWorld {
             } else {
                 world = asp.readWorld(loader, houseUUID.toString(), false, getProperties());
             }
-
             world = asp.loadWorld(world, true);
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
-
         return world;
     }
 
     public void save() {
         try {
             houseData = HouseData.Companion.fromHousingWorld(this);
-
             File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
             if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
             if (!file.exists()) file.createNewFile();
-            String json = gson.toJson(houseData);
+            String json = GSON.toJson(houseData);
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
-
             asp.saveWorld(slimeWorld);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
@@ -356,121 +282,36 @@ public class HousingWorld {
     }
 
     public void unload() {
-        for (Player player : houseWorld.getPlayers()) {
+        houseWorld.getPlayers().forEach(player -> {
             player.sendMessage(colorize("&e&lHouse is being unloaded!"));
             kickPlayerFromHouse(player);
-        }
-        for (HousingNPC npc : housingNPCS) {
-            npc.getCitizensNPC().destroy();
-        }
-
-        // Kill all entities in the world
+        });
+        housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
         killAllEntities();
-
         Bukkit.unloadWorld(houseWorld, false);
     }
 
-    public Function createFunction(String name) {
-        if (name == null) return null;
-        for (Function function : functions) {
-            if (function.getName().equals(name)) return null;
-        }
-
-        Function function = new Function(name);
-        functions.add(function);
-        return function;
+    public void delete() {
+        houseWorld.getPlayers().forEach(player -> {
+            kickPlayerFromHouse(player);
+            player.sendMessage(colorize("&e&lThis house has been deleted!"));
+        });
+        Bukkit.unloadWorld(houseWorld, false);
+        deleteWorld();
     }
 
-    public Command createCommand(String name) {
-        //Check for null, duplicate, and if the command already exists
-        if (name == null) return null;
-        for (Command command : commands) {
-            if (command.getName().equals(name)) return null;
-        }
-        if (!name.matches("^[a-zA-Z0-9]*$")) return null;
-        if (main.getCommandFramework().hasCommand(name)) return null;
-
-        // and then create the command
-        Command function = new Command(name);
-        commands.add(function);
-
-        // /houseid:commandname <args>
-        main.getCommandFramework().registerCommand(houseUUID.toString(), function.getCommand());
-
-        return function;
+    private void killAllEntities() {
+        houseWorld.getEntities().forEach(entity -> {
+            if (!(entity instanceof Player)) entity.remove();
+        });
     }
 
-    public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
-        List<Action> actions = eventActions.get(eventType);
-        boolean cancelled = false;
-        if (actions != null) {
-            ActionExecutor executor = new ActionExecutor();
-            executor.addActions(actions);
-            executor.execute(player, this, event);
-            if (event != null) {
-                cancelled = event.isCancelled();
-            }
-        }
-        return cancelled;
-    }
-
-    public void createNPC(Player player, Location location) {
-        HousingNPC npc = new HousingNPC(main, player, location, this);
-        housingNPCS.add(npc);
-    }
-
-    public void loadNPC(OfflinePlayer player, Location location, NPCData data) {
-        HousingNPC npc = new HousingNPC(main, player, location, this, data);
-        housingNPCS.add(npc);
-    }
-
-    public HousingNPC getNPC(int id) {
-        for (HousingNPC npc : housingNPCS) {
-            if (npc.getNpcID() == id) {
-                return npc;
-            }
-        }
-        return null;
-    }
-
-    public void removeNPC(int id) {
-        for (HousingNPC npc : housingNPCS) {
-            if (npc.getNpcID() == id) {
-                NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);
-                if (citizensNPC == null) {
-                    Bukkit.getLogger().info("NPC is null...");
-                    return;
-                }
-                citizensNPC.destroy();
-                CitizensAPI.getNPCRegistry().deregister(citizensNPC);
-                housingNPCS.remove(npc);
-                return;
-            }
-        }
-    }
-
-    public List<HousingNPC> getNPCs() {
-        return housingNPCS.stream().toList();
-    }
-
-    // Helper Method for delete()
-    private boolean deleteWorld(File path) {
-        for (HousingNPC npc : housingNPCS) {
-            removeNPC(npc.getNpcID());
-        }
-
-        // would this work? - Al3x
-//        commands.clear(); no sir
-        for (Command command: commands) {
-            main.getCommandFramework().unregisterCommand(command.getCommand(), this);
-        }
+    private boolean deleteWorld() {
+        housingNPCS.forEach(npc -> removeNPC(npc.getNpcID()));
+        commands.forEach(command -> main.getCommandFramework().unregisterCommand(command.getCommand(), this));
         commands.clear();
-
-        File file = new File(main.getDataFolder(), "houses/" + houseUUID.toString() + ".json");
-        if (file.exists()) {
-            file.delete();
-        }
-
+        File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
+        if (file.exists()) file.delete();
         try {
             loader.deleteWorld(houseUUID.toString());
             return true;
@@ -480,24 +321,10 @@ public class HousingWorld {
         }
     }
 
-    public void delete() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (houseWorld.getPlayers().contains(player)) {
-                kickPlayerFromHouse(player);
-                player.sendMessage(colorize("&e&lThis house has been deleted!"));
-            }
-        }
-
-        Bukkit.unloadWorld(houseWorld, false);
-        deleteWorld(houseWorld.getWorldFolder());
-    }
-
-    public void broadcast(String s) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().getName().equals(houseUUID)) {
-                player.sendMessage(colorize(s));
-            }
-        }
+    public void broadcast(String message) {
+        Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getWorld().getName().equals(houseUUID.toString()))
+                .forEach(player -> player.sendMessage(colorize(message)));
     }
 
     public void setDescription(String description) {
@@ -545,8 +372,8 @@ public class HousingWorld {
         return houseWorld;
     }
 
-    public void setName(String s) {
-        name = s;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -618,15 +445,13 @@ public class HousingWorld {
     }
 
     public Function getFunction(String name) {
-        for (Function function : functions) {
-            if (function.getName().equals(name)) return function;
-        }
-        return null;
+        return functions.stream().filter(function -> function.getName().equals(name)).findFirst().orElse(null);
     }
 
     public Material getIcon() {
         return icon;
     }
+
     public void setIcon(Material icon) {
         this.icon = icon;
     }
@@ -637,5 +462,60 @@ public class HousingWorld {
 
     public List<Regions> getRegions() {
         return regions;
+    }
+
+    public void createNPC(Player player, Location location) {
+        HousingNPC npc = new HousingNPC(main, player, location, this);
+        housingNPCS.add(npc);
+    }
+
+    public void loadNPC(OfflinePlayer player, Location location, NPCData data) {
+        HousingNPC npc = new HousingNPC(main, player, location, this, data);
+        housingNPCS.add(npc);
+    }
+
+    public HousingNPC getNPC(int id) {
+        return housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().orElse(null);
+    }
+
+    public void removeNPC(int id) {
+        housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().ifPresent(npc -> {
+            NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);
+            if (citizensNPC != null) {
+                citizensNPC.destroy();
+                CitizensAPI.getNPCRegistry().deregister(citizensNPC);
+                housingNPCS.remove(npc);
+            }
+        });
+    }
+
+    public List<HousingNPC> getNPCs() {
+        return new ArrayList<>(housingNPCS);
+    }
+
+    public Function createFunction(String name) {
+        if (name == null || functions.stream().anyMatch(function -> function.getName().equals(name))) return null;
+        Function function = new Function(name);
+        functions.add(function);
+        return function;
+    }
+
+    public Command createCommand(String name) {
+        if (name == null || !name.matches("^[a-zA-Z0-9]*$") || main.getCommandFramework().hasCommand(name) || commands.stream().anyMatch(command -> command.getName().equals(name))) return null;
+        Command command = new Command(name);
+        commands.add(command);
+        main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
+        return command;
+    }
+
+    public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
+        List<Action> actions = eventActions.get(eventType);
+        if (actions != null) {
+            ActionExecutor executor = new ActionExecutor();
+            executor.addActions(actions);
+            executor.execute(player, this, event);
+            return event != null && event.isCancelled();
+        }
+        return false;
     }
 }

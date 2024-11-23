@@ -31,6 +31,8 @@ public enum ActionEnum {
     SHOW_BOSSBAR("Show Bossbar Action", ShowBossbarAction.class),
     SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),
     LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
+    PARTICLE("Particle Action", ParticleAction.class),
+    REPEAT("Repeat Action", RepeatAction.class),
     EXIT("Exit Action", ExitAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same

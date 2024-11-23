@@ -27,8 +27,8 @@ public final class Main extends JavaPlugin {
     private HousingCommandFramework commandFramework;
     private ProtoolsManager protoolsManager;
 
-    private MineSkinClientImpl mineSkinClient;
-    // private String mineSkinKey;
+    //    private MineSkinClientImpl mineSkinClient;
+    private String mineSkinKey;
 
     @Override
     public void onEnable() {
@@ -39,11 +39,6 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
 
         if (getConfig().contains("mineskin_key") && !Objects.equals(getConfig().getString("mineskin_key"), "your-mineskin-key")) {
-//            mineSkinClient = (MineSkinClientImpl) MineSkinClient.builder()
-//                    .apiKey(getConfig().getString("mineskin_key"))
-//                    .userAgent("Housing2")
-//                    .requestHandler(Java11RequestHandler::new)
-//                    .build();
             mineSkinKey = getConfig().getString("mineskin_key");
         } else {
             getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
@@ -115,10 +110,6 @@ public final class Main extends JavaPlugin {
 
     public HousingCommandFramework getCommandFramework() {
         return commandFramework;
-    }
-
-    public MineSkinClientImpl getMineSkinClient() {
-        return mineSkinClient;
     }
 
     public String getMineSkinKey() {

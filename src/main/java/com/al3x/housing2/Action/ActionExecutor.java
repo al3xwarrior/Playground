@@ -15,13 +15,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
+    long pause = 0;
 
     public void addActions(List<Action> actions) {
         queue.addAll(actions);
     }
 
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
-        long pause = 0;
         AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         for (Action action : queue) {

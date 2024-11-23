@@ -24,8 +24,8 @@ data class HouseData(
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
     var playerStats: HashMap<String, List<StatData>>,
-    var commands: List<CommandData> = arrayListOf(),
-    var regions: List<RegionData> = arrayListOf(),
+    var commands: List<CommandData>? = arrayListOf(),
+    var regions: List<RegionData>? = arrayListOf(),
     val seed: String,
     var functions: List<FunctionData> = arrayListOf()
 ) {

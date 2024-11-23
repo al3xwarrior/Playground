@@ -16,8 +16,9 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class BlockList {
     List<Duple<Integer, Material>> blockList = new ArrayList<Duple<Integer, Material>>();
 
-    public void addBlock(int percent, Material block) {
+    public BlockList addBlock(int percent, Material block) {
         this.blockList.add(new Duple<Integer, Material>(percent, block));
+        return this;
     }
 
     public List<Material> generateBlocks() {

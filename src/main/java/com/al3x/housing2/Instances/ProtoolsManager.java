@@ -47,9 +47,17 @@ public class ProtoolsManager {
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
+    public void setPositions(Location pos1, Location pos2) {
+        this.selections.put(UUID.fromString("00000000-0000-0000-0000-000000000000"), new Duple<>(pos1, pos2));
+    }
+
     public void setRegionTo(Player player, BlockList blockList) {
-        this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
-        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        setRegionTo(player.getUniqueId(), blockList);
+    }
+
+    public void setRegionTo(UUID uuid, BlockList blockList) {
+        this.cooldowns.put(uuid, System.currentTimeMillis());
+        Duple<Location, Location> selection = this.selections.get(uuid);
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
@@ -60,7 +68,7 @@ public class ProtoolsManager {
         for (Block block : blocks) {
             currentState.add(block.getState());
         }
-        addUndoStack(player, currentState);
+        addUndoStack(uuid, currentState);
 
         List<Material> blockOptions = blockList.generateBlocks();
         blocks.forEach(block -> block.setType(blockOptions.get((int) (Math.random() * blockOptions.size()))));
@@ -95,12 +103,12 @@ public class ProtoolsManager {
             }
         }
 
-        addUndoStack(player, currentState);
+        addUndoStack(player.getUniqueId(), currentState);
         player.sendMessage(Color.colorize("&aSphere created successfully!"));
     }
 
-    private void addUndoStack(Player player, List<BlockState> blockStates) {
-        Stack<List<BlockState>> undoStack = undoStacks.computeIfAbsent(player.getUniqueId(), k -> new Stack<>());
+    private void addUndoStack(UUID uuid, List<BlockState> blockStates) {
+        Stack<List<BlockState>> undoStack = undoStacks.computeIfAbsent(uuid, k -> new Stack<>());
         if (undoStack.size() >= 20) {
             undoStack.remove(0); // Remove the oldest state
         }

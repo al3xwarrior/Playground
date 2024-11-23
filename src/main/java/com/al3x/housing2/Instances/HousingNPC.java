@@ -43,6 +43,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
+import static com.al3x.housing2.MineSkin.MineskinHandler.getSkinData;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
@@ -423,7 +424,7 @@ public class HousingNPC {
 
     public void setSkin(String skin) {
         this.skinUUID = skin;
-        if (main.getMineSkinClient() != null) {
+        if (main.getMineSkinKey() != null) {
             BiggerSkinData skinData = getSkinData(skin);
             if (skinData != null && skinData.getTexture() != null) {
                 SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
@@ -432,23 +433,5 @@ public class HousingNPC {
         }
     }
 
-    private BiggerSkinData getSkinData(String uuid) {
-        try {
-            HttpClient client = HttpClient.newBuilder().build();
-            HttpResponse<String> response = client.send(
-                    HttpRequest.newBuilder()
-                            .GET()
-                            .header("Accept", "application/json")
-                            .header("User-Agent", "Housing2")
-                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
-                            .uri(new URI("https://api.mineskin.org/v2/skins/" + uuid))
-                            .build(),
-                    responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
-            );
-            return gson.fromJson(response.body(), BiggerSkinResponse.class).getSkin();
-        } catch (Exception e) {
-            main.getLogger().warning("Failed to get skin data for NPC: " + name);
-        }
-        return null;
-    }
+
 }

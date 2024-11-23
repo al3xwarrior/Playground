@@ -4,6 +4,7 @@ main: com.al3x.housing2.Main
 api-version: '1.20'
 authors: [ Al3x ]
 depend: [Citizens]
+loadbefore: [Citizens]
 commands:
   housing:
     aliases: ["h"]

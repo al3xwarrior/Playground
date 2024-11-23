@@ -2,8 +2,11 @@ package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,12 +14,17 @@ import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import static com.al3x.housing2.Utils.Color.colorize;
 
 /**
  * Represents an action that can be executed by a player.
@@ -124,5 +132,33 @@ public abstract class Action {
             actions.add(gson.fromJson(jsonObject, clazz));
         }
         return actions;
+    }
+
+    protected boolean getDirection(InventoryClickEvent event, Object obj, HousingWorld house, Menu editMenu, BiConsumer<String, PushDirection> consumer) {
+        if (obj instanceof PushDirection direction && direction == PushDirection.CUSTOM) {
+            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom direction in the chat. (pitch,yaw)"));
+            editMenu.openChat(Main.getInstance(), (message) -> {
+                //pitch,yaw
+                String[] split = message.split(",");
+                if (split.length != 2) {
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                    return;
+                }
+
+                try {
+                    //Check if the placeholders are valid
+                    Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[0]));
+                    Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[1]));
+                    consumer.accept(message, PushDirection.CUSTOM);
+                } catch (NumberFormatException e) {
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
+                }
+            });
+        }
+
+        if ((obj instanceof PushDirection direction) && direction != PushDirection.CUSTOM) {
+            consumer.accept(null, direction);
+        }
+        return false;
     }
 }

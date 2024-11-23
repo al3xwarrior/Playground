@@ -74,36 +74,12 @@ public class PushPlayerAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + direction)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS, (event, obj) -> {
-                    if (obj instanceof PushDirection direction && direction == PushDirection.CUSTOM) {
-                        event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom direction in the chat. (pitch,yaw)"));
-                        editMenu.openChat(Main.getInstance(), (message) -> {
-                            //pitch,yaw
-                            String[] split = message.split(",");
-                            if (split.length != 2) {
-                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
-                                return;
-                            }
-
-                            try {
-                                float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[0]));
-                                float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[1]));
-                                customDirection = message;
-                                this.direction = PushDirection.CUSTOM;
-                                event.getWhoClicked().sendMessage(colorize("&aCustom direction set to " + customDirection));
-                            } catch (NumberFormatException e) {
-                                event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
-                            }
-                        });
-                    }
-
-                    if ((obj instanceof PushDirection direction) && direction != PushDirection.CUSTOM) {
-                        customDirection = null;
-                        this.direction = direction;
-                    }
-
-                    return false;
-                }),
+                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
+                        (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
+                            customDirection = str;
+                            direction = dir;
+                        })
+                ),
                 new ActionEditor.ActionItem("amount",
                         ItemBuilder.create(Material.SLIME_BALL)
                                 .name("&eVelocity")

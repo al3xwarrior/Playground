@@ -1,0 +1,131 @@
+package com.al3x.housing2.Enums;
+
+import org.bukkit.Color;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Vibration;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.inventory.ItemStack;
+
+public enum Particles implements EnumMaterial{
+    POOF(Material.GUNPOWDER, Particle.POOF),
+    EXPLOSION(Material.TNT, Particle.EXPLOSION),
+    EXPLOSION_EMITTER(Material.TNT, Particle.EXPLOSION_EMITTER),
+    FIREWORK(Material.FIREWORK_ROCKET, Particle.FIREWORK),
+    BUBBLE(Material.WATER_BUCKET, Particle.BUBBLE),
+    SPLASH(Material.WATER_BUCKET, Particle.SPLASH),
+    FISHING(Material.FISHING_ROD, Particle.FISHING),
+    UNDERWATER(Material.WATER_BUCKET, Particle.UNDERWATER),
+    CRIT(Material.IRON_SWORD, Particle.CRIT),
+    ENCHANTED_HIT(Material.ENCHANTED_BOOK, Particle.ENCHANTED_HIT),
+    SMOKE(Material.CAMPFIRE, Particle.SMOKE),
+    LARGE_SMOKE(Material.CAMPFIRE, Particle.LARGE_SMOKE),
+    EFFECT(Material.POTION, Particle.EFFECT),
+    INSTANT_EFFECT(Material.POTION, Particle.INSTANT_EFFECT),
+    WITCH(Material.POTION, Particle.WITCH),
+    DRIPPING_WATER(Material.WATER_BUCKET, Particle.DRIPPING_WATER),
+    DRIPPING_LAVA(Material.LAVA_BUCKET, Particle.DRIPPING_LAVA),
+    ANGRY_VILLAGER(Material.EMERALD, Particle.ANGRY_VILLAGER),
+    HAPPY_VILLAGER(Material.EMERALD, Particle.HAPPY_VILLAGER),
+    MYCELIUM(Material.MYCELIUM, Particle.MYCELIUM),
+    NOTE(Material.NOTE_BLOCK, Particle.NOTE),
+    PORTAL(Material.ENDER_PEARL, Particle.PORTAL),
+    ENCHANT(Material.ENCHANTING_TABLE, Particle.ENCHANT),
+    FLAME(Material.BLAZE_POWDER, Particle.FLAME),
+    LAVA(Material.LAVA_BUCKET, Particle.LAVA),
+    CLOUD(Material.FEATHER, Particle.CLOUD),
+    ITEM_SNOWBALL(Material.SNOWBALL, Particle.ITEM_SNOWBALL),
+    ITEM_SLIME(Material.SLIME_BALL, Particle.ITEM_SLIME),
+    HEART(Material.REDSTONE, Particle.HEART),
+    RAIN(Material.WATER_BUCKET, Particle.RAIN),
+    ELDER_GUARDIAN(Material.PRISMARINE_SHARD, Particle.ELDER_GUARDIAN),
+    DRAGON_BREATH(Material.DRAGON_BREATH, Particle.DRAGON_BREATH),
+    END_ROD(Material.END_ROD, Particle.END_ROD),
+    DAMAGE_INDICATOR(Material.REDSTONE, Particle.DAMAGE_INDICATOR),
+    SWEEP_ATTACK(Material.IRON_SWORD, Particle.SWEEP_ATTACK),
+    TOTEM_OF_UNDYING(Material.TOTEM_OF_UNDYING, Particle.TOTEM_OF_UNDYING),
+    SPIT(Material.LLAMA_SPAWN_EGG, Particle.SPIT),
+    SQUID_INK(Material.INK_SAC, Particle.SQUID_INK),
+    BUBBLE_POP(Material.WATER_BUCKET, Particle.BUBBLE_POP),
+    CURRENT_DOWN(Material.WATER_BUCKET, Particle.CURRENT_DOWN),
+    BUBBLE_COLUMN_UP(Material.WATER_BUCKET, Particle.BUBBLE_COLUMN_UP),
+    NAUTILUS(Material.NAUTILUS_SHELL, Particle.NAUTILUS),
+    DOLPHIN(Material.COD, Particle.DOLPHIN),
+    SNEEZE(Material.POPPY, Particle.SNEEZE),
+    CAMPFIRE_COSY_SMOKE(Material.CAMPFIRE, Particle.CAMPFIRE_COSY_SMOKE),
+    CAMPFIRE_SIGNAL_SMOKE(Material.CAMPFIRE, Particle.CAMPFIRE_SIGNAL_SMOKE),
+    COMPOSTER(Material.COMPOSTER, Particle.COMPOSTER),
+    FLASH(Material.FLINT_AND_STEEL, Particle.FLASH),
+    FALLING_LAVA(Material.LAVA_BUCKET, Particle.FALLING_LAVA),
+    LANDING_LAVA(Material.LAVA_BUCKET, Particle.LANDING_LAVA),
+    FALLING_WATER(Material.WATER_BUCKET, Particle.FALLING_WATER),
+    DRIPPING_HONEY(Material.HONEY_BOTTLE, Particle.DRIPPING_HONEY),
+    FALLING_HONEY(Material.HONEY_BOTTLE, Particle.FALLING_HONEY),
+    LANDING_HONEY(Material.HONEY_BOTTLE, Particle.LANDING_HONEY),
+    FALLING_NECTAR(Material.HONEYCOMB, Particle.FALLING_NECTAR),
+    SOUL_FIRE_FLAME(Material.SOUL_CAMPFIRE, Particle.SOUL_FIRE_FLAME),
+    ASH(Material.SOUL_SOIL, Particle.ASH),
+    CRIMSON_SPORE(Material.CRIMSON_FUNGUS, Particle.CRIMSON_SPORE),
+    WARPED_SPORE(Material.WARPED_FUNGUS, Particle.WARPED_SPORE),
+    SOUL(Material.SOUL_SAND, Particle.SOUL),
+    DRIPPING_OBSIDIAN_TEAR(Material.CRYING_OBSIDIAN, Particle.DRIPPING_OBSIDIAN_TEAR),
+    FALLING_OBSIDIAN_TEAR(Material.CRYING_OBSIDIAN, Particle.FALLING_OBSIDIAN_TEAR),
+    LANDING_OBSIDIAN_TEAR(Material.CRYING_OBSIDIAN, Particle.LANDING_OBSIDIAN_TEAR),
+    REVERSE_PORTAL(Material.ENDER_PEARL, Particle.REVERSE_PORTAL),
+    WHITE_ASH(Material.BONE_MEAL, Particle.WHITE_ASH),
+    FALLING_SPORE_BLOSSOM(Material.SPORE_BLOSSOM, Particle.FALLING_SPORE_BLOSSOM),
+    SPORE_BLOSSOM_AIR(Material.SPORE_BLOSSOM, Particle.SPORE_BLOSSOM_AIR),
+    SMALL_FLAME(Material.BLAZE_POWDER, Particle.SMALL_FLAME),
+    SNOWFLAKE(Material.SNOWBALL, Particle.SNOWFLAKE),
+    DRIPPING_DRIPSTONE_LAVA(Material.DRIPSTONE_BLOCK, Particle.DRIPPING_DRIPSTONE_LAVA),
+    FALLING_DRIPSTONE_LAVA(Material.DRIPSTONE_BLOCK, Particle.FALLING_DRIPSTONE_LAVA),
+    DRIPPING_DRIPSTONE_WATER(Material.DRIPSTONE_BLOCK, Particle.DRIPPING_DRIPSTONE_WATER),
+    FALLING_DRIPSTONE_WATER(Material.DRIPSTONE_BLOCK, Particle.FALLING_DRIPSTONE_WATER),
+    GLOW_SQUID_INK(Material.GLOW_INK_SAC, Particle.GLOW_SQUID_INK),
+    GLOW(Material.GLOWSTONE_DUST, Particle.GLOW),
+    WAX_ON(Material.HONEYCOMB, Particle.WAX_ON),
+    WAX_OFF(Material.HONEYCOMB, Particle.WAX_OFF),
+    ELECTRIC_SPARK(Material.REDSTONE, Particle.ELECTRIC_SPARK),
+    SCRAPE(Material.IRON_INGOT, Particle.SCRAPE),
+    SONIC_BOOM(Material.SCULK_SENSOR, Particle.SONIC_BOOM),
+    SCULK_SOUL(Material.SCULK, Particle.SCULK_SOUL),
+    SCULK_CHARGE_POP(Material.SCULK, Particle.SCULK_CHARGE_POP),
+    CHERRY_LEAVES(Material.CHERRY_LEAVES, Particle.CHERRY_LEAVES),
+    EGG_CRACK(Material.EGG, Particle.EGG_CRACK),
+    DUST_PLUME(Material.REDSTONE, Particle.DUST_PLUME),
+    WHITE_SMOKE(Material.BONE_MEAL, Particle.WHITE_SMOKE),
+    GUST(Material.FEATHER, Particle.GUST),
+    SMALL_GUST(Material.FEATHER, Particle.SMALL_GUST),
+    GUST_EMITTER_LARGE(Material.FEATHER, Particle.GUST_EMITTER_LARGE),
+    GUST_EMITTER_SMALL(Material.FEATHER, Particle.GUST_EMITTER_SMALL),
+    TRIAL_SPAWNER_DETECTION(Material.SPAWNER, Particle.TRIAL_SPAWNER_DETECTION),
+    TRIAL_SPAWNER_DETECTION_OMINOUS(Material.SPAWNER, Particle.TRIAL_SPAWNER_DETECTION_OMINOUS),
+    VAULT_CONNECTION(Material.ENDER_CHEST, Particle.VAULT_CONNECTION),
+    INFESTED(Material.SILVERFISH_SPAWN_EGG, Particle.INFESTED),
+    ITEM_COBWEB(Material.COBWEB, Particle.ITEM_COBWEB),
+    OMINOUS_SPAWNING(Material.SPAWNER, Particle.OMINOUS_SPAWNING),
+    RAID_OMEN(Material.BLACK_BANNER, Particle.RAID_OMEN),
+    TRIAL_OMEN(Material.BLACK_BANNER, Particle.TRIAL_OMEN),
+    ;
+
+    Material material;
+    Particle particle;
+
+    Particles() {
+        this.material = null;
+        this.particle = null;
+    }
+
+    Particles(Material material, Particle particle) {
+        this.material = material;
+        this.particle = particle;
+    }
+    @Override
+    public Material getMaterial() {
+        return material;
+    }
+
+    public Particle getParticle() {
+        return particle;
+    }
+}

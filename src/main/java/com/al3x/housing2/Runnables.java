@@ -24,6 +24,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static com.al3x.housing2.MineSkin.MineskinHandler.sendRequestForSkins;
+
 public class Runnables {
     //Description, Runnable
     private static HashMap<String, BukkitTask> runnables = new HashMap<>();
@@ -103,11 +105,11 @@ public class Runnables {
             int page = 1;
             @Override
             public void run() {
-                if (main.getMineSkinClient() != null) {
+                if (main.getMineSkinKey() != null) {
                     PaginationList<SkinData> skins = new PaginationList<>(HousingNPC.loadedSkins, 21);
                     List<SkinData> currentSkins = skins.getPage(page);
                     if (currentSkins == null) {
-                        sendRequest(skins.isEmpty() ? null : skins.getLast().getUuid());
+                        sendRequestForSkins(skins.isEmpty() ? null : skins.getLast().getUuid());
                         page++;
                     }
                 }
@@ -127,34 +129,6 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 5L));
-    }
-
-    private static void sendRequest(String after) {
-        List<SkinData> previousSkins = HousingNPC.loadedSkins;
-        HttpClient client = HttpClient.newBuilder().build();
-        try {
-            HttpResponse<String> response = client.send(
-                    HttpRequest.newBuilder()
-                            .GET()
-                            .header("Accept", "application/json")
-                            .header("User-Agent", "Housing2")
-                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
-                            .uri(new URI("https://api.mineskin.org/v2/skins?size=21" + ((after != null && !after.isEmpty()) ? "&after=" + after : "")))
-                            .build(),
-                    responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
-            );
-            SkinResponse skinResponse = gson.fromJson(response.body(), SkinResponse.class);
-            if (skinResponse.getSuccess()) {
-                for (SkinData skin : skinResponse.getSkins()) {
-                    if (skin == null) continue;
-                    if (previousSkins.stream().noneMatch(s -> s.getUuid().equals(skin.getUuid()))) {
-                        previousSkins.add(skin);
-                    }
-                }
-            }
-        } catch (IOException | InterruptedException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void stopRunnables() {
