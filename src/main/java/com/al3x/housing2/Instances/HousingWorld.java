@@ -226,6 +226,7 @@ public class HousingWorld {
         this.privacy = HousePrivacy.PRIVATE;
         this.icon = Material.OAK_DOOR;
         this.commands = new ArrayList<>();
+        this.regions = new ArrayList<>();
 
         // Set up the seed and random instance
         this.seed = UUID.randomUUID().toString();
