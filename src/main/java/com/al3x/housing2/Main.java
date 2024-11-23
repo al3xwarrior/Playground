@@ -16,9 +16,6 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mineskin.Java11RequestHandler;
-import org.mineskin.MineSkinClient;
-import org.mineskin.MineSkinClientImpl;
 
 import java.io.File;
 import java.util.Objects;
@@ -31,7 +28,7 @@ public final class Main extends JavaPlugin {
     private ProtoolsManager protoolsManager;
 
     private MineSkinClientImpl mineSkinClient;
-    private String mineSkinKey;
+    // private String mineSkinKey;
 
     @Override
     public void onEnable() {
