@@ -26,14 +26,15 @@ public class Sphere implements CommandExecutor {
         }
         Player player = (Player)commandSender;
 
+        if (strings.length != 2) {
+            player.sendMessage(Color.colorize("&cUsage: //sphere <radius> <block[s]>"));
+            return true;
+        }
+
         if (protoolsManager.canUseProtools(player, false)) {
-            if (strings.length == 2) {
-                BlockList blockList = BlockList.fromString(player, strings[1]);
-                protoolsManager.createSphere(player, Integer.parseInt(strings[0]), blockList);
-                player.sendMessage(Color.colorize("&aSphere generated!"));
-            } else {
-                player.sendMessage(colorize("&cUsage: /sphere <radius> <block[s]>"));
-            }
+            BlockList blockList = BlockList.fromString(player, strings[1]);
+            protoolsManager.createSphere(player, Integer.parseInt(strings[0]), blockList);
+            player.sendMessage(Color.colorize("&aGenerating sphere..."));
         }
 
         return false;

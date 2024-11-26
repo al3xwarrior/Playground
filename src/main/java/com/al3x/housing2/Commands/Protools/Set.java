@@ -1,6 +1,5 @@
 package com.al3x.housing2.Commands.Protools;
 
-import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.Color;
@@ -11,11 +10,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class Set implements CommandExecutor {
-    private HousesManager houseManager;
     private ProtoolsManager protoolsManager;
 
-    public Set(HousesManager housesManager, ProtoolsManager protoolsManager) {
-        this.houseManager = housesManager;
+    public Set(ProtoolsManager protoolsManager) {
         this.protoolsManager = protoolsManager;
     }
 
@@ -26,10 +23,15 @@ public class Set implements CommandExecutor {
         }
         Player player = (Player)commandSender;
 
+        if (strings.length != 1) {
+            player.sendMessage(Color.colorize("&cUsage: //set <blocks>"));
+            return true;
+        }
+
         if (protoolsManager.canUseProtools(player, false)) {
             BlockList blockList = BlockList.fromString(player, strings[0]);
             protoolsManager.setRegionTo(player, blockList);
-            player.sendMessage(Color.colorize("&aRegion successfully set!"));
+            player.sendMessage(Color.colorize("&aSetting region set..."));
             return true;
         }
 

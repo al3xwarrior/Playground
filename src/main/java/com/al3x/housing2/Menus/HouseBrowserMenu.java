@@ -24,7 +24,7 @@ public class HouseBrowserMenu extends Menu{
     private HousesManager housesManager;
 
     public HouseBrowserMenu(Player player, HousesManager housesManager) {
-        super(player, "&cHousing Browser", 54);
+        super(player, "&7Housing Browser", 54);
         this.player = player;
         this.housesManager = housesManager;
         setupItems();
@@ -41,7 +41,7 @@ public class HouseBrowserMenu extends Menu{
             ItemStack icon = new ItemStack(Material.valueOf(house.getIcon()));
             ItemMeta meta = icon.getItemMeta();
 
-            meta.setDisplayName(colorize(house.getHouseName()));
+            meta.setDisplayName(colorize("&a" + house.getHouseName()));
             meta.setLore(Arrays.asList(
                     colorize(house.getDescription()),
                     "",

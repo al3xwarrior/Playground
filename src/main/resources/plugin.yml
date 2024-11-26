@@ -19,8 +19,12 @@ commands:
 
   wand:
     usage: "/wand"
-    aliases: ["wand", "housingwand", "/"]
+    aliases: ["/", "wand", "housingwand"]
   set:
     aliases: ["/set"]
   sphere:
     aliases: ["/sphere"]
+  replace:
+    aliases: ["/replace"]
+  undo:
+    aliases: ["/undo"]

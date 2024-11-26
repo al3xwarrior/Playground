@@ -1,9 +1,7 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
-import com.al3x.housing2.Commands.Protools.Set;
-import com.al3x.housing2.Commands.Protools.Sphere;
-import com.al3x.housing2.Commands.Protools.Wand;
+import com.al3x.housing2.Commands.Protools.*;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.ProtoolsManager;
@@ -21,7 +19,7 @@ import java.io.File;
 import java.util.Objects;
 
 public final class Main extends JavaPlugin {
-    private static Main INSTANCE;
+    private static Main INSTANCE; // whats the point of this? can we just pass "this"? - al3x
     private SlimeLoader loader;
     private HousesManager housesManager;
     private HousingCommandFramework commandFramework;
@@ -123,9 +121,7 @@ public final class Main extends JavaPlugin {
         for (HousingWorld house : housesManager.getConcurrentLoadedHouses().values()) {
             housesManager.saveHouseAndUnload(house);
         }
-
         getServer().getLogger().info("[Housing2] Disabled");
-
     }
 
     public static Main getInstance() {

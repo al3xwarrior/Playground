@@ -23,12 +23,21 @@ public class BlockList {
 
     public List<Material> generateBlocks() {
         ArrayList<Material> blocks = new ArrayList<Material>();
-        for (Duple<Integer, Material> duple : this.blockList) {
+        for (Duple<Integer, Material> duple : blockList) {
             for (int i = 0; i < duple.getFirst(); ++i) {
                 blocks.add(duple.getSecond());
             }
         }
         return blocks;
+    }
+
+    public boolean includesMaterial(Material material) {
+        for (Duple<Integer, Material> duple : blockList) {
+            if (duple.getSecond() == material) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Duple<Integer, Material>> getBlockList() {

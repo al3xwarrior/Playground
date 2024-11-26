@@ -1,5 +1,6 @@
 package com.al3x.housing2.Instances;
 
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,16 +14,52 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class ProtoolsManager {
+    private Main main;
     private Map<UUID, Long> cooldowns;
     private Map<UUID, Duple<Location, Location>> selections;
+    private Map<UUID, Cuboid> copiedRegions;
     private Map<UUID, Stack<List<BlockState>>> undoStacks; // shoutout to chatgpt for information about the Stack Class (i still dont know how it works!)
     private HousesManager housesManager;
 
-    public ProtoolsManager(HousesManager housesManager) {
+    // Queue Stuff
+    private final Queue<Runnable> taskQueue;
+    private boolean isProcessing;
+
+    public ProtoolsManager(Main main, HousesManager housesManager) {
+        this.main = main;
         this.cooldowns = new HashMap<>();
         this.selections = new HashMap<>();
         this.undoStacks = new HashMap<>();
         this.housesManager = housesManager;
+
+        this.taskQueue = new LinkedList<>();
+        this.isProcessing = false;
+    }
+
+    private void enqueueTask(Runnable task) {
+        synchronized (taskQueue) {
+            taskQueue.add(task);
+        }
+        processQueue();
+    }
+
+    private void processQueue() {
+        if (isProcessing || taskQueue.isEmpty()) return;
+        isProcessing = true;
+
+        Bukkit.getScheduler().runTaskLater(main, () -> {
+            Runnable task;
+            synchronized (taskQueue) {
+                task = taskQueue.poll();
+            }
+            if (task != null) {
+                task.run();
+            }
+            isProcessing = false;
+            if (!taskQueue.isEmpty()) {
+                processQueue();
+            }
+        }, 30L);
     }
 
     public void setPos1(Player player, Location pos1) {
@@ -52,12 +89,8 @@ public class ProtoolsManager {
     }
 
     public void setRegionTo(Player player, BlockList blockList) {
-        setRegionTo(player.getUniqueId(), blockList);
-    }
-
-    public void setRegionTo(UUID uuid, BlockList blockList) {
-        this.cooldowns.put(uuid, System.currentTimeMillis());
-        Duple<Location, Location> selection = this.selections.get(uuid);
+        this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
@@ -68,14 +101,53 @@ public class ProtoolsManager {
         for (Block block : blocks) {
             currentState.add(block.getState());
         }
-        addUndoStack(uuid, currentState);
 
-        List<Material> blockOptions = blockList.generateBlocks();
-        blocks.forEach(block -> block.setType(blockOptions.get((int) (Math.random() * blockOptions.size()))));
+        addUndoStack(player.getUniqueId(), currentState);
+        player.sendMessage(Color.colorize("&aRegion set successfully!"));
+    }
+
+    public void setRegionTo(Player player, BlockList from, BlockList to) {
+        player.sendMessage(Color.colorize("&aReplacing region..."));
+        enqueueTask(() -> {
+            cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+            Location pos1 = selection.getFirst();
+            Location pos2 = selection.getSecond();
+            Cuboid cuboid = new Cuboid(pos1, pos2);
+            List<Block> blocks = cuboid.getBlocks();
+
+            // Save the current state of the blocks to be able to be undone
+            List<BlockState> currentState = new ArrayList<>();
+            for (Block block : blocks) {
+                currentState.add(block.getState());
+            }
+            addUndoStack(player.getUniqueId(), currentState);
+
+            List<Material> blockOptions = to.generateBlocks();
+            blocks.forEach(block -> {
+                if (from.includesMaterial(block.getType())) {
+                    block.setType(blockOptions.get((int) (Math.random() * blockOptions.size())));
+                }
+            });
+            player.sendMessage(Color.colorize("&aRegion replaced successfully!"));
+        });
+    }
+
+    public void copyToClipboard(Player player) {
+        player.sendMessage(Color.colorize("&aCopying region to clipboard..."));
+        enqueueTask(() -> {
+            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+            Location pos1 = selection.getFirst();
+            Location pos2 = selection.getSecond();
+            Cuboid cuboid = new Cuboid(pos1, pos2);
+            copiedRegions.put(player.getUniqueId(), cuboid);
+            player.sendMessage(Color.colorize("&aRegion copied to clipboard!"));
+        });
     }
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
+        player.sendMessage(Color.colorize("&aCreating sphere..."));
         // Save the current state of the blocks to enable undo functionality
         List<BlockState> currentState = new ArrayList<>();
 
@@ -116,16 +188,19 @@ public class ProtoolsManager {
     }
 
     public void undo(Player player) {
-        UUID uuid = player.getUniqueId();
-        if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
-            List<BlockState> previousState = undoStacks.get(uuid).pop();
-            for (BlockState state : previousState) {
-                state.update(true, false);
+        player.sendMessage(Color.colorize("&aUndoing..."));
+        enqueueTask(() -> {
+            UUID uuid = player.getUniqueId();
+            if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
+                List<BlockState> previousState = undoStacks.get(uuid).pop();
+                for (BlockState state : previousState) {
+                    state.update(true, false);
+                }
+                player.sendMessage(Color.colorize("&aUndo successful."));
+            } else {
+                player.sendMessage(Color.colorize("&cNothing to undo."));
             }
-            player.sendMessage(Color.colorize("&aUndo successful."));
-        } else {
-            player.sendMessage(Color.colorize("&cNothing to undo."));
-        }
+        });
     }
 
     public boolean canUseProtools(Player player, boolean ignoreSelection) {
