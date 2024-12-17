@@ -1,5 +1,6 @@
 package com.al3x.housing2;
 
+import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.MineSkin.SkinData;
@@ -129,6 +130,17 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 5L));
+
+        runnables.put("updateHolograms", new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
+                    for (Hologram holo : house.getHolograms()) {
+                        holo.updateHologramEntity();
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0L, 40L)); // might lower this. Right now it matches housings 2 second refresh
     }
 
     public static void stopRunnables() {

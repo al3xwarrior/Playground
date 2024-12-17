@@ -1,5 +1,7 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Instances.Hologram;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
@@ -8,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import static com.al3x.housing2.Instances.HousingNPC.getNPCItem;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 
@@ -81,7 +82,7 @@ public class ItemsMenu extends Menu {
         hologramMeta.setDisplayName(colorize("&aHologram"));
         hologram.setItemMeta(hologramMeta);
         addItem(6, hologram, () -> {
-            player.sendMessage("Hologram selected");
+            player.getInventory().addItem(Hologram.getHologramItem());
         });
 
         ItemStack npc = getCustomSkull("a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
@@ -89,7 +90,7 @@ public class ItemsMenu extends Menu {
         npcMeta.setDisplayName(colorize("&aNPC"));
         npc.setItemMeta(npcMeta);
         addItem(7, npc, () -> {
-            player.getInventory().addItem(getNPCItem());
+            player.getInventory().addItem(HousingNPC.getNPCItem());
         });
 
         ItemStack actionButton = new ItemStack(Material.STONE_BUTTON);

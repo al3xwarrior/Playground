@@ -6,15 +6,11 @@ import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.MineSkin.BiggerSkinData;
-import com.al3x.housing2.MineSkin.BiggerSkinResponse;
 import com.al3x.housing2.MineSkin.SkinData;
-import com.al3x.housing2.MineSkin.SkinResponse;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.google.gson.Gson;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.trait.Equipment;
 import net.citizensnpcs.trait.FollowTrait;
 import net.citizensnpcs.trait.HologramTrait;
@@ -34,12 +30,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
 import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;

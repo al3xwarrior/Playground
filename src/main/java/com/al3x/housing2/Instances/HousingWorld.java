@@ -23,6 +23,7 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -57,6 +58,7 @@ public class HousingWorld {
     private HousePrivacy privacy;
     private Material icon;
     private ConcurrentHashMultiset<HousingNPC> housingNPCS;
+    private List<Hologram> holograms;
     private HashMap<EventType, List<Action>> eventActions;
     private List<Function> functions;
     private StatManager statManager;
@@ -72,6 +74,7 @@ public class HousingWorld {
         setupHouseData(owner);
         loadWorld(owner);
         loadNPCs(owner);
+        // loadHolograms(); still not 100% sure how saving and crap works - al3x
         save();
     }
 
@@ -93,6 +96,7 @@ public class HousingWorld {
         this.functions = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.regions = new ArrayList<>();
+        this.holograms = new ArrayList<>();
         this.statManager = new StatManager(this);
         try {
             this.loader = main.getLoader();
@@ -491,6 +495,27 @@ public class HousingWorld {
 
     public List<HousingNPC> getNPCs() {
         return new ArrayList<>(housingNPCS);
+    }
+
+    public Hologram createHologram(Player player, Location location) {
+        Hologram hologram = new Hologram(main, player, this, location);
+        holograms.add(hologram);
+        return hologram;
+    }
+
+    public Hologram getHologramInstance(ArmorStand entity) {
+        for (Hologram hologram : holograms) {
+            if (hologram.getEntitys().contains(entity)) return hologram;
+        }
+        return null;
+    }
+
+    public List<Hologram> getHolograms() {
+        return holograms;
+    }
+
+    public void removeHologram(Hologram hologram) {
+        holograms.remove(hologram);
     }
 
     public Function createFunction(String name) {

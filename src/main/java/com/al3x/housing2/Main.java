@@ -10,6 +10,8 @@ import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import org.bukkit.Bukkit;
@@ -24,6 +26,7 @@ public final class Main extends JavaPlugin {
     private HousesManager housesManager;
     private HousingCommandFramework commandFramework;
     private ProtoolsManager protoolsManager;
+    private ProtocolManager protocolManager;
 
     //    private MineSkinClientImpl mineSkinClient;
     private String mineSkinKey;
@@ -43,8 +46,9 @@ public final class Main extends JavaPlugin {
         }
 
         this.housesManager = new HousesManager(this);
-        this.protoolsManager = new ProtoolsManager(housesManager);
+        this.protoolsManager = new ProtoolsManager(this, housesManager);
         this.commandFramework = new HousingCommandFramework(this);
+        this.protocolManager = ProtocolLibrary.getProtocolManager();
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
@@ -56,7 +60,7 @@ public final class Main extends JavaPlugin {
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
-        this.getCommand("set").setExecutor(new Set(housesManager, protoolsManager));
+        this.getCommand("set").setExecutor(new Set(protoolsManager));
         this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
         this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
         this.getCommand("sphere").setTabCompleter(new BlockList.TabCompleter());
@@ -67,6 +71,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
+        Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
 
         // House Events
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
@@ -112,6 +117,10 @@ public final class Main extends JavaPlugin {
 
     public String getMineSkinKey() {
         return mineSkinKey;
+    }
+
+    public ProtocolManager getProtocolManager() {
+        return protocolManager;
     }
 
     @Override

@@ -36,6 +36,7 @@ public class ProtoolsManager {
         this.isProcessing = false;
     }
 
+    /* I dont like how this is implemented, it seems like it could be done better, ill come back to it -al3x
     private void enqueueTask(Runnable task) {
         synchronized (taskQueue) {
             taskQueue.add(task);
@@ -61,6 +62,7 @@ public class ProtoolsManager {
             }
         }, 30L);
     }
+    */
 
     public void setPos1(Player player, Location pos1) {
         if (this.selections.containsKey(player.getUniqueId())) {
@@ -108,41 +110,37 @@ public class ProtoolsManager {
 
     public void setRegionTo(Player player, BlockList from, BlockList to) {
         player.sendMessage(Color.colorize("&aReplacing region..."));
-        enqueueTask(() -> {
-            cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
-            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
-            Location pos1 = selection.getFirst();
-            Location pos2 = selection.getSecond();
-            Cuboid cuboid = new Cuboid(pos1, pos2);
-            List<Block> blocks = cuboid.getBlocks();
+        cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        Location pos1 = selection.getFirst();
+        Location pos2 = selection.getSecond();
+        Cuboid cuboid = new Cuboid(pos1, pos2);
+        List<Block> blocks = cuboid.getBlocks();
 
-            // Save the current state of the blocks to be able to be undone
-            List<BlockState> currentState = new ArrayList<>();
-            for (Block block : blocks) {
-                currentState.add(block.getState());
+        // Save the current state of the blocks to be able to be undone
+        List<BlockState> currentState = new ArrayList<>();
+        for (Block block : blocks) {
+            currentState.add(block.getState());
+        }
+        addUndoStack(player.getUniqueId(), currentState);
+
+        List<Material> blockOptions = to.generateBlocks();
+        blocks.forEach(block -> {
+            if (from.includesMaterial(block.getType())) {
+                block.setType(blockOptions.get((int) (Math.random() * blockOptions.size())));
             }
-            addUndoStack(player.getUniqueId(), currentState);
-
-            List<Material> blockOptions = to.generateBlocks();
-            blocks.forEach(block -> {
-                if (from.includesMaterial(block.getType())) {
-                    block.setType(blockOptions.get((int) (Math.random() * blockOptions.size())));
-                }
-            });
-            player.sendMessage(Color.colorize("&aRegion replaced successfully!"));
         });
+        player.sendMessage(Color.colorize("&aRegion replaced successfully!"));
     }
 
     public void copyToClipboard(Player player) {
         player.sendMessage(Color.colorize("&aCopying region to clipboard..."));
-        enqueueTask(() -> {
-            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
-            Location pos1 = selection.getFirst();
-            Location pos2 = selection.getSecond();
-            Cuboid cuboid = new Cuboid(pos1, pos2);
-            copiedRegions.put(player.getUniqueId(), cuboid);
-            player.sendMessage(Color.colorize("&aRegion copied to clipboard!"));
-        });
+        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        Location pos1 = selection.getFirst();
+        Location pos2 = selection.getSecond();
+        Cuboid cuboid = new Cuboid(pos1, pos2);
+        copiedRegions.put(player.getUniqueId(), cuboid);
+        player.sendMessage(Color.colorize("&aRegion copied to clipboard!"));
     }
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
@@ -181,7 +179,7 @@ public class ProtoolsManager {
 
     private void addUndoStack(UUID uuid, List<BlockState> blockStates) {
         Stack<List<BlockState>> undoStack = undoStacks.computeIfAbsent(uuid, k -> new Stack<>());
-        if (undoStack.size() >= 20) {
+        if (undoStack.size() >= 25) {
             undoStack.remove(0); // Remove the oldest state
         }
         undoStack.push(blockStates);
@@ -189,18 +187,16 @@ public class ProtoolsManager {
 
     public void undo(Player player) {
         player.sendMessage(Color.colorize("&aUndoing..."));
-        enqueueTask(() -> {
-            UUID uuid = player.getUniqueId();
-            if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
-                List<BlockState> previousState = undoStacks.get(uuid).pop();
-                for (BlockState state : previousState) {
-                    state.update(true, false);
-                }
-                player.sendMessage(Color.colorize("&aUndo successful."));
-            } else {
-                player.sendMessage(Color.colorize("&cNothing to undo."));
+        UUID uuid = player.getUniqueId();
+        if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
+            List<BlockState> previousState = undoStacks.get(uuid).pop();
+            for (BlockState state : previousState) {
+                state.update(true, false);
             }
-        });
+            player.sendMessage(Color.colorize("&aUndo successful."));
+        } else {
+            player.sendMessage(Color.colorize("&cNothing to undo."));
+        }
     }
 
     public boolean canUseProtools(Player player, boolean ignoreSelection) {

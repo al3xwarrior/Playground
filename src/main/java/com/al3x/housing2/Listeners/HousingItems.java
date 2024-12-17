@@ -56,6 +56,11 @@ public class HousingItems implements Listener {
                 player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
 
             }
+
+            if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && ownerOfHouse) {
+                e.setCancelled(true);
+                housesManager.getHouse(player.getWorld()).createHologram(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
+            }
         }
 
         // Click air
