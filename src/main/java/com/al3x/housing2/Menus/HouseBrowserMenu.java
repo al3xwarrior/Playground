@@ -38,7 +38,7 @@ public class HouseBrowserMenu extends Menu{
             HouseData house = houses.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
 
-            ItemStack icon = new ItemStack(Material.valueOf(house.getIcon()));
+            ItemStack icon = new ItemStack(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"));
             ItemMeta meta = icon.getItemMeta();
 
             meta.setDisplayName(colorize("&a" + house.getHouseName()));

@@ -32,18 +32,13 @@ public class HologramInteractListener implements Listener {
     public void armorStandEditor(PlayerInteractAtEntityEvent e) {
         Player player = e.getPlayer();
 
-        Bukkit.getLogger().info("Armor stand interact event");
-
         if (!(e.getRightClicked() instanceof ArmorStand)) return;
-        Bukkit.getLogger().info("Right clicked entity is an armor stand");
         if (!housesManager.playerIsInOwnHouse(player)) return;
-        Bukkit.getLogger().info("Player is in their own house");
 
         ArmorStand armorStand = (ArmorStand) e.getRightClicked();
-        Hologram hologram = housesManager.getHouse(player).getHologramInstance(armorStand);
+        Hologram hologram = housesManager.getHouse(player).getHologramInstance(armorStand.getEntityId());
 
         if (hologram == null) return;
-        Bukkit.getLogger().info("Hologram instance found");
 
         new HologramEditorMenu(main, player, hologram).open();
     }

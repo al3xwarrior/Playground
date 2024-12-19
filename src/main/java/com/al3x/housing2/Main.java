@@ -7,6 +7,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
@@ -91,6 +92,8 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlaceBlock(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ChatEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
+
+        EntityInteraction.registerInteraction(housesManager);
 
         Runnables.startRunnables(this);
 

@@ -8,7 +8,7 @@ data class NPCData(
     val npcName: String,
     val npcType: String,
     val npcLocation: LocationData,
-    val npcSkin: String,
+    val npcSkin: String?,
     val actions: List<ActionData>,
     val lookAtPlayer: Boolean,
     val equipment: List<String>,

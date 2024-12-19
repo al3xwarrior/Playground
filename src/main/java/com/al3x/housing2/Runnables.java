@@ -110,7 +110,8 @@ public class Runnables {
                     PaginationList<SkinData> skins = new PaginationList<>(HousingNPC.loadedSkins, 21);
                     List<SkinData> currentSkins = skins.getPage(page);
                     if (currentSkins == null) {
-                        sendRequestForSkins(skins.isEmpty() ? null : skins.getLast().getUuid());
+                        List<SkinData> lastPage = skins.getPage(page - 1);
+                        sendRequestForSkins(skins.isEmpty() ? null : lastPage.getLast().getUuid());
                         page++;
                     }
                 }
@@ -140,7 +141,7 @@ public class Runnables {
                     }
                 }
             }
-        }.runTaskTimer(main, 0L, 40L)); // might lower this. Right now it matches housings 2 second refresh
+        }.runTaskTimer(main, 0L, 5L)); // might lower this. Right now it matches housings 2 second refresh. I will do it for you Al3x - Sin_ender <3
     }
 
     public static void stopRunnables() {

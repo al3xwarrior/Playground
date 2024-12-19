@@ -503,9 +503,9 @@ public class HousingWorld {
         return hologram;
     }
 
-    public Hologram getHologramInstance(ArmorStand entity) {
+    public Hologram getHologramInstance(int id) {
         for (Hologram hologram : holograms) {
-            if (hologram.getEntitys().contains(entity)) return hologram;
+            if (hologram.getEntitys().contains(id)) return hologram;
         }
         return null;
     }

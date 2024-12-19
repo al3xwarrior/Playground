@@ -89,7 +89,7 @@ public class SkinSelectorMenu extends Menu {
         ItemBuilder custom = ItemBuilder.create(Material.NAME_TAG)
                 .name("&7Custom Skin")
                 .info("&eCurrent Value", "")
-                .info(null, housingNPC.getSkinUUID())
+                .info(null, housingNPC.getSkinUUID() == null ? "&cNONE" : housingNPC.getSkinUUID())
                 .description("&7Click to enter a custom skin UUID.");
         addItem(47, custom.build(), (e) -> {
             player.sendMessage(colorize("&eEnter the UUID of the skin you want to use. You can find this at https://mineskin.org."));
