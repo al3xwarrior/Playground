@@ -124,6 +124,9 @@ public class PlibHologramLine {
     Boolean hasNoGravity = true;
     dataValues.add(new WrappedDataValue(5, boolSerializer, hasNoGravity));
 
+    Byte armorstandFlags = 0x01;
+    dataValues.add(new WrappedDataValue(15, byteSerializer, armorstandFlags));
+
     packet.getDataValueCollectionModifier().write(0, dataValues);
 
     return packet;

@@ -7,16 +7,19 @@ import org.bukkit.Location;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
-public class Regions extends Duple<Location, Location> {
+public class Region extends Duple<Location, Location> {
     private boolean loaded;
     private String name;
     private List<Action> exitActions;
     private List<Action> enterActions;
     private HashMap<PvpSettings, Boolean> pvpSettings;
 
+    private List<UUID> playersInRegion = new ArrayList<>();
 
-    public Regions(Location posA, Location posB, String name) {
+
+    public Region(Location posA, Location posB, String name) {
         super(posA, posB);
         this.loaded = true;
         this.name = name;
@@ -25,7 +28,7 @@ public class Regions extends Duple<Location, Location> {
         this.pvpSettings = new HashMap<>();
     }
 
-    public Regions(boolean loaded, Location posA, Location posB, String name, List<Action> exitActions, List<Action> enterActions, HashMap<PvpSettings, Boolean> pvpSettings) {
+    public Region(boolean loaded, Location posA, Location posB, String name, List<Action> exitActions, List<Action> enterActions, HashMap<PvpSettings, Boolean> pvpSettings) {
         super(posA, posB);
         this.loaded = loaded;
         this.name = name;
@@ -46,6 +49,10 @@ public class Regions extends Duple<Location, Location> {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<Action> getExitActions() {
         return exitActions;
     }
@@ -56,6 +63,10 @@ public class Regions extends Duple<Location, Location> {
 
     public HashMap<PvpSettings, Boolean> getPvpSettings() {
         return pvpSettings;
+    }
+
+    public List<UUID> getPlayersInRegion() {
+        return playersInRegion;
     }
 }
 

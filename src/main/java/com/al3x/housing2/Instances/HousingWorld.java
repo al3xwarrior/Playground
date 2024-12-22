@@ -8,7 +8,6 @@ import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Utils.BlockList;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,9 +20,6 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -63,7 +59,7 @@ public class HousingWorld {
     private List<Function> functions;
     private StatManager statManager;
     private List<Command> commands;
-    private List<Regions> regions;
+    private List<Region> regions;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -73,6 +69,7 @@ public class HousingWorld {
         loadHouseData(owner, houseID);
         setupHouseData(owner);
         loadWorld(owner);
+        setupDataAfterLoad(owner);
         loadNPCs(owner);
         // loadHolograms(); still not 100% sure how saving and crap works - al3x
         save();
@@ -131,13 +128,17 @@ public class HousingWorld {
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
-        this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
         this.scoreboard = houseData.getScoreboard();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
+    }
+
+    private void setupDataAfterLoad(OfflinePlayer owner) {
+        this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
+        this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
     }
 
     private void loadEventActions() {
@@ -464,7 +465,7 @@ public class HousingWorld {
         this.icon = material;
     }
 
-    public List<Regions> getRegions() {
+    public List<Region> getRegions() {
         return regions;
     }
 
@@ -531,6 +532,13 @@ public class HousingWorld {
         commands.add(command);
         main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
         return command;
+    }
+
+    public Region createRegion(String name, Location posA, Location posB) {
+        if (name == null || regions.stream().anyMatch(region -> region.getName().equals(name))) return null;
+        Region region = new Region(posA, posB, name);
+        regions.add(region);
+        return region;
     }
 
     public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {

@@ -1,7 +1,7 @@
 package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Instances.PvpSettings
-import com.al3x.housing2.Instances.Regions
+import com.al3x.housing2.Instances.Region
 
 data class RegionData(
     val loaded: Boolean = true,
@@ -13,7 +13,7 @@ data class RegionData(
     val pvpSettings: HashMap<PvpSettings, Boolean> = hashMapOf()
 ) {
     companion object {
-        fun fromRegion(region: Regions): RegionData {
+        fun fromRegion(region: Region): RegionData {
             val regionData = RegionData(
                 region.isLoaded,
                 LocationData.fromLocation(region.first),
@@ -26,14 +26,14 @@ data class RegionData(
             return regionData
         }
 
-        fun fromList(regions: List<Regions>): List<RegionData> {
+        fun fromList(regions: List<Region>): List<RegionData> {
             val regionDataList = arrayListOf<RegionData>()
             regions.forEach { regionDataList.add(fromRegion(it)) }
             return regionDataList
         }
 
-        fun toRegion(regionData: RegionData): Regions {
-            val region = Regions(
+        fun toRegion(regionData: RegionData): Region {
+            val region = Region(
                 regionData.loaded,
                 regionData.posA.toLocation(),
                 regionData.posB.toLocation(),
@@ -45,8 +45,8 @@ data class RegionData(
             return region
         }
 
-        fun toList(regionDataList: List<RegionData>): List<Regions> {
-            val regions = arrayListOf<Regions>()
+        fun toList(regionDataList: List<RegionData>, ): List<Region> {
+            val regions = arrayListOf<Region>()
             regionDataList.forEach { regions.add(toRegion(it)) }
             return regions
         }

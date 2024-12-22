@@ -18,7 +18,6 @@ public class MineskinHandler {
     private static Gson gson = new Gson();
 
     public static BiggerSkinData getSkinData(String uuid) {
-        if (main.getMineSkinKey() == null) return null;
         try {
             HttpClient client = HttpClient.newBuilder().build();
             HttpResponse<String> response = client.send(
@@ -26,7 +25,6 @@ public class MineskinHandler {
                             .GET()
                             .header("Accept", "application/json")
                             .header("User-Agent", "Housing2")
-                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
                             .uri(new URI("https://api.mineskin.org/v2/skins/" + uuid))
                             .build(),
                     responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
@@ -39,7 +37,6 @@ public class MineskinHandler {
     }
 
     public static void sendRequestForSkins(String after) {
-        if (main.getMineSkinKey() == null) return;
         List<SkinData> previousSkins = HousingNPC.loadedSkins;
         HttpClient client = HttpClient.newBuilder().build();
         try {
@@ -48,8 +45,8 @@ public class MineskinHandler {
                             .GET()
                             .header("Accept", "application/json")
                             .header("User-Agent", "Housing2")
-                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
-                            .uri(new URI("https://api.mineskin.org/v2/skins?size=21" + ((after != null && !after.isEmpty()) ? "&after=" + after : "")))
+//                            .header("Authorization", "Bearer " + Main.getInstance().getMineSkinKey())
+                            .uri(new URI("https://api.mineskin.org/v2/skins?size=128" + ((after != null && !after.isEmpty()) ? "&after=" + after : "")))
                             .build(),
                     responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
             );

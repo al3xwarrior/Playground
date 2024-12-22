@@ -1,5 +1,6 @@
 package com.al3x.housing2;
 
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -15,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
 import java.net.URI;
@@ -86,6 +88,7 @@ public class Runnables {
         //Run function actions
         runnables.put("runFunctionActions", new BukkitRunnable() {
             public static int TICKS = 0;
+
             @Override
             public void run() {
                 Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
@@ -104,19 +107,25 @@ public class Runnables {
         //Start loading npc skins
         runnables.put("loadNPCSkins", new BukkitRunnable() {
             int page = 1;
+
             @Override
             public void run() {
-                if (main.getMineSkinKey() != null) {
-                    PaginationList<SkinData> skins = new PaginationList<>(HousingNPC.loadedSkins, 21);
-                    List<SkinData> currentSkins = skins.getPage(page);
-                    if (currentSkins == null) {
-                        List<SkinData> lastPage = skins.getPage(page - 1);
-                        sendRequestForSkins(skins.isEmpty() ? null : lastPage.getLast().getUuid());
-                        page++;
+                PaginationList<SkinData> skins = new PaginationList<>(HousingNPC.loadedSkins, 21);
+                List<SkinData> currentSkins = skins.getPage(page);
+                if (currentSkins == null) {
+                    List<SkinData> lastPage = skins.getPage(page - 1);
+                    if (lastPage != null) {
+                        sendRequestForSkins(lastPage.getLast().getUuid());
                     }
+
+                    if (page == 1) {
+                        sendRequestForSkins(null);
+                    }
+                } else {
+                    page++;
                 }
             }
-        }.runTaskTimerAsynchronously(main, 0L, 10L)); // Every 10 ticks load a new page of skins
+        }.runTaskTimerAsynchronously(main, 0L, 20L)); // Every 10 ticks load a new page of skins
 
         runnables.put("protoolsParticles", new BukkitRunnable() {
             @Override
@@ -142,6 +151,41 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 5L)); // might lower this. Right now it matches housings 2 second refresh. I will do it for you Al3x - Sin_ender <3
+
+        runnables.put("checkRegion", new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
+                    for (Player player : house.getWorld().getPlayers()) {
+                        house.getRegions().forEach(region -> {
+                            if (!region.isLoaded()) return;
+                            double maxX = Math.max(region.getFirst().getX(), region.getSecond().getX());
+                            double maxY = Math.max(region.getFirst().getY(), region.getSecond().getY());
+                            double maxZ = Math.max(region.getFirst().getZ(), region.getSecond().getZ());
+                            double minX = Math.min(region.getFirst().getX(), region.getSecond().getX());
+                            double minY = Math.min(region.getFirst().getY(), region.getSecond().getY());
+                            double minZ = Math.min(region.getFirst().getZ(), region.getSecond().getZ());
+
+                            if (player.getLocation().getBlockX() >= minX && player.getLocation().getBlockX() <= maxX &&
+                                    player.getLocation().getBlockY() >= minY && player.getLocation().getBlockY() <= maxY &&
+                                    player.getLocation().getBlockZ() >= minZ && player.getLocation().getBlockZ() <= maxZ) {
+                                if (!region.getPlayersInRegion().contains(player.getUniqueId())) {
+                                    region.getPlayersInRegion().add(player.getUniqueId());
+                                    ActionExecutor executor = new ActionExecutor();
+                                    executor.addActions(region.getEnterActions());
+                                    executor.execute(player, house, null);
+                                }
+                            } else if (region.getPlayersInRegion().contains(player.getUniqueId())) {
+                                ActionExecutor executor = new ActionExecutor();
+                                executor.addActions(region.getExitActions());
+                                executor.execute(player, house, null);
+                                region.getPlayersInRegion().remove(player.getUniqueId());
+                            }
+                        });
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0L, 1L));
     }
 
     public static void stopRunnables() {

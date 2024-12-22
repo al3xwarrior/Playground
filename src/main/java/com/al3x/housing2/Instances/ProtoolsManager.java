@@ -86,10 +86,6 @@ public class ProtoolsManager {
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
-    public void setPositions(Location pos1, Location pos2) {
-        this.selections.put(UUID.fromString("00000000-0000-0000-0000-000000000000"), new Duple<>(pos1, pos2));
-    }
-
     public void setRegionTo(Player player, BlockList blockList) {
         this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());

@@ -32,7 +32,15 @@ public class HologramEditorMenu extends Menu{
         setupItems();
     }
 
-    int[] slots = new int[] {10, 11, 12, 13, 14, 15, 16, 19, 20, 21};
+    @Override
+    public void open() {
+        if (hologram.isDestroyed()) {
+            return;
+        }
+        super.open();
+    }
+
+    int[] slots = new int[] {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
 
     @Override
     public void setupItems() {
@@ -54,8 +62,8 @@ public class HologramEditorMenu extends Menu{
         });
 
         addItem(27 + add, ItemBuilder.create(Material.NAME_TAG).name("&aAdd Line").lClick(ADD_YELLOW).build(), () -> {
-            if (hologram.getText().size() >= 10) {
-                player.sendMessage(colorize("&cYou can't add more than 10 lines!"));
+            if (hologram.getText().size() >= 14) {
+                player.sendMessage(colorize("&cYou can't add more than 14 lines!"));
                 return;
             }
 

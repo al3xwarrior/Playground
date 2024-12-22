@@ -20,7 +20,7 @@ public class Hologram {
     private boolean destroyed = false;
     private Main main;
     private ProtocolManager protocolManager;
-    private ArrayList<String> text;
+    private List<String> text;
     private double spacing = .45;
     private HousingWorld house;
     private Location location;
@@ -61,6 +61,14 @@ public class Hologram {
         this.location = location;
 
 
+        this.entitys = spawnHologramEntities();
+    }
+
+    public Hologram(HousingWorld house, List<String> text, Location location, double spacing) {
+        this.house = house;
+        this.text = text;
+        this.location = location;
+        this.spacing = spacing;
         this.entitys = spawnHologramEntities();
     }
 
@@ -145,7 +153,11 @@ public class Hologram {
         }
     }
 
-    public ArrayList<String> getText() {
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public List<String> getText() {
         return text;
     }
 

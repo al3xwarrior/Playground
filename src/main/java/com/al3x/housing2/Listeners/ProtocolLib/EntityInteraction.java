@@ -24,8 +24,8 @@ public class EntityInteraction {
 
                 if (!housesManager.playerIsInOwnHouse(player)) return;
                 Hologram hologram = housesManager.getHouse(player).getHologramInstance(id);
-
                 if (hologram == null) return;
+                if (hologram.isDestroyed()) return;
 
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> new HologramEditorMenu(Main.getInstance(), player, hologram).open());
             }

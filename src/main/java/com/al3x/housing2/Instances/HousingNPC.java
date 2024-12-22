@@ -414,13 +414,12 @@ public class HousingNPC {
 
     public void setSkin(String skin) {
         this.skinUUID = skin;
-        if (main.getMineSkinKey() != null) {
-            BiggerSkinData skinData = getSkinData(skin);
-            if (skinData != null && skinData.getTexture() != null) {
-                SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
-                skinTrait.setSkinPersistent(skinData.getUuid(), skinData.getTexture().getData().getSignature(), skinData.getTexture().getData().getValue());
-            }
+        BiggerSkinData skinData = getSkinData(skin);
+        if (skinData != null && skinData.getTexture() != null) {
+            SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
+            skinTrait.setSkinPersistent(skinData.getUuid(), skinData.getTexture().getData().getSignature(), skinData.getTexture().getData().getValue());
         }
+
     }
 
 
