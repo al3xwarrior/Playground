@@ -31,6 +31,11 @@ public class ActionExecutor {
             }
 
             if (action instanceof ExitAction) {
+                returnVal.set(false);
+                break;
+            }
+
+            if (!returnVal.get()) {
                 break;
             }
 

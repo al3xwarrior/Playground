@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
+import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -133,8 +134,18 @@ public class Housing implements CommandExecutor {
                 return true;
             }
 
-            if (strings[0].equalsIgnoreCase("menu")) {
+            if (strings[0].equalsIgnoreCase("browse")) {
                 new HouseBrowserMenu(player, housesManager).open();
+                return true;
+            }
+
+            if (strings[0].equalsIgnoreCase("menu")) {
+                if (housesManager.getHouse(player).getOwnerUUID() == player.getUniqueId()) {
+                    HousingWorld house = housesManager.getHouse(player);
+                    new OwnerHousingMenu(main, player, house).open();
+                    return true;
+                }
+                player.sendMessage(colorize("&cYou are not the owner of this house!"));
                 return true;
             }
 
@@ -227,7 +238,7 @@ public class Housing implements CommandExecutor {
         @Override
         public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
             if (args.length == 1) {
-                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "menu", "playerstats", "globalstats", "save").stream().filter(i -> i.startsWith(args[0])).toList();
+                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "save").stream().filter(i -> i.startsWith(args[0])).toList();
             }
 
             if (args.length == 2) {

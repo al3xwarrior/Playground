@@ -26,6 +26,7 @@ data class HouseData(
     var playerStats: HashMap<String, List<StatData>>,
     var commands: List<CommandData>? = arrayListOf(),
     var regions: List<RegionData>? = arrayListOf(),
+    var layouts: List<LayoutData>? = arrayListOf(),
     var holograms: List<HologramData>? = arrayListOf(),
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf()
@@ -50,6 +51,7 @@ data class HouseData(
                 fromHashMap(world.statManager.playerStats),
                 CommandData.fromList(world.commands),
                 RegionData.fromList(world.regions),
+                LayoutData.fromList(world.layouts),
                 HologramData.fromList(world.holograms),
                 world.seed,
                 FunctionData.fromList(world.functions)

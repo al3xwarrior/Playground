@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.HousingMenu;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.commands.CommandsMenu;
+import com.al3x.housing2.Menus.HousingMenu.layout.LayoutsMenu;
 import com.al3x.housing2.Menus.HousingMenu.regions.RegionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Material;
@@ -73,7 +74,7 @@ public class SystemsMenu extends Menu {
         inventoryLayoutsMeta.setDisplayName(colorize("&aInventory Layouts"));
         inventoryLayouts.setItemMeta(inventoryLayoutsMeta);
         addItem(15, inventoryLayouts, () -> {
-            player.sendMessage("Opening Inventory Layouts...");
+            new LayoutsMenu(main, player, house).open();
         });
 
         ItemStack teams = new ItemStack(Material.OAK_SIGN);

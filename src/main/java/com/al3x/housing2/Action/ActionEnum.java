@@ -27,6 +27,7 @@ public enum ActionEnum {
     SET_GAMEMODE("Set Gamemode Action", SetGamemodeAction.class),
     RANDOM_ACTION("Random Action", RandomAction.class),
     FUNCTION("Function Action", FunctionAction.class),
+    APPLY_INVENTORY_LAYOUT("Apply Inventory Layout Action", ApplyInventoryLayoutAction.class),
     PAUSE_EXECUTION("Pause Action", PauseAction.class),
     SHOW_BOSSBAR("Show Bossbar Action", ShowBossbarAction.class),
     SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),

@@ -60,6 +60,7 @@ public class HousingWorld {
     private StatManager statManager;
     private List<Command> commands;
     private List<Region> regions;
+    private List<Layout> layouts;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -93,6 +94,7 @@ public class HousingWorld {
         this.functions = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.regions = new ArrayList<>();
+        this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
         this.statManager = new StatManager(this);
         try {
@@ -128,6 +130,7 @@ public class HousingWorld {
         this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
+        this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
         this.scoreboard = houseData.getScoreboard();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
@@ -469,6 +472,10 @@ public class HousingWorld {
         return regions;
     }
 
+    public List<Layout> getLayouts() {
+        return layouts;
+    }
+
     public void createNPC(Player player, Location location) {
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
@@ -541,6 +548,13 @@ public class HousingWorld {
         return region;
     }
 
+    public Layout createLayout(String name) {
+        if (name == null || layouts.stream().anyMatch(layout -> layout.getName().equals(name))) return null;
+        Layout layout = new Layout(name);
+        layouts.add(layout);
+        return layout;
+    }
+
     public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
@@ -550,5 +564,9 @@ public class HousingWorld {
             return event != null && event.isCancelled();
         }
         return false;
+    }
+
+    public Layout getLayout(String layout) {
+        return layouts.stream().filter(l -> l.getName().equals(layout)).findFirst().orElse(null);
     }
 }

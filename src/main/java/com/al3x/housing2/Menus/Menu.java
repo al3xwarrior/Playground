@@ -60,12 +60,15 @@ public abstract class Menu implements Listener {
         player.openInventory(inventory);
     }
 
+    protected boolean isCancelled() {
+        return true;
+    }
 
     // Handles the click event by running the corresponding action
     @EventHandler
     public void handleClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == inventory) {
-            event.setCancelled(true);
+            event.setCancelled(isCancelled());
 
             int slot = event.getSlot();
             Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
