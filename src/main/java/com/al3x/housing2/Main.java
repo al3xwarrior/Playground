@@ -58,6 +58,7 @@ public final class Main extends JavaPlugin {
         getCommand("testplaceholder").setExecutor(new TestPlaceholder(this));
         getCommand("testplaceholder").setTabCompleter(new TestPlaceholder.TabCompleter());
         getCommand("placeholders").setExecutor(new Placeholders(this));
+        getCommand("edit").setExecutor(new Edit(this));
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

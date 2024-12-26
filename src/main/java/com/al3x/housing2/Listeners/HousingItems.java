@@ -3,6 +3,7 @@ package com.al3x.housing2.Listeners;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
@@ -16,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -68,6 +70,8 @@ public class HousingItems implements Listener {
             return;
         }
 
+        executeCustomItem(player, e.getItem(), e.getAction());
+
         // Click block
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             ItemStack item = e.getItem();
@@ -117,6 +121,41 @@ public class HousingItems implements Listener {
                     Location loc = npc.removePath();
                     player.sendMessage("§aRemoved path node (" + (npc.getPath().size() + 1) + ") at " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
                 }
+            }
+        }
+    }
+
+    private void executeCustomItem(Player player, ItemStack item, Action action) {
+        ClickType clickType = null;
+        switch (action) {
+            case LEFT_CLICK_BLOCK:
+            case LEFT_CLICK_AIR: {
+                clickType = ClickType.LEFT;
+                break;
+            }
+            case RIGHT_CLICK_BLOCK:
+            case RIGHT_CLICK_AIR: {
+                clickType = ClickType.RIGHT;
+                break;
+            }
+        }
+
+        if (player.isSneaking() && clickType != null) {
+            clickType = clickType == ClickType.LEFT ? ClickType.SHIFT_LEFT : ClickType.SHIFT_RIGHT;
+        }
+
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) return;
+
+        if (clickType == null) return;
+
+        Item customItem = Item.fromItemStack(item);
+
+        if (customItem == null) return;
+
+        if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
+            for (com.al3x.housing2.Action.Action houseAction : customItem.getActions().get(clickType)) {
+                houseAction.execute(player, house, null);
             }
         }
     }

@@ -82,6 +82,7 @@ public class ClearPotionEffectAction extends Action {
                                     "&eSelect a Potion Effect", potions,
                                     Bukkit.getPlayer(house.getOwnerUUID()), house, backMenu, (potion) -> {
                                 potionEffectType = potion;
+                                backMenu.open();
                             }).open();
                             return true;
                         }

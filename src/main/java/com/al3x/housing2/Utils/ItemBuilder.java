@@ -351,6 +351,7 @@ public class ItemBuilder {
         EDIT_YELLOW("edit", YELLOW),
         REMOVE_YELLOW("remove", YELLOW),
         ADD_YELLOW("add", YELLOW),
+        SELECT_LEVEL("select level", YELLOW),
         CHANGE_YELLOW("change", YELLOW),
         EDIT_ACTIONS("edit actions", YELLOW),
         EDIT_FUNCTION("edit function", YELLOW),
@@ -366,6 +367,8 @@ public class ItemBuilder {
         PLAY_SOUND("preview sound", YELLOW),
         GIVE_ITEM("give item", YELLOW),
         CLEAR_SEARCH("clear search", YELLOW),
+        EDIT_LEFT_CLICK_ACTIONS("edit left click actions", YELLOW),
+        EDIT_RIGHT_CLICK_ACTIONS("edit right click actions", YELLOW),
         ;
 
         private String action;

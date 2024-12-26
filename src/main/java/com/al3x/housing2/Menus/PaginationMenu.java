@@ -55,7 +55,6 @@ public class PaginationMenu<E> extends Menu {
             Duple<E, ItemBuilder> something = pageItems.get(i);
             addItem(slots[i], something.getSecond().build(), (event) -> {
                 con.accept(something.getFirst());
-                backMenu.open();
             });
         }
 

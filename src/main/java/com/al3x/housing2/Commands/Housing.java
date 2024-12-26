@@ -1,12 +1,15 @@
 package com.al3x.housing2.Commands;
 
+import com.al3x.housing2.Action.Actions.ChatAction;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -15,8 +18,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -140,8 +145,8 @@ public class Housing implements CommandExecutor {
             }
 
             if (strings[0].equalsIgnoreCase("menu")) {
-                if (housesManager.getHouse(player).getOwnerUUID() == player.getUniqueId()) {
-                    HousingWorld house = housesManager.getHouse(player);
+                if (housesManager.getHouse(player.getWorld()).getOwnerUUID() == player.getUniqueId()) {
+                    HousingWorld house = housesManager.getHouse(player.getWorld());
                     new OwnerHousingMenu(main, player, house).open();
                     return true;
                 }
@@ -224,6 +229,17 @@ public class Housing implements CommandExecutor {
                     player.sendMessage(colorize("&cThere are no public houses available!"));
                 }
                 return true;
+            }
+
+            if (strings[0].equalsIgnoreCase("testitem")) {
+                ItemBuilder builder = ItemBuilder.create(org.bukkit.Material.DIAMOND_SWORD);
+                builder.name("&aTest Item");
+                builder.description("This is a test item");
+                Item item = new Item(builder.build());
+                item.getActions().put(ClickType.LEFT, List.of(
+                        new ChatAction("&eHello World!")
+                ));
+                player.getInventory().addItem(item.build());
             }
         }
 

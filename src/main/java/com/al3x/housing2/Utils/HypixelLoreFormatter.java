@@ -82,7 +82,9 @@ public class HypixelLoreFormatter {
         }
 
         if (labels != null && !labels.isEmpty()) {
-            lines.add("");
+            if (!lines.isEmpty()) {
+                lines.add("");
+            }
             lines.addAll(labels);
         }
 

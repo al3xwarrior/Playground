@@ -61,6 +61,7 @@ public class NavigationMenu extends Menu {
             new PaginationMenu<>(main, "&eSelect a Mode", modes, player, house, this, (mode) -> {
                 housingNPC.setNavigationType(mode);
                 setupItems();
+                open();
             }).open();
         });
         NavigationType type = housingNPC.getNavigationType();

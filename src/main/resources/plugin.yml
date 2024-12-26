@@ -16,7 +16,7 @@ commands:
   testplaceholder:
     usage: "/testplaceholder <string>"
   placeholders:
-
+  edit:
   wand:
     usage: "/wand"
     aliases: ["/", "wand", "housingwand"]

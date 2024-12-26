@@ -34,6 +34,7 @@ public class ActionEditMenu extends Menu {
     private HousingWorld house;
     private HousingNPC housingNPC;
     private EventType event;
+    private Runnable update;
     private Menu backMenu;
 
     public Menu getBackMenu() {
@@ -83,6 +84,7 @@ public class ActionEditMenu extends Menu {
 
     @Override
     public void setupItems() {
+        update.run();
         clearItems();
         //Only needed for actions that need their own custom menu
         ActionEditor editor;
@@ -256,6 +258,7 @@ public class ActionEditMenu extends Menu {
                                 field.setAccessible(true);
                                 field.set(action, function.getName());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + function.getName()));
+                                open();
                             } catch (NoSuchFieldException | IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
@@ -277,6 +280,7 @@ public class ActionEditMenu extends Menu {
                                 field.setAccessible(true);
                                 field.set(action, layout.getName());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + layout.getName()));
+                                open();
                             } catch (NoSuchFieldException | IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
@@ -327,6 +331,10 @@ public class ActionEditMenu extends Menu {
 
     public void setHousingNPC(HousingNPC housingNPC) {
         this.housingNPC = housingNPC;
+    }
+
+    public void setUpdate(Runnable update) {
+        this.update = update;
     }
 
     public Action getAction() {

@@ -32,7 +32,7 @@ public abstract class Menu implements Listener {
     private int size;
     private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
-    private Player player;
+    protected Player player;
 
     public Menu(Player player, String title, int size) {
         this.inventory = Bukkit.createInventory(null, size, colorize(title));

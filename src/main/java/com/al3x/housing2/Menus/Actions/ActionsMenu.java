@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -34,6 +35,7 @@ public class ActionsMenu extends Menu {
     private Function function;
     private Menu backMenu;
     private String varName;
+    private Runnable update;
     //1 is the new 0
     private int currentPage = 1;
     private final int itemsPerPage = 45;
@@ -106,8 +108,8 @@ public class ActionsMenu extends Menu {
     @Override
     public void setupItems() {
         clearItems();
-
         int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
+        update.run();
 
         // Conditions
         if (actions == null) {
@@ -182,6 +184,7 @@ public class ActionsMenu extends Menu {
                             ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
                             menu.setEvent(event);
                             menu.setHousingNPC(housingNPC);
+                            menu.setUpdate(update);
                             menu.open();
                         } else {
                             removeAction(action);
@@ -265,6 +268,10 @@ public class ActionsMenu extends Menu {
 
     public void setHousingNPC(HousingNPC housingNPC) {
         this.housingNPC = housingNPC;
+    }
+
+    public void setUpdate(Runnable update) {
+        this.update = update;
     }
 
     public void shiftAction(Action action, boolean forward) {
