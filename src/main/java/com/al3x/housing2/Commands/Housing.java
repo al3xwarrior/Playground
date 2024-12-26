@@ -215,6 +215,16 @@ public class Housing implements CommandExecutor {
                 player.sendMessage(colorize("&aHouses saved and unloaded!"));
                 return true;
             }
+
+            if (strings[0].equalsIgnoreCase("random")) {
+                HousingWorld house = housesManager.getRandomPublicHouse();
+                if (house != null) {
+                    house.sendPlayerToHouse(player);
+                } else {
+                    player.sendMessage(colorize("&cThere are no public houses available!"));
+                }
+                return true;
+            }
         }
 
         player.sendMessage(colorize("&7&m---------------------------------------"));

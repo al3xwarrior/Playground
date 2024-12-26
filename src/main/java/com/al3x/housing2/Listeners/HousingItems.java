@@ -2,7 +2,10 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HouseBrowserMenu;
+import com.al3x.housing2.Menus.MyHousesMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,17 +22,51 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class HousingItems implements Listener {
 
+    private Main main;
     private HousesManager housesManager;
 
-    public HousingItems(HousesManager housesManager) {
+    public HousingItems(Main main, HousesManager housesManager) {
+        this.main = main;
         this.housesManager = housesManager;
     }
 
     @EventHandler
     public void rightClick(PlayerInteractEvent e) {
         Player player = e.getPlayer();
+
+        // In Lobby
+        if (player.getWorld().equals(Bukkit.getWorld("world"))) {
+
+            if (e.getItem() == null) return;
+
+            ItemStack item = e.getItem();
+            ItemMeta itemMeta = item.getItemMeta();
+            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
+
+            // Browser
+            if (name.equals("§aHousing Browser §7(Right-Click)")) {
+                new HouseBrowserMenu(player, housesManager).open();
+            }
+
+            if (name.equals("§aMy Houses §7(Right-Click)")) {
+                new MyHousesMenu(main, player, player).open();
+            }
+
+            if (name.equals("§aRandom House §7(Right-Click)")) {
+                HousingWorld house = housesManager.getRandomPublicHouse();
+                if (house != null) {
+                    house.sendPlayerToHouse(player);
+                } else {
+                    player.sendMessage(colorize("&cThere are no public houses available!"));
+                }
+            }
+
+            return;
+        }
 
         // Click block
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {

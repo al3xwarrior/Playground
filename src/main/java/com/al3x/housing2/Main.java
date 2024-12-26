@@ -70,7 +70,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new HousingItems(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new HousingItems(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
 

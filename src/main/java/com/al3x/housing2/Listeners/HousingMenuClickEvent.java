@@ -30,7 +30,7 @@ public class HousingMenuClickEvent implements Listener {
             ItemStack item = e.getItem();
 
             // Whole lotta yap but it makes sure the player is house owner, and is clicking the menu
-            if (item.getType().equals(Material.NETHER_STAR) && item.getItemMeta().getDisplayName().equals("§dHousing Menu §7(Right-Click") && housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId())) {
+            if (item.getType().equals(Material.NETHER_STAR) && item.getItemMeta().getDisplayName().equals("§dHousing Menu §7(Right-Click)") && housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId())) {
                 new OwnerHousingMenu(main, player, housesManager.getHouse(player.getWorld())).open();
             }
         }

@@ -7,13 +7,19 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.MineSkin.SkinResponse;
 import com.al3x.housing2.Utils.Duple;
+import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.units.qual.A;
@@ -28,6 +34,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import static com.al3x.housing2.MineSkin.MineskinHandler.sendRequestForSkins;
+import static com.al3x.housing2.Utils.Color.colorize;
 
 public class Runnables {
     //Description, Runnable
@@ -186,6 +193,61 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 1L));
+
+        runnables.put("items", new BukkitRunnable() {
+            @Override
+            public void run() {
+                World lobby = Bukkit.getWorld("world"); // main world must be called world (by default it is)
+
+                ItemStack ownerMenu = ItemBuilder.create(Material.NETHER_STAR).name("&dHousing Menu &7(Right-Click)").build();
+                ItemStack playerMenu = ItemBuilder.create(Material.DARK_OAK_DOOR).name("&aHousing Menu &7(Right-Click)").build();
+                ItemStack browserItem = ItemBuilder.create(Material.COMPASS).name("&aHousing Browser &7(Right-Click)").build();
+                ItemStack myHouses = ItemBuilder.create(Material.GRASS_BLOCK).name("&aMy Houses &7(Right-Click)").build();
+                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMxMzVlYTMxYmMxNWJlMTM0NjJiZjEwZTkxMmExNDBlNWE3ZDY4ZWY0YmQyNmUzZDc1MDU1OWQ1MDJiZjk1In19fQ==")
+                        .name("&aRandom House &7(Right-Click)").build();
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    // They are in a house
+                    if (!(player.getWorld().equals(lobby))) {
+                        World world = player.getWorld();
+                        HousingWorld house = main.getHousesManager().getHouse(world);
+
+                        PlayerInventory inv = player.getInventory();
+                        if (inv.contains(browserItem) || inv.contains(myHouses) || inv.contains(randomHouse)) {
+                            inv.remove(browserItem);
+                            inv.remove(myHouses);
+                            inv.remove(randomHouse);
+                        }
+
+                        // Player Owns House
+                        if (house.getOwnerUUID().equals(player.getUniqueId())) {
+                            if (inv.contains(ownerMenu)) return;
+                            inv.setItem(8, ownerMenu);
+                        } else { // Doesn't own house
+                            if (inv.contains(playerMenu)) return;
+                            inv.setItem(8, playerMenu);
+                        }
+                    } else {
+                        PlayerInventory inv = player.getInventory();
+
+                        if (inv.contains(ownerMenu) || inv.contains(playerMenu)) {
+                            inv.remove(ownerMenu);
+                            inv.remove(playerMenu);
+                        }
+
+                        if (!inv.contains(browserItem)) {
+                            inv.setItem(0, browserItem);
+                        }
+                        if (!inv.contains(myHouses)) {
+                            inv.setItem(1, myHouses);
+                        }
+                        if (!inv.contains(randomHouse)) {
+                            inv.setItem(2, randomHouse);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0L, 20));
     }
 
     public static void stopRunnables() {

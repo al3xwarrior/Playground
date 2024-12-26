@@ -89,9 +89,7 @@ public class ItemsMenu extends Menu {
         ItemMeta npcMeta = npc.getItemMeta();
         npcMeta.setDisplayName(colorize("&aNPC"));
         npc.setItemMeta(npcMeta);
-        addItem(7, npc, () -> {
-            player.getInventory().addItem(HousingNPC.getNPCItem());
-        });
+        addItem(7, npc, () -> player.getInventory().addItem(HousingNPC.getNPCItem()));
 
         ItemStack actionButton = new ItemStack(Material.STONE_BUTTON);
         ItemMeta actionButtonMeta = actionButton.getItemMeta();

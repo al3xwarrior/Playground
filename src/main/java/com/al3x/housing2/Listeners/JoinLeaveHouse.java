@@ -45,6 +45,7 @@ public class JoinLeaveHouse implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setMaximumNoDamageTicks(20); // 10 i think?
+        player.getInventory().clear();
     }
 
     private void joinHouse(Player player) {
@@ -66,20 +67,10 @@ public class JoinLeaveHouse implements Listener {
         // If the person joining is the owner
         if (house.getOwnerUUID().equals(player.getUniqueId())) {
             player.setGameMode(GameMode.CREATIVE);
-            ItemStack menu = new ItemStack(Material.NETHER_STAR);
-            ItemMeta menuMeta = menu.getItemMeta();
-            menuMeta.setDisplayName(colorize("&dHousing Menu &7(Right-Click"));
-            menu.setItemMeta(menuMeta);
-            player.getInventory().setItem(8, menu);
         }
         // Normal player joins
         else {
             player.setGameMode(GameMode.SURVIVAL);
-            ItemStack menu = new ItemStack(Material.DARK_OAK_DOOR);
-            ItemMeta menuMeta = menu.getItemMeta();
-            menuMeta.setDisplayName(colorize("&aHousing Menu &7(Right-Click"));
-            menu.setItemMeta(menuMeta);
-            player.getInventory().setItem(8, menu);
         }
     }
 

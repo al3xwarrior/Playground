@@ -1,5 +1,6 @@
 package com.al3x.housing2.Instances;
 
+import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
@@ -237,5 +238,13 @@ public class HousesManager {
         HousingWorld house = new HousingWorld(main, player, houseID);
         concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
         return house;
+    }
+
+    public HousingWorld getRandomPublicHouse() {
+        return getLoadedHouses().stream().filter(house -> !house.getPrivacy().equals(HousePrivacy.PRIVATE)).toList().get((int) (Math.random() * getLoadedHouses().size()));
+    }
+
+    public HousingWorld getRandomHouse() {
+        return getLoadedHouses().get((int) (Math.random() * getLoadedHouses().size()));
     }
 }
