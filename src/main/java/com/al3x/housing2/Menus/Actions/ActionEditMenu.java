@@ -84,7 +84,8 @@ public class ActionEditMenu extends Menu {
 
     @Override
     public void setupItems() {
-        update.run();
+        if (update != null) update.run();
+
         clearItems();
         //Only needed for actions that need their own custom menu
         ActionEditor editor;

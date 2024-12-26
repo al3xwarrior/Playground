@@ -109,7 +109,7 @@ public class ActionsMenu extends Menu {
     public void setupItems() {
         clearItems();
         int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-        update.run();
+        if (update != null) update.run();
 
         // Conditions
         if (actions == null) {
