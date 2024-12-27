@@ -130,9 +130,6 @@ public class AddActionMenu extends Menu {
 
 
                     actions.add(action);
-                    if (event != null) {
-                        house.setEventActions(event, actions);
-                    }
                     if (backMenu != null) {
                         backMenu.open();
                         return;

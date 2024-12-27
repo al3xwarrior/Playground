@@ -58,6 +58,9 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.event = event;
         this.actions = house.getEventActions(event);
+        this.update = () -> {
+            house.setEventActions(event, actions);
+        };
         this.backMenu = new EventActionsMenu(main, player, house);
     }
 
