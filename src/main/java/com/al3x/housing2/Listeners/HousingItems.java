@@ -140,10 +140,6 @@ public class HousingItems implements Listener {
             }
         }
 
-        if (player.isSneaking() && clickType != null) {
-            clickType = clickType == ClickType.LEFT ? ClickType.SHIFT_LEFT : ClickType.SHIFT_RIGHT;
-        }
-
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
 
