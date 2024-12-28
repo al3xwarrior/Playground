@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.StringToBase64;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import org.bukkit.NamespacedKey;
@@ -61,17 +62,13 @@ public class Item {
         }
         Item newItem = new Item(item);
         HashMap<ClickType, ArrayList<Action>> actions = newItem.getActions();
-        Main main = Main.getInstance();
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.getPersistentDataContainer().has(new NamespacedKey(main, "actions"))) {
-            PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
-            PersistentDataContainer actionsContainer = dataContainer.get(new NamespacedKey(main, "actions"), PersistentDataType.TAG_CONTAINER);
-            if (actionsContainer != null) {
-                for (ClickType clickType : actions.keySet()) {
-                    String base64 = actionsContainer.get(new NamespacedKey(main, clickType.name()), PersistentDataType.STRING);
-                    if (base64 != null) {
-                        actions.put(clickType, StringToBase64.actionFromBase64(base64));
-                    }
+        NbtItemBuilder nbtItemBuilder = new NbtItemBuilder(item);
+        NbtItemBuilder actionsBuilder = nbtItemBuilder.getChild("actions");
+        if (actionsBuilder != null) {
+            for (ClickType clickType : actions.keySet()) {
+                String base64 = actionsBuilder.getString(clickType.name());
+                if (base64 != null) {
+                    actions.put(clickType, StringToBase64.actionFromBase64(base64));
                 }
             }
         }
@@ -79,18 +76,14 @@ public class Item {
     }
 
     public ItemStack build() {
-        ItemMeta meta = base.getItemMeta();
-        if (meta != null) {
-            PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
-            PersistentDataContainer newContainer = dataContainer.getAdapterContext().newPersistentDataContainer();
-            NamespacedKey actionsKey = new NamespacedKey(main, "actions");
-            for (ClickType clickType : actions.keySet()) {
-                List<Action> actionList = actions.get(clickType);
-                newContainer.set(new NamespacedKey(main, clickType.name()), PersistentDataType.STRING, StringToBase64.actionToBase64(actionList));
-            }
-            dataContainer.set(actionsKey, PersistentDataType.TAG_CONTAINER, newContainer);
+        NbtItemBuilder nbtItemBuilder = new NbtItemBuilder(base);
+        NbtItemBuilder actionsBuilder = nbtItemBuilder.addChild("actions");
+        for (ClickType clickType : actions.keySet()) {
+            List<Action> actionList = actions.get(clickType);
+            actionsBuilder.setString(clickType.name(), StringToBase64.actionToBase64(actionList));
         }
-        base.setItemMeta(meta);
+        nbtItemBuilder.build();
+
         return base;
     }
 }
