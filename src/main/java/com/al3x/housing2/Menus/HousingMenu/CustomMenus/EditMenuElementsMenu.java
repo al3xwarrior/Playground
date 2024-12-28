@@ -10,6 +10,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Duple;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -54,6 +55,8 @@ public class EditMenuElementsMenu extends Menu {
             }
 
             addItem(i, item, (e) -> {
+                if (handleInventoryInteractor(e)) return;
+
                 if (e.getCursor() != null && !e.getCursor().getType().isAir()) {
                     e.setCancelled(true);
                     if (holding != null) {
@@ -86,6 +89,11 @@ public class EditMenuElementsMenu extends Menu {
                 }
             });
         }
+    }
+
+
+    private boolean handleInventoryInteractor(InventoryClickEvent event) {
+        return false;
     }
 
 //    @Override

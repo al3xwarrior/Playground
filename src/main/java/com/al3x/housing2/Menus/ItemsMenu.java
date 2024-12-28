@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Listeners.HousingItems;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
 import org.bukkit.Material;
@@ -129,6 +130,13 @@ public class ItemsMenu extends Menu {
         biomeStick.setItemMeta(biomeStickMeta);
         addItem(12, biomeStick, () -> {
             player.sendMessage("Biome Stick selected");
+        });
+
+        ItemStack inventorySelector = HousingItems.inventoryInteractorItem(Material.HOPPER);
+        addItem(13, inventorySelector, () -> {
+            new EnumMenu<>(main, "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
+                player.getInventory().addItem(HousingItems.inventoryInteractorItem(m));
+            }).open();
         });
 
         ItemStack xSocialMediaHead = getCustomSkull("91b7a0c210e6cdf5a35fd8197e6e24a038315bbe3bdcd1bcc3630bf26f59ec5c");

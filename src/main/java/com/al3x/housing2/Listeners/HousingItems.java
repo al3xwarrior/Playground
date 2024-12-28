@@ -1,5 +1,6 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -7,6 +8,7 @@ import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,7 +21,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -35,6 +39,30 @@ public class HousingItems implements Listener {
     public HousingItems(Main main, HousesManager housesManager) {
         this.main = main;
         this.housesManager = housesManager;
+    }
+
+    @EventHandler
+    public void moveToOffhand(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getOffHandItem();
+        Item customItem = Item.fromItemStack(item);
+        if (customItem != null) {
+            ClickType type = ClickType.SWAP_OFFHAND;
+            new ActionExecutor(customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            if (event.isCancelled()) {
+                return;
+            }
+        }
+
+        ItemStack mainHandItem = event.getMainHandItem();
+        Item customMainHandItem = Item.fromItemStack(mainHandItem);
+        if (customMainHandItem != null) {
+            ClickType type = ClickType.SWAP_OFFHAND;
+            new ActionExecutor(customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            if (event.isCancelled()) {
+                return;
+            }
+        }
     }
 
     @EventHandler
@@ -151,9 +179,25 @@ public class HousingItems implements Listener {
         if (customItem == null) return;
 
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
-            for (com.al3x.housing2.Action.Action houseAction : customItem.getActions().get(clickType)) {
-                houseAction.execute(player, house, event);
-            }
+            new ActionExecutor(customItem.getActions().get(clickType)).execute(player, housesManager.getHouse(player.getWorld()), event);
         }
+    }
+
+
+
+
+
+    public static ItemStack inventoryInteractorItem(Material material) {
+        ItemStack item = ItemBuilder.create(material)
+                .name("&eInventory Interactor")
+                .description("Place this item in a custom menu to allow players to click an item in their inventory and run actions using the item.")
+                .extraLore("")
+                .build();
+
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "inventoryInteractor"), PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+        
+        return item;
     }
 }

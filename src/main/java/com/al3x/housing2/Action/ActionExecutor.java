@@ -17,6 +17,13 @@ public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
     long pause = 0;
 
+    public ActionExecutor() {
+    }
+
+    public ActionExecutor(List<Action> action) {
+        queue.addAll(action);
+    }
+
     public void addActions(List<Action> actions) {
         queue.addAll(actions);
     }
