@@ -108,6 +108,8 @@ public class ClearPotionEffectAction extends Action {
                     player.removePotionEffect(potionEffect.getType());
                 }
             });
+        } else {
+            player.removePotionEffect(potionEffectType);
         }
         return true;
     }

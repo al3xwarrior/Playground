@@ -155,7 +155,10 @@ public class ActionsMenu extends Menu {
             addActionMeta.setDisplayName(colorize("&aAdd Action"));
             addCondition.setItemMeta(addActionMeta);
             addItem(50, addCondition, () -> {
-                new AddConditionMenu(main, player, house, this.conditions, this).open();
+                AddConditionMenu menu = new AddConditionMenu(main, player, house, this.conditions, this);
+                menu.setEvent(event);
+                menu.setFunction(function);
+                menu.open();
             });
         } else { // Actions
             PaginationList<Action> paginationList = new PaginationList<>(actions, allowedSlots.length);

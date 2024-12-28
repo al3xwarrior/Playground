@@ -35,6 +35,8 @@ public enum ActionEnum {
     PARTICLE("Particle Action", ParticleAction.class),
     REPEAT("Repeat Action", RepeatAction.class),
     EXIT("Exit Action", ExitAction.class),
+    DISPLAY_MENU("Display Menu Action", DisplayMenuAction.class),
+    CLOSE_MENU("Close Menu Action", CloseMenuAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;

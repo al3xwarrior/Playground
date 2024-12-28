@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public abstract class Menu implements Listener {
+public abstract class Menu {
     protected Inventory inventory;
     private String title;
     private int size;
@@ -65,7 +65,6 @@ public abstract class Menu implements Listener {
     }
 
     // Handles the click event by running the corresponding action
-    @EventHandler
     public void handleClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == inventory) {
             event.setCancelled(isCancelled());
@@ -152,5 +151,8 @@ public abstract class Menu implements Listener {
                 }
             }
         }), main);
+    }
+
+    public void handleClose(InventoryCloseEvent event) {
     }
 }

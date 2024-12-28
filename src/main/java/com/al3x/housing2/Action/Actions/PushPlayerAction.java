@@ -97,8 +97,8 @@ public class PushPlayerAction extends Action {
     public boolean execute(Player player, HousingWorld house) {
         Vector playerVelocity = new Vector();
         switch (direction) {
-            case FORWARD -> playerVelocity.add(player.getLocation().getDirection().multiply(amount));
-            case BACKWARD -> playerVelocity.add(player.getLocation().getDirection().multiply(-amount));
+            case FORWARD -> playerVelocity.add(player.getEyeLocation().getDirection().multiply(amount));
+            case BACKWARD -> playerVelocity.add(player.getEyeLocation().getDirection().multiply(-amount));
             case UP -> playerVelocity.add(new Vector(0, amount, 0));
             case DOWN -> playerVelocity.add(new Vector(0, -amount, 0));
             case NORTH -> playerVelocity.add(new Vector(0, 0, -amount));
@@ -106,18 +106,21 @@ public class PushPlayerAction extends Action {
             case EAST -> playerVelocity.add(new Vector(amount, 0, 0));
             case WEST -> playerVelocity.add(new Vector(-amount, 0, 0));
             case LEFT -> {
-                Vector direction = player.getLocation().getDirection();
+                Vector direction = player.getEyeLocation().getDirection();
                 // Rotate the direction 90 degrees counterclockwise (left)
                 Vector left = new Vector(-direction.getZ(), 0, direction.getX()).normalize().multiply(amount);
                 playerVelocity.add(left);
             }
             case RIGHT -> {
-                Vector direction = player.getLocation().getDirection();
+                Vector direction = player.getEyeLocation().getDirection();
                 // Rotate the direction 90 degrees clockwise (right)
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
                 playerVelocity.add(right);
             }
             case CUSTOM -> {
+                if (customDirection == null) {
+                    return true;
+                }
                 String[] split = customDirection.split(",");
                 if (split.length != 2) {
                     return true;
@@ -126,7 +129,7 @@ public class PushPlayerAction extends Action {
                 try {
                     float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
                     float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector custom = player.getLocation().getDirection().setY(0).normalize().multiply(amount);
+                    Vector custom = player.getEyeLocation().getDirection().setY(0).normalize().multiply(amount);
                     custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
                     custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
                     custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
@@ -163,6 +166,7 @@ public class PushPlayerAction extends Action {
     public HashMap<String, Object> data() {
         HashMap<String, Object> data = new HashMap<>();
         data.put("amount", amount);
+        data.put("customDirection", customDirection);
         data.put("direction", direction);
         return data;
     }

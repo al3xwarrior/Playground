@@ -11,8 +11,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.bukkit.event.inventory.ClickType.CONTROL_DROP;
 
 /*
 Should it be like skyblock where you can have abilities? or should it be like hypixel where you can just make items do things?
@@ -21,15 +25,15 @@ There is alot I can expand on here, but I think for now I will keep it like hypi
 public class Item {
     private Main main;
     private ItemStack base;
-    private HashMap<ClickType, List<Action>> actions;
+    private HashMap<ClickType, ArrayList<Action>> actions;
 
     public Item(ItemStack base) {
         this.main = Main.getInstance();
         this.base = base;
         this.actions = new HashMap<>();
-        List<ClickType> defaultClickTypes = List.of(ClickType.LEFT, ClickType.RIGHT);
+        List<ClickType> defaultClickTypes = List.of(ClickType.LEFT, ClickType.RIGHT, ClickType.DROP, CONTROL_DROP, ClickType.SWAP_OFFHAND);
         for (ClickType clickType : defaultClickTypes) {
-            actions.put(clickType, List.of());
+            actions.put(clickType, new ArrayList<>());
         }
     }
 
@@ -37,7 +41,7 @@ public class Item {
         return base;
     }
 
-    public HashMap<ClickType, List<Action>> getActions() {
+    public HashMap<ClickType, ArrayList<Action>> getActions() {
         return actions;
     }
 
@@ -56,7 +60,7 @@ public class Item {
             return null;
         }
         Item newItem = new Item(item);
-        HashMap<ClickType, List<Action>> actions = newItem.getActions();
+        HashMap<ClickType, ArrayList<Action>> actions = newItem.getActions();
         Main main = Main.getInstance();
         ItemMeta meta = item.getItemMeta();
         if (meta != null && meta.getPersistentDataContainer().has(new NamespacedKey(main, "actions"))) {

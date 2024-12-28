@@ -61,6 +61,7 @@ public class HousingWorld {
     private List<Command> commands;
     private List<Region> regions;
     private List<Layout> layouts;
+    private List<CustomMenu> customMenus;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -72,7 +73,7 @@ public class HousingWorld {
         loadWorld(owner);
         setupDataAfterLoad(owner);
         loadNPCs(owner);
-        // loadHolograms(); still not 100% sure how saving and crap works - al3x
+        loadCommands();
         save();
     }
 
@@ -96,6 +97,7 @@ public class HousingWorld {
         this.regions = new ArrayList<>();
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
+        this.customMenus = new ArrayList<>();
         this.statManager = new StatManager(this);
         try {
             this.loader = main.getLoader();
@@ -131,6 +133,7 @@ public class HousingWorld {
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
+        this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.Companion.toList(houseData.getCustomMenus()) : new ArrayList<>();
         this.scoreboard = houseData.getScoreboard();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
@@ -171,6 +174,12 @@ public class HousingWorld {
         for (NPCData npc : houseData.getHouseNPCs()) {
             Location location = npc.getNpcLocation().toLocation();
             loadNPC(owner, location, npc);
+        }
+    }
+
+    private void loadCommands() {
+        for (Command command : commands) {
+            main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
         }
     }
 
@@ -476,6 +485,10 @@ public class HousingWorld {
         return layouts;
     }
 
+    public List<CustomMenu> getCustomMenus() {
+        return customMenus;
+    }
+
     public void createNPC(Player player, Location location) {
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
@@ -568,5 +581,9 @@ public class HousingWorld {
 
     public Layout getLayout(String layout) {
         return layouts.stream().filter(l -> l.getName().equals(layout)).findFirst().orElse(null);
+    }
+
+    public void addCustomMenu(CustomMenu customMenu) {
+        customMenus.add(customMenu);
     }
 }

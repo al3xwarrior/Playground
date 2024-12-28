@@ -47,6 +47,14 @@ public class AddConditionMenu extends Menu {
         setupItems();
     }
 
+    public void setFunction(Function function) {
+        this.function = function;
+    }
+
+    public void setEvent(EventType event) {
+        this.event = event;
+    }
+
     @Override
     public void open() {
         this.inventory = Bukkit.createInventory(null, 54, "§aAdd Condition (" + page + "/" + getConditions().getPageCount() + ")");

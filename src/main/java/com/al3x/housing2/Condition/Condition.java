@@ -7,6 +7,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -42,6 +43,10 @@ public abstract class Condition {
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         return null;
+    }
+
+    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+        return execute(player, house);
     }
 
     public abstract boolean execute(Player player, HousingWorld house);

@@ -93,6 +93,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlaceBlock(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ChatEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
 
         EntityInteraction.registerInteraction(housesManager);
 

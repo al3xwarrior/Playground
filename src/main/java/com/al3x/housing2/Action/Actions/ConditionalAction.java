@@ -25,11 +25,13 @@ public class ConditionalAction extends Action {
     private static final Gson gson = new Gson();
     private List<Condition> conditions;
     private boolean matchAnyCondition;
+    private boolean not;
     private List<Action> ifActions;
     private List<Action> elseActions;
 
     public ConditionalAction(ArrayList<Condition> conditions, boolean matchAnyCondition, ArrayList<Action> ifActions, ArrayList<Action> elseActions) {
         super("Conditional Action");
+        this.not = false;
         this.conditions = conditions;
         this.matchAnyCondition = matchAnyCondition;
         this.ifActions = ifActions;
@@ -39,6 +41,7 @@ public class ConditionalAction extends Action {
     public ConditionalAction() {
         super("Conditional Action");
         this.conditions = new ArrayList<>();
+        this.not = false;
         this.matchAnyCondition = false;
         this.ifActions = new ArrayList<>();
         this.elseActions = new ArrayList<>();
@@ -82,6 +85,13 @@ public class ConditionalAction extends Action {
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.CONDITION
                 ),
+                new ActionEditor.ActionItem("not", ItemBuilder.create((not ? Material.LIME_DYE : Material.RED_DYE))
+                        .name("&aNot")
+                        .description("When enabled the conditions will be inverted.")
+                        .info("&7Current Value", "")
+                        .info(null, not ? "&aYes" : "&cNo"),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
+                ),
                 new ActionEditor.ActionItem("matchAnyCondition", ItemBuilder.create((matchAnyCondition ? Material.LIME_DYE : Material.RED_DYE))
                         .name("&aMatch Any Condition")
                         .description("When enabled ony one condition needs to match, otherwise all conditions must match.")
@@ -124,7 +134,7 @@ public class ConditionalAction extends Action {
             result = true;
         } else {
             for (Condition condition : conditions) {
-                if (condition.execute(player, house)) {
+                if (condition.execute(player, house, event) != not) {
                     result = true;
                     if (matchAnyCondition) break;
                 } else {
@@ -170,17 +180,10 @@ public class ConditionalAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("conditions", ConditionData.Companion.fromList(conditions));
         data.put("matchAnyCondition", matchAnyCondition);
+        data.put("not", not);
         data.put("ifActions", Companion.fromList(ifActions));
         data.put("elseActions", Companion.fromList(elseActions));
         return data;
-    }
-
-    @Override
-    public HashMap<String, List<Action>> getActions() {
-        HashMap<String, List<Action>> actions = new HashMap<>();
-        actions.put("ifActions", ifActions);
-        actions.put("elseActions", elseActions);
-        return actions;
     }
 
     @Override
@@ -196,6 +199,11 @@ public class ConditionalAction extends Action {
         }
         if (data.containsKey("matchAnyCondition")) {
             matchAnyCondition = (boolean) data.get("matchAnyCondition");
+        }
+        if (data.containsKey("not")) {
+            not = (boolean) data.get("not");
+        } else {
+            not = false;
         }
         if (data.containsKey("ifActions")) {
             ifActions = dataToList(gson.toJsonTree(data.get("ifActions")).getAsJsonArray());

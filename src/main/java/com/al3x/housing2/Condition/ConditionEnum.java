@@ -16,6 +16,8 @@ public enum ConditionEnum {
     MAXHEALTH_REQUIREMENT("Max Health Requirement", MaxHealthRequirementCondition.class),
     HUNGER_REQUIREMENT("Hunger Requirement", HungerRequirementCondition.class),
     GAMEMODE_REQUIREMENT("Gamemode Requirement", GamemodeRequirementCondition.class),
+    CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
+    IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
     ;
     
     private String name;

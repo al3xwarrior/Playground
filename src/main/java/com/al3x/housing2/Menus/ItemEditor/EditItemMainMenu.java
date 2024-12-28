@@ -68,30 +68,31 @@ public class EditItemMainMenu extends Menu {
         addItem(34, ItemBuilder.create(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
                 .name("&aEdit Actions")
                 .description("Edit the actions which will be performed when the player uses this item.")
-                .lClick(EDIT_LEFT_CLICK_ACTIONS)
-                .rClick(EDIT_RIGHT_CLICK_ACTIONS)
+                .lClick(EDIT_YELLOW)
                 .build(), e -> {
-            if (e.isLeftClick()) {
-                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.LEFT, new ArrayList<>()));
-                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
-                menu.setUpdate(() -> {
-                    customItem.getActions().put(ClickType.LEFT, actions);
-                    player.getInventory().setItemInMainHand(customItem.build());
-                    setupItems();
-                });
-                menu.open();
-            } else if (e.isRightClick()) {
-                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.RIGHT, new ArrayList<>()));
-                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
-                menu.setUpdate(() -> {
-                    customItem.getActions().put(ClickType.RIGHT, actions);
-                    player.getInventory().setItemInMainHand(customItem.build());
-                    setupItems();
-                });
-                menu.open();
-            }
+//            if (e.isLeftClick()) {
+//                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.LEFT, new ArrayList<>()));
+//                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
+//                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
+//                menu.setUpdate(() -> {
+//                    customItem.getActions().put(ClickType.LEFT, actions);
+//                    player.getInventory().setItemInMainHand(customItem.build());
+//                    setupItems();
+//                });
+//                menu.open();
+//            } else if (e.isRightClick()) {
+//                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.RIGHT, new ArrayList<>()));
+//                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
+//                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
+//                menu.setUpdate(() -> {
+//                    customItem.getActions().put(ClickType.RIGHT, actions);
+//                    player.getInventory().setItemInMainHand(customItem.build());
+//                    setupItems();
+//                });
+//                menu.open();
+//            }
+
+            new EditActionTypesMenu(player, customItem).open();
         });
 
         addItem(40, ItemBuilder.create(Material.BLACK_BANNER)

@@ -92,18 +92,6 @@ public abstract class Action {
         return null;
     }
 
-    /**
-     * Returns a map of actions that are under this action.
-     * <p>
-     * Example:
-     * Random Action will have a key of "Actions" and then a list of actions under that key.
-     * </p>
-     *
-     * @return a map of strings representing the actions
-     */
-    public HashMap<String, List<Action>> getActions() {
-        return new HashMap<>();
-    }
 
     public boolean mustBeSync() {
         return false;

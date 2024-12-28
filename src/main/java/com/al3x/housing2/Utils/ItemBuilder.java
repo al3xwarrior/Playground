@@ -349,6 +349,7 @@ public class ItemBuilder {
      */
     public static enum ActionType {
         EDIT_YELLOW("edit", YELLOW),
+        VIEW_YELLOW("view", YELLOW),
         REMOVE_YELLOW("remove", YELLOW),
         ADD_YELLOW("add", YELLOW),
         SELECT_LEVEL("select level", YELLOW),

@@ -108,7 +108,7 @@ public class LaunchProjectileAction extends Action {
     public boolean execute(Player player, HousingWorld house) {
         org.bukkit.entity.Projectile proj = player.launchProjectile(projectile.getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), true));
-        Vector velocity = player.getLocation().getDirection().normalize().multiply(amount);
+        Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
         switch (direction) {
             case UP:
                 velocity.setY(amount);
@@ -148,7 +148,7 @@ public class LaunchProjectileAction extends Action {
                 try {
                     float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
                     float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector custom = player.getLocation().getDirection().setY(0).normalize().multiply(amount);
+                    Vector custom = player.getEyeLocation().getDirection().setY(0).normalize().multiply(amount);
                     custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
                     custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
                     custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));

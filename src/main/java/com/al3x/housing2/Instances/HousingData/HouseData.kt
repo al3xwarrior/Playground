@@ -28,6 +28,7 @@ data class HouseData(
     var regions: List<RegionData>? = arrayListOf(),
     var layouts: List<LayoutData>? = arrayListOf(),
     var holograms: List<HologramData>? = arrayListOf(),
+    var customMenus: List<CustomMenuData>? = arrayListOf(),
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf()
 ) {
@@ -53,6 +54,7 @@ data class HouseData(
                 RegionData.fromList(world.regions),
                 LayoutData.fromList(world.layouts),
                 HologramData.fromList(world.holograms),
+                CustomMenuData.fromList(world.customMenus),
                 world.seed,
                 FunctionData.fromList(world.functions)
             )

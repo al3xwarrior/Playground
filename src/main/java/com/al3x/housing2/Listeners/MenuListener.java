@@ -8,11 +8,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MenuListener implements Listener {
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onMenuClick(InventoryClickEvent event) {
         // Check if the inventory clicked belongs to a menu (you need to store menus somewhere)
         if (event.getWhoClicked() instanceof Player player) {
@@ -21,6 +22,14 @@ public class MenuListener implements Listener {
             if (menu != null) {
                 menu.handleClick(event);
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Menu menu = getMenuForPlayer((Player) event.getPlayer());
+        if (menu != null) {
+            menu.handleClose(event);
         }
     }
 

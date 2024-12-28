@@ -2,6 +2,7 @@ package com.al3x.housing2.Menus.HousingMenu;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.CustomMenus.CustomMenusMenu;
 import com.al3x.housing2.Menus.HousingMenu.commands.CommandsMenu;
 import com.al3x.housing2.Menus.HousingMenu.layout.LayoutsMenu;
 import com.al3x.housing2.Menus.HousingMenu.regions.RegionsMenu;
@@ -90,7 +91,7 @@ public class SystemsMenu extends Menu {
         customMenusMeta.setDisplayName(colorize("&aCustom Menus"));
         customMenus.setItemMeta(customMenusMeta);
         addItem(19, customMenus, () -> {
-            player.sendMessage("Opening Custom Menus...");
+            new CustomMenusMenu(main, player, house).open();
         });
 
         ItemStack backArrow = new ItemStack(Material.ARROW);

@@ -34,7 +34,7 @@ public class StringToBase64 {
         }
     }
 
-    public static List<Action> actionFromBase64(String data) {
+    public static ArrayList<Action> actionFromBase64(String data) {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
@@ -49,7 +49,7 @@ public class StringToBase64 {
                 JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
                 actions.add(gson.fromJson(jsonObject, ActionData.class));
             }
-            return ActionData.Companion.toList(actions);
+            return new ArrayList<>(ActionData.Companion.toList(actions));
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load action.", e);
         }

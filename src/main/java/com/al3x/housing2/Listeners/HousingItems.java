@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -70,7 +71,7 @@ public class HousingItems implements Listener {
             return;
         }
 
-        executeCustomItem(player, e.getItem(), e.getAction());
+        executeCustomItem(player, e.getItem(), e.getAction(), e);
 
         // Click block
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -125,7 +126,7 @@ public class HousingItems implements Listener {
         }
     }
 
-    private void executeCustomItem(Player player, ItemStack item, Action action) {
+    private void executeCustomItem(Player player, ItemStack item, Action action, Cancellable event) {
         ClickType clickType = null;
         switch (action) {
             case LEFT_CLICK_BLOCK:
@@ -151,7 +152,7 @@ public class HousingItems implements Listener {
 
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
             for (com.al3x.housing2.Action.Action houseAction : customItem.getActions().get(clickType)) {
-                houseAction.execute(player, house, null);
+                houseAction.execute(player, house, event);
             }
         }
     }

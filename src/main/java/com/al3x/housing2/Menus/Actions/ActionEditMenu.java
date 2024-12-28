@@ -5,10 +5,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
-import com.al3x.housing2.Instances.Function;
-import com.al3x.housing2.Instances.HousingNPC;
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Layout;
+import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
@@ -281,6 +278,27 @@ public class ActionEditMenu extends Menu {
                                 field.setAccessible(true);
                                 field.set(action, layout.getName());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + layout.getName()));
+                                open();
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
+                        break;
+                    }
+                    case MENU: {
+                        List<Duple<CustomMenu, ItemBuilder>> customMenus = new ArrayList<>();
+                        for (CustomMenu customMenu : house.getCustomMenus()) {
+                            customMenus.add(new Duple<>(customMenu, ItemBuilder.create(Material.CHEST).name(customMenu.getTitle()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+                        PaginationMenu<CustomMenu> paginationMenu = new PaginationMenu<>(main, "Select a Menu", customMenus, player, house, this, (layout) -> {
+                            try {
+                                // Set the field
+                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                field.setAccessible(true);
+                                field.set(action, layout.getTitle());
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + layout.getTitle()));
                                 open();
                             } catch (NoSuchFieldException | IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());

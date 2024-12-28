@@ -230,17 +230,6 @@ public class Housing implements CommandExecutor {
                 }
                 return true;
             }
-
-            if (strings[0].equalsIgnoreCase("testitem")) {
-                ItemBuilder builder = ItemBuilder.create(org.bukkit.Material.DIAMOND_SWORD);
-                builder.name("&aTest Item");
-                builder.description("This is a test item");
-                Item item = new Item(builder.build());
-                item.getActions().put(ClickType.LEFT, List.of(
-                        new ChatAction("&eHello World!")
-                ));
-                player.getInventory().addItem(item.build());
-            }
         }
 
         player.sendMessage(colorize("&7&m---------------------------------------"));

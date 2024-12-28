@@ -1,0 +1,94 @@
+package com.al3x.housing2.Menus.ItemEditor;
+
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Item;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+
+import java.util.ArrayList;
+
+public class EditActionTypesMenu extends Menu {
+    Item item;
+    public EditActionTypesMenu(Player player, Item item) {
+        super(player, "&7Edit Action Types", 9*4);
+        this.item = item;
+    }
+
+    @Override
+    public void setupItems() {
+        Main main = Main.getInstance();
+        HousingWorld housingWorld = main.getHousesManager().getHouse(player.getWorld());
+        addItem(11, ItemBuilder.create(Material.IRON_SWORD)
+                .name("&aLeft Click Actions")
+                .description("&7Click to edit the actions that happen when you left click this item.")
+                .info("&eActions", "")
+                .info(null, item.getActions().get(ClickType.LEFT).size() + " actions")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), event -> {
+            openActionsMenu(ClickType.LEFT);
+        });
+        addItem(12, ItemBuilder.create(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
+                .name("&aRight Click Actions")
+                .description("&7Click to edit the actions that happen when you right click this item.")
+                .info("&eActions", "")
+                .info(null, item.getActions().get(ClickType.RIGHT).size() + " actions")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), event -> {
+            openActionsMenu(ClickType.RIGHT);
+        });
+        addItem(13, ItemBuilder.create(Material.DROPPER)
+                .name("&aDrop Actions")
+                .description("&7Click to edit the actions that happen when you drop this item.")
+                .info("&eActions", "")
+                .info(null, item.getActions().get(ClickType.DROP).size() + " actions")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), event -> {
+            openActionsMenu(ClickType.DROP);
+        });
+        addItem(14, ItemBuilder.create(Material.DROPPER)
+                .glow(true)
+                .name("&aDrop Stack Actions")
+                .description("&7Click to edit the actions that happen when you control drop/drop the stack of items.")
+                .info("&eActions", "")
+                .info(null, item.getActions().get(ClickType.CONTROL_DROP).size() + " actions")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), event -> {
+            openActionsMenu(ClickType.CONTROL_DROP);
+        });
+        addItem(15, ItemBuilder.create(Material.SHIELD)
+                .name("&aSwap Offhand Actions")
+                .description("&7Click to edit the actions that happen when you swap this item to your offhand.")
+                .info("&eActions", "")
+                .info(null, item.getActions().get(ClickType.SWAP_OFFHAND).size() + " actions")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), event -> {
+            openActionsMenu(ClickType.SWAP_OFFHAND);
+        });
+
+        //back
+        addItem(31, ItemBuilder.create(Material.ARROW)
+                .name("&cBack")
+                .build(), event -> {
+            new EditItemMainMenu(player).open();
+        });
+    }
+
+    private void openActionsMenu(ClickType clickType) {
+        Main main = Main.getInstance();
+        HousingWorld housingWorld = main.getHousesManager().getHouse(player.getWorld());
+        ArrayList<Action> actions = item.getActions().get(clickType);
+        ActionsMenu menu = new ActionsMenu(main, player, housingWorld, actions, this, null);
+        menu.setUpdate(() -> {
+            item.getActions().put(clickType, actions);
+            player.getInventory().setItemInMainHand(item.build());
+            setupItems();
+        });
+        menu.open();
+    }
+}
