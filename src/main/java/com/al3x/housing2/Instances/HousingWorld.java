@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousingData.*;
+import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
@@ -20,6 +21,7 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
@@ -184,6 +186,7 @@ public class HousingWorld {
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0) : spawn;
+        TrashCanListener.initTrashCans(trashCans);
     }
 
     private void loadNPCs(OfflinePlayer owner) {
@@ -322,6 +325,13 @@ public class HousingWorld {
         housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
         killAllEntities();
         Bukkit.unloadWorld(houseWorld, false);
+        trashCans.forEach(location -> {
+            for (ArmorStand armorStand : getWorld().getEntitiesByClass(ArmorStand.class)) {
+                if (armorStand.getLocation().add(0, 1, 0).getBlock().equals(location.getBlock())) {
+                    armorStand.remove();
+                }
+            }
+        });
     }
 
     public void delete() {

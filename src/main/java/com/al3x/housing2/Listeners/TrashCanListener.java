@@ -4,6 +4,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -18,14 +19,36 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class TrashCanListener implements Listener {
 
     private Main main;
+    private static ItemStack head = ItemBuilder.create(Material.PLAYER_HEAD)
+            .skullTexture("441f4edbc68c9061355242bd73effc9299a3252b9f11e82b5f1ec7b3b6ac0")
+            .build();
 
     public TrashCanListener(Main main) {
         this.main = main;
+    }
+
+    private static void createArmorStands(Block block) {
+        ArmorStand top = block.getWorld().spawn(block.getLocation().add(0.5, -0.5, 0.5), ArmorStand.class);
+        top.setGravity(false); top.setVisible(false); top.setSmall(true);
+        ArmorStand bottom = block.getWorld().spawn(block.getLocation().add(0.5, -0.7, 0.5), ArmorStand.class);
+        bottom.setGravity(false); bottom.setVisible(false); bottom.setSmall(true);
+        top.getEquipment().setHelmet(head);
+        bottom.getEquipment().setHelmet(head);
+    }
+
+    public static void initTrashCans(List<Location> locations) {
+        for (Location location : locations) {
+            Block block = location.getBlock();
+            block.setType(Material.BARRIER);
+            createArmorStands(block);
+        }
     }
 
     @EventHandler
@@ -64,19 +87,8 @@ public class TrashCanListener implements Listener {
             blockPlaced.setType(Material.BARRIER);
             house.addTrashCan(blockPlaced.getLocation());
 
-
-            ItemStack head = ItemBuilder.create(Material.PLAYER_HEAD)
-                    .skullTexture("441f4edbc68c9061355242bd73effc9299a3252b9f11e82b5f1ec7b3b6ac0")
-                    .build();
-
             // Armor Stand
-            ArmorStand top = blockPlaced.getWorld().spawn(blockPlaced.getLocation().add(0.5, -0.5, 0.5), ArmorStand.class);
-            top.setGravity(false); top.setVisible(false); top.setSmall(true);
-            ArmorStand bottom = blockPlaced.getWorld().spawn(blockPlaced.getLocation().add(0.5, -0.7, 0.5), ArmorStand.class);
-            bottom.setGravity(false); bottom.setVisible(false); bottom.setSmall(true);
-
-            top.getEquipment().setHelmet(head);
-            bottom.getEquipment().setHelmet(head);
+            createArmorStands(blockPlaced);
         }
     }
 
@@ -91,8 +103,11 @@ public class TrashCanListener implements Listener {
         if (house.trashCanAtLocation(block.getLocation())) {
             house.removeTrashCan(block.getLocation());
 
+            int stands = 0;
             for (ArmorStand armorStand : block.getWorld().getEntitiesByClass(ArmorStand.class)) {
+                if (stands >= 2) return;
                 if (armorStand.getLocation().add(0, 1, 0).getBlock().equals(block)) {
+                    stands++;
                     armorStand.remove();
                 }
             }
