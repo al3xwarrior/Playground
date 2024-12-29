@@ -8,6 +8,7 @@ import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
+import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +71,7 @@ public class HousingWorld {
     private List<Group> groups;
     private HashMap<String, PlayerData> playersData;
     private String defaultGroup = "default";
+    private List<Location> trashCans;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -108,6 +111,7 @@ public class HousingWorld {
         this.cookieGivers = new ArrayList<>();
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
+        this.trashCans = new ArrayList<>();
         this.customMenus = new ArrayList<>();
         this.groups = new ArrayList<>();
         this.playersData = new HashMap<>();
@@ -153,6 +157,7 @@ public class HousingWorld {
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
+//        this.trashCans = houseData.getTrashCans();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
@@ -193,6 +198,7 @@ public class HousingWorld {
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0) : spawn;
+        TrashCanListener.initTrashCans(trashCans);
     }
 
     private void loadNPCs(OfflinePlayer owner) {
@@ -350,6 +356,13 @@ public class HousingWorld {
         housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
         killAllEntities();
         Bukkit.unloadWorld(houseWorld, false);
+        trashCans.forEach(location -> {
+            for (ArmorStand armorStand : getWorld().getEntitiesByClass(ArmorStand.class)) {
+                if (armorStand.getLocation().add(0, 1, 0).getBlock().equals(location.getBlock())) {
+                    armorStand.remove();
+                }
+            }
+        });
     }
 
     public void delete() {
@@ -509,6 +522,27 @@ public class HousingWorld {
 
     public void setCookieWeek(int cookieWeek) {
         this.cookieWeek = cookieWeek;
+    }
+
+    public void addTrashCan(Location location) {
+        getWorld().setBlockData(location, Bukkit.createBlockData(Material.BARRIER));
+        trashCans.add(location);
+    }
+
+    public void setTrashCans(List<Location> trashCans) {
+        this.trashCans = trashCans;
+    }
+
+    public void removeTrashCan(Location location) {
+        trashCans.remove(location);
+    }
+
+    public boolean trashCanAtLocation(Location location) {
+        return trashCans.stream().anyMatch(trashCan -> trashCan.equals(location));
+    }
+
+    public List<Location> getTrashCans() {
+        return trashCans;
     }
 
     public int getSize() {
