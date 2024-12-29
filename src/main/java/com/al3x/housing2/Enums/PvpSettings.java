@@ -1,4 +1,4 @@
-package com.al3x.housing2.Instances;
+package com.al3x.housing2.Enums;
 
 public enum PvpSettings {
     DAMAGE("PvP/Damage"),

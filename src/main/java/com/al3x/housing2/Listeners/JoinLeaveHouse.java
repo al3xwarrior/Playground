@@ -58,6 +58,8 @@ public class JoinLeaveHouse implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) { return; }
 
+        house.loadOrCreatePlayerData(player);
+
         //Set the tablist
         HousingTabList.setTabList(player, house);
 

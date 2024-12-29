@@ -370,6 +370,8 @@ public class ItemBuilder {
         CLEAR_SEARCH("clear search", YELLOW),
         EDIT_LEFT_CLICK_ACTIONS("edit left click actions", YELLOW),
         EDIT_RIGHT_CLICK_ACTIONS("edit right click actions", YELLOW),
+        CYCLE_FORWARD("cycle forward", YELLOW),
+        CYCLE_BACKWARD("cycle backwards", YELLOW),
         ;
 
         private String action;

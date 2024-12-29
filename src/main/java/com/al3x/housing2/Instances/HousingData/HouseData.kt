@@ -30,6 +30,9 @@ data class HouseData(
     var layouts: List<LayoutData>? = arrayListOf(),
     var holograms: List<HologramData>? = arrayListOf(),
     var customMenus: List<CustomMenuData>? = arrayListOf(),
+    var groups: List<GroupData>? = arrayListOf(),
+    var defaultGroup: String? = "default",
+    var playerData: HashMap<String, PlayerData>? = hashMapOf(),
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf()
 ) {
@@ -58,6 +61,9 @@ data class HouseData(
                 LayoutData.fromList(world.layouts),
                 HologramData.fromList(world.holograms),
                 CustomMenuData.fromList(world.customMenus),
+                GroupData.fromList(world.groups),
+                world.defaultGroup,
+                world.playersData,
                 world.seed,
                 FunctionData.fromList(world.functions)
             )

@@ -1,6 +1,6 @@
 package com.al3x.housing2.Instances.HousingData
 
-import com.al3x.housing2.Instances.PvpSettings
+import com.al3x.housing2.Enums.PvpSettings
 import com.al3x.housing2.Instances.Region
 
 data class RegionData(

@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.Layout;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.CustomMenuViewer;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -69,7 +70,9 @@ public class DisplayMenuAction extends Action {
             return false;
         }
         house.getCustomMenus().stream().filter(customMenu -> customMenu.getTitle().equals(menu)).findFirst().ifPresent(customMenu -> {
-            new CustomMenuViewer(player, customMenu).open();
+            Bukkit.getScheduler().runTask(Main.getInstance(), () -> { //Make sure it runs on the main thread
+                new CustomMenuViewer(player, customMenu).open();
+            });
         });
         return true;
     }

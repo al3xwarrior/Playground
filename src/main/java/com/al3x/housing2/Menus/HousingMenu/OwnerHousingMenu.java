@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HouseSettingsMenu;
+import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -192,7 +193,7 @@ public class OwnerHousingMenu extends Menu {
         permissionsGroupsMeta.setDisplayName(colorize("&aPermissions and Groups"));
         permissionsGroups.setItemMeta(permissionsGroupsMeta);
         addItem(40, permissionsGroups, () -> {
-            player.sendMessage("Permissions and Groups");
+            new GroupsMenu(player, main, house).open();
         });
 
         ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);

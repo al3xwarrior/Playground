@@ -21,7 +21,7 @@ import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 public class ExplosionAction extends Action {
     private String customLocation;
     private Locations location;
-    private int power;
+    private double power; //Ints are not storeable anywhere
 
     public ExplosionAction() {
         super("Explosion Action");
@@ -95,11 +95,11 @@ public class ExplosionAction extends Action {
         World world = house.getWorld();
         switch (location) {
             case INVOKERS_LOCATION ->
-                    world.createExplosion(player.getLocation(), power, false, false);
+                    world.createExplosion(player.getLocation(), (float) power, false, false);
             case HOUSE_SPAWN ->
-                    world.createExplosion(house.getSpawn(), power, false, false);
+                    world.createExplosion(house.getSpawn(), (float) power, false, false);
             case CUSTOM, PLAYER_LOCATION ->
-                    world.createExplosion(getLocationFromString(player, house, customLocation), power, false, false);
+                    world.createExplosion(getLocationFromString(player, house, customLocation), (float) power, false, false);
         }
         return true;
     }
@@ -122,6 +122,6 @@ public class ExplosionAction extends Action {
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
-        power = (int) data.get("power");
+        power = (double) data.get("power");
     }
 }

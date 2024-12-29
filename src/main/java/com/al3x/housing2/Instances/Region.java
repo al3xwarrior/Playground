@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Enums.PvpSettings;
 import com.al3x.housing2.Utils.Duple;
 import org.bukkit.Location;
 

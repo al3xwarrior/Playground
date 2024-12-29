@@ -6,6 +6,7 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Main;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -65,6 +66,9 @@ public class HousingWorld {
     private List<Region> regions;
     private List<Layout> layouts;
     private List<CustomMenu> customMenus;
+    private List<Group> groups;
+    private HashMap<String, PlayerData> playersData;
+    private String defaultGroup = "default";
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -78,6 +82,7 @@ public class HousingWorld {
         loadNPCs(owner);
         loadCommands();
         setupWorldBorder();
+        if (groups.isEmpty()) addDefaultGroups(owner);
         save();
     }
 
@@ -87,6 +92,7 @@ public class HousingWorld {
         createTemplatePlatform();
         setupWorldBorder();
         setupDefaultScoreboard();
+        addDefaultGroups(owner);
         save();
     }
 
@@ -103,6 +109,8 @@ public class HousingWorld {
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
         this.customMenus = new ArrayList<>();
+        this.groups = new ArrayList<>();
+        this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
         try {
             this.loader = main.getLoader();
@@ -123,6 +131,7 @@ public class HousingWorld {
             houseData = GSON.fromJson(json, HouseData.class);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            notifyOwnerOfFailure(owner);
         }
     }
 
@@ -140,6 +149,9 @@ public class HousingWorld {
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
         this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.Companion.toList(houseData.getCustomMenus()) : new ArrayList<>();
+        this.groups = houseData.getGroups() != null ? GroupData.Companion.toList(houseData.getGroups()) : new ArrayList<>();
+        this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
+        this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
@@ -232,8 +244,27 @@ public class HousingWorld {
         };
     }
 
+    private void addDefaultGroups(OfflinePlayer owner) {
+        Group defaultGroup = new Group("default");
+        defaultGroup.setPrefix("&7");
+        defaultGroup.setDisplayName("&7Default");
+        defaultGroup.setColor("§7");
+        groups.add(defaultGroup);
+
+        Group ownerGroup = new Group("owner");
+        ownerGroup.setPrefix("&e[Owner] ");
+        ownerGroup.setDisplayName("&eOwner");
+        ownerGroup.setColor("§e");
+        groups.add(ownerGroup);
+
+        if (owner instanceof Player) {
+            PlayerData data = loadOrCreatePlayerData((Player) owner);
+            data.setGroup(ownerGroup.getName());
+        }
+    }
+
     private void setupWorldBorder() {
-        this.houseWorld.getWorldBorder().setCenter(this.spawn);
+        this.houseWorld.getWorldBorder().setCenter(new Location(houseWorld, 0, 61, 0));
         this.houseWorld.getWorldBorder().setSize(this.size);
     }
 
@@ -540,6 +571,14 @@ public class HousingWorld {
         return customMenus;
     }
 
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public String getDefaultGroup() {
+        return defaultGroup;
+    }
+
     public void createNPC(Player player, Location location) {
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
@@ -617,6 +656,40 @@ public class HousingWorld {
         Layout layout = new Layout(name);
         layouts.add(layout);
         return layout;
+    }
+
+    public Group createGroup(String name) {
+        if (name == null || groups.stream().anyMatch(group -> group.getName().equalsIgnoreCase(name))) return null;
+        Group group = new Group(name);
+        groups.add(group);
+        return group;
+    }
+
+    public PlayerData loadOrCreatePlayerData(Player player) {
+        PlayerData data = playersData.get(player.getUniqueId().toString());
+        if (data == null) {
+            data = new PlayerData(player.getUniqueId().toString());
+            data.setGroup(defaultGroup);
+            playersData.put(player.getUniqueId().toString(), data);
+        }
+        return data;
+    }
+
+    public HashMap<String, PlayerData> getPlayersData() {
+        return playersData;
+    }
+
+    public void setDefaultGroup(String defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
+    public boolean hasPermission(Player player, Permissions permission) {
+        if (player.getUniqueId().equals(ownerUUID)) return true;
+        PlayerData data = playersData.get(player.getUniqueId().toString());
+        if (data == null) return false;
+        Object permissionValue = data.getGroupInstance(this).getPermissions().get(permission);
+        if (permissionValue instanceof Boolean) return permissionValue.equals(true);
+        return false; //Other permission types will be checked by itself
     }
 
     public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {

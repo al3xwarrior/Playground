@@ -39,6 +39,45 @@ public class PaginationMenu<E> extends Menu {
         this.backMenu = backMenu;
     }
 
+    public PaginationMenu(Main main, String title, Player player, HousingWorld house) {
+        super(player, colorize(title), 9 * 6);
+        this.main = main;
+        this.player = player;
+        this.house = house;
+    }
+
+    public void setItems(List<Duple<E, ItemBuilder>> items) {
+        this.items = items;
+    }
+
+    public void setConsumer(Consumer<E> consumer) {
+        this.con = consumer;
+    }
+
+    public void setBackMenu(Menu backMenu) {
+        this.backMenu = backMenu;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setHouse(HousingWorld house) {
+        this.house = house;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+
     @Override
     public void setupItems() {
         clearItems();

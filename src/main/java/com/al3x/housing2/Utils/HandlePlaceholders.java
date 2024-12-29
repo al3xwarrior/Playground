@@ -1,6 +1,7 @@
 package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Instances.CommandRegistry;
+import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Region;
 import com.al3x.housing2.Instances.Stat;
@@ -116,6 +117,14 @@ public class HandlePlaceholders {
         registerPlaceholder("%player.maxHealth%", (player, house) -> String.valueOf(player.getMaxHealth()));
         registerPlaceholder("%player.hunger%", (player, house) -> String.valueOf(player.getFoodLevel()));
         registerPlaceholder("%player.level%", (player, house) -> String.valueOf(player.getLevel()));
+
+        // Group placeholders
+        registerPlaceholder("%group.name%", (player, house) -> house.loadOrCreatePlayerData(player).getGroupInstance(house).getName());
+        registerPlaceholder("%group.prefix%", (player, house) -> house.loadOrCreatePlayerData(player).getGroupInstance(house).getPrefix());
+        registerPlaceholder("%group.color%", (player, house) -> house.loadOrCreatePlayerData(player).getGroupInstance(house).getColor());
+        registerPlaceholder("%group.suffix%", (player, house) -> house.loadOrCreatePlayerData(player).getGroupInstance(house).getSuffix());
+        registerPlaceholder("%group.priority%", (player, house) -> String.valueOf(house.loadOrCreatePlayerData(player).getGroupInstance(house).getPriority()));
+        registerPlaceholder("%group.displayname%", (player, house) -> house.loadOrCreatePlayerData(player).getGroupInstance(house).getDisplayName());
 
         // Regex for capturing stat placeholders like %stat.player/<stat>%
         registerPlaceholder("regex:%stat\\.player/([a-zA-Z0-9_#]+)%", "&6%stat.player/&7[player_stat]&6%", (player, house, match) -> {
