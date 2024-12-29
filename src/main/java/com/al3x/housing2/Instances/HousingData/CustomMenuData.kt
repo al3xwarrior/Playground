@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.CustomMenu
 data class CustomMenuData(
     var title: String?,
     var rows: Int,
+    var refreshRate: Int,
     var items: List<CustomMenuItem?>
 ) {
     companion object {

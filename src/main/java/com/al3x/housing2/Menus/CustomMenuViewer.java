@@ -1,15 +1,31 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Instances.CustomMenu;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitTask;
 
 public class CustomMenuViewer extends Menu{
     CustomMenu customMenu;
+
+    BukkitTask task;
     public CustomMenuViewer(Player player, CustomMenu customMenu) {
         super(player, customMenu.getTitle(), 9 * customMenu.getRows());
         this.customMenu = customMenu;
+    }
+
+    @Override
+    public void open() {
+        super.open();
+
+        task = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::setupItems, 0, customMenu.getRefreshRate());
     }
 
     @Override
@@ -22,9 +38,26 @@ public class CustomMenuViewer extends Menu{
             if (customMenu.getItems().get(i) == null) {
                 continue;
             }
-            addItem(i, customMenu.getItems().get(i).getFirst(), (e) -> {
-                customMenu.getItems().get(finalI).getSecond().forEach(action -> action.execute(player, house, e));
+            ItemStack item = customMenu.getItems().get(i).getFirst().clone();
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName()));
+            if (meta.getLore() != null) {
+                for (int j = 0; j < meta.getLore().size(); j++) {
+                    String line = meta.getLore().get(j);
+                    meta.getLore().set(j, HandlePlaceholders.parsePlaceholders(player, house, line));
+                }
+            }
+            item.setItemMeta(meta);
+            addItem(i, item, (e) -> {
+                new ActionExecutor(customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);
             });
+        }
+    }
+
+    @Override
+    public void handleClose(InventoryCloseEvent event) {
+        if (event.getPlayer().getOpenInventory().getTopInventory().equals(inventory)) {
+            task.cancel();
         }
     }
 }

@@ -2,10 +2,12 @@ package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Instances.CommandRegistry;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Region;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
 import com.al3x.housing2.Listeners.HouseEvents.ChangeHeldItem;
 import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
+import com.al3x.housing2.Runnables;
 import kotlin.Function;
 import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
@@ -313,6 +315,9 @@ public class HandlePlaceholders {
         registerPlaceholder("%date.unix%", (player, house) -> String.valueOf(System.currentTimeMillis()));
         registerPlaceholder("%server.tps%", (player, house) -> new DecimalFormat("#.##").format(Bukkit.getServerTickManager().getTickRate()));
 
+        // Region
+        registerPlaceholder("%region.name%", (player, house) -> house.getRegions().stream().filter(region -> region.getPlayersInRegion().contains(player.getUniqueId())).map(Region::getName).findFirst().orElse("none"));
+
         // Regex for capturing stat placeholders like %stat.global/<stat>%
         registerPlaceholder("regex:%stat\\.global/([a-zA-Z0-9_#]+)%", "&6%stat.global/&7[global_stat]&6%", (player, house, match) -> {
             String statName = match.getGroupValues().get(1); // The captured <stat>
@@ -371,7 +376,57 @@ public class HandlePlaceholders {
             return parsePlaceholders(player, house, "%" + placeholder + value + "%");
         });
 
+        //Regex for math between placeholders and numbers
+        registerPlaceholder("regex:%math.double/(.+) ([+\\-*/]) (.+)%", "&6%math/&7[placeholder] [+ - * / % ^] [placeholder/number]&6%", (player, house, match) -> {
+            String value1 = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
+            String operator = match.getGroups().get(2).getValue();
+            String value2 = parsePlaceholders(player, house, match.getGroups().get(3).getValue());
+            if (NumberUtilsKt.isDouble(value1) && NumberUtilsKt.isDouble(value2)) {
+                double val1 = Double.parseDouble(value1);
+                double val2 = Double.parseDouble(value2);
+                switch (operator) {
+                    case "+":
+                        return String.valueOf(val1 + val2);
+                    case "-":
+                        return String.valueOf(val1 - val2);
+                    case "*":
+                        return String.valueOf(val1 * val2);
+                    case "/":
+                        return String.valueOf(val1 / val2);
+                    case "%":
+                        return String.valueOf(val1 % val2);
+                    case "^":
+                        return String.valueOf(Math.pow(val1, val2));
+                }
+            }
+            return value1 + operator + value2;
+        });
 
+        //Regex for math between placeholders and numbers
+        registerPlaceholder("regex:%math.int/(.+) ([+\\-*/]) (.+)%", "&6%math/&7[placeholder] [+ - * / % ^] [placeholder/number]&6%", (player, house, match) -> {
+            String value1 = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
+            String operator = match.getGroups().get(2).getValue();
+            String value2 = parsePlaceholders(player, house, match.getGroups().get(3).getValue());
+            if (NumberUtilsKt.isInt(value1) && NumberUtilsKt.isInt(value2)) {
+                int val1 = Integer.parseInt(value1);
+                int val2 = Integer.parseInt(value2);
+                switch (operator) {
+                    case "+":
+                        return String.valueOf(val1 + val2);
+                    case "-":
+                        return String.valueOf(val1 - val2);
+                    case "*":
+                        return String.valueOf(val1 * val2);
+                    case "/":
+                        return String.valueOf(val1 / val2);
+                    case "%":
+                        return String.valueOf(val1 % val2);
+                    case "^":
+                        return String.valueOf(Math.pow(val1, val2));
+                }
+            }
+            return value1 + operator + value2;
+        });
     }
 
 

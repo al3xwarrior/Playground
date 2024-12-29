@@ -31,6 +31,7 @@ public class PlayerDropItem implements Listener {
                 return;
             }
         }
+
         sendEventExecution(housesManager, EventType.PLAYER_DROP_ITEM, e.getPlayer(), e);
     }
 }

@@ -10,7 +10,7 @@ commands:
     aliases: ["h"]
   home:
     aliases: ["house", "homes"]
-
+  setspawn:
   cancelinput:
     usage: "/cancelinput"
   testplaceholder:

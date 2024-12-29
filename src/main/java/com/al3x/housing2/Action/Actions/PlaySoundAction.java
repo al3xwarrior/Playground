@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
@@ -17,12 +18,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlaySoundAction extends Action {
     private Double volume;
     private Double pitch;
     private Sound sound;
+    private String customLocation;
     private Locations location;
 
     public PlaySoundAction() {
@@ -30,15 +33,8 @@ public class PlaySoundAction extends Action {
         this.volume = 1.0D;
         this.pitch = 1.0D;
         this.sound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
+        this.customLocation = null;
         this.location = Locations.INVOKERS_LOCATION;
-    }
-
-    public PlaySoundAction(Double volume, Double pitch, Sound sound, Locations location) {
-        super("Play Sound Action");
-        this.volume = volume;
-        this.pitch = pitch;
-        this.sound = sound;
-        this.location = location;
     }
 
     @Override
@@ -54,7 +50,7 @@ public class PlaySoundAction extends Action {
         builder.info("Value", "&a" + sound);
         builder.info("Volume", "&a" + volume);
         builder.info("Pitch", "&a" + pitch);
-        builder.info("Location", "&a" + location);
+        builder.info("Location", "&a" + (location == CUSTOM ? customLocation : location));
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -70,7 +66,7 @@ public class PlaySoundAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         List<ActionEditor.ActionItem> items = Arrays.asList(
                 new ActionEditor.ActionItem("sound",
                         ItemBuilder.create(Material.NOTE_BLOCK)
@@ -100,9 +96,15 @@ public class PlaySoundAction extends Action {
                         ItemBuilder.create(Material.COMPASS)
                                 .name("&eLocation")
                                 .info("&7Current Value", "")
-                                .info(null, "&a" + location)
+                                .info(null, "&a" + (location == CUSTOM ? customLocation : location))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS
+                        ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
+                        (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
+                                (coords, location) -> {
+                                    customLocation = coords;
+                                    this.location = CUSTOM;
+                                }
+                        )
                 )
         );
 
@@ -112,8 +114,12 @@ public class PlaySoundAction extends Action {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         switch (location) {
-            case INVOKERS_LOCATION -> player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
-            case HOUSE_SPAWN -> player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            case INVOKERS_LOCATION ->
+                    player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            case HOUSE_SPAWN ->
+                    player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            case CUSTOM ->
+                    player.playSound(getLocationFromString(player, house, customLocation), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
         }
         return true;
     }
@@ -125,6 +131,7 @@ public class PlaySoundAction extends Action {
         data.put("pitch", pitch);
         data.put("sound", sound.name());
         data.put("location", location.name());
+        data.put("customLocation", customLocation);
         return data;
     }
 
@@ -138,6 +145,7 @@ public class PlaySoundAction extends Action {
         volume = (Double) data.get("volume");
         pitch = (Double) data.get("pitch");
         sound = Sound.valueOf((String) data.get("sound"));
+        customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
     }
 }

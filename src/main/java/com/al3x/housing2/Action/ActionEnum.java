@@ -20,6 +20,7 @@ public enum ActionEnum {
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     PLAYER_STAT("Player Stat Action", PlayerStatAction.class),
     GLOBAL_STAT("Global Stat Action", GlobalStatAction.class),
+    TELEPORT("Teleport Action", TeleportAction.class),
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
     CLEAR_GLOBALSTATS("Clear Global Stats Action", ClearGlobalStatsAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),

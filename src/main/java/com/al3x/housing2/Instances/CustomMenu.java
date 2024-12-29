@@ -16,11 +16,13 @@ import java.util.List;
 public class CustomMenu {
     String title;
     int rows;
+    int refreshRate;
     ArrayList<Duple<ItemStack, List<Action>>> items;
 
     public CustomMenu(String title, int rows) {
         this.title = title;
         this.rows = rows;
+        this.refreshRate = 20;
         this.items = new ArrayList<>();
 
         for (int i = 0; i < rows * 9; i++) {
@@ -33,6 +35,7 @@ public class CustomMenu {
     public CustomMenu(CustomMenuData data) {
         this.title = data.getTitle();
         this.rows = data.getRows();
+        this.refreshRate = data.getRefreshRate();
         this.items = new ArrayList<>(data.getItems().stream().map(item -> {
             if (item == null) return null;
             try {
@@ -64,6 +67,17 @@ public class CustomMenu {
         return rows;
     }
 
+    public int getRefreshRate() {
+        return refreshRate;
+    }
+
+    public void setRefreshRate(int refreshRate) {
+        if (refreshRate < 1) {
+            refreshRate = 1;
+        }
+        this.refreshRate = refreshRate;
+    }
+
     public void setRows(int rows) {
         this.rows = rows;
 
@@ -77,7 +91,7 @@ public class CustomMenu {
     }
 
     public CustomMenuData toData() {
-        return new CustomMenuData(title, rows, items.stream().map(item -> {
+        return new CustomMenuData(title, rows, refreshRate, items.stream().map(item -> {
             if (item == null) return null;
             return new CustomMenuItem(Serialization.itemStackToBase64(item.getFirst()), ActionData.Companion.fromList(item.getSecond()));
         }).toList());

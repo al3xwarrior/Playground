@@ -68,5 +68,20 @@ public class CustomMenuEditMenu extends Menu {
                 .build(), (e) -> {
             new CustomMenuViewer(player, customMenu).open();
         });
+
+        addItem(33, ItemBuilder.create(Material.CLOCK)
+                .name("&aSet Refresh Rate")
+                .info("Current", "&a" + customMenu.getRefreshRate())
+                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                .build(), (e) -> {
+            player.sendMessage("§eEnter the new refresh rate for this menu: ");
+            openChat(main, String.valueOf(customMenu.getRefreshRate()), (message) -> {
+                try {
+                    customMenu.setRefreshRate(Integer.parseInt(message));
+                } catch (NumberFormatException ex) {
+                    player.sendMessage("§cInvalid number format!");
+                }
+            });
+        });
     }
 }

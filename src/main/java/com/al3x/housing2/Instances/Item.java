@@ -66,7 +66,7 @@ public class Item {
         NbtItemBuilder actionsBuilder = nbtItemBuilder.getChild("actions");
         if (actionsBuilder != null) {
             for (ClickType clickType : actions.keySet()) {
-                String base64 = actionsBuilder.getString(clickType.name());
+                String base64 = actionsBuilder.getString(clickType.name().toLowerCase());
                 if (base64 != null) {
                     actions.put(clickType, StringToBase64.actionFromBase64(base64));
                 }
@@ -80,10 +80,9 @@ public class Item {
         NbtItemBuilder actionsBuilder = nbtItemBuilder.addChild("actions");
         for (ClickType clickType : actions.keySet()) {
             List<Action> actionList = actions.get(clickType);
-            actionsBuilder.setString(clickType.name(), StringToBase64.actionToBase64(actionList));
+            actionsBuilder.setString(clickType.name().toLowerCase(), StringToBase64.actionToBase64(actionList));
         }
         nbtItemBuilder.build();
-
         return base;
     }
 }

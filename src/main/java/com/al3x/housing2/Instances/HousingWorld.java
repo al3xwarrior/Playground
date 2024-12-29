@@ -22,6 +22,7 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class HousingWorld {
         setupDataAfterLoad(owner);
         loadNPCs(owner);
         loadCommands();
+        setupWorldBorder();
         save();
     }
 
@@ -145,6 +147,7 @@ public class HousingWorld {
     private void setupDataAfterLoad(OfflinePlayer owner) {
         this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
         this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
+        this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
     }
 
     private void loadEventActions() {
@@ -167,7 +170,7 @@ public class HousingWorld {
         }
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
-        this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+        this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0) : spawn;
     }
 
     private void loadNPCs(OfflinePlayer owner) {
@@ -585,5 +588,9 @@ public class HousingWorld {
 
     public void addCustomMenu(CustomMenu customMenu) {
         customMenus.add(customMenu);
+    }
+
+    public void setSpawn(@NotNull Location location) {
+        this.spawn = location;
     }
 }

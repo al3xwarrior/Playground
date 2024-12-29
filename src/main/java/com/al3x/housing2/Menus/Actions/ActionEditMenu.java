@@ -39,7 +39,7 @@ public class ActionEditMenu extends Menu {
     }
 
     private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
-        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, player);
+        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, menu, player);
     }
 
     private static ActionEditor getEditor(Condition condition, HousingWorld house, ActionEditMenu menu, Player player) {

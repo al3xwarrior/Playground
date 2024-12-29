@@ -2,6 +2,7 @@ package com.al3x.housing2.Utils;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
@@ -12,6 +13,8 @@ import java.util.List;
 public class NbtItemBuilder {
     private static final String PLUGIN_ID = "housing2";
 
+    private ItemStack stack;
+    private ItemMeta meta;
 
     private PersistentDataContainer nbt;
     private NbtItemBuilder parent;
@@ -34,7 +37,12 @@ public class NbtItemBuilder {
     }
 
     public NbtItemBuilder(ItemStack stack) {
-        this(stack.getItemMeta().getPersistentDataContainer());
+        this.stack = stack;
+        this.meta = stack.getItemMeta();
+        this.nbt = meta.getPersistentDataContainer();
+        this.parent = null;
+        this.key = null;
+        children = fromNbt();
     }
 
     public NbtItemBuilder setString(String key, String value) {
@@ -105,6 +113,11 @@ public class NbtItemBuilder {
         for (NbtItemBuilder child : children) {
             nbt.set(new NamespacedKey(PLUGIN_ID, child.key), PersistentDataType.TAG_CONTAINER, child.build());
         }
+
+        if (stack != null) {
+            stack.setItemMeta(meta);
+        }
+
         return nbt;
     }
 
@@ -119,9 +132,12 @@ public class NbtItemBuilder {
     private List<NbtItemBuilder> fromNbt() {
         List<NbtItemBuilder> list = new ArrayList<>();
         for (NamespacedKey key : nbt.getKeys()) {
-            PersistentDataContainer childNbt = nbt.get(new NamespacedKey(PLUGIN_ID, key.getKey()), PersistentDataType.TAG_CONTAINER);
-            if (childNbt != null) {
-                list.add(new NbtItemBuilder(childNbt, key.getKey(), this));
+            try {
+                PersistentDataContainer childNbt = nbt.get(new NamespacedKey(PLUGIN_ID, key.getKey()), PersistentDataType.TAG_CONTAINER);
+                if (childNbt != null) {
+                    list.add(new NbtItemBuilder(childNbt, key.getKey(), this));
+                }
+            } catch (IllegalArgumentException ignored) {
             }
         }
         return list;

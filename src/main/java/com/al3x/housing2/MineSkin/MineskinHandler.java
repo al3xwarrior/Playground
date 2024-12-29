@@ -30,8 +30,7 @@ public class MineskinHandler {
                     responseInfo -> HttpResponse.BodySubscribers.ofString(Charset.defaultCharset())
             );
             return gson.fromJson(response.body(), BiggerSkinResponse.class).getSkin();
-        } catch (Exception e) {
-            main.getLogger().warning("Failed to get skin data for " + uuid + ": " + e.getMessage());
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -60,9 +59,7 @@ public class MineskinHandler {
                         }
                     }
                 }
-            } catch (Exception e) {
-                main.getLogger().info(response.body());
-                main.getLogger().warning("Failed to get skins: " + e.getMessage());
+            } catch (Exception ignored) {
             }
         } catch (IOException | InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);

@@ -205,7 +205,7 @@ public class AddActionMenu extends Menu {
             if (action == null) continue;
             if (function != null) {
                 if (function.isGlobal() && action.requiresPlayer()) continue;
-                if (action.allowedEvents() != null && !action.allowedEvents().contains(null)) continue;
+                if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) continue;
                 newActions.add(action);
                 continue;
             }

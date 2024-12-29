@@ -2,6 +2,7 @@ package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -12,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -51,7 +53,7 @@ public abstract class Action {
         return null;
     }
 
-    public ActionEditor editorMenu(HousingWorld house, Player player) {
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
         return null;
     }
 
@@ -149,4 +151,72 @@ public abstract class Action {
         }
         return false;
     }
+
+    protected boolean getCoordinate(InventoryClickEvent event, Object obj, String current, HousingWorld house, Menu editMenu, BiConsumer<String, Locations> consumer) {
+        if (obj instanceof Locations location && location == Locations.CUSTOM) {
+            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z)"));
+            editMenu.openChat(Main.getInstance(), (current == null ? "" : current), (message) -> {
+                //pitch,yaw
+                String[] split = message.split(",");
+                if (split.length != 3) {
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+                    return;
+                }
+
+                try {
+                    for (int i = 0; i < split.length; i++) {
+                        if (split[i].startsWith("~")) {
+                            split[i] = split[i].substring(1);
+                        }
+
+                        if (split[i].isEmpty()) continue;
+
+                        Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[i]));
+                    }
+                    consumer.accept(message, Locations.CUSTOM);
+                } catch (NumberFormatException e) {
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+                    return;
+                }
+            });
+        }
+
+        if ((obj instanceof Locations direction) && direction != Locations.CUSTOM) {
+            consumer.accept(null, direction);
+        }
+        return false;
+    }
+
+    protected Location getLocationFromString(Player player, HousingWorld house, String message) {
+        String[] split = message.split(",");
+        if (split.length != 3) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+            return null;
+        }
+
+        Location loc = player.getLocation();
+        try {
+            String x = HandlePlaceholders.parsePlaceholders(player, house, split[0]);
+            String y = HandlePlaceholders.parsePlaceholders(player, house, split[1]);
+            String z = HandlePlaceholders.parsePlaceholders(player, house, split[2]);
+
+            double x1 = (x.startsWith("~")) ? loc.getX() : Double.parseDouble(x);
+            double y1 = (y.startsWith("~")) ? loc.getY() : Double.parseDouble(y);
+            double z1 = (z.startsWith("~")) ? loc.getZ() : Double.parseDouble(z);
+            if (x.startsWith("~") && x.length() > 1) {
+                x1 += Double.parseDouble(x.substring(1));
+            }
+            if (y.startsWith("~") && y.length() > 1) {
+                y1 += Double.parseDouble(y.substring(1));
+            }
+            if (z.startsWith("~") && z.length() > 1) {
+                z1 += Double.parseDouble(z.substring(1));
+            }
+            return new Location(player.getWorld(), x1, y1, z1, loc.getYaw(), loc.getPitch());
+        } catch (NumberFormatException e) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+            return null;
+        }
+    }
+
 }

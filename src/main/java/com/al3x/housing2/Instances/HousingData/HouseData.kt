@@ -19,7 +19,7 @@ data class HouseData(
     var icon: String? = Material.OAK_DOOR.name,
     var timeCreated: Long,
     var eventActions: HashMap<EventType, List<ActionData>>,
-    var spawnLocation: LocationData,
+    var spawnLocation: LocationData?,
     var scoreboard: List<String>,
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
@@ -32,6 +32,7 @@ data class HouseData(
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf()
 ) {
+
     companion object {
         fun fromHousingWorld(world: HousingWorld): HouseData {
             val houseData = HouseData(

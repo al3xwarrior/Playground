@@ -9,6 +9,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MenuListener implements Listener {
@@ -30,6 +32,14 @@ public class MenuListener implements Listener {
         Menu menu = getMenuForPlayer((Player) event.getPlayer());
         if (menu != null) {
             menu.handleClose(event);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        Menu menu = getMenuForPlayer((Player) event.getWhoClicked());
+        if (menu != null) {
+            menu.handleDrag(event);
         }
     }
 

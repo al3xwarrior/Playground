@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus.ItemEditor;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
@@ -53,12 +54,16 @@ public class EditActionTypesMenu extends Menu {
         });
         addItem(14, ItemBuilder.create(Material.DROPPER)
                 .glow(true)
+                .punctuation(false)
                 .name("&aDrop Stack Actions")
-                .description("&7Click to edit the actions that happen when you control drop/drop the stack of items.")
+                .description("&7Click to edit the actions that happen when you control drop/drop the stack of items." + (item.getBase().getMaxStackSize() == 1 ? "\n\n&cWILL NOT WORK WITH THIS ITEM." : ""))
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.CONTROL_DROP).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), event -> {
+            if (item.getBase().getMaxStackSize() == 1) {
+                return;
+            }
             openActionsMenu(ClickType.CONTROL_DROP);
         });
         addItem(15, ItemBuilder.create(Material.SHIELD)
@@ -84,6 +89,13 @@ public class EditActionTypesMenu extends Menu {
         HousingWorld housingWorld = main.getHousesManager().getHouse(player.getWorld());
         ArrayList<Action> actions = item.getActions().get(clickType);
         ActionsMenu menu = new ActionsMenu(main, player, housingWorld, actions, this, null);
+        if (clickType == ClickType.SWAP_OFFHAND) {
+            menu.setEvent(EventType.PLAYER_SWAP_TO_OFFHAND);
+        } else if (clickType == ClickType.DROP) {
+            menu.setEvent(EventType.PLAYER_DROP_ITEM);
+        } else {
+            menu.setEvent(EventType.PLAYER_SWAP_TO_OFFHAND);
+        }
         menu.setUpdate(() -> {
             item.getActions().put(clickType, actions);
             player.getInventory().setItemInMainHand(item.build());
