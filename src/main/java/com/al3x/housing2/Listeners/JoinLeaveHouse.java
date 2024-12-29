@@ -8,11 +8,13 @@ import com.al3x.housing2.Utils.tablist.HousingTabList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -84,13 +86,16 @@ public class JoinLeaveHouse implements Listener {
     public void enterWorld(PlayerChangedWorldEvent e) {
         Player player = e.getPlayer();
 
+        World from = e.getFrom();
+        World to = player.getWorld();
+
         // They are not leaving the hub so that means they are leaving another house
-        if (!e.getFrom().getName().equals("world")) {
-            leaveHouse(player, housesManager.getHouse(UUID.fromString(e.getFrom().getName())));
+        if (!from.getName().equals("world")) {
+            leaveHouse(player, housesManager.getHouse(UUID.fromString(from.getName())));
         }
 
         // They are entering a house, not the hub
-        if (!player.getWorld().getName().equals("world") && e.getFrom().getName().equals("world")) {
+        if (!to.getName().equals("world") && from.getName().equals("world")) {
             joinHouse(player);
         } else {
             resetPlayer(player);
@@ -99,7 +104,6 @@ public class JoinLeaveHouse implements Listener {
 
     @EventHandler
     public void playerLeave(PlayerQuitEvent e) {
-
         Player player = e.getPlayer();
         String worldName = player.getWorld().getName();
 
@@ -115,6 +119,13 @@ public class JoinLeaveHouse implements Listener {
         }
 
         e.setQuitMessage(colorize( "&7&o" + player.getName() + " left the server."));
+    }
+
+    @EventHandler
+    public void playerJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+        e.setJoinMessage(colorize("&7&o" + player.getName() + " joined the server."));
+        resetPlayer(player);
     }
 
 }

@@ -308,6 +308,9 @@ public class HandlePlaceholders {
         registerPlaceholder("%house.cookies%", (player, house) -> String.valueOf(house.getCookies()));
         registerPlaceholder("%house.guests%", (player, house) -> String.valueOf(house.getGuests()));
 
+        // Cookie Placeholders
+        registerPlaceholder("%house.cookies.player%", (player, house) -> (!house.getCookieGivers().isEmpty()) ? String.valueOf(house.getCookieGivers().getLast()) : "null");
+
         // Misc
         registerPlaceholder("%unix.time%", (player, house) -> String.valueOf(System.currentTimeMillis() / 1000));
         registerPlaceholder("%time.unix%", (player, house) -> String.valueOf(System.currentTimeMillis() / 1000));

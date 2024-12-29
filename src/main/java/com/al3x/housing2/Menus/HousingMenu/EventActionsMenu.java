@@ -61,6 +61,7 @@ public class EventActionsMenu extends Menu {
         if (page == 2) {
             addEventActionItem(10, Material.SLIME_BALL, "&aPlayer Jump", "&7Executes when a player jumps.", EventType.PLAYER_JUMP);
             addEventActionItem(11, Material.SHIELD, "&aPlayer Swap To Offhand", "&7Executes when a player swaps to their offhand.", EventType.PLAYER_SWAP_TO_OFFHAND);
+            addEventActionItem(11, Material.COOKIE, "&aPlayer Give Cookie", "&7Executes when a player gives the house a cookie.", EventType.GIVE_COOKIE);
 
             addItem(45, new ItemBuilder().material(Material.ARROW).name("&aPrevious Page").build(), () -> {
                 page = 1;

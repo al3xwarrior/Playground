@@ -49,6 +49,8 @@ public class HousingWorld {
     private int size;
     private int guests;
     private int cookies;
+    private List<UUID> cookieGivers;
+    private int cookieWeek;
     private long timeCreated;
     private Location spawn;
     private List<String> scoreboard;
@@ -97,6 +99,7 @@ public class HousingWorld {
         this.functions = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.regions = new ArrayList<>();
+        this.cookieGivers = new ArrayList<>();
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
         this.customMenus = new ArrayList<>();
@@ -127,6 +130,7 @@ public class HousingWorld {
         this.houseUUID = UUID.fromString(houseData.getHouseID());
         this.name = houseData.getHouseName();
         this.cookies = (int) houseData.getCookies();
+        this.cookieGivers = new ArrayList<>();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
@@ -142,6 +146,12 @@ public class HousingWorld {
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
+
+        // House loaded after a new week was issued
+        if (cookieWeek < main.getCookieManager().getWeek()) {
+            cookieWeek = main.getCookieManager().getWeek();
+            cookies = 0;
+        }
     }
 
     private void setupDataAfterLoad(OfflinePlayer owner) {
@@ -388,6 +398,11 @@ public class HousingWorld {
         guests = Bukkit.getWorld(houseUUID.toString()).getPlayers().size();
     }
 
+    public void clearCookies() {
+        cookies = 0;
+        cookieGivers.clear();
+    }
+
     public World getWorld() {
         return houseWorld;
     }
@@ -430,6 +445,39 @@ public class HousingWorld {
 
     public int getCookies() {
         return cookies;
+    }
+
+    public void giveCookies(Player player, int amount) {
+        cookieGivers.add(player.getUniqueId());
+        cookies += amount;
+
+        Player owner = Bukkit.getPlayer(ownerUUID);
+        if (owner != null) owner.sendMessage(colorize("&eYou were given &a" + amount + " &ecookie" + ((amount > 1) ? "s!" : "!") + " by " + player.getName()));
+        player.sendMessage(colorize("&eYou gave " + Bukkit.getOfflinePlayer(ownerUUID).getName() + " &ea pack of &a" + amount + " &ecookie" + ((cookies > 1) ? "s!" : "!")));
+    }
+
+    /**
+     * @param player The player to check
+     * @return True if the player has already given cookies to this house this week
+     */
+    public boolean playerGivenCookies(Player player) {
+        return cookieGivers.contains(player.getUniqueId());
+    }
+
+    public List<UUID> getCookieGivers() {
+        return cookieGivers;
+    }
+
+    public void setCookies(int cookies) {
+        this.cookies = cookies;
+    }
+
+    public int getCookieWeek() {
+        return cookieWeek;
+    }
+
+    public void setCookieWeek(int cookieWeek) {
+        this.cookieWeek = cookieWeek;
     }
 
     public int getSize() {

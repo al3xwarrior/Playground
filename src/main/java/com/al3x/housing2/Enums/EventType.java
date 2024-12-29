@@ -25,5 +25,6 @@ public enum EventType {
     PLAYER_ATTACK,
     FUNCTION,
     PLAYER_CHAT,
-    INVENTORY_CLICK
+    INVENTORY_CLICK,
+    GIVE_COOKIE
 }

@@ -241,10 +241,12 @@ public class HousesManager {
     }
 
     public HousingWorld getRandomPublicHouse() {
+        if (getLoadedHouses().isEmpty()) return null;
         return getLoadedHouses().stream().filter(house -> !house.getPrivacy().equals(HousePrivacy.PRIVATE)).toList().get((int) (Math.random() * getLoadedHouses().size()));
     }
 
     public HousingWorld getRandomHouse() {
+        if (getLoadedHouses().isEmpty()) return null;
         return getLoadedHouses().get((int) (Math.random() * getLoadedHouses().size()));
     }
 }

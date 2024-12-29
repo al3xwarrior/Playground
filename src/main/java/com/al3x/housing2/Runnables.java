@@ -201,10 +201,6 @@ public class Runnables {
 
                 ItemStack ownerMenu = ItemBuilder.create(Material.NETHER_STAR).name("&dHousing Menu &7(Right-Click)").build();
                 ItemStack playerMenu = ItemBuilder.create(Material.DARK_OAK_DOOR).name("&aHousing Menu &7(Right-Click)").build();
-                ItemStack browserItem = ItemBuilder.create(Material.COMPASS).name("&aHousing Browser &7(Right-Click)").build();
-                ItemStack myHouses = ItemBuilder.create(Material.GRASS_BLOCK).name("&aMy Houses &7(Right-Click)").build();
-                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMxMzVlYTMxYmMxNWJlMTM0NjJiZjEwZTkxMmExNDBlNWE3ZDY4ZWY0YmQyNmUzZDc1MDU1OWQ1MDJiZjk1In19fQ==")
-                        .name("&aRandom House &7(Right-Click)").build();
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     // They are in a house
@@ -213,11 +209,6 @@ public class Runnables {
                         HousingWorld house = main.getHousesManager().getHouse(world);
 
                         PlayerInventory inv = player.getInventory();
-                        if (inv.contains(browserItem) || inv.contains(myHouses) || inv.contains(randomHouse)) {
-                            inv.remove(browserItem);
-                            inv.remove(myHouses);
-                            inv.remove(randomHouse);
-                        }
 
                         // Player Owns House
                         if (house.getOwnerUUID().equals(player.getUniqueId())) {
@@ -234,17 +225,23 @@ public class Runnables {
                             inv.remove(ownerMenu);
                             inv.remove(playerMenu);
                         }
-
-                        if (!inv.contains(browserItem)) {
-                            inv.setItem(0, browserItem);
-                        }
-                        if (!inv.contains(myHouses)) {
-                            inv.setItem(1, myHouses);
-                        }
-                        if (!inv.contains(randomHouse)) {
-                            inv.setItem(2, randomHouse);
-                        }
                     }
+                }
+            }
+        }.runTaskTimer(main, 0L, 20));
+
+        runnables.put("cookieReset", new BukkitRunnable() {
+            @Override
+            public void run() {
+                final Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+
+                final int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                final int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                final int minute = calendar.get(Calendar.MINUTE);
+
+                // Check if it's midnight on Sunday
+                if (dayOfWeek == Calendar.SUNDAY && hourOfDay == 0 && minute == 0) {
+                    main.getCookieManager().newWeek();
                 }
             }
         }.runTaskTimer(main, 0L, 20));

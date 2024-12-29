@@ -21,6 +21,7 @@ repositories {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven { url = 'https://repo.extendedclip.com/releases/' }
 }
 
 dependencies {
@@ -35,6 +36,7 @@ dependencies {
     implementation 'fr.mrmicky:fastboard:2.1.3'
     implementation files('libs/PacketWrapper.jar')
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
 }
 
 tasks.withType(JavaCompile) {

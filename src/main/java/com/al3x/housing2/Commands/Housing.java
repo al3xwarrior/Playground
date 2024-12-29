@@ -2,6 +2,7 @@ package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Action.Actions.ChatAction;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Instances.CookieManager;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
@@ -228,6 +229,11 @@ public class Housing implements CommandExecutor {
                 } else {
                     player.sendMessage(colorize("&cThere are no public houses available!"));
                 }
+                return true;
+            }
+
+            if (strings[0].equalsIgnoreCase("givecookie") && player.hasPermission("housing2.admin")) {
+                CookieManager.givePhysicalCookie(player);
                 return true;
             }
         }

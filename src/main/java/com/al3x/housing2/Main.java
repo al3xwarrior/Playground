@@ -2,12 +2,14 @@ package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
 import com.al3x.housing2.Commands.Protools.*;
+import com.al3x.housing2.Instances.CookieManager;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
+import com.al3x.housing2.Placeholders.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
@@ -28,6 +30,7 @@ public final class Main extends JavaPlugin {
     private HousingCommandFramework commandFramework;
     private ProtoolsManager protoolsManager;
     private ProtocolManager protocolManager;
+    private CookieManager cookieManager;
 
     //    private MineSkinClientImpl mineSkinClient;
     private String mineSkinKey;
@@ -50,6 +53,7 @@ public final class Main extends JavaPlugin {
         this.protoolsManager = new ProtoolsManager(this, housesManager);
         this.commandFramework = new HousingCommandFramework(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();
+        this.cookieManager = new CookieManager(this, getDataFolder());
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
@@ -102,6 +106,11 @@ public final class Main extends JavaPlugin {
 
         HandlePlaceholders.registerPlaceholders();
 
+        // PlaceholderAPI
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new CookiesPlaceholder(this).register();
+        }
+
         getServer().getLogger().info("[Housing2] Enabled");
     }
 
@@ -141,6 +150,10 @@ public final class Main extends JavaPlugin {
 
     public static Main getInstance() {
         return INSTANCE;
+    }
+
+    public CookieManager getCookieManager() {
+        return this.cookieManager;
     }
 
 

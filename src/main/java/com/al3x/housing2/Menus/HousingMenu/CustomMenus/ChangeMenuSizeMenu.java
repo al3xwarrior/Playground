@@ -24,6 +24,7 @@ public class ChangeMenuSizeMenu extends Menu {
             int finalI = i;
             addItem(i + 9, ItemBuilder.create(Material.BEACON)
                     .name("&a" + i + " Rows")
+                    .glow(customMenu.getRows() == i)
                     .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
                     .build(), (e) -> {
                 customMenu.setRows(finalI);
