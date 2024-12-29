@@ -78,6 +78,28 @@ public class HousingItems implements Listener {
 
         executeCustomItem(player, e.getItem(), e.getAction(), e);
 
+        // In Lobby
+        if (player.getWorld().equals(Bukkit.getWorld("world"))) {
+            if (item == null) return;
+
+            // Browser
+            if (name.equals("§aHousing Browser §7(Right-Click)")) {
+                new HouseBrowserMenu(player, housesManager).open();
+            }
+            if (name.equals("§aMy Houses §7(Right-Click)")) {
+                new MyHousesMenu(main, player, player).open();
+            }
+            if (name.equals("§aRandom House §7(Right-Click)")) {
+                HousingWorld house = housesManager.getRandomPublicHouse();
+                if (house != null) {
+                    house.sendPlayerToHouse(player);
+                } else {
+                    player.sendMessage(colorize("&cThere are no public houses available!"));
+                }
+            }
+            return;
+        }
+
         // Click block
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Block block = e.getClickedBlock();
