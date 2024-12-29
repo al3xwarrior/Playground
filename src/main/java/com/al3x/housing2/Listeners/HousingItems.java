@@ -70,6 +70,36 @@ public class HousingItems implements Listener {
     public void rightClick(PlayerInteractEvent e) {
         Player player = e.getPlayer();
 
+        // In Lobby
+        if (player.getWorld().equals(Bukkit.getWorld("world"))) {
+
+            if (e.getItem() == null) return;
+
+            ItemStack item = e.getItem();
+            ItemMeta itemMeta = item.getItemMeta();
+            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
+
+            // Browser
+            if (name.equals("§aHousing Browser §7(Right-Click)")) {
+                new HouseBrowserMenu(player, housesManager).open();
+            }
+
+            if (name.equals("§aMy Houses §7(Right-Click)")) {
+                new MyHousesMenu(main, player, player).open();
+            }
+
+            if (name.equals("§aRandom House §7(Right-Click)")) {
+                HousingWorld house = housesManager.getRandomPublicHouse();
+                if (house != null) {
+                    house.sendPlayerToHouse(player);
+                } else {
+                    player.sendMessage(colorize("&cThere are no public houses available!"));
+                }
+            }
+
+            return;
+        }
+
         ItemStack item = e.getItem();
         ItemMeta itemMeta = item.getItemMeta();
         Material itemType = item.getType();
