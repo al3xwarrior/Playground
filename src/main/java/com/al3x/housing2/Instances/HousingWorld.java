@@ -157,7 +157,6 @@ public class HousingWorld {
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
-//        this.trashCans = houseData.getTrashCans();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
@@ -175,6 +174,8 @@ public class HousingWorld {
         this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
         this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+        this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
+
     }
 
     private void loadEventActions() {

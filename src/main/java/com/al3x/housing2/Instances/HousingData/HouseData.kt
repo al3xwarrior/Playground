@@ -5,7 +5,6 @@ import com.al3x.housing2.Enums.HousePrivacy
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
-import org.bukkit.Location
 import org.bukkit.Material
 
 data class HouseData(
@@ -34,6 +33,7 @@ data class HouseData(
     var groups: List<GroupData>? = arrayListOf(),
     var defaultGroup: String? = "default",
     var playerData: HashMap<String, PlayerData>? = hashMapOf(),
+    var trashCans: List<LocationData>? = arrayListOf(),
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf()
 ) {
@@ -65,6 +65,7 @@ data class HouseData(
                 GroupData.fromList(world.groups),
                 world.defaultGroup,
                 world.playersData,
+                LocationData.fromLocationList(world.trashCans),
                 world.seed,
                 FunctionData.fromList(world.functions)
             )
