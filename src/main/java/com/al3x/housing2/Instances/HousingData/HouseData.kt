@@ -5,6 +5,7 @@ import com.al3x.housing2.Enums.HousePrivacy
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
+import org.bukkit.Location
 import org.bukkit.Material
 
 data class HouseData(

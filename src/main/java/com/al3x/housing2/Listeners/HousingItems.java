@@ -69,48 +69,18 @@ public class HousingItems implements Listener {
     @EventHandler
     public void rightClick(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-
-        // In Lobby
-        if (player.getWorld().equals(Bukkit.getWorld("world"))) {
-
-            if (e.getItem() == null) return;
-
-            ItemStack item = e.getItem();
-            ItemMeta itemMeta = item.getItemMeta();
-            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
-
-            // Browser
-            if (name.equals("§aHousing Browser §7(Right-Click)")) {
-                new HouseBrowserMenu(player, housesManager).open();
-            }
-
-            if (name.equals("§aMy Houses §7(Right-Click)")) {
-                new MyHousesMenu(main, player, player).open();
-            }
-
-            if (name.equals("§aRandom House §7(Right-Click)")) {
-                HousingWorld house = housesManager.getRandomPublicHouse();
-                if (house != null) {
-                    house.sendPlayerToHouse(player);
-                } else {
-                    player.sendMessage(colorize("&cThere are no public houses available!"));
-                }
-            }
-
-            return;
-        }
+        HousingWorld house = housesManager.getHouse(player.getWorld());
 
         ItemStack item = e.getItem();
-        ItemMeta itemMeta = item.getItemMeta();
-        Material itemType = item.getType();
-        String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
-        NbtItemBuilder nbt = new NbtItemBuilder(item);
 
         executeCustomItem(player, e.getItem(), e.getAction(), e);
 
         // In Lobby
-        if (player.getWorld().equals(Bukkit.getWorld("world"))) {
-            if (item == null) return;
+        if (item != null && player.getWorld().equals(Bukkit.getWorld("world"))) {
+            ItemMeta itemMeta = item.getItemMeta();
+            Material itemType = item.getType();
+            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
+            NbtItemBuilder nbt = new NbtItemBuilder(item);
 
             // Browser
             if (name.equals("§aHousing Browser §7(Right-Click)")) {
@@ -120,8 +90,8 @@ public class HousingItems implements Listener {
                 new MyHousesMenu(main, player, player).open();
             }
             if (name.equals("§aRandom House §7(Right-Click)")) {
-                HousingWorld house = housesManager.getRandomPublicHouse();
-                if (house != null) {
+                HousingWorld randomHouse = housesManager.getRandomPublicHouse();
+                if (randomHouse != null) {
                     house.sendPlayerToHouse(player);
                 } else {
                     player.sendMessage(colorize("&cThere are no public houses available!"));
@@ -131,44 +101,63 @@ public class HousingItems implements Listener {
         }
 
         // Click block
-        if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            Block block = e.getClickedBlock();
-            boolean ownerOfHouse = housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId());
+        if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 
-            if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && ownerOfHouse) {
-                e.setCancelled(true);
-                housesManager.getHouse(player.getWorld()).createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
+            // Trash Can
+            if (house.trashCanAtLocation(e.getClickedBlock().getLocation()) && e.getClickedBlock().getType().equals(Material.BARRIER)) {
+                player.openInventory(Bukkit.createInventory(player, 27, colorize("&cTrash Can")));
+                return;
             }
 
-            NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
-            NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
-            if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2) && ownerOfHouse) {
-                e.setCancelled(true);
-                int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
-                HousingNPC npc = housesManager.getHouse(player.getWorld()).getNPC(id);
-                npc.addPath(block.getLocation().add(0.5, 1, 0.5));
-                player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
+            // Holding an item
+            if (item != null) {
+                ItemMeta itemMeta = item.getItemMeta();
+                Material itemType = item.getType();
+                String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
+                NbtItemBuilder nbt = new NbtItemBuilder(item);
 
-            }
+                Block block = e.getClickedBlock();
+                boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
 
-            if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && ownerOfHouse) {
-                e.setCancelled(true);
-                housesManager.getHouse(player.getWorld()).createHologram(player, block.getLocation().add(new Vector(0.5, 0, 0.5)));
+                if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && ownerOfHouse) {
+                    e.setCancelled(true);
+                    house.createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
+                }
+
+                NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
+                NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
+                if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2) && ownerOfHouse) {
+                    e.setCancelled(true);
+                    int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
+                    HousingNPC npc = house.getNPC(id);
+                    npc.addPath(block.getLocation().add(0.5, 1, 0.5));
+                    player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
+
+                }
+
+                if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && ownerOfHouse) {
+                    e.setCancelled(true);
+                    house.createHologram(player, block.getLocation().add(new Vector(0.5, 0, 0.5)));
+                }
             }
         }
 
         // Click air
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+            ItemMeta itemMeta = item.getItemMeta();
+            Material itemType = item.getType();
+            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
+            NbtItemBuilder nbt = new NbtItemBuilder(item);
+
             // Cookies
             if (nbt.getBoolean("housing_cookie")) {
                 e.setCancelled(true);
-                HousingWorld house = housesManager.getHouse(player.getWorld());
                 if (house == null) return;
                 main.getCookieManager().giveCookie(player, house);
                 return;
             }
 
-            boolean ownerOfHouse = housesManager.getHouse(player.getWorld()) != null && housesManager.getHouse(player.getWorld()).getOwnerUUID().equals(player.getUniqueId());
+            boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
 
             NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
             NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
@@ -209,7 +198,7 @@ public class HousingItems implements Listener {
         if (customItem == null) return;
 
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
-            new ActionExecutor(customItem.getActions().get(clickType)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            new ActionExecutor(customItem.getActions().get(clickType)).execute(player, house, event);
         }
     }
 

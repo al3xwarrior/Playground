@@ -205,10 +205,6 @@ public class Runnables {
                         .name("&aRandom House &7(Right-Click)").build();
                 ItemStack ownerMenu = ItemBuilder.create(Material.NETHER_STAR).name("&dHousing Menu &7(Right-Click)").build();
                 ItemStack playerMenu = ItemBuilder.create(Material.DARK_OAK_DOOR).name("&aHousing Menu &7(Right-Click)").build();
-                ItemStack browserItem = ItemBuilder.create(Material.COMPASS).name("&aHousing Browser &7(Right-Click)").build();
-                ItemStack myHouses = ItemBuilder.create(Material.GRASS_BLOCK).name("&aMy Houses &7(Right-Click)").build();
-                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMxMzVlYTMxYmMxNWJlMTM0NjJiZjEwZTkxMmExNDBlNWE3ZDY4ZWY0YmQyNmUzZDc1MDU1OWQ1MDJiZjk1In19fQ==")
-                        .name("&aRandom House &7(Right-Click)").build();
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     // They are in a house

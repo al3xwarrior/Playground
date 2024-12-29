@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.HousingItems;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -121,7 +122,12 @@ public class ItemsMenu extends Menu {
         trashCanMeta.setDisplayName(colorize("&aTrash Can"));
         trashCan.setItemMeta(trashCanMeta);
         addItem(11, trashCan, () -> {
-            player.sendMessage("Trash Can selected");
+            player.getInventory().addItem(
+                    ItemBuilder.create(Material.CAULDRON)
+                            .name("&aTrash Can")
+                            .description("&7Place this item in your house to\n&7place a Trash Can!")
+                            .build()
+            );
         });
 
         ItemStack biomeStick = new ItemStack(Material.STICK);

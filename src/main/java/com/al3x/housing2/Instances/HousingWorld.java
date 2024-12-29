@@ -65,6 +65,7 @@ public class HousingWorld {
     private List<Region> regions;
     private List<Layout> layouts;
     private List<CustomMenu> customMenus;
+    private List<Location> trashCans;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -102,6 +103,7 @@ public class HousingWorld {
         this.cookieGivers = new ArrayList<>();
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
+        this.trashCans = new ArrayList<>();
         this.customMenus = new ArrayList<>();
         this.statManager = new StatManager(this);
         try {
@@ -141,6 +143,7 @@ public class HousingWorld {
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
         this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.Companion.toList(houseData.getCustomMenus()) : new ArrayList<>();
         this.scoreboard = houseData.getScoreboard();
+//        this.trashCans = houseData.getTrashCans();
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
@@ -478,6 +481,27 @@ public class HousingWorld {
 
     public void setCookieWeek(int cookieWeek) {
         this.cookieWeek = cookieWeek;
+    }
+
+    public void addTrashCan(Location location) {
+        getWorld().setBlockData(location, Bukkit.createBlockData(Material.BARRIER));
+        trashCans.add(location);
+    }
+
+    public void setTrashCans(List<Location> trashCans) {
+        this.trashCans = trashCans;
+    }
+
+    public void removeTrashCan(Location location) {
+        trashCans.remove(location);
+    }
+
+    public boolean trashCanAtLocation(Location location) {
+        return trashCans.stream().anyMatch(trashCan -> trashCan.equals(location));
+    }
+
+    public List<Location> getTrashCans() {
+        return trashCans;
     }
 
     public int getSize() {

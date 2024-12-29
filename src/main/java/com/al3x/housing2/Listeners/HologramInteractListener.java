@@ -24,7 +24,6 @@ public class HologramInteractListener implements Listener {
 
     @EventHandler
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
-        Bukkit.getLogger().info("Armor stand manipulate event");
         if (!e.getRightClicked().isVisible()) e.setCancelled(true);
     }
 
