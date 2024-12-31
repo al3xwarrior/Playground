@@ -108,7 +108,7 @@ public class GroupEditMenu extends Menu {
         });
         i++;
 
-        if (!group.getName().equalsIgnoreCase("default") && !group.getName().equalsIgnoreCase("owner")) {
+        if (!group.getName().equalsIgnoreCase("owner")) {
             addItem(slots[i], ItemBuilder.create(Material.PLAYER_HEAD).name("&aEdit Permissions")
                     .skullTexture("86f125004a8ffa6e4a4ec7b178606d0670c28a75b9cde59e011e66e91a66cf14")
                     .description("Change the permissions the players have within this group.")

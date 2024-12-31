@@ -3,14 +3,14 @@ package com.al3x.housing2.Enums.permissions;
 import com.al3x.housing2.Utils.StringUtilsKt;
 
 public enum Permissions implements PermissionInterface{
-    FLY,
-    WOOD_DOOR,
-    IRON_DOOR,
-    WOOD_TRAPDOOR,
-    IRON_TRAPDOOR,
-    FENCE_GATE,
-    BUTTON,
-    LEVER,
+    FLY(true),
+    WOOD_DOOR(true),
+    IRON_DOOR(true),
+    WOOD_TRAPDOOR(true),
+    IRON_TRAPDOOR(true),
+    FENCE_GATE(true),
+    BUTTON(true),
+    LEVER(true),
     LAUNCH_PAD,
     COMMAND_TP,
     COMMAND_TP_OTHER,
@@ -18,31 +18,34 @@ public enum Permissions implements PermissionInterface{
     KICK,
     BAN,
     MUTE,
-    CHAT(ChatSettings.class), //Chat will have a subenum for off, on, 1, 2, 3, 5, etc
+    CHAT(false, ChatSettings.class), //Chat will have a subenum for off, on, 1, 2, 3, 5, etc
     PET_SPAWNING, //Another things that will probably never happen
-    BUILD,
-    OFFLINE_BUILD(), //Another thing where it can depend on something here
+    BUILD(true),
+    OFFLINE_BUILD(true), //Another thing where it can depend on something here
     FLUID, //requires build
-    PRO_TOOLS, //requires build
-    USE_CHESTS,
-    USE_ENDER_CHESTS,
-    ITEM_EDITOR,
-    GAMEMODE(Gamemodes.class), //Gamemode enum
-    COMMAND_GAMEMODE,
-    COMMAND_EDITSTATS,
+    PRO_TOOLS(true), //requires build
+    USE_CHESTS(true),
+    USE_ENDER_CHESTS(true),
+    USE_SHULKERS(true),
+    ITEM_EDITOR(true),
+    GAMEMODE(true, Gamemodes.class), //Gamemode enum
+    COMMAND_GAMEMODE(false),
+    COMMAND_EDITSTATS(false),
     CHANGE_PLAYER_GROUP,
     CHANGE_GAMERULES,
-    HOUSING_MENU,
+    HOUSING_MENU(true),
+    HOUSE_SETTINGS(true),
+    EDIT_PERMISSIONS_AND_GROUP(true),
     TEAM_CHAT_SPY,
-    EDIT_ACTIONS,
-    EDIT_REGIONS,
-    EDIT_SCOREBOARD,
-    EDIT_EVENTS,
-    EDIT_COMMANDS,
-    EDIT_FUNCTIONS,
-    EDIT_INVENTORY_LAYOUTS,
-    EDIT_TEAMS,
-    EDIT_CUSTOM_MENUS,
+    EDIT_ACTIONS(true),
+    EDIT_REGIONS(true),
+    EDIT_SCOREBOARD(true),
+    EDIT_EVENTS(true),
+    EDIT_COMMANDS(true),
+    EDIT_FUNCTIONS(true),
+    EDIT_INVENTORY_LAYOUTS(true),
+    EDIT_TEAMS(true),
+    EDIT_CUSTOM_MENUS(true),
     ITEM_MAILBOX,
     ITEM_EGG_HUNT,
     ITEM_TELEPORT_PAD,
@@ -58,11 +61,16 @@ public enum Permissions implements PermissionInterface{
     ;
 
     Class<? extends PermissionInterface> subEnum;
+    boolean implemented = false;
 
     Permissions() {
     }
 
-    Permissions(Class<? extends PermissionInterface> subEnum) {
+    Permissions(boolean implemented) {
+        this.implemented = implemented;
+    }
+
+    Permissions(boolean implemented, Class<? extends PermissionInterface> subEnum) {
         this.subEnum = subEnum;
     }
 

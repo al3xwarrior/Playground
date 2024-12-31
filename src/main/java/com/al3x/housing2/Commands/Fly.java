@@ -2,32 +2,22 @@ package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ItemEditor.EditItemMainMenu;
-import com.al3x.housing2.Utils.Color;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import kotlin.text.MatchResult;
-import kotlin.text.Regex;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static org.bukkit.Material.AIR;
 
-public class Edit implements CommandExecutor {
+public class Fly implements CommandExecutor {
 
     private Main main;
 
-    public Edit(Main main) {
+    public Fly(Main main) {
         this.main = main;
     }
 
@@ -47,17 +37,19 @@ public class Edit implements CommandExecutor {
 
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
 
-        if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType() == AIR || player.getInventory().getItemInMainHand().getItemMeta() == null) {
-            player.sendMessage(colorize("&cYou must be holding an item to edit it!"));
+        if (!house.hasPermission(player, Permissions.FLY)) {
+            player.sendMessage(colorize("&cYou do not have permission to use this command in this house!"));
             return true;
         }
 
-        if (!house.hasPermission(player, Permissions.ITEM_EDITOR)) {
-            player.sendMessage(colorize("&cYou do not have permission to edit items in this house!"));
-            return true;
+        if (player.getAllowFlight()) {
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            player.sendMessage(colorize("&cYou have disabled fly mode!"));
+        } else {
+            player.setAllowFlight(true);
+            player.sendMessage(colorize("&aYou have enabled fly mode!"));
         }
-
-        new EditItemMainMenu(player).open();
         return true;
     }
 }

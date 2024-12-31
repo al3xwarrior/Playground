@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -106,6 +107,24 @@ public class ActionsMenu extends Menu {
     public void removeCondition(Condition condition) {
         conditions.remove(condition);
         setupItems();
+    }
+
+    @Override
+    public void open() {
+        if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
+            player.sendMessage(colorize("&cYou do not have permission to edit actions in this house!"));
+            if (event != null) {
+                new EventActionsMenu(main, player, house).open();
+            }
+            if (housingNPC != null) {
+                new NPCMenu(main, player, housingNPC).open();
+            }
+            if (backMenu != null) {
+                backMenu.open();
+            }
+            return;
+        }
+        super.open();
     }
 
     @Override

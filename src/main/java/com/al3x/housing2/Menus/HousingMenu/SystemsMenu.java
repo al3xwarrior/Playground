@@ -1,5 +1,6 @@
 package com.al3x.housing2.Menus.HousingMenu;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.CustomMenus.CustomMenusMenu;
@@ -30,76 +31,104 @@ public class SystemsMenu extends Menu {
 
     @Override
     public void setupItems() {
-        ItemStack regions = new ItemStack(Material.GRASS_BLOCK);
-        ItemMeta regionsMeta = regions.getItemMeta();
-        regionsMeta.setDisplayName(colorize("&aRegions"));
-        regions.setItemMeta(regionsMeta);
-        addItem(10, regions, () -> {
-            new RegionsMenu(main, player, house).open();
-        });
+        int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
-        ItemStack eventActions = new ItemStack(Material.COBWEB);
-        ItemMeta eventActionsMeta = eventActions.getItemMeta();
-        eventActionsMeta.setDisplayName(colorize("&aEvent Actions"));
-        eventActions.setItemMeta(eventActionsMeta);
-        addItem(11, eventActions, () -> {
-            new EventActionsMenu(main, player, house).open();
-        });
+        int slot = 0;
+        if (house.hasPermission(player, Permissions.EDIT_REGIONS)) {
+            ItemStack regions = new ItemStack(Material.GRASS_BLOCK);
+            ItemMeta regionsMeta = regions.getItemMeta();
+            regionsMeta.setDisplayName(colorize("&aRegions"));
+            regions.setItemMeta(regionsMeta);
+            addItem(slots[slot], regions, () -> {
+                new RegionsMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack scoreboardEditor = new ItemStack(Material.MAP);
-        ItemMeta scoreboardEditorMeta = scoreboardEditor.getItemMeta();
-        scoreboardEditorMeta.setDisplayName(colorize("&aScoreboard Editor"));
-        scoreboardEditor.setItemMeta(scoreboardEditorMeta);
-        addItem(12, scoreboardEditor, () -> {
-            new ScoreboardMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, Permissions.EDIT_EVENTS)) {
+            ItemStack eventActions = new ItemStack(Material.COBWEB);
+            ItemMeta eventActionsMeta = eventActions.getItemMeta();
+            eventActionsMeta.setDisplayName(colorize("&aEvent Actions"));
+            eventActions.setItemMeta(eventActionsMeta);
+            addItem(slots[slot], eventActions, () -> {
+                new EventActionsMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack commands = new ItemStack(Material.COMMAND_BLOCK);
-        ItemMeta commandsMeta = commands.getItemMeta();
-        commandsMeta.setDisplayName(colorize("&aCommands"));
-        commands.setItemMeta(commandsMeta);
-        addItem(13, commands, () -> {
-            new CommandsMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, Permissions.EDIT_SCOREBOARD)) {
+            ItemStack scoreboardEditor = new ItemStack(Material.MAP);
+            ItemMeta scoreboardEditorMeta = scoreboardEditor.getItemMeta();
+            scoreboardEditorMeta.setDisplayName(colorize("&aScoreboard Editor"));
+            scoreboardEditor.setItemMeta(scoreboardEditorMeta);
+            addItem(slots[slot], scoreboardEditor, () -> {
+                new ScoreboardMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack functions = new ItemStack(Material.ACTIVATOR_RAIL);
-        ItemMeta functionsMeta = functions.getItemMeta();
-        functionsMeta.setDisplayName(colorize("&aFunctions"));
-        functions.setItemMeta(functionsMeta);
-        addItem(14, functions, () -> {
-            new FunctionsMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, Permissions.EDIT_COMMANDS)) {
+            ItemStack commands = new ItemStack(Material.COMMAND_BLOCK);
+            ItemMeta commandsMeta = commands.getItemMeta();
+            commandsMeta.setDisplayName(colorize("&aCommands"));
+            commands.setItemMeta(commandsMeta);
+            addItem(slots[slot], commands, () -> {
+                new CommandsMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack inventoryLayouts = new ItemStack(Material.IRON_AXE);
-        ItemMeta inventoryLayoutsMeta = inventoryLayouts.getItemMeta();
-        inventoryLayoutsMeta.setDisplayName(colorize("&aInventory Layouts"));
-        inventoryLayouts.setItemMeta(inventoryLayoutsMeta);
-        addItem(15, inventoryLayouts, () -> {
-            new LayoutsMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, Permissions.EDIT_FUNCTIONS)) {
+            ItemStack functions = new ItemStack(Material.ACTIVATOR_RAIL);
+            ItemMeta functionsMeta = functions.getItemMeta();
+            functionsMeta.setDisplayName(colorize("&aFunctions"));
+            functions.setItemMeta(functionsMeta);
+            addItem(slots[slot], functions, () -> {
+                new FunctionsMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack teams = new ItemStack(Material.OAK_SIGN);
-        ItemMeta teamsMeta = teams.getItemMeta();
-        teamsMeta.setDisplayName(colorize("&aTeams"));
-        teams.setItemMeta(teamsMeta);
-        addItem(16, teams, () -> {
-            player.sendMessage("Opening Teams Menu...");
-        });
+        if (house.hasPermission(player, Permissions.EDIT_INVENTORY_LAYOUTS)) {
+            ItemStack inventoryLayouts = new ItemStack(Material.IRON_AXE);
+            ItemMeta inventoryLayoutsMeta = inventoryLayouts.getItemMeta();
+            inventoryLayoutsMeta.setDisplayName(colorize("&aInventory Layouts"));
+            inventoryLayouts.setItemMeta(inventoryLayoutsMeta);
+            addItem(slots[slot], inventoryLayouts, () -> {
+                new LayoutsMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
-        ItemStack customMenus = new ItemStack(Material.CHEST);
-        ItemMeta customMenusMeta = customMenus.getItemMeta();
-        customMenusMeta.setDisplayName(colorize("&aCustom Menus"));
-        customMenus.setItemMeta(customMenusMeta);
-        addItem(19, customMenus, () -> {
-            new CustomMenusMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, Permissions.EDIT_TEAMS)) {
+            ItemStack teams = new ItemStack(Material.OAK_SIGN);
+            ItemMeta teamsMeta = teams.getItemMeta();
+            teamsMeta.setDisplayName(colorize("&aTeams"));
+            teams.setItemMeta(teamsMeta);
+            addItem(slots[slot], teams, () -> {
+                player.sendMessage("Opening Teams Menu...");
+            });
+            slot++;
+        }
+
+        if (house.hasPermission(player, Permissions.EDIT_CUSTOM_MENUS)) {
+            ItemStack customMenus = new ItemStack(Material.CHEST);
+            ItemMeta customMenusMeta = customMenus.getItemMeta();
+
+            customMenusMeta.setDisplayName(colorize("&aCustom Menus"));
+            customMenus.setItemMeta(customMenusMeta);
+            addItem(slots[slot], customMenus, () -> {
+                new CustomMenusMenu(main, player, house).open();
+            });
+            slot++;
+        }
 
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(40, backArrow, () -> {
-            new OwnerHousingMenu(main, player, house).open();
+            new HousingMenu(main, player, house).open();
         });
     }
 }

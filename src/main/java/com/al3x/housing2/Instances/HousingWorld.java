@@ -76,6 +76,7 @@ public class HousingWorld {
     private Random random;
     public HouseData houseData;
 
+    //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
         initialize(main, owner, null);
         loadHouseData(owner, houseID);
@@ -175,7 +176,6 @@ public class HousingWorld {
         this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
-
     }
 
     private void loadEventActions() {
@@ -592,6 +592,10 @@ public class HousingWorld {
 
     public void setMaterial(Material material) {
         this.icon = material;
+    }
+
+    public OfflinePlayer getOwner() {
+        return Bukkit.getOfflinePlayer(ownerUUID);
     }
 
     public List<Region> getRegions() {

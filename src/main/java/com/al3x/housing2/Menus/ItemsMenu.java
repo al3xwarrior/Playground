@@ -1,11 +1,12 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.HousingItems;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
+import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,112 +32,139 @@ public class ItemsMenu extends Menu {
 
     @Override
     public void setupItems() {
-        ItemStack mailbox = getCustomSkull("b4bd9dd128c94c10c945eadaa342fc6d9765f37b3df2e38f7b056dc7c927ed");
-        ItemMeta mailboxMeta = mailbox.getItemMeta();
-        mailboxMeta.setDisplayName(colorize("&aMailbox"));
-        mailbox.setItemMeta(mailboxMeta);
-        addItem(0, mailbox, () -> {
-            player.sendMessage("Mailbox selected");
-        });
+        int slot = 0;
+        if (house.hasPermission(player, Permissions.ITEM_MAILBOX)) {
+            ItemStack mailbox = getCustomSkull("b4bd9dd128c94c10c945eadaa342fc6d9765f37b3df2e38f7b056dc7c927ed");
+            ItemMeta mailboxMeta = mailbox.getItemMeta();
+            mailboxMeta.setDisplayName(colorize("&aMailbox"));
+            mailbox.setItemMeta(mailboxMeta);
+            addItem(slot++, mailbox, () -> {
+                player.sendMessage("Mailbox selected");
+            });
+        }
 
-        ItemStack eggHuntBlock = getCustomSkull("8f3f4d3a2f48466918fa05cd60c9830cc18fc74390cfaeaad1a117786aba90cd");
-        ItemMeta eggHuntBlockMeta = eggHuntBlock.getItemMeta();
-        eggHuntBlockMeta.setDisplayName(colorize("&aEgg Hunt Block"));
-        eggHuntBlock.setItemMeta(eggHuntBlockMeta);
-        addItem(1, eggHuntBlock, () -> {
-            player.sendMessage("Egg Hunt Block selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_EGG_HUNT)) {
+            ItemStack eggHuntBlock = getCustomSkull("8f3f4d3a2f48466918fa05cd60c9830cc18fc74390cfaeaad1a117786aba90cd");
+            ItemMeta eggHuntBlockMeta = eggHuntBlock.getItemMeta();
+            eggHuntBlockMeta.setDisplayName(colorize("&aEgg Hunt Block"));
+            eggHuntBlock.setItemMeta(eggHuntBlockMeta);
+            addItem(slot++, eggHuntBlock, () -> {
+                player.sendMessage("Egg Hunt Block selected");
+            });
+        }
 
-        ItemStack teleportPad = new ItemStack(Material.END_PORTAL_FRAME);
-        ItemMeta teleportPadMeta = teleportPad.getItemMeta();
-        teleportPadMeta.setDisplayName(colorize("&aTeleport Pad"));
-        teleportPad.setItemMeta(teleportPadMeta);
-        addItem(2, teleportPad, () -> {
-            player.sendMessage("Teleport Pad selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_TELEPORT_PAD)) {
+            ItemStack teleportPad = new ItemStack(Material.END_PORTAL_FRAME);
+            ItemMeta teleportPadMeta = teleportPad.getItemMeta();
+            teleportPadMeta.setDisplayName(colorize("&aTeleport Pad"));
+            teleportPad.setItemMeta(teleportPadMeta);
+            addItem(slot++, teleportPad, () -> {
+                player.sendMessage("Teleport Pad selected");
+            });
+        }
 
-        ItemStack launchPad = new ItemStack(Material.SLIME_BLOCK);
-        ItemMeta launchPadMeta = launchPad.getItemMeta();
-        launchPadMeta.setDisplayName(colorize("&aLaunch Pad"));
-        launchPad.setItemMeta(launchPadMeta);
-        addItem(3, launchPad, () -> {
-            player.sendMessage("Launch Pad selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_LAUNCH_PAD)) {
+            ItemStack launchPad = new ItemStack(Material.SLIME_BLOCK);
+            ItemMeta launchPadMeta = launchPad.getItemMeta();
+            launchPadMeta.setDisplayName(colorize("&aLaunch Pad"));
+            launchPad.setItemMeta(launchPadMeta);
+            addItem(slot++, launchPad, () -> {
+                player.sendMessage("Launch Pad selected");
+            });
+        }
 
-        ItemStack parkourBlock = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
-        ItemMeta parkourBlockMeta = parkourBlock.getItemMeta();
-        parkourBlockMeta.setDisplayName(colorize("&aParkour Block"));
-        parkourBlock.setItemMeta(parkourBlockMeta);
-        addItem(4, parkourBlock, () -> {
-            player.sendMessage("Parkour Block selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_ACTION_PAD)) {
+            ItemStack parkourBlock = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
+            ItemMeta parkourBlockMeta = parkourBlock.getItemMeta();
+            parkourBlockMeta.setDisplayName(colorize("&aParkour Block"));
+            parkourBlock.setItemMeta(parkourBlockMeta);
+            addItem(slot++, parkourBlock, () -> {
+                player.sendMessage("Parkour Block selected");
+            });
+        }
 
-        ItemStack actionPad = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-        ItemMeta actionPadMeta = actionPad.getItemMeta();
-        actionPadMeta.setDisplayName(colorize("&aAction Pad"));
-        actionPad.setItemMeta(actionPadMeta);
-        addItem(5, actionPad, () -> {
-            player.sendMessage("Action Pad selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_ACTION_PAD)) {
+            ItemStack actionPad = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+            ItemMeta actionPadMeta = actionPad.getItemMeta();
+            actionPadMeta.setDisplayName(colorize("&aAction Pad"));
+            actionPad.setItemMeta(actionPadMeta);
+            addItem(slot++, actionPad, () -> {
+                player.sendMessage("Action Pad selected");
+            });
+        }
 
-        ItemStack hologram = new ItemStack(Material.NAME_TAG);
-        ItemMeta hologramMeta = hologram.getItemMeta();
-        hologramMeta.setDisplayName(colorize("&aHologram"));
-        hologram.setItemMeta(hologramMeta);
-        addItem(6, hologram, () -> {
-            player.getInventory().addItem(Hologram.getHologramItem());
-        });
+        if (house.hasPermission(player, Permissions.ITEM_HOLOGRAM)) {
+            ItemStack hologram = new ItemStack(Material.NAME_TAG);
+            ItemMeta hologramMeta = hologram.getItemMeta();
+            hologramMeta.setDisplayName(colorize("&aHologram"));
+            hologram.setItemMeta(hologramMeta);
+            addItem(slot++, hologram, () -> {
+                player.getInventory().addItem(Hologram.getHologramItem());
+            });
+        }
 
-        ItemStack npc = getCustomSkull("a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
-        ItemMeta npcMeta = npc.getItemMeta();
-        npcMeta.setDisplayName(colorize("&aNPC"));
-        npc.setItemMeta(npcMeta);
-        addItem(7, npc, () -> player.getInventory().addItem(HousingNPC.getNPCItem()));
+        if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
+            ItemStack npc = getCustomSkull("a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
+            ItemMeta npcMeta = npc.getItemMeta();
+            npcMeta.setDisplayName(colorize("&aNPC"));
+            npc.setItemMeta(npcMeta);
+            addItem(slot++, npc, () -> player.getInventory().addItem(HousingNPC.getNPCItem()));
+        }
 
-        ItemStack actionButton = new ItemStack(Material.STONE_BUTTON);
-        ItemMeta actionButtonMeta = actionButton.getItemMeta();
-        actionButtonMeta.setDisplayName(colorize("&aAction Button"));
-        actionButton.setItemMeta(actionButtonMeta);
-        addItem(8, actionButton, () -> {
-            player.sendMessage("Action Button selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_ACTION_BUTTON)) {
+            ItemStack actionButton = new ItemStack(Material.STONE_BUTTON);
+            ItemMeta actionButtonMeta = actionButton.getItemMeta();
+            actionButtonMeta.setDisplayName(colorize("&aAction Button"));
+            actionButton.setItemMeta(actionButtonMeta);
+            addItem(slot++, actionButton, () -> {
+                player.sendMessage("Action Button selected");
+            });
+        }
 
-        ItemStack statLeaderboard = new ItemStack(Material.BOOK);
-        ItemMeta statLeaderboardMeta = statLeaderboard.getItemMeta();
-        statLeaderboardMeta.setDisplayName(colorize("&aStat Leaderboard"));
-        statLeaderboard.setItemMeta(statLeaderboardMeta);
-        addItem(9, statLeaderboard, () -> {
-            player.sendMessage("Stat Leaderboard selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_LEADERBOARD)) {
+            ItemStack statLeaderboard = new ItemStack(Material.BOOK);
+            ItemMeta statLeaderboardMeta = statLeaderboard.getItemMeta();
+            statLeaderboardMeta.setDisplayName(colorize("&aStat Leaderboard"));
+            statLeaderboard.setItemMeta(statLeaderboardMeta);
+            addItem(slot++, statLeaderboard, () -> {
+                player.sendMessage("Stat Leaderboard selected");
+            });
+        }
 
-        ItemStack parkourLeaderboard = new ItemStack(Material.BOOK);
-        ItemMeta parkourLeaderboardMeta = parkourLeaderboard.getItemMeta();
-        parkourLeaderboardMeta.setDisplayName(colorize("&aParkour Leaderboard"));
-        parkourLeaderboard.setItemMeta(parkourLeaderboardMeta);
-        addItem(10, parkourLeaderboard, () -> {
-            player.sendMessage("Parkour Leaderboard selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_LEADERBOARD)) {
+            ItemStack parkourLeaderboard = new ItemStack(Material.BOOK);
+            ItemMeta parkourLeaderboardMeta = parkourLeaderboard.getItemMeta();
+            parkourLeaderboardMeta.setDisplayName(colorize("&aParkour Leaderboard"));
+            parkourLeaderboard.setItemMeta(parkourLeaderboardMeta);
+            addItem(slot++, parkourLeaderboard, () -> {
+                player.sendMessage("Parkour Leaderboard selected");
+            });
+        }
 
-        ItemStack trashCan = new ItemStack(Material.CAULDRON);
-        ItemMeta trashCanMeta = trashCan.getItemMeta();
-        trashCanMeta.setDisplayName(colorize("&aTrash Can"));
-        trashCan.setItemMeta(trashCanMeta);
-        addItem(11, trashCan, () -> {
-            player.getInventory().addItem(
-                    ItemBuilder.create(Material.CAULDRON)
-                            .name("&aTrash Can")
-                            .description("&7Place this item in your house to\n&7place a Trash Can!")
-                            .build()
-            );
-        });
+        if (house.hasPermission(player, Permissions.ITEM_TRASHCAN)) {
+            ItemStack trashCan = new ItemStack(Material.CAULDRON);
+            ItemMeta trashCanMeta = trashCan.getItemMeta();
+            trashCanMeta.setDisplayName(colorize("&aTrash Can"));
+            trashCan.setItemMeta(trashCanMeta);
+            addItem(slot++, trashCan, () -> {
+                player.getInventory().addItem(
+                        ItemBuilder.create(Material.CAULDRON)
+                                .name("&aTrash Can")
+                                .description("&7Place this item in your house to\n&7place a Trash Can!")
+                                .build()
+                );
+            });
+        }
 
-        ItemStack biomeStick = new ItemStack(Material.STICK);
-        ItemMeta biomeStickMeta = biomeStick.getItemMeta();
-        biomeStickMeta.setDisplayName(colorize("&aBiome Stick"));
-        biomeStick.setItemMeta(biomeStickMeta);
-        addItem(12, biomeStick, () -> {
-            player.sendMessage("Biome Stick selected");
-        });
+        if (house.hasPermission(player, Permissions.ITEM_BIOME_STICK)) {
+            ItemStack biomeStick = new ItemStack(Material.STICK);
+            ItemMeta biomeStickMeta = biomeStick.getItemMeta();
+            biomeStickMeta.setDisplayName(colorize("&aBiome Stick"));
+            biomeStick.setItemMeta(biomeStickMeta);
+            addItem(slot++, biomeStick, () -> {
+                player.sendMessage("Biome Stick selected");
+            });
+        }
 
         ItemStack inventorySelector = HousingItems.inventoryInteractorItem(Material.HOPPER);
         addItem(13, inventorySelector, () -> {
@@ -198,7 +226,7 @@ public class ItemsMenu extends Menu {
         backArrowMeta.setDisplayName(colorize("&cGo Back"));
         backArrow.setItemMeta(backArrowMeta);
         addItem(40, backArrow, () -> {
-            new OwnerHousingMenu(main, player, house).open();
+            new HousingMenu(main, player, house).open();
         });
     }
 }

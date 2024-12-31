@@ -2,13 +2,14 @@ package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Action.Actions.ChatAction;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.CookieManager;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
-import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
+import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
@@ -148,7 +149,7 @@ public class Housing implements CommandExecutor {
             if (strings[0].equalsIgnoreCase("menu")) {
                 if (housesManager.getHouse(player.getWorld()).getOwnerUUID() == player.getUniqueId()) {
                     HousingWorld house = housesManager.getHouse(player.getWorld());
-                    new OwnerHousingMenu(main, player, house).open();
+                    new HousingMenu(main, player, house).open();
                     return true;
                 }
                 player.sendMessage(colorize("&cYou are not the owner of this house!"));
@@ -165,7 +166,7 @@ public class Housing implements CommandExecutor {
 
                     HousingWorld house = housesManager.getHouse(player.getWorld());
 
-                    if (house.getOwnerUUID() != player.getUniqueId() && !player.hasPermission("housing.playerstats")) {
+                    if (house.hasPermission(player, Permissions.COMMAND_EDITSTATS) && !player.hasPermission("housing.playerstats")) {
                         player.sendMessage(colorize("&cYou do not have permission to view player stats!"));
                         return true;
                     }
@@ -192,7 +193,7 @@ public class Housing implements CommandExecutor {
                         player.sendMessage(colorize("&cYou are not in a house!"));
                         return true;
                     }
-                    if (house.getOwnerUUID() != player.getUniqueId() && !player.hasPermission("housing.globalstats")) {
+                    if (house.hasPermission(player, Permissions.COMMAND_EDITSTATS) && !player.hasPermission("housing.globalstats")) {
                         player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
                         return true;
                     }

@@ -2,7 +2,7 @@ package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.HousingMenu.OwnerHousingMenu;
+import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -140,7 +140,7 @@ public class HouseSettingsMenu extends Menu {
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)
                 .name(colorize("&aMain Menu"))
                 .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                .build(), (e) -> new OwnerHousingMenu(main, player, house).open());
+                .build(), (e) -> new HousingMenu(main, player, house).open());
 
     }
 }

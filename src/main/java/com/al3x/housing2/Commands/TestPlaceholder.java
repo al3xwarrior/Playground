@@ -1,5 +1,6 @@
 package com.al3x.housing2.Commands;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
@@ -49,6 +50,11 @@ public class TestPlaceholder implements CommandExecutor {
 
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
 
+        if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
+            player.sendMessage(colorize("&cYou do not have permission to view placeholders in this house!"));
+            return true;
+        }
+
         String message = String.join(" ", strings);
         player.sendMessage(colorize("&e" + HandlePlaceholders.parsePlaceholders(player, house, message)));
 
@@ -58,6 +64,20 @@ public class TestPlaceholder implements CommandExecutor {
     public static class TabCompleter implements org.bukkit.command.TabCompleter {
         @Override
         public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
+
+            if (!(commandSender instanceof Player player)) {
+                return List.of();
+            }
+
+            HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
+            if (house == null) {
+                return List.of();
+            }
+
+            if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
+                return List.of();
+            }
+
             if (args.length == 0) {
                 return HandlePlaceholders.getPlaceholders().stream().map((p) -> Color.removeColor(p.getDisplayName())).toList();
             }
@@ -66,11 +86,6 @@ public class TestPlaceholder implements CommandExecutor {
                 String arg = args[0];
                 List<String> placeholders = new ArrayList<>(HandlePlaceholders.getPlaceholders().stream().map((p) -> Color.removeColor(p.getDisplayName())).toList());
                 placeholders.removeIf((p) -> !p.toLowerCase().startsWith(args[0].toLowerCase()));
-
-                Player player = (Player) commandSender;
-                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-
-                if (house == null) return placeholders;
 
                 ArrayList<String> newCompletions = new ArrayList<>();
                 //I will work on this later lol

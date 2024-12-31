@@ -1,5 +1,6 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Main;
@@ -32,7 +33,7 @@ public class HologramInteractListener implements Listener {
         Player player = e.getPlayer();
 
         if (!(e.getRightClicked() instanceof ArmorStand)) return;
-        if (!housesManager.playerIsInOwnHouse(player)) return;
+        if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
 
         ArmorStand armorStand = (ArmorStand) e.getRightClicked();
         Hologram hologram = housesManager.getHouse(player).getHologramInstance(armorStand.getEntityId());

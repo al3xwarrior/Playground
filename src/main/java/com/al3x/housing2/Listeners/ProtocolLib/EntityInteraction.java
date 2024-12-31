@@ -1,5 +1,6 @@
 package com.al3x.housing2.Listeners.ProtocolLib;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Main;
@@ -22,7 +23,7 @@ public class EntityInteraction {
                 int id = wrapper.getTargetID();
                 Player player = event.getPlayer();
 
-                if (!housesManager.playerIsInOwnHouse(player)) return;
+                if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
                 Hologram hologram = housesManager.getHouse(player).getHologramInstance(id);
                 if (hologram == null) return;
                 if (hologram.isDestroyed()) return;

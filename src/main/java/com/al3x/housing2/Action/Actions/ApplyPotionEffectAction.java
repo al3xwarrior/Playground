@@ -71,7 +71,7 @@ public class ApplyPotionEffectAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
         List<ActionItem> items = List.of(
                 new ActionItem("potion",
                         ItemBuilder.create(Material.POTION)
@@ -88,7 +88,7 @@ public class ApplyPotionEffectAction extends Action {
                             //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
                             new PaginationMenu<>(Main.getInstance(),
                                     "&eSelect a Potion Effect", potions,
-                                    Bukkit.getPlayer(house.getOwnerUUID()), house, backMenu, (potion) -> {
+                                    player, house, backMenu, (potion) -> {
                                 potionEffectType = potion;
                                 backMenu.open();
                             }).open();

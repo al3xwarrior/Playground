@@ -4,6 +4,7 @@ import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Region;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.HousingMenu.SystemsMenu;
 import com.al3x.housing2.Menus.HousingMenu.regions.RegionEditMenu;
 import com.al3x.housing2.Menus.Menu;
@@ -72,7 +73,7 @@ public class GroupsMenu extends Menu {
         }
 
         addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
-            new SystemsMenu(main, player, house).open();
+            new HousingMenu(main, player, house).open();
         });
 
         addItem(50, new ItemBuilder().material(Material.OAK_SIGN).name(colorize("&aCreate Group")).build(), (e) -> {

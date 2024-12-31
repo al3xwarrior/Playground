@@ -1,5 +1,6 @@
 package com.al3x.housing2.Commands;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Color;
@@ -51,6 +52,11 @@ public class Placeholders implements CommandExecutor {
         }
 
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
+
+        if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
+            player.sendMessage(colorize("&cYou do not have permission to view placeholders in this house!"));
+            return true;
+        }
 
         player.sendMessage(colorize("&eHousing Placeholders:"));
         player.sendMessage(colorize("&7Use &e/placeholders <filter> &7to filter the list."));

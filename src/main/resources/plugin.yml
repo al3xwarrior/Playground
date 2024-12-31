@@ -12,6 +12,7 @@ commands:
   home:
     aliases: ["house", "homes"]
   setspawn:
+  fly:
   cancelinput:
     usage: "/cancelinput"
   testplaceholder:

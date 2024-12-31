@@ -34,6 +34,12 @@ public class Group {
         this.suffix = data.getSuffix();
         this.priority = data.getPriority();
         this.permissions = data.getPermissions();
+
+        for (Permissions permission : Permissions.values()) {
+            if (!permissions.containsKey(permission)) {
+                permissions.put(permission, false);
+            }
+        }
     }
 
     public String getName() {

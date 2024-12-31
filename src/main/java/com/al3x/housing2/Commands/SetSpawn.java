@@ -1,5 +1,6 @@
 package com.al3x.housing2.Commands;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -29,7 +30,7 @@ public class SetSpawn implements CommandExecutor {
             return true;
         }
 
-        if (!house.getOwnerUUID().equals(player.getUniqueId())) {
+        if (!house.hasPermission(player, Permissions.HOUSE_SETTINGS)) {
             player.sendMessage("§cYou are not the owner of this house.");
             return true;
         }

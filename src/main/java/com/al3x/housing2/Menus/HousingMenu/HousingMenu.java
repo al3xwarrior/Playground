@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus.HousingMenu;
 
 import com.al3x.housing2.Enums.HousePrivacy;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
@@ -15,15 +16,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class OwnerHousingMenu extends Menu {
+public class HousingMenu extends Menu {
 
     private Main main;
     private Player player;
     private HousingWorld house;
 
-    public OwnerHousingMenu(Main main, Player player, HousingWorld house) {
+    public HousingMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&7Housing Menu"), 45);
         this.main = main;
         this.player = player;
@@ -33,13 +35,15 @@ public class OwnerHousingMenu extends Menu {
 
     @Override
     public void setupItems() {
-        ItemStack protools = new ItemStack(Material.STICK);
-        ItemMeta protoolsMeta = protools.getItemMeta();
-        protoolsMeta.setDisplayName(colorize("&aPro Tools"));
-        protools.setItemMeta(protoolsMeta);
-        addItem(0, protools, () -> {
-            player.sendMessage("protools");
-        });
+        if (house.hasPermission(player, Permissions.PRO_TOOLS)) {
+            ItemStack protools = new ItemStack(Material.STICK);
+            ItemMeta protoolsMeta = protools.getItemMeta();
+            protoolsMeta.setDisplayName(colorize("&aPro Tools"));
+            protools.setItemMeta(protoolsMeta);
+            addItem(0, protools, () -> {
+                player.sendMessage("protools");
+            });
+        }
 
         ItemStack blocks = new ItemStack(Material.BRICKS);
         ItemMeta blocksMeta = blocks.getItemMeta();
@@ -153,13 +157,15 @@ public class OwnerHousingMenu extends Menu {
             player.sendMessage("Visibility");
         });
 
-        ItemStack buildMode = new ItemStack(Material.STONE_PICKAXE);
-        ItemMeta buildModeMeta = buildMode.getItemMeta();
-        buildModeMeta.setDisplayName(colorize("&aMode: &eBuild Mode"));
-        buildMode.setItemMeta(buildModeMeta);
-        addItem(35, buildMode, () -> {
-            player.sendMessage("Build Mode");
-        });
+        if (house.hasPermission(player, Permissions.BUILD) && (!house.getOwner().isOnline() || house.hasPermission(player, Permissions.OFFLINE_BUILD))) {
+            ItemStack buildMode = new ItemStack(Material.STONE_PICKAXE);
+            ItemMeta buildModeMeta = buildMode.getItemMeta();
+            buildModeMeta.setDisplayName(colorize("&aMode: &eBuild Mode"));
+            buildMode.setItemMeta(buildModeMeta);
+            addItem(35, buildMode, () -> {
+                player.sendMessage("Build Mode");
+            });
+        }
 
         ItemStack search = new ItemStack(Material.COMPASS);
         ItemMeta searchMeta = search.getItemMeta();
@@ -168,59 +174,67 @@ public class OwnerHousingMenu extends Menu {
         addItem(36, search, () -> {
             player.sendMessage("Search");
         });
+        if (house.hasPermission(player, HOUSE_SETTINGS)) {
+            ItemBuilder visitingRules = ItemBuilder.create(Material.PLAYER_HEAD);
+            visitingRules.name("&aVisiting Rules");
+            visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
+            visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
+            addItem(38, visitingRules.build(), () -> {
+                //thanks chatgippity lol, I would have made this a lot more complicated
+                house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
+                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
+                setupItems();
+            });
 
-        ItemBuilder visitingRules = ItemBuilder.create(Material.PLAYER_HEAD);
-        visitingRules.name("&aVisiting Rules");
-        visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
-        visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
-        addItem(38, visitingRules.build(), () -> {
-            //thanks chatgippity lol, I would have made this a lot more complicated
-            house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
-            player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
-            setupItems();
-        });
+            ItemStack houseSettings = new ItemStack(Material.COMPARATOR);
+            ItemMeta houseSettingsMeta = houseSettings.getItemMeta();
+            houseSettingsMeta.setDisplayName(colorize("&aHouse Settings"));
+            houseSettings.setItemMeta(houseSettingsMeta);
+            addItem(39, houseSettings, () -> {
+                new HouseSettingsMenu(main, player, house).open();
+            });
+        }
 
-        ItemStack houseSettings = new ItemStack(Material.COMPARATOR);
-        ItemMeta houseSettingsMeta = houseSettings.getItemMeta();
-        houseSettingsMeta.setDisplayName(colorize("&aHouse Settings"));
-        houseSettings.setItemMeta(houseSettingsMeta);
-        addItem(39, houseSettings, () -> {
-            new HouseSettingsMenu(main, player, house).open();
-        });
+        if (house.hasPermission(player, EDIT_PERMISSIONS_AND_GROUP)) {
+            ItemStack permissionsGroups = new ItemStack(Material.FILLED_MAP);
+            ItemMeta permissionsGroupsMeta = permissionsGroups.getItemMeta();
+            permissionsGroupsMeta.setDisplayName(colorize("&aPermissions and Groups"));
+            permissionsGroups.setItemMeta(permissionsGroupsMeta);
+            addItem(40, permissionsGroups, () -> {
+                new GroupsMenu(player, main, house).open();
+            });
+        }
 
-        ItemStack permissionsGroups = new ItemStack(Material.FILLED_MAP);
-        ItemMeta permissionsGroupsMeta = permissionsGroups.getItemMeta();
-        permissionsGroupsMeta.setDisplayName(colorize("&aPermissions and Groups"));
-        permissionsGroups.setItemMeta(permissionsGroupsMeta);
-        addItem(40, permissionsGroups, () -> {
-            new GroupsMenu(player, main, house).open();
-        });
+        if (house.hasPermission(player, Permissions.CHANGE_PLAYER_GROUP)) {
+            ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta playerListingMeta = playerListing.getItemMeta();
+            playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
+            playerListing.setItemMeta(playerListingMeta);
+            addItem(41, playerListing, () -> {
+                player.sendMessage("Player Listing");
+            });
+        }
 
-        ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
-        ItemMeta playerListingMeta = playerListing.getItemMeta();
-        playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
-        playerListing.setItemMeta(playerListingMeta);
-        addItem(41, playerListing, () -> {
-            player.sendMessage("Player Listing");
-        });
+        if (house.hasPermission(player, BUILD)) {
+            ItemStack clearInventory = new ItemStack(Material.CAULDRON);
+            ItemMeta clearInventoryMeta = clearInventory.getItemMeta();
+            clearInventoryMeta.setDisplayName(colorize("&aClear Inventory"));
+            clearInventory.setItemMeta(clearInventoryMeta);
+            addItem(42, clearInventory, () -> {
+                player.closeInventory();
+                player.getInventory().clear();
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+            });
+        }
 
-        ItemStack clearInventory = new ItemStack(Material.CAULDRON);
-        ItemMeta clearInventoryMeta = clearInventory.getItemMeta();
-        clearInventoryMeta.setDisplayName(colorize("&aClear Inventory"));
-        clearInventory.setItemMeta(clearInventoryMeta);
-        addItem(42, clearInventory, () -> {
-            player.closeInventory();
-            player.getInventory().clear();
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-        });
-
-        ItemStack jukebox = new ItemStack(Material.JUKEBOX);
-        ItemMeta jukeboxMeta = jukebox.getItemMeta();
-        jukeboxMeta.setDisplayName(colorize("&aJukebox"));
-        jukebox.setItemMeta(jukeboxMeta);
-        addItem(44, jukebox, () -> {
-            player.sendMessage("Jukebox");
-        });
-
+        if (house.hasPermission(player, JUKEBOX)) {
+            ItemStack jukebox = new ItemStack(Material.JUKEBOX);
+            ItemMeta jukeboxMeta = jukebox.getItemMeta();
+            jukeboxMeta.setDisplayName(colorize("&aJukebox"));
+            jukebox.setItemMeta(jukeboxMeta);
+            addItem(44, jukebox, () -> {
+                player.sendMessage("Jukebox");
+            });
+        }
     }
 }

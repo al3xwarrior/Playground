@@ -1,5 +1,6 @@
 package com.al3x.housing2.Commands.Protools;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.ProtoolsManager;
 import com.al3x.housing2.Main;
@@ -22,7 +23,7 @@ public class Wand implements CommandExecutor {
             return true;
         }
         Player player = (Player)commandSender;
-        if (this.houseManager.playerIsInOwnHouse(player)) {
+        if (this.houseManager.hasPermissionInHouse(player, Permissions.PRO_TOOLS)) {
             player.getInventory().addItem(ProtoolsManager.getWand());
             return true;
         }

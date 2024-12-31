@@ -1,6 +1,9 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Enums.Gamemodes;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
@@ -58,7 +61,9 @@ public class JoinLeaveHouse implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) { return; }
 
-        house.loadOrCreatePlayerData(player);
+        PlayerData data = house.loadOrCreatePlayerData(player);
+
+        loadPermissions(player, house, data);
 
         //Set the tablist
         HousingTabList.setTabList(player, house);
@@ -75,6 +80,19 @@ public class JoinLeaveHouse implements Listener {
         // Normal player joins
         else {
             player.setGameMode(GameMode.SURVIVAL);
+        }
+    }
+
+    private void loadPermissions(Player player, HousingWorld house, PlayerData data) {
+        if (house == null) return;
+
+        if (house.hasPermission(player, Permissions.FLY)) {
+            player.setAllowFlight(true);
+        }
+
+        Gamemodes value = Gamemodes.valueOf((String) data.getGroupInstance(house).getPermissions().get(Permissions.GAMEMODE));
+        if (value != null) {
+            player.setGameMode(value.getGameMode());
         }
     }
 

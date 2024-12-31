@@ -1,5 +1,6 @@
 package com.al3x.housing2.Instances;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
 import org.bukkit.Bukkit;
@@ -196,7 +197,7 @@ public class ProtoolsManager {
     }
 
     public boolean canUseProtools(Player player, boolean ignoreSelection) {
-        if (housesManager.playerIsInOwnHouse(player)) {
+        if (housesManager.hasPermissionInHouse(player, Permissions.PRO_TOOLS)) {
             if (offCooldown(player)) {
                 if (ignoreSelection || hasSelection(player)) {
                     return true;

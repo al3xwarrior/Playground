@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
@@ -73,7 +74,6 @@ public class HousesManager {
 
         return house;
     }
-
 
 
     public List<HousingWorld> getLoadedHouses() {
@@ -172,9 +172,18 @@ public class HousesManager {
         return null;
     }
 
+    //Really shouldnt use this anymore
+    //Replaced by hasPermissionInHouse
+    @Deprecated
     public boolean playerIsInOwnHouse(Player player) {
         HousingWorld house = getHouse(player.getWorld());
         return house != null && house.getOwnerUUID().equals(player.getUniqueId());
+    }
+
+    public boolean hasPermissionInHouse(Player player, Permissions permission) {
+        HousingWorld house = getHouse(player.getWorld());
+        if (house == null) return false;
+        return house.hasPermission(player, permission);
     }
 
     public boolean playerHasHouse(Player player) {
@@ -240,9 +249,19 @@ public class HousesManager {
         return house;
     }
 
+    //Updated to allow for houses that havent been loaded yet tom be added to the list
     public HousingWorld getRandomPublicHouse() {
-        if (getLoadedHouses().isEmpty()) return null;
-        return getLoadedHouses().stream().filter(house -> !house.getPrivacy().equals(HousePrivacy.PRIVATE)).toList().get((int) (Math.random() * getLoadedHouses().size()));
+        ArrayList<HouseData> publicHouses = new ArrayList<>(getAllHouseData().stream()
+                .filter(houseData -> houseData.getPrivacy().equals("PUBLIC"))
+                .toList());
+
+        if (publicHouses.isEmpty()) return null;
+        HouseData houseData = publicHouses.get((int) (Math.random() * publicHouses.size()));
+        if (houseData == null) return null;
+        if (concurrentLoadedHouses.containsKey(houseData.getHouseID())) {
+            return concurrentLoadedHouses.get(houseData.getHouseID());
+        }
+        return loadHouse(main.getServer().getOfflinePlayer(UUID.fromString(houseData.getOwnerID())), houseData.getHouseID());
     }
 
     public HousingWorld getRandomHouse() {

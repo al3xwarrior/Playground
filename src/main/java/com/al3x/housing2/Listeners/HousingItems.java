@@ -1,6 +1,7 @@
 package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -92,7 +93,7 @@ public class HousingItems implements Listener {
             if (name.equals("§aRandom House §7(Right-Click)")) {
                 HousingWorld randomHouse = housesManager.getRandomPublicHouse();
                 if (randomHouse != null) {
-                    house.sendPlayerToHouse(player);
+                    randomHouse.sendPlayerToHouse(player);
                 } else {
                     player.sendMessage(colorize("&cThere are no public houses available!"));
                 }
@@ -119,23 +120,24 @@ public class HousingItems implements Listener {
                 Block block = e.getClickedBlock();
                 boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
 
-                if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && ownerOfHouse) {
+                if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && house.hasPermission(player, Permissions.ITEM_NPCS)) {
                     e.setCancelled(true);
                     house.createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
                 }
 
-                NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
-                NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
-                if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2) && ownerOfHouse) {
-                    e.setCancelled(true);
-                    int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
-                    HousingNPC npc = house.getNPC(id);
-                    npc.addPath(block.getLocation().add(0.5, 1, 0.5));
-                    player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
-
+                if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
+                    NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
+                    NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
+                    if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2)) {
+                        e.setCancelled(true);
+                        int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
+                        HousingNPC npc = house.getNPC(id);
+                        npc.addPath(block.getLocation().add(0.5, 1, 0.5));
+                        player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
+                    }
                 }
 
-                if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && ownerOfHouse) {
+                if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && house.hasPermission(player, Permissions.ITEM_HOLOGRAM)) {
                     e.setCancelled(true);
                     house.createHologram(player, block.getLocation().add(new Vector(0.5, 0, 0.5)));
                 }
@@ -159,15 +161,17 @@ public class HousingItems implements Listener {
 
             boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
 
-            NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
-            NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
-            if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2) && ownerOfHouse) {
-                e.setCancelled(true);
-                int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
-                HousingNPC npc = housesManager.getHouse(player.getWorld()).getNPC(id);
-                if (npc.getPath() != null && !npc.getPath().isEmpty()) {
-                    Location loc = npc.removePath();
-                    player.sendMessage("§aRemoved path node (" + (npc.getPath().size() + 1) + ") at " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
+            if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
+                NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
+                NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
+                if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2)) {
+                    e.setCancelled(true);
+                    int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
+                    HousingNPC npc = housesManager.getHouse(player.getWorld()).getNPC(id);
+                    if (npc.getPath() != null && !npc.getPath().isEmpty()) {
+                        Location loc = npc.removePath();
+                        player.sendMessage("§aRemoved path node (" + (npc.getPath().size() + 1) + ") at " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
+                    }
                 }
             }
         }
@@ -203,9 +207,6 @@ public class HousingItems implements Listener {
     }
 
 
-
-
-
     public static ItemStack inventoryInteractorItem(Material material) {
         ItemStack item = ItemBuilder.create(material)
                 .name("&eInventory Interactor")
@@ -216,7 +217,7 @@ public class HousingItems implements Listener {
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "inventoryInteractor"), PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);
-        
+
         return item;
     }
 }

@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-public class CustomMenuViewer extends Menu{
+import java.util.ArrayList;
+
+public class CustomMenuViewer extends Menu {
     CustomMenu customMenu;
 
     BukkitTask task;
@@ -41,12 +43,14 @@ public class CustomMenuViewer extends Menu{
             ItemStack item = customMenu.getItems().get(i).getFirst().clone();
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName()));
+            ArrayList<String> lore = new ArrayList<>();
             if (meta.getLore() != null) {
                 for (int j = 0; j < meta.getLore().size(); j++) {
                     String line = meta.getLore().get(j);
-                    meta.getLore().set(j, HandlePlaceholders.parsePlaceholders(player, house, line));
+                    lore.add(HandlePlaceholders.parsePlaceholders(player, house, line));
                 }
             }
+            meta.setLore(lore);
             item.setItemMeta(meta);
             addItem(i, item, (e) -> {
                 new ActionExecutor(customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);

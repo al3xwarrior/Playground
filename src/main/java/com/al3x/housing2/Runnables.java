@@ -1,6 +1,7 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -220,11 +221,11 @@ public class Runnables {
                         }
 
                         // Player Owns House
-                        if (house.getOwnerUUID().equals(player.getUniqueId())) {
-                            if (inv.contains(ownerMenu)) return;
+                        if (house.hasPermission(player, Permissions.HOUSING_MENU)) {
+                            if (inv.contains(ownerMenu)) continue;
                             inv.setItem(8, ownerMenu);
                         } else { // Doesn't own house
-                            if (inv.contains(playerMenu)) return;
+                            if (inv.contains(playerMenu)) continue;
                             inv.setItem(8, playerMenu);
                         }
                     } else {
