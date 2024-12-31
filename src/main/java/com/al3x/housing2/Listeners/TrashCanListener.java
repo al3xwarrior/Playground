@@ -16,8 +16,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
@@ -29,6 +27,9 @@ public class TrashCanListener implements Listener {
     private static ItemStack head = ItemBuilder.create(Material.PLAYER_HEAD)
             .skullTexture("441f4edbc68c9061355242bd73effc9299a3252b9f11e82b5f1ec7b3b6ac0")
             .build();
+    private static ItemStack easterEggHead = ItemBuilder.create(Material.PLAYER_HEAD)
+            .skullTexture("3cea77e0532b330f6d554eb7c0f4274bf0365c35eab2ed7f39997ad1370942bb")
+            .build();
 
     public TrashCanListener(Main main) {
         this.main = main;
@@ -39,7 +40,7 @@ public class TrashCanListener implements Listener {
         top.setGravity(false); top.setVisible(false); top.setSmall(true);
         ArmorStand bottom = block.getWorld().spawn(block.getLocation().add(0.5, -0.7, 0.5), ArmorStand.class);
         bottom.setGravity(false); bottom.setVisible(false); bottom.setSmall(true);
-        top.getEquipment().setHelmet(head);
+        top.getEquipment().setHelmet((Math.random() < 0.01) ? easterEggHead : head);
         bottom.getEquipment().setHelmet(head);
     }
 

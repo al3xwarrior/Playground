@@ -3,14 +3,11 @@ package com.al3x.housing2.Utils;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class HousingCommandFramework {
