@@ -72,6 +72,7 @@ public class HousingWorld {
     private HashMap<String, PlayerData> playersData;
     private String defaultGroup = "default";
     private List<Location> trashCans;
+    private List<LaunchPad> launchPads;
     private String seed;
     private Random random;
     public HouseData houseData;
@@ -113,6 +114,7 @@ public class HousingWorld {
         this.layouts = new ArrayList<>();
         this.holograms = new ArrayList<>();
         this.trashCans = new ArrayList<>();
+        this.launchPads = new ArrayList<>();
         this.customMenus = new ArrayList<>();
         this.groups = new ArrayList<>();
         this.playersData = new HashMap<>();
@@ -523,6 +525,30 @@ public class HousingWorld {
 
     public void setCookieWeek(int cookieWeek) {
         this.cookieWeek = cookieWeek;
+    }
+
+    public void addLaunchPad(Location location) {
+        launchPads.add(new LaunchPad(location));
+    }
+
+    public void setLaunchPads(List<LaunchPad> launchPads) {
+        this.launchPads = launchPads;
+    }
+
+    public void removeLaunchPad(Location location) {
+        launchPads.removeIf(launchPad -> launchPad.getLocation().equals(location));
+    }
+
+    public boolean launchPadAtLocation(Location location) {
+        return launchPads.stream().anyMatch(launchPad -> launchPad.getLocation().equals(location));
+    }
+
+    public LaunchPad getLaunchPadAtLocation(Location location) {
+        return launchPads.stream().filter(launchPad -> launchPad.getLocation().equals(location)).findFirst().orElse(null);
+    }
+
+    public List<LaunchPad> getLaunchPads() {
+        return launchPads;
     }
 
     public void addTrashCan(Location location) {

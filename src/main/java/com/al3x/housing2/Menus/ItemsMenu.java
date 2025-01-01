@@ -69,7 +69,10 @@ public class ItemsMenu extends Menu {
             launchPadMeta.setDisplayName(colorize("&aLaunch Pad"));
             launchPad.setItemMeta(launchPadMeta);
             addItem(slot++, launchPad, () -> {
-                player.sendMessage("Launch Pad selected");
+                player.getInventory().addItem(ItemBuilder.create(Material.SLIME_BLOCK)
+                        .name("&aLaunch Pad")
+                        .description("&7Place this block in your house\n&7to place a Launch Pad!")
+                        .build());
             });
         }
 

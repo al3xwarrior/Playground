@@ -5,6 +5,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.LaunchPad;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.MineSkin.SkinResponse;
 import com.al3x.housing2.Utils.Duple;
@@ -13,10 +14,7 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -265,6 +263,20 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 20));
+
+        runnables.put("launchPadParticles", new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
+                    if (house.getWorld().getPlayers().isEmpty()) continue;
+
+                    for (LaunchPad launchPad : house.getLaunchPads()) {
+                        Location clone = launchPad.getLocation().clone();
+                        house.getWorld().spawnParticle(Particle.ITEM_SLIME, clone.add(Math.random(), 1, Math.random()), 1, 0, 0, 0, 0);
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0L, 2));
     }
 
     public static void stopRunnables() {
