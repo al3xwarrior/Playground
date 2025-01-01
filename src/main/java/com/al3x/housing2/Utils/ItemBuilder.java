@@ -1,7 +1,12 @@
 package com.al3x.housing2.Utils;
 
+import com.al3x.housing2.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
@@ -249,10 +254,8 @@ public class ItemBuilder {
         itemMeta.setLore(colorize(getLore()));
 
         // Hide all item flags cause they are annoying and useless
-        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemMeta.addItemFlags(ItemFlag.HIDE_DESTROYS);
-        itemMeta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
-        itemMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+        itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey(Main.getInstance(), "dummy"), 0, AttributeModifier.Operation.ADD_NUMBER)); // needed to correctly hide attributes
 
         stack.setItemMeta(itemMeta);
         //Add glow effect
