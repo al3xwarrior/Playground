@@ -24,7 +24,7 @@ public class HasItemCondition extends Condition {
 
 
     public HasItemCondition() {
-        super("Has Item Requirement");
+        super("Has Item");
     }
 
     @Override
