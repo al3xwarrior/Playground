@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -94,4 +95,19 @@ public abstract class Condition {
         }
     }
 
+    public Condition clone() {
+        Condition condition;
+        ConditionEnum conditionEnum = ConditionEnum.getConditionByName(getName());
+        if (conditionEnum == null) {
+            return null;
+        }
+        HashMap<String, Object> data = data();
+        for (String key : data.keySet()) {
+            if (data.get(key) instanceof Enum<?> e) {
+                data.put(key, e.name());
+            }
+        }
+        condition = conditionEnum.getConditionInstance(data);
+        return condition;
+    }
 }

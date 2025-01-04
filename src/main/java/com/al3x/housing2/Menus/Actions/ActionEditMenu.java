@@ -7,6 +7,7 @@ import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.ItemSelectMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
@@ -266,6 +267,50 @@ public class ActionEditMenu extends Menu {
                         break;
                     }
 
+                    case GROUP: {
+                        List<Duple<Group, ItemBuilder>> groups = new ArrayList<>();
+                        for (Group group : house.getGroups()) {
+                            groups.add(new Duple<>(group, ItemBuilder.create(Material.PAPER).name(group.getName()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+                        PaginationMenu<Group> paginationMenu = new PaginationMenu<>(main, "Select a Group", groups, player, house, this, (group) -> {
+                            try {
+                                // Set the field
+                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                field.setAccessible(true);
+                                field.set(action, group.getName());
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + group.getName()));
+                                open();
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
+                        break;
+                    }
+
+                    case REGION: {
+                        List<Duple<Region, ItemBuilder>> regions = new ArrayList<>();
+                        for (Region region : house.getRegions()) {
+                            regions.add(new Duple<>(region, ItemBuilder.create(Material.GRASS_BLOCK).name(region.getName()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+                        PaginationMenu<Region> paginationMenu = new PaginationMenu<>(main, "Select a Region", regions, player, house, this, (region) -> {
+                            try {
+                                // Set the field
+                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                field.setAccessible(true);
+                                field.set(action, region.getName());
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + region.getName()));
+                                open();
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
+                        break;
+                    }
+
                     case LAYOUT: {
                         List<Duple<Layout, ItemBuilder>> layouts = new ArrayList<>();
                         for (Layout layout : house.getLayouts()) {
@@ -314,6 +359,15 @@ public class ActionEditMenu extends Menu {
                         o.setValue(!value);
                         player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + !value));
                         open();
+                        break;
+                    }
+                    case ITEM: {
+                        if (o.field == null) return;
+                        new ItemSelectMenu(player, backMenu, (selectedItem) -> {
+                            o.setValue(selectedItem);
+                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + selectedItem.getItemMeta().getDisplayName()));
+                            open();
+                        }).open();
                         break;
                     }
                     case ACTION_SETTING: {

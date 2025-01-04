@@ -5,6 +5,7 @@ import org.bukkit.Material;
 public enum ParticleType implements EnumMaterial{
     LINE(Material.STICK),
     CIRCLE(Material.SNOWBALL),
+    CURVE(Material.EGG),
     SQUARE(Material.PAINTING);
 
     Material material;

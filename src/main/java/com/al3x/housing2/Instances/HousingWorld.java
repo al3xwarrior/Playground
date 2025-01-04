@@ -178,6 +178,7 @@ public class HousingWorld {
         this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
+        this.launchPads = houseData.getLaunchPads() != null ? houseData.getLaunchPads() : new ArrayList<>(); //Used a new method for this :)
     }
 
     private void loadEventActions() {
@@ -778,5 +779,9 @@ public class HousingWorld {
 
     public void setSpawn(@NotNull Location location) {
         this.spawn = location;
+    }
+
+    public Group getGroup(String group) {
+        return groups.stream().filter(g -> g.getName().equals(group)).findFirst().orElse(null);
     }
 }

@@ -16,6 +16,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -151,12 +152,19 @@ public class ActionsMenu extends Menu {
                     Condition condition = conditions.get(i);
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
+                    item.mClick(ItemBuilder.ActionType.CLONE);
                     condition.createDisplayItem(item);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
                             //shift actions around
                             shiftCondition(condition, e.isRightClick());
+                            return;
+                        }
+
+                        if (e.getClick() == ClickType.MIDDLE) {
+                            this.conditions.add(finalI, condition.clone());
+                            setupItems();
                             return;
                         }
 
@@ -196,12 +204,19 @@ public class ActionsMenu extends Menu {
                     Action action = actions.get(i);
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
+                    item.mClick(ItemBuilder.ActionType.CLONE);
                     action.createDisplayItem(item);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
                             //shift actions around
                             shiftAction(action, e.isRightClick());
+                            return;
+                        }
+
+                        if (e.getClick() == ClickType.MIDDLE) {
+                            this.actions.add(finalI, action.clone());
+                            setupItems();
                             return;
                         }
 

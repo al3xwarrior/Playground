@@ -49,6 +49,8 @@ public class LaunchPadListener implements Listener {
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         if (house == null) return;
 
+        if (e.getAction().isLeftClick()) return;
+
         if (house.launchPadAtLocation(block.getLocation())) {
             LaunchPad launchPad = house.getLaunchPadAtLocation(block.getLocation());
             launchPad.openConfigGUI(player);

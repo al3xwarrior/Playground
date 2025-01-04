@@ -8,7 +8,7 @@ public enum Gamemodes implements EnumMaterial {
     SURVIVAL(GameMode.SURVIVAL, Material.IRON_SWORD),
     CREATIVE(GameMode.CREATIVE, Material.GRASS_BLOCK),
     ADVENTURE(GameMode.ADVENTURE, Material.DIAMOND_SWORD),
-    SPECTATOR(GameMode.SPECTATOR, Material.ENDER_EYE)
+//    SPECTATOR(GameMode.SPECTATOR, Material.ENDER_EYE)
     ;
 
     private final GameMode gameMode;

@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.CancelAction;
+import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
@@ -104,7 +106,7 @@ public abstract class Action {
             try {
                 Field field = actionClass.getDeclaredField(key);
                 field.setAccessible(true);
-                if (field.getType().isEnum()) {
+                if (field.getType().isEnum() && data.get(key) != null) {
                     field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
                     continue;
                 }
@@ -217,6 +219,54 @@ public abstract class Action {
             player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
             return null;
         }
+    }
+
+    protected Location getLocationFromString(Player player, Location baseLocation, HousingWorld house, String message) {
+        String[] split = message.split(",");
+        if (split.length != 3) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+            return null;
+        }
+
+        Location loc = baseLocation.clone();
+        try {
+            String x = HandlePlaceholders.parsePlaceholders(player, house, split[0]);
+            String y = HandlePlaceholders.parsePlaceholders(player, house, split[1]);
+            String z = HandlePlaceholders.parsePlaceholders(player, house, split[2]);
+
+            double x1 = (x.startsWith("~")) ? loc.getX() : Double.parseDouble(x);
+            double y1 = (y.startsWith("~")) ? loc.getY() : Double.parseDouble(y);
+            double z1 = (z.startsWith("~")) ? loc.getZ() : Double.parseDouble(z);
+            if (x.startsWith("~") && x.length() > 1) {
+                x1 += Double.parseDouble(x.substring(1));
+            }
+            if (y.startsWith("~") && y.length() > 1) {
+                y1 += Double.parseDouble(y.substring(1));
+            }
+            if (z.startsWith("~") && z.length() > 1) {
+                z1 += Double.parseDouble(z.substring(1));
+            }
+            return new Location(player.getWorld(), x1, y1, z1, loc.getYaw(), loc.getPitch());
+        } catch (NumberFormatException e) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+            return null;
+        }
+    }
+
+    public Action clone() {
+        Action action;
+        ActionEnum actionEnum = ActionEnum.getActionByName(getName());
+        if (actionEnum == null) {
+            return null;
+        }
+        HashMap<String, Object> data = data();
+        for (String key : data.keySet()) {
+            if (data.get(key) != null && data.get(key).getClass().isEnum()) {
+                data.put(key, ((Enum<?>) data.get(key)).name());
+            }
+        }
+        action = actionEnum.getActionInstance(data);
+        return action;
     }
 
 }

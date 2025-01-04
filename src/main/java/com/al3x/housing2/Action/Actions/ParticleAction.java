@@ -2,36 +2,35 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Enums.ParticleType;
-import com.al3x.housing2.Enums.Particles;
-import com.al3x.housing2.Enums.Projectile;
-import com.al3x.housing2.Enums.PushDirection;
+import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Enums.Locations.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ParticleAction extends Action {
     private Particles particle;
-    private PushDirection direction;
-    private String customDirection;
+    private Locations location = null;
+    private String customLocation = null;
+    private Locations location2 = null;
+    private String customLocation2 = null;
+    private PushDirection direction = null;
+    private String customDirection = null;
     private ParticleType type;
     private Double radius;
     private Double amount;
@@ -42,19 +41,11 @@ public class ParticleAction extends Action {
         this.particle = Particles.WHITE_SMOKE;
         this.direction = PushDirection.FORWARD;
         this.type = ParticleType.LINE;
+        this.location = INVOKERS_LOCATION;
+        this.location2 = INVOKERS_LOCATION;
         this.radius = 8D;
         this.amount = 3D;
         this.globallyVisible = false;
-    }
-
-    public ParticleAction(Particles particle, ParticleType type, Double radius, Double amount, PushDirection direction, boolean globallyVisible) {
-        super("Particle Action");
-        this.particle = particle;
-        this.direction = direction;
-        this.type = type;
-        this.radius = radius;
-        this.amount = amount;
-        this.globallyVisible = globallyVisible;
     }
 
     @Override
@@ -70,9 +61,15 @@ public class ParticleAction extends Action {
         builder.info("&eSettings", "");
         builder.info("Particle&6", particle.name());
         builder.info("Type&6", type.name());
-        builder.info("Radius/Length", "&a" + radius);
+        if (type != ParticleType.CURVE) {
+            builder.info("Radius", "&6" + radius);
+        }
         builder.info("Amount", "&a" + amount);
-        if (type == ParticleType.LINE) {
+        builder.info("Location&a", ((location == Locations.CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name()));
+        if (type == ParticleType.CURVE) {
+            builder.info("Location 2&a", ((location2 == Locations.CUSTOM || location2 == PLAYER_LOCATION) ? customLocation2 : location2.name()));
+        }
+        if (type == ParticleType.LINE || type == ParticleType.CURVE) {
             builder.info("Direction", "&6" + direction);
         }
         builder.info("Globally Visible", (globallyVisible ? "&aTrue" : "&cFalse"));
@@ -92,7 +89,7 @@ public class ParticleAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
+    public ActionEditor editorMenu(HousingWorld house, Menu editMenu, Player player) {
         List<ActionEditor.ActionItem> items = new ArrayList<>();
         items.add(new ActionEditor.ActionItem("particle",
                 ItemBuilder.create(this.particle.getMaterial())
@@ -110,7 +107,47 @@ public class ParticleAction extends Action {
                         .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                 ActionEditor.ActionItem.ActionType.ENUM, ParticleType.values(), null
         ));
-        if (type == ParticleType.LINE) {
+        items.add(new ActionEditor.ActionItem("location",
+                ItemBuilder.create(Material.COMPASS)
+                        .name("&eLocation")
+                        .info("&7Current Value", "")
+                        .info(null, "&a" + ((location == Locations.CUSTOM || location == PLAYER_LOCATION) ? customLocation : location))
+                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
+                (event, o) -> getCoordinate(event, o, customLocation, house, editMenu,
+                        (coords, location) -> {
+                            customLocation = coords;
+                            this.location = location;
+                            if (location == PLAYER_LOCATION) {
+                                Location loc = player.getLocation();
+                                this.customLocation = loc.getX() + "," + loc.getY() + "," + loc.getZ();
+                            }
+                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                        }
+                )
+        ));
+        if (type == ParticleType.CURVE) {
+            items.add(new ActionEditor.ActionItem("location2",
+                    ItemBuilder.create(Material.COMPASS)
+                            .name("&eLocation 2")
+                            .info("&7Current Value", "")
+                            .info(null, "&a" + ((location2 == Locations.CUSTOM || location2 == PLAYER_LOCATION) ? customLocation2 : location2))
+                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                    ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
+                    (event, o) -> getCoordinate(event, o, customLocation2, house, editMenu,
+                            (coords, location) -> {
+                                customLocation2 = coords;
+                                this.location2 = location;
+                                if (location == PLAYER_LOCATION) {
+                                    Location loc = player.getLocation();
+                                    this.customLocation2 = loc.getX() + "," + loc.getY() + "," + loc.getZ();
+                                }
+                                Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                            }
+                    )
+            ));
+        }
+        if (type == ParticleType.LINE || type == ParticleType.CURVE) {
             items.add(new ActionEditor.ActionItem("direction",
                     ItemBuilder.create(Material.COMPASS)
                             .name("&eDirection")
@@ -121,18 +158,21 @@ public class ParticleAction extends Action {
                     (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
                         customDirection = str;
                         direction = dir;
+                        editMenu.open();
                     }))
             );
         }
-        items.add(new ActionEditor.ActionItem("radius",
-                        ItemBuilder.create(Material.SLIME_BALL)
-                                .name("&eRadius/Length")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + radius)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 1, 40 //Pretty easy to change the max value
-                )
-        );
+        if (type != ParticleType.CURVE) {
+            items.add(new ActionEditor.ActionItem("radius",
+                            ItemBuilder.create(Material.SLIME_BALL)
+                                    .name("&eRadius/Length")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + radius)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            ActionEditor.ActionItem.ActionType.DOUBLE, 1, 40 //Pretty easy to change the max value
+                    )
+            );
+        }
 
         items.add(new ActionEditor.ActionItem("amount",
                         ItemBuilder.create(Material.IRON_BARS)
@@ -198,12 +238,14 @@ public class ParticleAction extends Action {
                 try {
                     float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) location, null, split[0]));
                     float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) location, null, split[1]));
-                    Vector custom = location.getDirection().setY(0).normalize();
-                    custom = custom.multiply(Math.cos(Math.toRadians(pitch)));
-                    custom = custom.setY(Math.sin(Math.toRadians(pitch)));
-                    custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
-                    custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
-                    direction = custom;
+                    Vector vector = new Vector();
+                    double rotX = yaw;
+                    double rotY = pitch;
+                    vector.setY(-Math.sin(Math.toRadians(rotY)));
+                    double xz = Math.cos(Math.toRadians(rotY));
+                    vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
+                    vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
+                    direction = vector;
                 } catch (NumberFormatException e) {
                     return locations;
                 }
@@ -233,12 +275,93 @@ public class ParticleAction extends Action {
         return locations;
     }
 
+    public List<Location> getCurve(Location start, Location end, int amount, Player player, HousingWorld house) {
+        List<Location> locations = new ArrayList<>();
+        double distance = start.distance(end);
+        double increment = distance / amount;
+        Vector direction = end.toVector().subtract(start.toVector()).normalize();
+        //curve the line in the direction its going
+        Vector curve = switch (this.direction) {
+            case UP, FORWARD -> new Vector(0, direction.getY(), 0).normalize();
+            case LEFT -> new Vector(direction.getZ(), 0, -direction.getX()).normalize();
+            case RIGHT -> new Vector(-direction.getZ(), 0, direction.getX()).normalize();
+            case DOWN -> new Vector(0, -direction.getY(), 0).normalize();
+            case NORTH -> new Vector(0, 0, -direction.getZ()).normalize();
+            case SOUTH -> new Vector(0, 0, direction.getZ()).normalize();
+            case EAST -> new Vector(direction.getX(), 0, 0).normalize();
+            case WEST -> new Vector(-direction.getX(), 0, 0).normalize();
+            case CUSTOM -> {
+                if (customDirection == null) {
+                    yield null;
+                }
+                String[] split = customDirection.split(",");
+                if (split.length != 2) {
+                    yield null;
+                }
+
+                try {
+                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
+                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
+                    Vector vector = new Vector();
+                    double rotX = yaw;
+                    double rotY = pitch;
+                    vector.setY(-Math.sin(Math.toRadians(rotY)));
+                    double xz = Math.cos(Math.toRadians(rotY));
+                    vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
+                    vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
+                    yield vector;
+                } catch (NumberFormatException e) {
+                    yield null;
+                }
+            }
+            default -> new Vector(0, 0, 0);
+        };
+        if (curve == null) {
+            return locations;
+        }
+        for (double i = 0; i < distance; i+=increment) {
+            Location loc = start.clone().add(direction.clone().multiply(i)).add(curve.clone().multiply(Math.sin(i / distance * Math.PI) * 2));
+            locations.add(loc);
+        }
+        return locations;
+    }
+
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Location location = player.getLocation();
+        Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
+        if (location == null) {
+            return true;
+        }
+        summonParticles(player, house, location);
+        return true;
+    }
+
+    private Location locationFromLocations(Player player, HousingWorld house, Location base, Locations location, String customLocation) {
+        switch (location == null ? INVOKERS_LOCATION : location) {
+            case INVOKERS_LOCATION -> {
+                return player.getEyeLocation().clone();
+            }
+            case HOUSE_SPAWN -> {
+                return house.getSpawn().clone();
+            }
+            case CUSTOM, PLAYER_LOCATION -> {
+                if (base != null) {
+                    return getLocationFromString(player, base, house, customLocation);
+                }
+                return getLocationFromString(player, house, customLocation);
+            }
+        }
+        return null;
+    }
+
+    private void summonParticles(Player player, HousingWorld house, Location location) {
         List<Location> locations = new ArrayList<>();
         switch (type) {
             case CIRCLE -> locations = getCircle(location, radius, 40);
+            case CURVE -> {
+                Location loc2 = locationFromLocations(player, house, (this.location != INVOKERS_LOCATION) ? location : null, location2, customLocation2);
+                locations = getCurve(location, loc2, 40, player, house);
+            }
             case LINE -> locations = getLine(location, radius);
             case SQUARE -> locations = getSquare(location, radius, 40);
         }
@@ -249,7 +372,6 @@ public class ParticleAction extends Action {
                 player.spawnParticle(particle.getParticle(), loc, NumberUtilsKt.toInt(amount));
             }
         }
-        return true;
     }
 
     @Override
@@ -262,6 +384,10 @@ public class ParticleAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("particle", particle);
         data.put("type", type);
+        data.put("location", location);
+        data.put("customLocation", customLocation);
+        data.put("location2", location2);
+        data.put("customLocation2", customLocation2);
         data.put("radius", radius);
         data.put("amount", amount);
         data.put("direction", direction);

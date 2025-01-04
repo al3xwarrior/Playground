@@ -366,6 +366,7 @@ public class ItemBuilder {
         DELETE_YELLOW("delete", YELLOW),
         TOGGLE_YELLOW("toggle", YELLOW),
         TELEPORT("teleport", YELLOW),
+        CLONE("clone", YELLOW),
         SELECT_REGION("select region", YELLOW),
         TOGGLE_EXPRESSION("toggle expression", YELLOW),
         PLAY_SOUND("preview sound", YELLOW),

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Enums.PushDirection;
+import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -12,28 +13,28 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class LaunchPad {
 
-    private Location location;
+    private LocationData location; //New way of storing location data so that you dont need two classes to store location data
     private PushDirection pushDirection;
     private double verticalVelocity;
     private double horizontalVelocity;
 
     public LaunchPad(Location location) {
-        this.location = location;
+        this.location = LocationData.Companion.fromLocation(location);
         this.pushDirection = PushDirection.FORWARD;
         this.verticalVelocity = 1.0;
         this.horizontalVelocity = 2.0;
     }
 
-    public LaunchPad(Location location, PushDirection pushDirection, double verticalVelocity, double horizontalVelocity) {
-        this.location = location;
-        this.pushDirection = pushDirection;
-        this.verticalVelocity = verticalVelocity;
-        this.horizontalVelocity = horizontalVelocity;
-    }
+//    public LaunchPad(Location location, PushDirection pushDirection, double verticalVelocity, double horizontalVelocity) {
+//        this.location = LocationData.Companion.fromLocation(location);
+//        this.pushDirection = pushDirection;
+//        this.verticalVelocity = verticalVelocity;
+//        this.horizontalVelocity = horizontalVelocity;
+//    }
 
     public void launchPlayer(Player player) {
         switch (pushDirection) {
-            case FORWARD:
+            case FORWARD, UP:
                 player.setVelocity(player.getLocation().getDirection().multiply(horizontalVelocity).setY(verticalVelocity));
                 break;
             case BACKWARD:
@@ -44,9 +45,6 @@ public class LaunchPad {
                 break;
             case RIGHT:
                 player.setVelocity(player.getLocation().getDirection().rotateAroundY(Math.toRadians(-90)).multiply(horizontalVelocity).setY(verticalVelocity));
-                break;
-            case UP:
-                player.setVelocity(player.getLocation().getDirection().multiply(horizontalVelocity).setY(verticalVelocity));
                 break;
             case DOWN:
                 player.setVelocity(player.getLocation().getDirection().multiply(horizontalVelocity).setY(-verticalVelocity));
@@ -59,7 +57,7 @@ public class LaunchPad {
     }
 
     public void setLocation(Location location) {
-        this.location = location;
+        this.location = LocationData.Companion.fromLocation(location);
     }
     public void setPushDirection(PushDirection pushDirection) {
         this.pushDirection = pushDirection;
@@ -72,7 +70,7 @@ public class LaunchPad {
     }
 
     public Location getLocation() {
-        return location;
+        return location.toLocation();
     }
     public PushDirection getPushDirection() {
         return pushDirection;
@@ -85,6 +83,7 @@ public class LaunchPad {
     }
 
     // First time making a class inside a class !!
+    // I would like to vomit :/ -Sin_ender
     public class LaunchPadGUI extends Menu {
 
         private Main main;
