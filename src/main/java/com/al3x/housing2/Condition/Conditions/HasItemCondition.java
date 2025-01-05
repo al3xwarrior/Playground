@@ -267,7 +267,7 @@ public class HasItemCondition extends Condition {
         }
         whatToCheck = WhatToCheck.valueOf((String) data.get("whatToCheck"));
         whereToCheck = WhereToCheck.valueOf((String) data.get("whereToCheck"));
-        customSlot = ((Double) data.get("customSlot")).intValue();
+        if (data.get("customSlot") != null) customSlot = ((Double) data.get("customSlot")).intValue();
         amount = Amount.valueOf((String) data.get("amount"));
     }
 
