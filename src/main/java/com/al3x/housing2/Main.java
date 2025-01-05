@@ -79,10 +79,13 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
+
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 
         // House Events
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);

@@ -39,6 +39,7 @@ public class WithinRegionCondition extends Condition {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.GRASS_BLOCK);
         builder.name("&eWithin Region");
+        builder.description("Requires the user to be in the specified region.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

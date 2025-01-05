@@ -1,5 +1,6 @@
 package com.al3x.housing2.Utils;
 
+import com.al3x.housing2.Main;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NbtItemBuilder {
-    private static final String PLUGIN_ID = "housing2";
-
     private ItemStack stack;
     private ItemMeta meta;
 
@@ -46,28 +45,28 @@ public class NbtItemBuilder {
     }
 
     public NbtItemBuilder setString(String key, String value) {
-        nbt.set(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.STRING, value);
+        nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.STRING, value);
         return this;
     }
 
     public NbtItemBuilder setInt(String key, int value) {
-        nbt.set(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.INTEGER, value);
+        nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.INTEGER, value);
         return this;
     }
 
     public NbtItemBuilder setDouble(String key, double value) {
-        nbt.set(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.DOUBLE, value);
+        nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.DOUBLE, value);
         return this;
     }
 
     public NbtItemBuilder setBoolean(String key, boolean value) {
-        nbt.set(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.BYTE, (byte) (value ? 1 : 0));
+        nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.BYTE, (byte) (value ? 1 : 0));
         return this;
     }
 
     public NbtItemBuilder addChild(String key) {
         NbtItemBuilder child = new NbtItemBuilder(nbt.getAdapterContext().newPersistentDataContainer(), key, this);
-        nbt.set(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.TAG_CONTAINER, child.build());
+        nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.TAG_CONTAINER, child.build());
         children.add(child);
         return child;
     }
@@ -77,41 +76,41 @@ public class NbtItemBuilder {
     }
 
     public String getString(String key) {
-        if (!nbt.has(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.STRING)) {
+        if (!nbt.has(new NamespacedKey(Main.getInstance(), key), PersistentDataType.STRING)) {
             return null;
         }
-        return nbt.get(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.STRING);
+        return nbt.get(new NamespacedKey(Main.getInstance(), key), PersistentDataType.STRING);
     }
 
     public int getInt(String key) {
-        if (!nbt.has(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.INTEGER)) {
+        if (!nbt.has(new NamespacedKey(Main.getInstance(), key), PersistentDataType.INTEGER)) {
             return 0;
         }
-        return nbt.get(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.INTEGER);
+        return nbt.get(new NamespacedKey(Main.getInstance(), key), PersistentDataType.INTEGER);
     }
 
     public double getDouble(String key) {
-        if (!nbt.has(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.DOUBLE)) {
+        if (!nbt.has(new NamespacedKey(Main.getInstance(), key), PersistentDataType.DOUBLE)) {
             return 0;
         }
-        return nbt.get(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.DOUBLE);
+        return nbt.get(new NamespacedKey(Main.getInstance(), key), PersistentDataType.DOUBLE);
     }
 
     public boolean getBoolean(String key) {
-        if (!nbt.has(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.BYTE)) {
+        if (!nbt.has(new NamespacedKey(Main.getInstance(), key), PersistentDataType.BYTE)) {
             return false;
         }
-        return nbt.get(new NamespacedKey(PLUGIN_ID, key), PersistentDataType.BYTE) == 1;
+        return nbt.get(new NamespacedKey(Main.getInstance(), key), PersistentDataType.BYTE) == 1;
     }
 
     public NbtItemBuilder remove(String key) {
-        nbt.remove(new NamespacedKey(PLUGIN_ID, key));
+        nbt.remove(new NamespacedKey(Main.getInstance(), key));
         return this;
     }
 
     public PersistentDataContainer build() {
         for (NbtItemBuilder child : children) {
-            nbt.set(new NamespacedKey(PLUGIN_ID, child.key), PersistentDataType.TAG_CONTAINER, child.build());
+            nbt.set(new NamespacedKey(Main.getInstance(), child.key), PersistentDataType.TAG_CONTAINER, child.build());
         }
 
         if (stack != null) {
@@ -133,7 +132,7 @@ public class NbtItemBuilder {
         List<NbtItemBuilder> list = new ArrayList<>();
         for (NamespacedKey key : nbt.getKeys()) {
             try {
-                PersistentDataContainer childNbt = nbt.get(new NamespacedKey(PLUGIN_ID, key.getKey()), PersistentDataType.TAG_CONTAINER);
+                PersistentDataContainer childNbt = nbt.get(new NamespacedKey(Main.getInstance(), key.getKey()), PersistentDataType.TAG_CONTAINER);
                 if (childNbt != null) {
                     list.add(new NbtItemBuilder(childNbt, key.getKey(), this));
                 }

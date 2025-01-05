@@ -183,12 +183,7 @@ public class ActionEditor {
         }
 
         public enum ActionType {
-            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, REGION, ACTION, ACTION_SETTING, FUNCTION, GROUP, LAYOUT, MENU, CONDITION, CUSTOM
-        }
-
-        public interface EnumInterface {
-            ItemBuilder getDisplayItem();
-
+            STRING, INT, DOUBLE, BOOLEAN, ENUM, ITEM, NPC, REGION, ACTION, ACTION_SETTING, FUNCTION, GROUP, LAYOUT, MENU, CONDITION, CUSTOM
         }
     }
 

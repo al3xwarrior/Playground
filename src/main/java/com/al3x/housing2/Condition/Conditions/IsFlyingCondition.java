@@ -31,7 +31,7 @@ public class IsFlyingCondition extends Condition {
         @Override
         public void createAddDisplayItem(ItemBuilder builder) {
             builder.material(Material.FEATHER);
-            builder.name("&aIs Flying");
+            builder.name("&eIs Flying");
             builder.description("Check if the player is Flying.");
             builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
         }

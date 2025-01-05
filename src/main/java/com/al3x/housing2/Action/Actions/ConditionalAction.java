@@ -79,7 +79,7 @@ public class ConditionalAction extends Action {
         List<ActionEditor.ActionItem> items = List.of(
                 new ActionEditor.ActionItem("conditions",
                         ItemBuilder.create(Material.COMPARATOR)
-                                .name("&aActions")
+                                .name("&aConditions")
                                 .info("&7Current Value", "")
                                 .info(null, (conditions.isEmpty() ? "&cNo Actions" : "&a" + conditions.size() + " Action"))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),

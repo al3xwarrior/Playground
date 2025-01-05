@@ -39,6 +39,7 @@ public enum ActionEnum {
     SET_HITDELAY("Set Hit Delay Action", SetHitDelayAction.class),
     LAUNCH_PROJECTILE("Launch Projectile Action", LaunchProjectileAction.class),
     PARTICLE("Particle Action", ParticleAction.class),
+    CHANGE_NPC_NAVIGATION("Change Npc Navigation Action", NpcPathAction.class),
     REPEAT("Repeat Action", RepeatAction.class),
     EXIT("Exit Action", ExitAction.class),
     DISPLAY_MENU("Display Menu Action", DisplayMenuAction.class),

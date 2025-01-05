@@ -50,7 +50,7 @@ public class MenuListener implements Listener {
 
         if (event.getClickedInventory() == event.getWhoClicked().getInventory()) {
             event.setCancelled(true);
-            if (event.getCurrentItem() != null && event.getCurrentItem().hasItemMeta()) {
+            if (event.getCurrentItem() != null && !event.getCurrentItem().isEmpty()) {
                 ItemStack item = event.getCurrentItem();
                 itemMenu.consumer.accept(item);
                 itemMenu.back.open();

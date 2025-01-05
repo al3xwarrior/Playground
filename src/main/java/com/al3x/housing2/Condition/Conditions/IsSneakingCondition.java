@@ -31,7 +31,7 @@ public class IsSneakingCondition extends Condition {
         @Override
         public void createAddDisplayItem(ItemBuilder builder) {
             builder.material(Material.HAY_BLOCK);
-            builder.name("&aIs Sneaking");
+            builder.name("&eIs Sneaking");
             builder.description("Check if the player is sneaking.");
             builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
         }

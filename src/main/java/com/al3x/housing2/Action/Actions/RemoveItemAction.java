@@ -8,6 +8,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.SlotSelectMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -58,7 +59,7 @@ public class RemoveItemAction extends Action {
                         .name("&aItem")
                         .description("Select a item to give")
                         .info("&7Current Value", "")
-                        .info(null, (item == null ? "&cNone" : "&6" + item.getItemMeta().getDisplayName())),
+                        .info(null, (item == null ? "&cNone" : "&6" + StackUtils.getDisplayName(item))),
                         ActionEditor.ActionItem.ActionType.ITEM
                 ),
                 new ActionEditor.ActionItem("slot", ItemBuilder.create(Material.CHEST)

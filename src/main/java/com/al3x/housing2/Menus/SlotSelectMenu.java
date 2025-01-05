@@ -14,11 +14,21 @@ public class SlotSelectMenu extends Menu {
     Main main;
     Consumer<Integer> slotRunnable;
     Menu backMenu;
+    boolean others;
     public SlotSelectMenu(Player player, Main main, Menu backMenu, Consumer<Integer> slotRunnable) {
         super(player, "&7Select Inventory Slot", 9 * 6);
         this.main = main;
         this.slotRunnable = slotRunnable;
         this.backMenu = backMenu;
+        this.others = false;
+    }
+
+    public SlotSelectMenu(Player player, Main main, Menu backMenu, boolean others, Consumer<Integer> slotRunnable) {
+        super(player, "&7Select Inventory Slot", 9 * 6);
+        this.main = main;
+        this.slotRunnable = slotRunnable;
+        this.backMenu = backMenu;
+        this.others = others;
     }
 
     @Override
@@ -55,34 +65,36 @@ public class SlotSelectMenu extends Menu {
             backMenu.open();
         });
 
-        //First Available Slot (-1)
-        addItem(6, ItemBuilder.create(Material.WHITE_STAINED_GLASS).name("&aFirst Available Slot")
-                .description("&8Manual Slot -1")
-                .build(), e -> {
-            slotRunnable.accept(-1);
-            backMenu.open();
-        });
+        if (others) {
+            //First Available Slot (-1)
+            addItem(6, ItemBuilder.create(Material.WHITE_STAINED_GLASS).name("&aFirst Available Slot")
+                    .description("&8Manual Slot -1")
+                    .build(), e -> {
+                slotRunnable.accept(-1);
+                backMenu.open();
+            });
 
-        //Main Hand (-2)
-        addItem(7, ItemBuilder.create(Material.WOODEN_SWORD).name("&aMain Hand")
-                .description("&8Manual Slot -2")
-                .build(), e -> {
-            slotRunnable.accept(-2);
-            backMenu.open();
-        });
+            //Main Hand (-2)
+            addItem(7, ItemBuilder.create(Material.WOODEN_SWORD).name("&aMain Hand")
+                    .description("&8Manual Slot -2")
+                    .build(), e -> {
+                slotRunnable.accept(-2);
+                backMenu.open();
+            });
 
-        //Off Hand (-3)
-        addItem(8, ItemBuilder.create(Material.SHIELD).name("&aOff Hand")
-                .description("&8Manual Slot -3")
-                .build(), e -> {
-            slotRunnable.accept(-3);
-            backMenu.open();
-        });
+            //Off Hand (-3)
+            addItem(8, ItemBuilder.create(Material.SHIELD).name("&aOff Hand")
+                    .description("&8Manual Slot -3")
+                    .build(), e -> {
+                slotRunnable.accept(-3);
+                backMenu.open();
+            });
+        }
 
         //Inventory
         for (int i = 0; i < 3*9; i++) {
             int finalI = i;
-            addItem(i + 9, ItemBuilder.create(Material.WHITE_STAINED_GLASS).name("&aInventory Slot " + (i + 1))
+            addItem(i + 9, ItemBuilder.create(Material.GRAY_STAINED_GLASS_PANE).name("&aInventory Slot " + (i + 1))
                     .description("&8Manual Slot " + (i + 9))
                     .build(), e -> {
                 slotRunnable.accept(finalI + 9);

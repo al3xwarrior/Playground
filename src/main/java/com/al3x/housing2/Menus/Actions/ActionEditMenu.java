@@ -12,6 +12,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -363,11 +365,42 @@ public class ActionEditMenu extends Menu {
                     }
                     case ITEM: {
                         if (o.field == null) return;
-                        new ItemSelectMenu(player, backMenu, (selectedItem) -> {
+                        new ItemSelectMenu(player, this, (selectedItem) -> {
                             o.setValue(selectedItem);
-                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + selectedItem.getItemMeta().getDisplayName()));
+                            if (selectedItem == null) {
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: &cNone"));
+                                open();
+                                return;
+                            }
+                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + StackUtils.getDisplayName(selectedItem)));
                             open();
                         }).open();
+                        break;
+                    }
+                    case NPC: {
+                        if (o.field == null) return;
+                        List<Duple<HousingNPC, ItemBuilder>> npcs = new ArrayList<>();
+                        for (HousingNPC npc : house.getNPCs()) {
+                            double distance = npc.getLocation().distance(player.getLocation());
+                            npcs.add(new Duple<>(npc, ItemBuilder.create(Material.PLAYER_HEAD).name(npc.getName()).info("Distance", Math.toIntExact(Math.round(distance))).info("NPC ID", npc.getNpcID()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+
+                        npcs.sort(Comparator.comparing(npc -> npc.getFirst().getLocation().distance(player.getLocation())));
+
+                        PaginationMenu<HousingNPC> paginationMenu = new PaginationMenu<>(main, "Select a NPC", npcs, player, house, this, (npc) -> {
+                            try {
+                                // Set the field
+                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                field.setAccessible(true);
+                                field.set(action, npc.getNpcID());
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + npc.getName()));
+                                open();
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
                         break;
                     }
                     case ACTION_SETTING: {
@@ -396,6 +429,17 @@ public class ActionEditMenu extends Menu {
             player.sendMessage(colorize("&cError: No back menu found"));
             player.closeInventory();
         });
+
+        // Add export button
+//        ItemBuilder export = ItemBuilder.create(Material.LIME_DYE).name("&aExport").lClick(ItemBuilder.ActionType.EXPORT_YELLOW);
+//        addItem(((editor.getRows() - 1) * 9), export.build(), (e) -> {
+//            player.sendMessage(colorize("&cI tried, but it doesn't work yet :("));
+//            if (action != null) {
+////                action.export(player);
+//            } else {
+////                condition.export(player);
+//            }
+//        });
     }
 
     public void setEvent(EventType event) {

@@ -6,12 +6,16 @@ import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
+import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
@@ -48,6 +52,9 @@ public abstract class Action {
     public abstract String toString();
 
     public abstract void createDisplayItem(ItemBuilder builder);
+    public void createDisplayItem(ItemBuilder builder, HousingWorld house) {
+        createDisplayItem(builder);
+    }
 
     public abstract void createAddDisplayItem(ItemBuilder builder);
 
@@ -223,8 +230,8 @@ public abstract class Action {
 
     protected Location getLocationFromString(Player player, Location baseLocation, HousingWorld house, String message) {
         String[] split = message.split(",");
-        if (split.length != 3) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+        if (split.length < 3 || split.length > 5) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
             return null;
         }
 
@@ -269,4 +276,15 @@ public abstract class Action {
         return action;
     }
 
+    // I couldnt figure this out :(
+//    private static final Gson exportGson = new GsonBuilder().setPrettyPrinting().create();
+//
+//    public void export(Player player) {
+//        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+//        out.writeUTF("export");
+//        out.writeUTF(exportGson.toJson(ActionData.Companion.toData(this)));
+//        player.sendPluginMessage(Main.getInstance(), "housing:export",
+//                out.toByteArray()
+//        );
+//    }
 }

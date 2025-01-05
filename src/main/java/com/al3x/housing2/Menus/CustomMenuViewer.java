@@ -13,6 +13,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.al3x.housing2.Utils.Color.colorize;
+import static com.al3x.housing2.Utils.Color.removeColor;
 
 public class CustomMenuViewer extends Menu {
     CustomMenu customMenu;
@@ -32,6 +38,7 @@ public class CustomMenuViewer extends Menu {
 
     @Override
     public void setupItems() {
+        clearItems();
         Main main = Main.getInstance();
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
 
@@ -44,11 +51,9 @@ public class CustomMenuViewer extends Menu {
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName()));
             ArrayList<String> lore = new ArrayList<>();
-            if (meta.getLore() != null) {
-                for (int j = 0; j < meta.getLore().size(); j++) {
-                    String line = meta.getLore().get(j);
-                    lore.add(HandlePlaceholders.parsePlaceholders(player, house, line));
-                }
+            List<String> oldLore = new ArrayList<>(meta.getLore() == null ? new ArrayList<>() : meta.getLore());
+            for (String line : oldLore) {
+                lore.add(HandlePlaceholders.parsePlaceholders(player, house, line));
             }
             meta.setLore(lore);
             item.setItemMeta(meta);

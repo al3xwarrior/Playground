@@ -36,6 +36,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.al3x.housing2.Utils.Color.removeColor;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -449,6 +450,7 @@ public class HandlePlaceholders {
             if (placeholder.getPlaceholder().startsWith("regex:")) {
                 String regex = placeholder.getPlaceholder().substring(6);
                 Regex pattern = new Regex(regex);
+                removeColorCodesInPlaceholders(result);
                 MatchResult match = pattern.find(result.toString(), 0);
                 while (match != null) {
                     replaceAll(result, match.getValue(), placeholder.run(player, house, match));
@@ -460,6 +462,15 @@ public class HandlePlaceholders {
         }
 
         return result.toString();
+    }
+
+    private static void removeColorCodesInPlaceholders(StringBuilder builder) {
+        Pattern pattern = Pattern.compile("%[^%]+%");
+        Matcher matcher = pattern.matcher(builder.toString());
+        while (matcher.find()) {
+            String match = matcher.group();
+            builder.replace(matcher.start(), matcher.end(), removeColor(match));
+        }
     }
 
     private static void replaceAll(StringBuilder builder, String target, String replacement) {

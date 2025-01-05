@@ -179,7 +179,7 @@ public class ActionsMenu extends Menu {
 
             ItemStack addCondition = new ItemStack(Material.PAPER);
             ItemMeta addActionMeta = addCondition.getItemMeta();
-            addActionMeta.setDisplayName(colorize("&aAdd Action"));
+            addActionMeta.setDisplayName(colorize("&aAdd Condition"));
             addCondition.setItemMeta(addActionMeta);
             addItem(50, addCondition, () -> {
                 AddConditionMenu menu = new AddConditionMenu(main, player, house, this.conditions, this);
@@ -205,7 +205,7 @@ public class ActionsMenu extends Menu {
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
                     item.mClick(ItemBuilder.ActionType.CLONE);
-                    action.createDisplayItem(item);
+                    action.createDisplayItem(item, house);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {

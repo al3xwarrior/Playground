@@ -277,6 +277,7 @@ public class ParticleAction extends Action {
 
     public List<Location> getCurve(Location start, Location end, int amount, Player player, HousingWorld house) {
         List<Location> locations = new ArrayList<>();
+        if (end == null) end = player.getEyeLocation().clone();
         double distance = start.distance(end);
         double increment = distance / amount;
         Vector direction = end.toVector().subtract(start.toVector()).normalize();

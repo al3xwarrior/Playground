@@ -125,18 +125,6 @@ public class HousingItems implements Listener {
                     house.createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
                 }
 
-                if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
-                    NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
-                    NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
-                    if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2)) {
-                        e.setCancelled(true);
-                        int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
-                        HousingNPC npc = house.getNPC(id);
-                        npc.addPath(block.getLocation().add(0.5, 1, 0.5));
-                        player.sendMessage("§aAdded path node (" + (npc.getPath().size()) + ") at " + block.getX() + ", " + block.getY() + ", " + block.getZ());
-                    }
-                }
-
                 if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && house.hasPermission(player, Permissions.ITEM_HOLOGRAM)) {
                     e.setCancelled(true);
                     house.createHologram(player, block.getLocation().add(new Vector(0.5, 0, 0.5)));
@@ -146,9 +134,6 @@ public class HousingItems implements Listener {
 
         // Click air
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-            ItemMeta itemMeta = item.getItemMeta();
-            Material itemType = item.getType();
-            String name = (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : item.getItemMeta().getItemName();
             NbtItemBuilder nbt = new NbtItemBuilder(item);
 
             // Cookies
@@ -159,21 +144,6 @@ public class HousingItems implements Listener {
                 return;
             }
 
-            boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
-
-            if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
-                NamespacedKey key = new NamespacedKey(Main.getInstance(), "isPath");
-                NamespacedKey key2 = new NamespacedKey(Main.getInstance(), "npc");
-                if (itemMeta != null && itemMeta.getPersistentDataContainer().has(key) && itemMeta.getPersistentDataContainer().has(key2)) {
-                    e.setCancelled(true);
-                    int id = itemMeta.getPersistentDataContainer().get(key2, PersistentDataType.INTEGER);
-                    HousingNPC npc = housesManager.getHouse(player.getWorld()).getNPC(id);
-                    if (npc.getPath() != null && !npc.getPath().isEmpty()) {
-                        Location loc = npc.removePath();
-                        player.sendMessage("§aRemoved path node (" + (npc.getPath().size() + 1) + ") at " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
-                    }
-                }
-            }
         }
     }
 
