@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -77,18 +78,48 @@ public class HousingWorld {
     private Random random;
     public HouseData houseData;
 
+    private boolean loaded = false;
+    private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
+
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
-        initialize(main, owner, null);
-        loadHouseData(owner, houseID);
-        setupHouseData(owner);
-        loadWorld(owner);
-        setupDataAfterLoad(owner);
-        loadNPCs(owner);
-        loadCommands();
-        setupWorldBorder();
-        if (groups.isEmpty()) addDefaultGroups(owner);
-        save();
+        long start = System.currentTimeMillis();
+
+        main.getServer().getAsyncScheduler().runNow(main, (t) -> {
+            long asyncStart = System.currentTimeMillis();
+            initialize(main, owner, null);
+            loadHouseData(owner, houseID);
+            setupHouseData(owner);
+            main.getLogger().info("Loaded Async Part of house " + name + " in " + (System.currentTimeMillis() - asyncStart) + "ms!");
+
+            main.getServer().getScheduler().runTask(main, () -> {
+                try {
+                    long syncStart = System.currentTimeMillis();
+                    loadWorld(owner);
+                    main.getLogger().info("Loaded world in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    setupDataAfterLoad(owner);
+                    main.getLogger().info("Setup data after load in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    loadNPCs(owner);
+                    main.getLogger().info("Loaded NPCs in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    loadCommands();
+                    main.getLogger().info("Loaded commands in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    setupWorldBorder();
+                    main.getLogger().info("Setup world border in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    if (groups.isEmpty()) {
+                        addDefaultGroups(owner);
+                        main.getLogger().info("Added default groups in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    }
+                    loaded = true;
+                    main.getLogger().info("Loaded house " + name + " in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    onLoad.forEach(consumer -> consumer.accept(this));
+                    main.getServer().getAsyncScheduler().runNow(main, (t2) -> {
+                        save();
+                    });
+                } catch (Exception e) {
+                    main.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                }
+            });
+        });
     }
 
     public HousingWorld(Main main, Player owner, HouseSize size) {
@@ -346,6 +377,11 @@ public class HousingWorld {
             if (!file.exists()) file.createNewFile();
             String json = GSON.toJson(houseData);
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        try {
             asp.saveWorld(slimeWorld);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
@@ -359,14 +395,14 @@ public class HousingWorld {
         });
         housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
         killAllEntities();
-        Bukkit.unloadWorld(houseWorld, false);
-        trashCans.forEach(location -> {
+        trashCans.forEach(location -> { //I dont think this is needed cause of the killAllEntities() method
             for (ArmorStand armorStand : getWorld().getEntitiesByClass(ArmorStand.class)) {
                 if (armorStand.getLocation().add(0, 1, 0).getBlock().equals(location.getBlock())) {
                     armorStand.remove();
                 }
             }
         });
+        Bukkit.unloadWorld(houseWorld, false);
     }
 
     public void delete() {
@@ -421,9 +457,24 @@ public class HousingWorld {
         return eventActions.getOrDefault(type, new ArrayList<>());
     }
 
+    public void runOnLoadOrNow(Consumer<HousingWorld> consumer) {
+        if (loaded) {
+            consumer.accept(this);
+        } else {
+            onLoad.add(consumer);
+        }
+    }
+
     public void sendPlayerToHouse(Player player) {
-        player.teleport(spawn);
-        player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+        if (loaded) {
+            player.teleport(spawn);
+            player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+        } else {
+            onLoad.add(house -> {
+                player.teleport(house.getSpawn());
+                player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+            });
+        }
     }
 
     public List<Command> getCommands() {
@@ -500,7 +551,8 @@ public class HousingWorld {
         cookies += amount;
 
         Player owner = Bukkit.getPlayer(ownerUUID);
-        if (owner != null) owner.sendMessage(colorize("&eYou were given &a" + amount + " &ecookie" + ((amount > 1) ? "s!" : "!") + " by " + player.getName()));
+        if (owner != null)
+            owner.sendMessage(colorize("&eYou were given &a" + amount + " &ecookie" + ((amount > 1) ? "s!" : "!") + " by " + player.getName()));
         player.sendMessage(colorize("&eYou gave " + Bukkit.getOfflinePlayer(ownerUUID).getName() + " &ea pack of &a" + amount + " &ecookie" + ((cookies > 1) ? "s!" : "!")));
     }
 
@@ -703,7 +755,8 @@ public class HousingWorld {
     }
 
     public Command createCommand(String name) {
-        if (name == null || !name.matches("^[a-zA-Z0-9]*$") || main.getCommandFramework().hasCommand(name) || commands.stream().anyMatch(command -> command.getName().equals(name))) return null;
+        if (name == null || !name.matches("^[a-zA-Z0-9]*$") || main.getCommandFramework().hasCommand(name) || commands.stream().anyMatch(command -> command.getName().equals(name)))
+            return null;
         Command command = new Command(name);
         commands.add(command);
         main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());

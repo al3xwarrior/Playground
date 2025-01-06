@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -16,14 +17,18 @@ import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
 import com.google.gson.Gson;
+import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
 import net.citizensnpcs.trait.waypoint.WanderWaypointProvider;
 import net.citizensnpcs.trait.waypoint.Waypoint;
 import net.citizensnpcs.trait.waypoint.Waypoints;
+import net.citizensnpcs.trait.waypoint.triggers.WaypointTrigger;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -45,6 +50,8 @@ public class NpcPathAction extends Action {
     Double xRange = null;
     Double yRange = null;
     List<LocationData> path = null;
+    boolean loop = false;
+    boolean pauseUntilComplete = false;
 
     public NpcPathAction() {
         super("Change Npc Navigation Action");
@@ -82,20 +89,33 @@ public class NpcPathAction extends Action {
         builder.info("&eSettings", "");
         builder.info("NPC", (npcId == -1 ? "&cNone" : "&6" + (house.getNPC(npcId) == null ? "Unknown NPC" : house.getNPC(npcId).getName())));
         builder.info("Mode", mode.name());
-        if (speed != null) {
-            builder.info("Speed", speed + "");
+        if (mode != NavigationType.STATIONARY) {
+            if (speed == null) {
+                speed = 1.0;
+            }
+            builder.info("Speed", speed);
         }
-        if (delay != null) {
-            builder.info("Delay", delay + "");
+        if (mode == NavigationType.WANDER) {
+            if (delay == null) {
+                delay = -1.0;
+            }
+            if (xRange == null) {
+                xRange = 25.0;
+            }
+            if (yRange == null) {
+                yRange = 3.0;
+            }
+            builder.info("Delay", delay);
+            builder.info("X Range", xRange);
+            builder.info("Y Range", yRange);
         }
-        if (xRange != null) {
-            builder.info("X Range", xRange + "");
-        }
-        if (yRange != null) {
-            builder.info("Y Range", yRange + "");
-        }
-        if (path != null) {
+        if (mode == NavigationType.PATH) {
+            if (path == null) {
+                path = new ArrayList<>();
+            }
             builder.info("Path", path.size() + " points");
+            builder.info("Loop", loop ? "&aYes" : "&cNo");
+            builder.info("Pause Until Complete", pauseUntilComplete ? "&aYes" : "&cNo");
         }
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -152,6 +172,12 @@ public class NpcPathAction extends Action {
             if (delay == null) {
                 delay = -1.0;
             }
+            if (xRange == null) {
+                xRange = 25.0;
+            }
+            if (yRange == null) {
+                yRange = 3.0;
+            }
             items.add(new ActionEditor.ActionItem("delay",
                     ItemBuilder.create(Material.CLOCK)
                             .name("&eDelay")
@@ -160,13 +186,6 @@ public class NpcPathAction extends Action {
                             .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                     ActionEditor.ActionItem.ActionType.DOUBLE, -1.0, 100.0
             ));
-
-            if (xRange == null) {
-                xRange = 25.0;
-            }
-            if (yRange == null) {
-                yRange = 3.0;
-            }
 
             items.add(new ActionEditor.ActionItem("xRange",
                     ItemBuilder.create(Material.COMPASS)
@@ -210,6 +229,23 @@ public class NpcPathAction extends Action {
                         return true;
                     }
             ));
+            items.add(new ActionEditor.ActionItem("loop",
+                    ItemBuilder.create(Material.REDSTONE_TORCH)
+                            .name("&eLoop")
+                            .info("&7Current Value", "")
+                            .info(null, loop ? "&aYes" : "&cNo")
+                            .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                    ActionEditor.ActionItem.ActionType.BOOLEAN
+            ));
+            items.add(new ActionEditor.ActionItem("pauseUntilComplete",
+                    ItemBuilder.create(Material.REDSTONE_TORCH)
+                            .name("&ePause Until Complete")
+                            .info("&7Current Value", "")
+                            .info(null, pauseUntilComplete ? "&aYes" : "&cNo")
+                            .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                    ActionEditor.ActionItem.ActionType.BOOLEAN
+            ));
+
             ItemBuilder paths = ItemBuilder.create(Material.PAPER)
                     .name("&aPath Locations")
                     .description("All the locations in the path")
@@ -232,6 +268,11 @@ public class NpcPathAction extends Action {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return false; //Not used
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable cancellable, ActionExecutor actionExecutor) {
         HousingNPC npc = house.getNPC(npcId);
         if (npc == null) {
             return true;
@@ -275,7 +316,35 @@ public class NpcPathAction extends Action {
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             path.clear();
             for (LocationData locationData : this.path) {
-                path.add(new Waypoint(locationData.toLocation()));
+                Waypoint waypoint = new Waypoint(locationData.toLocation());
+                if (!this.loop) {
+                    waypoint.addTrigger(new WaypointTrigger() {
+                        @Override
+                        public String description() {
+                            return "remove this waypoint when reached";
+                        }
+
+                        @Override
+                        public void onWaypointReached(NPC npc, Location location) {
+                            Waypoints waypoints = npc.getOrAddTrait(Waypoints.class);
+                            LinearWaypointProvider provider = (LinearWaypointProvider) waypoints.getCurrentProvider();
+                            List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
+                            path.remove(waypoint);
+
+                            if (path.isEmpty()) {
+                                if (pauseUntilComplete) {
+                                    actionExecutor.setPaused(false);
+                                }
+                            }
+                        }
+                    });
+                }
+                path.add(waypoint);
+            }
+            if (!path.isEmpty()) {
+                if (pauseUntilComplete) {
+                    actionExecutor.setPaused(true);
+                }
             }
         }
         return true;
@@ -286,20 +355,18 @@ public class NpcPathAction extends Action {
         HashMap<String, Object> data = new HashMap<>();
         data.put("npcId", npcId);
         data.put("mode", mode.name());
-        if (speed != null) {
+        if (mode != NavigationType.STATIONARY) {
             data.put("speed", speed);
         }
-        if (delay != null) {
+        if (mode == NavigationType.WANDER) {
             data.put("delay", delay);
-        }
-        if (xRange != null) {
             data.put("xRange", xRange);
-        }
-        if (yRange != null) {
             data.put("yRange", yRange);
         }
-        if (path != null) {
+        if (mode == NavigationType.PATH) {
             data.put("path", path);
+            data.put("loop", loop);
+            data.put("pauseUntilComplete", pauseUntilComplete);
         }
         return data;
     }
@@ -327,6 +394,12 @@ public class NpcPathAction extends Action {
                 }
                 path.add(new Gson().fromJson(locationData.toString(), LocationData.class));
             }
+        }
+        if (data.containsKey("loop")) {
+            loop = (boolean) data.get("loop");
+        }
+        if (data.containsKey("pauseUntilComplete")) {
+            pauseUntilComplete = (boolean) data.get("pauseUntilComplete");
         }
     }
 

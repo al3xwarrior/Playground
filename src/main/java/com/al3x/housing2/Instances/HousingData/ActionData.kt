@@ -44,5 +44,12 @@ data class ActionData(
             return ActionData(Action.name, Action.data())
         }
 
+        fun fromData(data: ActionData): Action {
+            if (ActionEnum.getActionByName(data.action) == null) {
+                throw IllegalArgumentException("Action ${data.action} does not exist")
+            }
+            return ActionEnum.getActionByName(data.action)!!.getActionInstance(data.data)
+        }
+
     }
 }

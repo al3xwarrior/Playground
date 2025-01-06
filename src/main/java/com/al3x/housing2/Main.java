@@ -2,10 +2,7 @@ package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
 import com.al3x.housing2.Commands.Protools.*;
-import com.al3x.housing2.Instances.CookieManager;
-import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.ProtoolsManager;
+import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
@@ -21,6 +18,7 @@ import com.infernalsuite.aswm.loaders.file.FileLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.awt.datatransfer.Clipboard;
 import java.io.File;
 import java.util.Objects;
 
@@ -32,8 +30,8 @@ public final class Main extends JavaPlugin {
     private ProtoolsManager protoolsManager;
     private ProtocolManager protocolManager;
     private CookieManager cookieManager;
+    private ClipboardManager clipboardManager;
 
-    //    private MineSkinClientImpl mineSkinClient;
     private String mineSkinKey;
 
     @Override
@@ -55,6 +53,7 @@ public final class Main extends JavaPlugin {
         this.commandFramework = new HousingCommandFramework(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.cookieManager = new CookieManager(this, getDataFolder());
+        this.clipboardManager = new ClipboardManager(this, getDataFolder());
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
@@ -85,7 +84,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
 
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
+//        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 
         // House Events
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
@@ -144,6 +143,10 @@ public final class Main extends JavaPlugin {
 
     public ProtocolManager getProtocolManager() {
         return protocolManager;
+    }
+
+    public ClipboardManager getClipboardManager() {
+        return clipboardManager;
     }
 
     @Override

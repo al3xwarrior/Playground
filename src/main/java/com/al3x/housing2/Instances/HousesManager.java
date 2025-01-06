@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class HousesManager {
-    private static final Gson gson = new Gson();
+    public static final Gson gson = new Gson();
     private Main main;
 
     // All the loaded houses
@@ -106,7 +106,7 @@ public class HousesManager {
         if (playerHouses.containsKey(owner.getUniqueId())) {
             for (String houseID : playerHouses.get(owner.getUniqueId())) {
                 HousingWorld house = new HousingWorld(main, owner, houseID);
-                concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
+                house.runOnLoadOrNow((h) -> concurrentLoadedHouses.put(house.getHouseUUID().toString(), h));
                 return house;
             }
         }
@@ -245,7 +245,7 @@ public class HousesManager {
 
     public HousingWorld loadHouse(OfflinePlayer player, String houseID) {
         HousingWorld house = new HousingWorld(main, player, houseID);
-        concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
+        house.runOnLoadOrNow((h) -> concurrentLoadedHouses.put(house.getHouseUUID().toString(), h));
         return house;
     }
 

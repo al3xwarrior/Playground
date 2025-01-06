@@ -16,12 +16,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
     long pause = 0;
+    boolean isPaused = false;
 
     public ActionExecutor() {
     }
 
     public ActionExecutor(List<Action> action) {
         queue.addAll(action);
+    }
+
+    public void setPaused(boolean paused) {
+        isPaused = paused;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
     }
 
     public void addActions(List<Action> actions) {
@@ -31,7 +40,14 @@ public class ActionExecutor {
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
         AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        for (Action action : queue) {
+        Action action;
+        while (!queue.isEmpty()) {
+            if (isPaused) {
+                break;
+            }
+
+            action = queue.removeFirst();
+
             if (action instanceof PauseAction) { //Add time every time a new one comes in
                 pause += (long) ((PauseAction) action).getDuration();
                 continue;
@@ -39,7 +55,7 @@ public class ActionExecutor {
 
             if (action instanceof ExitAction) {
                 returnVal.set(false);
-                break;
+                return false;
             }
 
             if (!returnVal.get()) {
@@ -47,13 +63,14 @@ public class ActionExecutor {
             }
 
             if (pause == 0) {
-                returnVal.set(action.execute(player, house, event));
+                returnVal.set(action.execute(player, house, event, this));
                 continue;
             }
 
+            Action finalAction = action;
             if (String.valueOf(pause).equals(String.valueOf(Math.round(pause)))) {
                 scheduler.runTaskLater(Main.getInstance(), () -> {
-                    returnVal.set(action.execute(player, house, event));
+                    returnVal.set(finalAction.execute(player, house, event, this));
                 }, pause);
             } else {
                 long finalPause = pause;
@@ -63,17 +80,27 @@ public class ActionExecutor {
                     } catch (InterruptedException ignored) {
                     }
 
-                    if (action.mustBeSync()) {
+                    if (finalAction.mustBeSync()) {
                         scheduler.runTask(Main.getInstance(), () -> {
-                            returnVal.set(action.execute(player, house, event));
+                            returnVal.set(finalAction.execute(player, house, event, this));
                         });
                     } else {
-                        returnVal.set(action.execute(player, house, event));
+                        returnVal.set(finalAction.execute(player, house, event, this));
                     }
                 });
             }
         }
-        queue.clear();
+
+        if (isPaused) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
+            scheduler.runTaskTimerAsynchronously(Main.getInstance(), () -> {
+                if (!isPaused) {
+                    scheduler.runTask(Main.getInstance(), () -> {
+                        execute(player, house, event);
+                    });
+                }
+            }, 0, 1);
+        }
+
         return returnVal.get();
     }
 }

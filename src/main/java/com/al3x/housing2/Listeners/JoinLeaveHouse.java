@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
+import com.google.gson.internal.LinkedTreeMap;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.al3x.housing2.Instances.HousesManager.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
 
@@ -90,8 +92,12 @@ public class JoinLeaveHouse implements Listener {
             player.setAllowFlight(true);
         }
 
-        Gamemodes value = Gamemodes.valueOf((String) data.getGroupInstance(house).getPermissions().get(Permissions.GAMEMODE));
-        if (value != null) {
+        Object gamemodeObj = data.getGroupInstance(house).getPermissions().get(Permissions.GAMEMODE);
+        if (gamemodeObj instanceof String gamemode) {
+            Gamemodes value = Gamemodes.valueOf((gamemode));
+            player.setGameMode(value.getGameMode());
+        } else if (gamemodeObj instanceof LinkedTreeMap<?, ?> gamemodeMap) {
+            Gamemodes value = Gamemodes.valueOf((String) gamemodeMap.get("name"));
             player.setGameMode(value.getGameMode());
         }
     }

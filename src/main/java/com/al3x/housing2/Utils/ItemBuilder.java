@@ -207,6 +207,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder shiftClick(boolean changeOrderLore) {
+        this.changeOrderLore = changeOrderLore;
+        return this;
+    }
+
     /**
      * Enables or disables the label that allows the user to change the order of the actions by shift clicking.
      * <p>
@@ -366,6 +371,7 @@ public class ItemBuilder {
         DELETE_YELLOW("delete", YELLOW),
         TOGGLE_YELLOW("toggle", YELLOW),
         EXPORT_YELLOW("export", YELLOW),
+        IMPORT_YELLOW("import", YELLOW),
         TELEPORT("teleport", YELLOW),
         CLONE("clone", YELLOW),
         SELECT_REGION("select region", YELLOW),
@@ -378,6 +384,7 @@ public class ItemBuilder {
         EDIT_RIGHT_CLICK_ACTIONS("edit right click actions", YELLOW),
         CYCLE_FORWARD("cycle forward", YELLOW),
         CYCLE_BACKWARD("cycle backwards", YELLOW),
+        SAVE_LOCATION("save location", YELLOW),
         ;
 
         private String action;

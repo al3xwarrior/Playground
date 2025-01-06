@@ -145,8 +145,10 @@ public class NPCMenu extends Menu {
                 .info("ID", "&a" + housingNPC.getNpcID())
                 .info("Entity Type", "&b" + housingNPC.getEntityType().name())
                 .info("Navigation Type", "&6" + housingNPC.getNavigationType().name())
-                .info("Look at Players", housingNPC.isLookAtPlayer() ? "&aYes" : "&cNo");
+                .info("Look at Players", housingNPC.isLookAtPlayer() ? "&aYes" : "&cNo")
+                .lClick(ItemBuilder.ActionType.SAVE_LOCATION);
         addItem(48, npcInfo.build(), () -> {
+            housingNPC.setLocation(housingNPC.getLocation());
         });
 
         ItemStack close = new ItemStack(Material.BARRIER);

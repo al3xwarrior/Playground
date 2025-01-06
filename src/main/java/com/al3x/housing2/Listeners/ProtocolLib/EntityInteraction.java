@@ -5,7 +5,7 @@ import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HologramEditorMenu;
-import com.comphenix.packetwrapper.WrapperPlayClientUseEntity;
+import com.comphenix.packetwrapper.wrappers.play.serverbound.WrapperPlayClientUseEntity;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -20,7 +20,7 @@ public class EntityInteraction {
             public void onPacketReceiving(PacketEvent event) {
                 // Handle packet
                 WrapperPlayClientUseEntity wrapper = new WrapperPlayClientUseEntity(event.getPacket());
-                int id = wrapper.getTargetID();
+                int id = wrapper.getEntityId();
                 Player player = event.getPlayer();
 
                 if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;

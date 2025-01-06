@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -33,11 +30,11 @@ public class HouseBrowserMenu extends Menu{
     @Override
     public void setupItems() {
         List<HouseData> houses = getSortedHouses();
+        houses = houses.stream().filter(house -> Objects.equals(house.getPrivacy(), "PUBLIC")).toList();
 
         for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
             HouseData house = houses.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
-            if (housingWorld == null) continue;
 
             ItemStack icon = new ItemStack(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"));
             ItemMeta meta = icon.getItemMeta();

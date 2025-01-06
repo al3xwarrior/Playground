@@ -4,16 +4,10 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.StringToBase64;
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,7 +62,7 @@ public class Item {
             for (ClickType clickType : actions.keySet()) {
                 String base64 = actionsBuilder.getString(clickType.name().toLowerCase());
                 if (base64 != null) {
-                    actions.put(clickType, StringToBase64.actionFromBase64(base64));
+                    actions.put(clickType, StringToBase64.actionsFromBase64(base64));
                 }
             }
         }
@@ -80,7 +74,7 @@ public class Item {
         NbtItemBuilder actionsBuilder = nbtItemBuilder.addChild("actions");
         for (ClickType clickType : actions.keySet()) {
             List<Action> actionList = actions.get(clickType);
-            actionsBuilder.setString(clickType.name().toLowerCase(), StringToBase64.actionToBase64(actionList));
+            actionsBuilder.setString(clickType.name().toLowerCase(), StringToBase64.actionsToBase64(actionList));
         }
         nbtItemBuilder.build();
         return base;

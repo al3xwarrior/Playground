@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
@@ -24,6 +25,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -83,6 +85,8 @@ public class HousingNPC {
     private static final String[] NPC_NAMES = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
     public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
+        long start = System.currentTimeMillis();
+
         this.main = main;
         this.house = house;
         this.name = data.getNpcName();
@@ -94,15 +98,32 @@ public class HousingNPC {
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
 
+        main.getLogger().info("NPC " + name + " loaded in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        long total = System.currentTimeMillis();
+
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
+        main.getLogger().info("NPC " + name + " created in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
         configureLookCloseTrait();
+        main.getLogger().info("NPC " + name + " lookclose in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
         configureEquipment(data.getEquipment());
+        main.getLogger().info("NPC " + name + " equipment in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
         configureNavigation(data);
+        main.getLogger().info("NPC " + name + " navigation in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
 
         setSkin(data.getNpcSkin());
+        main.getLogger().info("NPC " + name + " skin in " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
 
         citizensNPC.spawn(location);
+        main.getLogger().info("NPC " + name + " spawned in " + (System.currentTimeMillis() - start) + "ms");
         startFollowTask();
+
+        main.getLogger().info("NPC " + name + " spawned in " + (System.currentTimeMillis() - total) + "ms");
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
@@ -242,9 +263,7 @@ public class HousingNPC {
 
     public void sendExecuteActions(HousingWorld house, Player player) {
         if (actions != null) {
-            for (Action action : actions) {
-                action.execute(player, house, null);
-            }
+            new ActionExecutor(actions).execute(player, house, null);
         }
     }
 
@@ -297,6 +316,11 @@ public class HousingNPC {
 
     public Location getLocation() {
         return citizensNPC.isSpawned() ? citizensNPC.getEntity().getLocation() : location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+        citizensNPC.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     public boolean isLookAtPlayer() {
@@ -414,12 +438,15 @@ public class HousingNPC {
 
     public void setSkin(String skin) {
         this.skinUUID = skin;
-        BiggerSkinData skinData = getSkinData(skin);
-        if (skinData != null && skinData.getTexture() != null) {
-            SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
-            skinTrait.setSkinPersistent(skinData.getUuid(), skinData.getTexture().getData().getSignature(), skinData.getTexture().getData().getValue());
-        }
-
+        main.getServer().getScheduler().runTaskAsynchronously(main, () -> {
+            BiggerSkinData skinData = getSkinData(skin);
+            main.getServer().getScheduler().runTask(main, () -> {
+                if (skinData != null && skinData.getTexture() != null) {
+                    SkinTrait skinTrait = citizensNPC.getOrAddTrait(SkinTrait.class);
+                    skinTrait.setSkinPersistent(skinData.getUuid(), skinData.getTexture().getData().getSignature(), skinData.getTexture().getData().getValue());
+                }
+            });
+        });
     }
 
 
