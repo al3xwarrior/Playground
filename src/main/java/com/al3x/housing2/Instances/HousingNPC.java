@@ -8,7 +8,16 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.MineSkin.BiggerSkinData;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.Utils.Serialization;
+import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerRelEntityMove;
+import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerRelEntityMoveLook;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import com.google.gson.Gson;
+import de.oliver.fancynpcs.api.FancyNpcsPlugin;
+import de.oliver.fancynpcs.api.Npc;
+import de.oliver.fancynpcs.api.NpcData;
+import de.oliver.fancynpcs.api.actions.types.WaitAction;
+import de.oliver.fancynpcs.api.utils.SkinFetcher;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
@@ -22,12 +31,14 @@ import net.citizensnpcs.trait.waypoint.Waypoints;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +47,8 @@ import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.MineSkin.MineskinHandler.getSkinData;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
+import static de.oliver.fancynpcs.api.actions.ActionTrigger.ANY_CLICK;
+import static de.oliver.fancynpcs.api.actions.ActionTrigger.RIGHT_CLICK;
 
 public class HousingNPC {
 
@@ -52,6 +65,7 @@ public class HousingNPC {
     public static List<SkinData> loadedSkins = new ArrayList<>();
 
     private NPC citizensNPC;
+    private Npc npc;
     private HousingWorld house;
     private Main main;
 
@@ -64,6 +78,8 @@ public class HousingNPC {
     private Location location;
     private EntityType entityType;
     private String skinUUID;
+
+    private List<Location> waypoints;
 
     // Equipment
     private ItemStack hand;
@@ -94,15 +110,28 @@ public class HousingNPC {
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
 
-        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
-        configureLookCloseTrait();
-        configureEquipment(data.getEquipment());
-        configureNavigation(data);
+        this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
 
-        setSkin(data.getNpcSkin());
+        NpcData npcData = new NpcData(this.name, creatorUUID, location);
+        npcData.setTurnToPlayer(lookAtPlayer);
+        npcData.setType(entityType);
+        npcData.setDisplayName(name);
 
-        citizensNPC.spawn(location);
-        startFollowTask();
+        npc = FancyNpcsPlugin.get().getNpcAdapter().apply(npcData);
+
+        npc.create();
+        npc.spawnForAll();
+
+//        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
+//        configureLookCloseTrait();
+//        configureEquipment(data.getEquipment());
+//        configureNavigation(data);
+//
+//        setSkin(data.getNpcSkin());
+//
+//        citizensNPC.spawn(location);
+//        startFollowTask();
+
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
@@ -114,17 +143,45 @@ public class HousingNPC {
         this.creatorUUID = player.getUniqueId();
         this.entityType = EntityType.PLAYER;
         this.speed = 1.0;
-        this.navigationType = NavigationType.STATIONARY;
+        this.navigationType = NavigationType.PATH;
         this.actions = new ArrayList<>();
+        this.waypoints = new ArrayList<>(List.of(
+                location.clone().add(0, 0, 15),
+                location.clone().add(15, 0, 15),
+                location.clone().add(15, 0, 10),
+                location.clone().add(0, 0, 0)
+        ));
 
-        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
-        configureLookCloseTrait();
-        citizensNPC.spawn(location);
-        citizensNPC.faceLocation(player.getLocation());
-        this.npcID = citizensNPC.getId();
-        this.npcUUID = citizensNPC.getUniqueId();
+        NpcData data = new NpcData(this.name, creatorUUID, location);
+        data.setType(entityType);
+        data.setDisplayName(name);
+        data.setTurnToPlayer(lookAtPlayer);
 
-        startFollowTask();
+        npc = FancyNpcsPlugin.get().getNpcAdapter().apply(data);
+
+        npc.create();
+        npc.spawnForAll();
+
+        this.npcUUID = UUID.fromString(npc.getData().getId());
+        this.npcID = npc.getEntityId();
+
+        startThread();
+//        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
+//        configureLookCloseTrait();
+//        citizensNPC.spawn(location);
+//        citizensNPC.faceLocation(player.getLocation());
+//        this.npcID = citizensNPC.getId();
+//        this.npcUUID = citizensNPC.getUniqueId();
+
+//        startFollowTask();
+    }
+
+    Location currentLocation;
+    Location goingTo;
+
+    private void startThread() {
+        currentLocation = location;
+        goingTo = location;
     }
 
     private void configureLookCloseTrait() {
@@ -296,7 +353,7 @@ public class HousingNPC {
     }
 
     public Location getLocation() {
-        return citizensNPC.isSpawned() ? citizensNPC.getEntity().getLocation() : location;
+        return currentLocation;
     }
 
     public boolean isLookAtPlayer() {
@@ -380,6 +437,9 @@ public class HousingNPC {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             provider.addWaypoint(new Waypoint(loc));
+
+            List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
+            this.waypoints = new ArrayList<>(path.stream().map(Waypoint::getLocation).toList());
         }
     }
 
@@ -388,7 +448,9 @@ public class HousingNPC {
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             if (!path.isEmpty()) {
-                return path.remove(path.size() - 1).getLocation();
+                Location loc = path.get(path.size() - 1).getLocation();
+                this.waypoints = new ArrayList<>(path.stream().map(Waypoint::getLocation).toList());
+                return loc;
             }
         }
         return null;
@@ -404,10 +466,12 @@ public class HousingNPC {
 
     public List<Location> getWaypoints() {
         List<Location> waypoints = new ArrayList<>();
-        if (getPath() != null) {
+        if (Bukkit.isPrimaryThread() && getPath() != null) {
             for (Waypoint waypoint : getPath()) {
                 waypoints.add(waypoint.getLocation());
             }
+        } else {
+            waypoints = this.waypoints;
         }
         return waypoints;
     }
@@ -421,6 +485,4 @@ public class HousingNPC {
         }
 
     }
-
-
 }
