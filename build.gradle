@@ -38,7 +38,6 @@ dependencies {
     implementation files('libs/PacketWrapper.jar')
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
-    compileOnly "de.oliver:FancyNpcs:2.4.1"
 }
 
 tasks.withType(JavaCompile) {

@@ -5,15 +5,22 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +73,8 @@ public class PlaySoundAction extends Action {
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
+    @SuppressWarnings("removal")
+    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
         List<ActionEditor.ActionItem> items = Arrays.asList(
                 new ActionEditor.ActionItem("sound",
                         ItemBuilder.create(Material.NOTE_BLOCK)
@@ -74,7 +82,21 @@ public class PlaySoundAction extends Action {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + sound)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Sound.values(), Material.NOTE_BLOCK //Will eventually need to be a custom gui rather than this interface
+                        (event, obj) -> {
+                            //Create a list of all the potion effects
+                            List<Duple<Sound, ItemBuilder>> soundDuple = new ArrayList<>();
+                            for (Sound type : Registry.SOUNDS) {
+                                soundDuple.add(new Duple<>(type, ItemBuilder.create(Material.NOTE_BLOCK).name("&6" + StringUtilsKt.formatCapitalize(type.name()))));
+                            }
+                            //Basically because Sound isnt a ENUM we cant just use the enum class
+                            new PaginationMenu<>(Main.getInstance(),
+                                    "&eSelect a Potion Effect", soundDuple,
+                                    player, house, backMenu, (potion) -> {
+                                sound = potion;
+                                backMenu.open();
+                            }).open();
+                            return true;
+                        }
                 ),
                 new ActionEditor.ActionItem("volume",
                         ItemBuilder.create(Material.IRON_BLOCK)

@@ -41,13 +41,13 @@ public class ActionClipboardMenu extends Menu {
         newList = newList.stream().filter(action -> action.getClass().equals(this.action.getClass())).toList();
         PaginationList<Action> actions = new PaginationList<>(newList, 21);
         List<Action> page = actions.getPage(currentPage);
-        if (page.isEmpty()) {
+        if (page == null || page.isEmpty()) {
             ItemStack noActions = new ItemStack(Material.BEDROCK);
             ItemMeta noActionsMeta = noActions.getItemMeta();
             noActionsMeta.setDisplayName(colorize("&cNo Actions!"));
             noActions.setItemMeta(noActionsMeta);
             addItem(22, noActions, () -> {
-                player.sendMessage(colorize("&eAdd an action using the &aAdd Action &eitem below!"));
+                player.sendMessage(colorize("&eYou have no action under this type in your clipboard!"));
             });
         } else {
             for (int i = 0; i < page.size(); i++) {

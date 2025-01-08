@@ -46,6 +46,7 @@ public enum Permissions implements PermissionInterface{
     EDIT_INVENTORY_LAYOUTS(true),
     EDIT_TEAMS(true),
     EDIT_CUSTOM_MENUS(true),
+    ITEMS,
     ITEM_MAILBOX,
     ITEM_EGG_HUNT,
     ITEM_TELEPORT_PAD,
@@ -81,6 +82,7 @@ public enum Permissions implements PermissionInterface{
     public String getDescription() {
         return "";
     }
+
 
     public Object cycle(Object value) {
         if (subEnum != null) {

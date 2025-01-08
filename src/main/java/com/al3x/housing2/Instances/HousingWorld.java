@@ -31,10 +31,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.Permission;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
+import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
@@ -802,6 +804,28 @@ public class HousingWorld {
         if (data == null) return false;
         Object permissionValue = data.getGroupInstance(this).getPermissions().get(permission);
         if (permissionValue instanceof Boolean) return permissionValue.equals(true);
+        return false; //Other permission types will be checked by itself
+    }
+
+    public boolean hasSystem(Player player) {
+        Permissions[] permission = {
+                EDIT_ACTIONS,
+                EDIT_REGIONS,
+                EDIT_SCOREBOARD,
+                EDIT_EVENTS,
+                EDIT_COMMANDS,
+                EDIT_FUNCTIONS,
+                EDIT_INVENTORY_LAYOUTS,
+                EDIT_TEAMS,
+                EDIT_CUSTOM_MENUS
+        };
+        if (player.getUniqueId().equals(ownerUUID)) return true;
+        PlayerData data = playersData.get(player.getUniqueId().toString());
+        if (data == null) return false;
+        for (Permissions permissions : permission) {
+            Object permissionValue = data.getGroupInstance(this).getPermissions().get(permissions);
+            if (permissionValue instanceof Boolean && permissionValue.equals(true)) return true;
+        }
         return false; //Other permission types will be checked by itself
     }
 

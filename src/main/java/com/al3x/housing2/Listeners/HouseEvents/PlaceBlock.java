@@ -23,10 +23,8 @@ public class PlaceBlock implements Listener {
     public void onBlockPlace(BlockPlaceEvent e) {
         HousingWorld house = housesManager.getHouse(e.getPlayer().getWorld());
         if (house == null) return;
-        if (!house.hasPermission(e.getPlayer(), Permissions.BUILD)) {
-            if (!house.getOwner().isOnline() && !house.hasPermission(e.getPlayer(), Permissions.OFFLINE_BUILD)) {
-                e.setCancelled(true);
-            }
+        if (!house.hasPermission(e.getPlayer(), Permissions.BUILD) || !(house.getOwner().isOnline() && house.hasPermission(e.getPlayer(), Permissions.BUILD))) {
+            e.setCancelled(true);
         }
 
         sendEventExecution(housesManager, EventType.PLAYER_BLOCK_PLACE, e.getPlayer(), e);
