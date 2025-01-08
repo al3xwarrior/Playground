@@ -75,6 +75,11 @@ public class RandomAction extends Action {
     }
 
     @Override
+    public boolean canBeNested() {
+        return false;
+    }
+
+    @Override
     public boolean execute(Player player, HousingWorld house) {
         if (subActions.isEmpty()) {
             return true;

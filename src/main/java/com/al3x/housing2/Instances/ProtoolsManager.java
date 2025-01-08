@@ -102,6 +102,9 @@ public class ProtoolsManager {
         }
 
         addUndoStack(player.getUniqueId(), currentState);
+
+        List<Material> blockOptions = blockList.generateBlocks();
+        blocks.forEach(block -> block.setType(blockOptions.get((int) (Math.random() * blockOptions.size()))));
         player.sendMessage(Color.colorize("&aRegion set successfully!"));
     }
 

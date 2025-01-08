@@ -187,6 +187,11 @@ public class ConditionalAction extends Action {
     }
 
     @Override
+    public boolean canBeNested() {
+        return false;
+    }
+
+    @Override
     public boolean requiresPlayer() {
         return false;
     }

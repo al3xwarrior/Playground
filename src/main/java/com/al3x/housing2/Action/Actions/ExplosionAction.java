@@ -69,11 +69,12 @@ public class ExplosionAction extends Action {
                         (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
                                 (coords, location) -> {
                                     customLocation = coords;
-                                    this.location = CUSTOM;
+                                    this.location = location;
                                     if (location == PLAYER_LOCATION) {
                                         Location loc = player.getLocation();
                                         this.customLocation = loc.getX() + " " + loc.getY() + " " + loc.getZ();
                                     }
+                                    backMenu.open();
                                 }
                         )
                 ),

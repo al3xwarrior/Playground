@@ -210,7 +210,7 @@ public class ActionsMenu extends Menu {
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
                             //shift actions around
-                            shiftAction(action, e.isRightClick());
+                            shiftAction(action, finalI, e.isRightClick());
                             return;
                         }
 
@@ -250,7 +250,7 @@ public class ActionsMenu extends Menu {
             addActionMeta.setDisplayName(colorize("&aAdd Action"));
             addAction.setItemMeta(addActionMeta);
             addItem(50, addAction, () -> {
-                AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, varName);
+                AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, varName != null);
                 menu.setEvent(event);
                 menu.setFunction(function);
                 menu.open();
@@ -314,8 +314,7 @@ public class ActionsMenu extends Menu {
         this.update = update;
     }
 
-    public void shiftAction(Action action, boolean forward) {
-        int index = actions.indexOf(action);
+    public void shiftAction(Action action, int index, boolean forward) {
 
         if (actions == null || actions.size() < 2) return;
 

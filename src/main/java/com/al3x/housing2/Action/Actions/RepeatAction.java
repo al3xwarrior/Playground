@@ -78,6 +78,8 @@ public class RepeatAction extends Action {
                                 .name("&aTimes")
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + times)
+                                .info(null, "")
+                                .info(null, "&fMax: &c20 Times")
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.STRING
                 )
@@ -97,12 +99,25 @@ public class RepeatAction extends Action {
             return true;
         }
 
+        int timesInt = Integer.parseInt(times);
+        if (timesInt < 1) {
+            return true;
+        }
+        if (timesInt > 20) {
+            timesInt = 20;
+        }
+
         ActionExecutor executor = new ActionExecutor();
-        for (int i = 0; i < Integer.parseInt(times); i++) {
+        for (int i = 0; i < timesInt; i++) {
             executor.addActions(subActions);
             executor.execute(player, house, null);
         }
         return true;
+    }
+
+    @Override
+    public int limit() {
+        return 1;
     }
 
     public List<Action> getSubActions() {

@@ -6,6 +6,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -223,15 +224,6 @@ public class HousesManager {
                 concurrentLoadedHouses.remove(houseUUID.toString());
                 return;
             }
-        }
-    }
-
-    public void saveHouseAndUnload(Player owner) {
-        HousingWorld house = getHouse(owner);
-        if (house != null) {
-            house.save();
-            house.unload();
-            concurrentLoadedHouses.remove(house.getHouseUUID().toString());
         }
     }
 

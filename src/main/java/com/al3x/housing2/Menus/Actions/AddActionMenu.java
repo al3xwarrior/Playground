@@ -38,44 +38,19 @@ public class AddActionMenu extends Menu {
     private Function function;
     private EventType event;
     private List<Action> actions;
-    private String varName;
+    private boolean nested = false;
+
     private String search = "";
 
-    public AddActionMenu(Main main, Player player, HousingWorld house, Function function, Menu backMenu) {
-        super(player, colorize("&aAdd Action"), 54);
-        this.main = main;
-        this.player = player;
-        this.house = house;
-
-        this.function = function;
-        this.actions = function.getActions();
-        this.backMenu = backMenu;
-
-        setupItems();
-    }
-
-    public AddActionMenu(Main main, Player player, HousingWorld house, EventType event, Menu backMenu) {
-        super(player, colorize("&aAdd Action"), 54);
-        this.main = main;
-        this.player = player;
-        this.house = house;
-
-        this.event = event;
-        this.actions = house.getEventActions(event);
-        this.backMenu = backMenu;
-
-        setupItems();
-    }
-
     //Will be used for random actions and conditions
-    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, String varName) {
+    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, boolean nested) {
         super(player, colorize("&aAdd Action"), 54);
         this.main = main;
         this.player = player;
         this.house = house;
         this.actions = actions;
         this.backMenu = backMenu;
-        this.varName = varName;
+        this.nested = nested;
         setupItems();
     }
 
@@ -93,6 +68,7 @@ public class AddActionMenu extends Menu {
 
     @Override
     public void setupItems() {
+        clearItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
         PaginationList<Action> paginationList = getActions();
@@ -209,6 +185,8 @@ public class AddActionMenu extends Menu {
                 newActions.add(action);
                 continue;
             }
+
+            if (!action.canBeNested() && nested) continue;
 
             if (event != null) {
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(event)) continue;

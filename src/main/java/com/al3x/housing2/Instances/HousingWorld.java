@@ -96,21 +96,15 @@ public class HousingWorld {
                 try {
                     long syncStart = System.currentTimeMillis();
                     loadWorld(owner);
-                    main.getLogger().info("Loaded world in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     setupDataAfterLoad(owner);
-                    main.getLogger().info("Setup data after load in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     loadNPCs(owner);
-                    main.getLogger().info("Loaded NPCs in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     loadCommands();
-                    main.getLogger().info("Loaded commands in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     setupWorldBorder();
-                    main.getLogger().info("Setup world border in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     if (groups.isEmpty()) {
                         addDefaultGroups(owner);
-                        main.getLogger().info("Added default groups in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     }
                     loaded = true;
-                    main.getLogger().info("Loaded house " + name + " in " + (System.currentTimeMillis() - syncStart) + "ms!");
+                    main.getLogger().info("Loaded Sync Part of house " + name + " in " + (System.currentTimeMillis() - syncStart) + "ms!");
                     onLoad.forEach(consumer -> consumer.accept(this));
                     main.getServer().getAsyncScheduler().runNow(main, (t2) -> {
                         save();

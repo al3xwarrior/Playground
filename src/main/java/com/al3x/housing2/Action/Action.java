@@ -98,6 +98,10 @@ public abstract class Action {
         return -1;
     }
 
+    public boolean canBeNested() {
+        return true;
+    }
+
     /**
      * Returns a list of events that are allowed for this action.
      * Null if all events are allowed.

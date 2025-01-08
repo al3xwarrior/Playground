@@ -33,7 +33,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
     private Menu backMenu;
 
     private int currentPage = 1;
-    private String search;
+    private String search = "";
 
     public EnumMenu(Main main, String title, E[] enums, Material material, Player player, HousingWorld house, Menu backMenu, Consumer<E> consumer) {
         super(player, colorize(title + "(1/" + (getItems(enums).getPageCount() - 1) + ")"), 9 * 6);
@@ -66,7 +66,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
         PaginationList<E> paginationList = getItems(enums);
         List<E> pageItems = paginationList.getPage(currentPage);
 
-        if (search != null) {
+        if (search != null && !search.isEmpty()) {
             pageItems = pageItems.stream().filter(i -> Color.removeColor(i.name().toLowerCase()).contains(search.toLowerCase())).toList();
         }
 
