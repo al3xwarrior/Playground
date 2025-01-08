@@ -70,6 +70,7 @@ public class HousingWorld {
     private List<Layout> layouts;
     private List<CustomMenu> customMenus;
     private List<Group> groups;
+    private List<Team> teams;
     private HashMap<String, PlayerData> playersData;
     private String defaultGroup = "default";
     private List<Location> trashCans;
@@ -142,6 +143,7 @@ public class HousingWorld {
         this.launchPads = new ArrayList<>();
         this.customMenus = new ArrayList<>();
         this.groups = new ArrayList<>();
+        this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
         try {
@@ -182,6 +184,7 @@ public class HousingWorld {
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
         this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.Companion.toList(houseData.getCustomMenus()) : new ArrayList<>();
         this.groups = houseData.getGroups() != null ? GroupData.Companion.toList(houseData.getGroups()) : new ArrayList<>();
+        this.teams = houseData.getTeams() != null ? TeamData.Companion.toList(houseData.getTeams()) : new ArrayList<>();
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
@@ -691,6 +694,10 @@ public class HousingWorld {
         return defaultGroup;
     }
 
+    public List<Team> getTeams() {
+        return teams;
+    }
+
     public void createNPC(Player player, Location location) {
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
@@ -778,6 +785,13 @@ public class HousingWorld {
         return group;
     }
 
+    public Team createTeam(String name) {
+        if (name == null || groups.stream().anyMatch(team -> team.getName().equalsIgnoreCase(name))) return null;
+        Team team = new Team(name);
+        teams.add(team);
+        return team;
+    }
+
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
@@ -830,5 +844,9 @@ public class HousingWorld {
 
     public Group getGroup(String group) {
         return groups.stream().filter(g -> g.getName().equals(group)).findFirst().orElse(null);
+    }
+
+    public Team getTeam(String team) {
+        return teams.stream().filter(t -> t.getName().equals(team)).findFirst().orElse(null);
     }
 }

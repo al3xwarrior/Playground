@@ -7,6 +7,7 @@ import com.al3x.housing2.Menus.HousingMenu.CustomMenus.CustomMenusMenu;
 import com.al3x.housing2.Menus.HousingMenu.commands.CommandsMenu;
 import com.al3x.housing2.Menus.HousingMenu.layout.LayoutsMenu;
 import com.al3x.housing2.Menus.HousingMenu.regions.RegionsMenu;
+import com.al3x.housing2.Menus.HousingMenu.teams.TeamsMenu;
 import com.al3x.housing2.Menus.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -106,7 +107,7 @@ public class SystemsMenu extends Menu {
             teamsMeta.setDisplayName(colorize("&aTeams"));
             teams.setItemMeta(teamsMeta);
             addItem(slots[slot], teams, () -> {
-                player.sendMessage("Opening Teams Menu...");
+                new TeamsMenu(player, main, house).open();
             });
             slot++;
         }
