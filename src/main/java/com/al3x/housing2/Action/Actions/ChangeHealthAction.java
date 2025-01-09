@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.StatInstance;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
@@ -12,10 +13,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
-import com.al3x.housing2.Utils.Duple;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,11 +22,12 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChangeHealthAction extends Action {
+public class ChangeHealthAction extends HTSLImpl {
     private static Gson gson = new Gson();
 
     private StatOperation mode;
@@ -36,6 +35,8 @@ public class ChangeHealthAction extends Action {
 
     public ChangeHealthAction() {
         super("Change Health Action");
+        mode = StatOperation.SET;
+        value = new StatValue(false);
     }
 
     @Override
@@ -129,8 +130,8 @@ public class ChangeHealthAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("mode", mode.name());
         data.put("value", StatActionData.Companion.fromStatValue(value));
         return data;
@@ -144,6 +145,16 @@ public class ChangeHealthAction extends Action {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         mode = StatOperation.valueOf((String) data.get("mode"));
-        value = gson.fromJson((String) data.get("value"), MoreStatData.class).toStatValue();
+//        value = ((MoreStatData) data.get("value")).toStatValue();
+    }
+
+    @Override
+    public String export(int indent) {
+        return " ".repeat(indent) + keyword() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
+    }
+
+    @Override
+    public String keyword() {
+        return "changeHealth";
     }
 }

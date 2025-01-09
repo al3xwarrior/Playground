@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Layout;
@@ -13,9 +14,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class DisplayMenuAction extends Action {
+public class DisplayMenuAction extends HTSLImpl {
     String menu;
     public DisplayMenuAction() {
         super("Display Menu Action");
@@ -24,6 +26,11 @@ public class DisplayMenuAction extends Action {
     public DisplayMenuAction(String menu) {
         super("Display Menu Action");
         this.menu = menu;
+    }
+
+    @Override
+    public String keyword() {
+        return "displayMenu";
     }
 
     @Override
@@ -78,8 +85,8 @@ public class DisplayMenuAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("menu", menu);
         return data;
     }

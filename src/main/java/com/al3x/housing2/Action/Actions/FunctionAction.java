@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousesManager;
@@ -13,12 +14,9 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class FunctionAction extends Action {
+public class FunctionAction extends HTSLImpl {
     String function;
     boolean runForAllPlayers;
     public FunctionAction() {
@@ -97,8 +95,8 @@ public class FunctionAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("function", function == null ? null : function);
         data.put("runForAllPlayers", runForAllPlayers);
         return data;
@@ -113,5 +111,10 @@ public class FunctionAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return false;
+    }
+
+    @Override
+    public String keyword() {
+        return "function";
     }
 }

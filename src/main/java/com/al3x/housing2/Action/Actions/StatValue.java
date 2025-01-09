@@ -23,7 +23,7 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -341,8 +341,8 @@ public class StatValue extends Action {
     } // never "executed"
 
     @Override
-    public HashMap<String, Object> data() {
-        return new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        return new LinkedHashMap<>();
     }
 
     public boolean isExpression() {

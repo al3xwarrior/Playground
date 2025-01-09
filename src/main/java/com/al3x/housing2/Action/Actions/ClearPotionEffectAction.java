@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
@@ -20,9 +21,10 @@ import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ClearPotionEffectAction extends Action {
+public class ClearPotionEffectAction extends HTSLImpl {
 
     private PotionEffectType potionEffectType;
     private boolean clearAll;
@@ -115,8 +117,8 @@ public class ClearPotionEffectAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("potion", potionEffectType.getName());
         data.put("clearall", clearAll);
         return data;
@@ -134,5 +136,10 @@ public class ClearPotionEffectAction extends Action {
         potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
         if (!data.containsKey("clearall")) return;
         clearAll = (boolean) data.get("clearall");
+    }
+
+    @Override
+    public String keyword() {
+        return "clearEffect";
     }
 }

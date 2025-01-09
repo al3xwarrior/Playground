@@ -35,10 +35,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.IOException;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
 
@@ -351,8 +348,8 @@ public class NpcPathAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("npcId", npcId);
         data.put("mode", mode.name());
         if (mode != NavigationType.STATIONARY) {

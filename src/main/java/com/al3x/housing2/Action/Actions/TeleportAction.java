@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
@@ -14,12 +15,13 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 
-public class TeleportAction extends Action {
+public class TeleportAction extends HTSLImpl {
     private String customLocation;
     private Locations location;
 
@@ -94,8 +96,8 @@ public class TeleportAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("location", location.name());
         data.put("customLocation", customLocation);
         return data;
@@ -110,5 +112,16 @@ public class TeleportAction extends Action {
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
+    }
+
+    @Override
+    public String export(int indent) {
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name();
+        return " ".repeat(indent) + keyword() + " " + loc;
+    }
+
+    @Override
+    public String keyword() {
+        return "teleport";
     }
 }

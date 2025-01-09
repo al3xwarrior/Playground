@@ -59,7 +59,7 @@ public class ActionExecutor {
             }
 
             if (!returnVal.get()) {
-                break;
+                return false;
             }
 
             if (pause == 0) {

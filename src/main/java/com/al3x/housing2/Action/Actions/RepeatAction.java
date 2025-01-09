@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -15,11 +16,12 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
-public class RepeatAction extends Action {
+public class RepeatAction extends HTSLImpl {
     private static final Gson gson = new Gson();
     private List<Action> subActions;
     private String times;
@@ -129,8 +131,8 @@ public class RepeatAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("subActions", Companion.fromList(subActions));
         data.put("times", times);
         return data;
@@ -157,5 +159,26 @@ public class RepeatAction extends Action {
 
         this.subActions = Companion.toList(actions);
         this.times = data.get("times").toString();
+    }
+
+    @Override
+    public String export(int indent) {
+        StringBuilder builder = new StringBuilder();
+        for (Action action : subActions) {
+            if (!(action instanceof HTSLImpl impl)) continue;
+            builder.append(impl.export(indent + 4)).append("\n");
+        }
+        if (builder.isEmpty()) return " ".repeat(indent) + keyword();
+        return " ".repeat(indent) + keyword() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
+    }
+
+    @Override
+    public String syntax() {
+        return keyword() + " <times> {\\n<actions>\\n}";
+    }
+
+    @Override
+    public String keyword() {
+        return "repeat";
     }
 }

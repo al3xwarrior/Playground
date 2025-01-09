@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.StatInstance;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.ActionData;
@@ -14,6 +15,7 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -28,15 +30,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class GlobalStatAction extends Action {
+public class GlobalStatAction extends HTSLImpl {
 
     private static final Gson gson = new Gson();
     private String statName;
@@ -275,8 +274,8 @@ public class GlobalStatAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("statName", statName);
         data.put("statInstances", statInstances);
         return data;
@@ -302,5 +301,22 @@ public class GlobalStatAction extends Action {
             statInstance.value = value;
             statInstance.mode = mode;
         }
+    }
+
+    @Override
+    public String export(int indent) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < statInstances.size(); i++) {
+            sb.append(statInstances.get(i).mode.getAlternative()).append(" ").append(Color.removeColor(statInstances.get(i).value.toString()));
+            if (i != statInstances.size() - 1) {
+                sb.append(" ");
+            }
+        }
+        return " ".repeat(indent) + keyword() + " \"" + statName + "\" " + sb;
+    }
+
+    @Override
+    public String keyword() {
+        return "globalstat";
     }
 }

@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -17,13 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Enums.Locations.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ParticleAction extends Action {
+public class ParticleAction extends HTSLImpl {
     private Particles particle;
     private Locations location = null;
     private String customLocation = null;
@@ -381,8 +382,8 @@ public class ParticleAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("particle", particle);
         data.put("type", type);
         data.put("location", location);
@@ -400,5 +401,10 @@ public class ParticleAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "particle";
     }
 }

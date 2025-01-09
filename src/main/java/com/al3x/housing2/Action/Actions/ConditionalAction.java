@@ -17,6 +17,7 @@ import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
@@ -176,8 +177,8 @@ public class ConditionalAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("conditions", ConditionData.Companion.fromList(conditions));
         data.put("matchAnyCondition", matchAnyCondition);
         data.put("not", not);

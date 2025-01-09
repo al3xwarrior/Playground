@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -16,12 +17,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class LaunchProjectileAction extends Action {
+public class LaunchProjectileAction extends HTSLImpl {
     private Projectile projectile;
     private PushDirection direction;
     private String customDirection;
@@ -168,8 +169,8 @@ public class LaunchProjectileAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("projectile", projectile);
         data.put("amount", amount);
         data.put("direction", direction);
@@ -179,5 +180,10 @@ public class LaunchProjectileAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "launchProjectile";
     }
 }

@@ -35,7 +35,7 @@ public class CancelInput implements CommandExecutor {
 
         Player player = (Player) commandSender;
 
-        AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+        if (MenuManager.getListener(player) != null) AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
         MenuManager.getPlayerMenu(player).open();
 
         return true;

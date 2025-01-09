@@ -98,32 +98,16 @@ public class HousingNPC {
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
 
-        main.getLogger().info("NPC " + name + " loaded in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-        long total = System.currentTimeMillis();
-
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
-        main.getLogger().info("NPC " + name + " created in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         configureLookCloseTrait();
-        main.getLogger().info("NPC " + name + " lookclose in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         configureEquipment(data.getEquipment());
-        main.getLogger().info("NPC " + name + " equipment in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         configureNavigation(data);
-        main.getLogger().info("NPC " + name + " navigation in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
 
         setSkin(data.getNpcSkin());
-        main.getLogger().info("NPC " + name + " skin in " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
 
         citizensNPC.spawn(location);
-        main.getLogger().info("NPC " + name + " spawned in " + (System.currentTimeMillis() - start) + "ms");
         startFollowTask();
 
-        main.getLogger().info("NPC " + name + " spawned in " + (System.currentTimeMillis() - total) + "ms");
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {

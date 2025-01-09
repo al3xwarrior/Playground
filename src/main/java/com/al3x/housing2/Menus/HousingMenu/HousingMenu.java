@@ -90,7 +90,7 @@ public class HousingMenu extends Menu {
             });
         }
 
-        if (house.hasPermission(player, Permissions.BUILD) && (!house.getOwner().isOnline() || house.hasPermission(player, Permissions.OFFLINE_BUILD))) {
+        if (house.hasPermission(player, Permissions.BUILD) && (house.getOwner().isOnline() || house.hasPermission(player, Permissions.OFFLINE_BUILD))) {
             ItemStack buildMode = new ItemStack(Material.STONE_PICKAXE);
             ItemMeta buildModeMeta = buildMode.getItemMeta();
             buildModeMeta.setDisplayName(colorize("&aMode: &eBuild Mode"));

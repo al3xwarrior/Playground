@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static org.bukkit.Material.*;
 
-public enum StatOperation implements EnumMaterial {
+public enum StatOperation implements EnumMaterial, EnumHTSLAlternative{
     INCREASE(GREEN_STAINED_GLASS, "+", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     DECREASE(RED_STAINED_GLASS, "-", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     SET(YELLOW_STAINED_GLASS, "=", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
@@ -57,5 +57,10 @@ public enum StatOperation implements EnumMaterial {
     @Override
     public Material getMaterial() {
         return material;
+    }
+
+    @Override
+    public String getAlternative() {
+        return asString;
     }
 }

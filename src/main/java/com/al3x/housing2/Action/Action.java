@@ -26,10 +26,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -78,10 +75,10 @@ public abstract class Action {
     }
 
     public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        return execute(player, house);
+        return execute(player, house, event);
     }
 
-    public abstract HashMap<String, Object> data();
+    public abstract LinkedHashMap<String, Object> data();
 
     public abstract boolean requiresPlayer();
 
@@ -273,6 +270,7 @@ public abstract class Action {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Action action = (Action) o;
+        if (super.equals(o)) return true;
         return Objects.equals(getName(), action.getName()) && data().equals(action.data());
     }
 

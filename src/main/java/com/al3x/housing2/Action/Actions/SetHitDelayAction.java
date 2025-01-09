@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -11,10 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class SetHitDelayAction extends Action {
+public class SetHitDelayAction extends HTSLImpl {
 
     private double delay;
 
@@ -81,8 +82,8 @@ public class SetHitDelayAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("delay", delay);
         return data;
     }
@@ -90,6 +91,11 @@ public class SetHitDelayAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "hitDelay";
     }
 
 //    @Override

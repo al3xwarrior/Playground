@@ -2,7 +2,9 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.Locations;
+import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -13,12 +15,13 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 
-public class ExplosionAction extends Action {
+public class ExplosionAction extends HTSLImpl {
     private String customLocation;
     private Locations location;
     private double power; //Ints are not storeable anywhere
@@ -106,8 +109,8 @@ public class ExplosionAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("location", location.name());
         data.put("customLocation", customLocation);
         data.put("power", power);
@@ -124,5 +127,16 @@ public class ExplosionAction extends Action {
         customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
         power = (double) data.get("power");
+    }
+
+    @Override
+    public String export(int indent) {
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name();
+        return " ".repeat(indent) + keyword() + " " + loc + " " + power;
+    }
+
+    @Override
+    public String keyword() {
+        return "explosion";
     }
 }

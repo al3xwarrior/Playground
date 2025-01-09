@@ -19,10 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class GiveItemAction extends Action {
     ItemStack item;
@@ -212,8 +209,8 @@ public class GiveItemAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("item", Serialization.itemStackToBase64(item));
         data.put("allowMultiple", allowMultiple);
         data.put("slot", slot);

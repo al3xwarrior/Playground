@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -16,12 +17,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PushPlayerAction extends Action {
+public class PushPlayerAction extends HTSLImpl {
     private PushDirection direction;
     private String customDirection;
     private double amount;
@@ -163,8 +164,8 @@ public class PushPlayerAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("amount", amount);
         data.put("customDirection", customDirection);
         data.put("direction", direction);
@@ -174,5 +175,16 @@ public class PushPlayerAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String export(int indent) {
+        String dir = direction == PushDirection.CUSTOM ? customDirection : direction.name();
+        return " ".repeat(indent) + keyword() + " " + amount + " " + dir;
+    }
+
+    @Override
+    public String keyword() {
+        return "propel";
     }
 }

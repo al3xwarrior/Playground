@@ -17,6 +17,7 @@ public class CommandRegistry extends BukkitCommand {
     public static HashMap<UUID, List<String>> commandArgsResults = new HashMap<>();
 
     private Command command;
+
     protected CommandRegistry(@NotNull String name, Command comand) {
         super(name);
         this.command = comand;
@@ -40,6 +41,7 @@ public class CommandRegistry extends BukkitCommand {
             if (args.size() < i + 1) {
                 if (arg.isRequired()) {
                     player.sendMessage(colorize("&cUsage: " + command.getUsage()));
+                    player.sendMessage(colorize("&cYou are missing the required argument: " + arg.getName()));
                     return true;
                 }
                 continue;
@@ -57,33 +59,32 @@ public class CommandRegistry extends BukkitCommand {
             String finalArgValue = argValue;
             switch (arg.getType()) {
                 case STRING -> {
-                    if (!argValue.matches(".*[a-zA-Z]+.*")) {
-                        player.sendMessage(colorize("&cUsage: " + command.getUsage()));
-                        return true;
-                    }
-
                 }
                 case INT -> {
                     if (!argValue.matches(".*[0-9]+.*")) {
                         player.sendMessage(colorize("&cUsage: " + command.getUsage()));
+                        player.sendMessage(colorize("&cArgument " + arg.getName() + " must be an integer"));
                         return true;
                     }
                 }
                 case BOOLEAN -> {
                     if (!argValue.equalsIgnoreCase("true") && !argValue.equalsIgnoreCase("false")) {
                         player.sendMessage(colorize("&cUsage: " + command.getUsage()));
+                        player.sendMessage(colorize("&cArgument " + arg.getName() + " must be a boolean"));
                         return true;
                     }
                 }
                 case PLAYER -> {
                     if (world.getWorld().getPlayers().stream().noneMatch(p -> p.getName().equalsIgnoreCase(finalArgValue))) {
                         player.sendMessage(colorize("&cUsage: " + command.getUsage()));
+                        player.sendMessage(colorize("&cPlayer " + arg.getName() + " not found"));
                         return true;
                     }
                 }
                 case DOUBLE -> {
                     if (!argValue.matches(".*[0-9.]+.*")) {
                         player.sendMessage(colorize("&cUsage: " + command.getUsage()));
+                        player.sendMessage(colorize("&cArgument " + arg.getName() + " must be a double"));
                         return true;
                     }
                 }

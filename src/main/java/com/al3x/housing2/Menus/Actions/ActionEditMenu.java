@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
+import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.*;
@@ -13,6 +14,12 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StackUtils;
+import com.al3x.housing2.api.Housing2Api;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,6 +30,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -440,6 +448,28 @@ public class ActionEditMenu extends Menu {
             ItemBuilder importItem = ItemBuilder.create(Material.CYAN_DYE).name("&bImport from Clipboard").lClick(ItemBuilder.ActionType.IMPORT_YELLOW);
             addItem(((editor.getRows() - 1) * 9) + 1, importItem.build(), (e) -> {
                 new ActionClipboardMenu(player, main, house, action, this).open();
+            });
+
+            ItemBuilder editExternally = ItemBuilder.create(Material.PURPLE_DYE).name("&eEdit Externally").lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+            addItem(((editor.getRows() - 1) * 9) + 2, editExternally.build(), (e) -> {
+                TextComponent text = Component.text("Exporting to external editor...").color(TextColor.color(0xFFEE00));
+                player.sendMessage(text);
+                Housing2Api.Companion.getInstance().addEditing(
+                        player.getUniqueId().toString(), UUID.randomUUID().toString(), action
+                );
+
+                text = Component.text("Exported successfully, open it ").append(
+                        Component.text("here").color(TextColor.color(0x00FF00)).decorate(TextDecoration.UNDERLINED)
+                                .clickEvent(ClickEvent.openUrl("http://localhost:8080/action?uuid=" + player.getUniqueId()))
+                                .hoverEvent(Component.text("Click to open the external editor")
+                                        .color(TextColor.color(0xFFEE00))
+                                )
+                ).append(
+                        Component.text(" §c[Back]").clickEvent(ClickEvent.runCommand("/cancelinput"))
+                                .hoverEvent(Component.text("§eClick to go back to where you were"))
+                ).color(TextColor.color(0xFFEE00));
+                player.sendMessage(text);
+                player.closeInventory();
             });
         }
     }

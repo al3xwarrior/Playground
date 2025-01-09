@@ -5,7 +5,7 @@ import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.google.gson.Gson;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class StatInstance {
     private static final Gson gson = new Gson();
@@ -17,7 +17,7 @@ public class StatInstance {
         this.value = new StatValue(global);
     }
 
-    public void fromData(HashMap<String, Object> data, Class<? extends StatInstance> actionClass) {
+    public void fromData(LinkedHashMap<String, Object> data, Class<? extends StatInstance> actionClass) {
         mode = StatOperation.valueOf((String) data.get("mode"));
         value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
     }

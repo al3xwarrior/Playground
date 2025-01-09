@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -13,11 +14,12 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChangeMaxHealthAction extends Action {
+public class ChangeMaxHealthAction extends HTSLImpl {
 
     private double health;
     private StatOperation mode;
@@ -122,17 +124,22 @@ public class ChangeMaxHealthAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("health", health);
         data.put("mode", mode);
-        data.put("healonchange", healOnChange);
+        data.put("healOnChange", healOnChange);
         return data;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "maxHealth";
     }
 
 //    @Override

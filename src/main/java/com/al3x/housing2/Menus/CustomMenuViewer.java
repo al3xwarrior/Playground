@@ -49,11 +49,11 @@ public class CustomMenuViewer extends Menu {
             }
             ItemStack item = customMenu.getItems().get(i).getFirst().clone();
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName()));
+            meta.setDisplayName(colorize(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName())));
             ArrayList<String> lore = new ArrayList<>();
             List<String> oldLore = new ArrayList<>(meta.getLore() == null ? new ArrayList<>() : meta.getLore());
             for (String line : oldLore) {
-                lore.add(HandlePlaceholders.parsePlaceholders(player, house, line));
+                lore.add(colorize(HandlePlaceholders.parsePlaceholders(player, house, line)));
             }
             meta.setLore(lore);
             item.setItemMeta(meta);

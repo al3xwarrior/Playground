@@ -19,6 +19,9 @@ public class MenuManager {
     }
 
     public static Listener getListener(Player player) {
+        if (!playerListeners.containsKey(player)) {
+            return null;
+        }
         return playerListeners.get(player);
     }
 

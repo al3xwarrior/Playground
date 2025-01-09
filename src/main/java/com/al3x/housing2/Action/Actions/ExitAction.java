@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -8,12 +9,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Enums.EventType.*;
 
-public class ExitAction extends Action {
+public class ExitAction extends HTSLImpl {
 
     public ExitAction() {
         super("Exit Action");
@@ -46,8 +47,8 @@ public class ExitAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        return new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        return new LinkedHashMap<>();
     }
 
     @Override
@@ -58,5 +59,10 @@ public class ExitAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return false;
+    }
+
+    @Override
+    public String keyword() {
+        return "exit";
     }
 }

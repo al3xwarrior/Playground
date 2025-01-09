@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -23,12 +24,13 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
-public class ApplyPotionEffectAction extends Action {
+public class ApplyPotionEffectAction extends HTSLImpl {
 
     private PotionEffectType potionEffectType;
     private int level;
@@ -123,8 +125,8 @@ public class ApplyPotionEffectAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("potion", potionEffectType.getName());
         data.put("duration", duration);
         data.put("level", level);
@@ -144,5 +146,10 @@ public class ApplyPotionEffectAction extends Action {
         duration = NumberUtilsKt.toInt((Double) data.get("duration"));
         if (!data.containsKey("level")) return;
         level = NumberUtilsKt.toInt((Double) data.get("level"));
+    }
+
+    @Override
+    public String keyword() {
+        return "applyPotion";
     }
 }

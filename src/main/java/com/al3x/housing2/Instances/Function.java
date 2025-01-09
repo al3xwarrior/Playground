@@ -59,10 +59,7 @@ public class Function {
         ActionExecutor executor = new ActionExecutor();
 
         for (Player p : players) {
-            List<Action> actions = new ArrayList<>(this.actions).stream()
-                    .filter((action) -> action.allowedEvents() == null || action.allowedEvents().contains(EventType.FUNCTION))
-                    .filter((action) -> !action.requiresPlayer() || p != null)
-                    .toList();
+            List<Action> actions = new ArrayList<>(this.actions);
             executor.addActions(actions);
             executor.execute(p, house, null);
         }

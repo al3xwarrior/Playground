@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -20,15 +21,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PlaySoundAction extends Action {
+public class PlaySoundAction extends HTSLImpl {
     private Double volume;
     private Double pitch;
     private Sound sound;
@@ -147,8 +145,8 @@ public class PlaySoundAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("volume", volume);
         data.put("pitch", pitch);
         data.put("sound", sound.name());
@@ -169,5 +167,21 @@ public class PlaySoundAction extends Action {
         sound = Sound.valueOf((String) data.get("sound"));
         customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
+    }
+
+    @Override
+    public String export(int indent) {
+        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? location.name() : customLocation;
+        return " ".repeat(indent) + keyword() + " " + sound.name() + " " + volume + " " + pitch + " " + loc;
+    }
+
+    @Override
+    public String syntax() {
+        return "sound <sound> <volume> <pitch> <location>";
+    }
+
+    @Override
+    public String keyword() {
+        return "sound";
     }
 }

@@ -223,6 +223,11 @@ public class Housing implements CommandExecutor {
                 return true;
             }
 
+            if (strings[0].equalsIgnoreCase("editor") && player.hasPermission("housing.editor")) {
+
+                return true;
+            }
+
             if (strings[0].equalsIgnoreCase("random")) {
                 HousingWorld house = housesManager.getRandomPublicHouse();
                 if (house != null) {

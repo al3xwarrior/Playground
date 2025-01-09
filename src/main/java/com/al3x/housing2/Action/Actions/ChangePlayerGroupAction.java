@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -15,9 +16,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ChangePlayerGroupAction extends Action {
+public class ChangePlayerGroupAction extends HTSLImpl {
     String group = null;
     boolean demotionProtection = false;
     public ChangePlayerGroupAction() {
@@ -87,8 +89,8 @@ public class ChangePlayerGroupAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("group", group);
         data.put("demotionProtection", demotionProtection);
         return data;
@@ -103,5 +105,10 @@ public class ChangePlayerGroupAction extends Action {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "changePlayerGroup";
     }
 }

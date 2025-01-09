@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -12,13 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
 
-public class ChatAction extends Action {
+public class ChatAction extends HTSLImpl {
 
     private String message;
 
@@ -30,6 +31,11 @@ public class ChatAction extends Action {
     public ChatAction(String message) {
         super("Chat Action");
         this.message = message;
+    }
+
+    @Override
+    public String keyword() {
+        return "chat";
     }
 
     @Override
@@ -85,8 +91,8 @@ public class ChatAction extends Action {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("message", message);
         return data;
     }

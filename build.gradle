@@ -38,6 +38,10 @@ dependencies {
     implementation files('libs/PacketWrapper.jar')
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
+
+    // Ktor is not lightweight, but is my favorite web framework
+    implementation "io.ktor:ktor-server-core:3.0.3"
+    implementation "io.ktor:ktor-server-netty:3.0.3"
 }
 
 tasks.withType(JavaCompile) {
