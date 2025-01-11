@@ -6,6 +6,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
 import com.google.gson.Gson;
+import com.xxmicloxx.NoteBlockAPI.model.Song;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -227,6 +228,13 @@ public class HousesManager {
         }
     }
 
+    public void addSongToHouse(HousingWorld house, Song song) {
+        house.addSong(song);
+    }
+    public void removeSongFromHouse(HousingWorld house, Song song) {
+        house.removeSong(song);
+    }
+
     public void saveHouseAndUnload(HousingWorld house) {
         if (house != null) {
             house.save();
@@ -241,7 +249,7 @@ public class HousesManager {
         return house;
     }
 
-    //Updated to allow for houses that havent been loaded yet tom be added to the list
+    //Updated to allow for houses that haven't been loaded yet tom be added to the list
     public HousingWorld getRandomPublicHouse() {
         ArrayList<HouseData> publicHouses = new ArrayList<>(getAllHouseData().stream()
                 .filter(houseData -> houseData.getPrivacy().equals("PUBLIC"))

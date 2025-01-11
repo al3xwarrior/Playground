@@ -23,6 +23,7 @@ repositories {
     }
     maven { url = 'https://repo.extendedclip.com/releases/' }
     maven { url "https://repo.fancyplugins.de/releases" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -42,6 +43,9 @@ dependencies {
     // Ktor is not lightweight, but is my favorite web framework
     implementation "io.ktor:ktor-server-core:3.0.3"
     implementation "io.ktor:ktor-server-netty:3.0.3"
+
+    // note block
+    compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.2'
 }
 
 tasks.withType(JavaCompile) {

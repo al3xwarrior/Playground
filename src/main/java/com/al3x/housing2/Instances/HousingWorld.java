@@ -19,6 +19,10 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.api.world.SlimeWorld;
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
+import com.xxmicloxx.NoteBlockAPI.model.Playlist;
+import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
+import com.xxmicloxx.NoteBlockAPI.model.Song;
+import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
@@ -31,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.Permission;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -80,6 +83,10 @@ public class HousingWorld {
     private String seed;
     private Random random;
     public HouseData houseData;
+
+    // Jukebox
+    private Playlist playlist;
+    private RadioSongPlayer radioSongPlayer;
 
     private boolean loaded = false;
     private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
@@ -154,6 +161,11 @@ public class HousingWorld {
         } catch (Exception e) {
             main.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
+
+        this.playlist = new Playlist(JukeBoxManager.getRandomSong()); // needs at least 1 song to work
+        this.radioSongPlayer = new RadioSongPlayer(playlist);
+        radioSongPlayer.setRepeatMode(RepeatMode.ALL);
+        radioSongPlayer.setRandom(true);
     }
 
     private void loadHouseData(OfflinePlayer owner, String name) {
@@ -438,6 +450,72 @@ public class HousingWorld {
         Bukkit.getOnlinePlayers().stream()
                 .filter(player -> player.getWorld().getName().equals(houseUUID.toString()))
                 .forEach(player -> player.sendMessage(colorize(message)));
+    }
+
+    public void addSong(Song song) {
+        if (!radioSongPlayer.isPlaying()) {
+            clearAllSongsBut(song);
+            radioSongPlayer.setPlaying(true);
+            return;
+        }
+        if (!playlist.contains(song)) playlist.add(song);
+    }
+
+    public void removeSong(Song song) {
+        if (!playlist.contains(song)) return;
+        if (playlist.getCount() == 1) {
+            stopMusic();
+            return;
+        }
+        if (radioSongPlayer.getSong() == song) radioSongPlayer.playNextSong();
+        playlist.remove(song);
+    }
+
+    public void clearAllSongsBut(Song song) {
+        playlist.add(song);
+        playlist.getSongList().forEach(bald -> {
+            if (bald != song) playlist.remove(bald);
+        });
+    }
+
+    public void startMusic() {
+        radioSongPlayer.setPlaying(true);
+    }
+
+    public void stopMusic() {
+        radioSongPlayer.setPlaying(false);
+    }
+
+    public void skipSong() {
+        radioSongPlayer.playNextSong();
+    }
+
+    public Song getCurrentSong() {
+        return radioSongPlayer.getSong();
+    }
+
+    public boolean songInPlaylist(Song song) {
+        return playlist.contains(song);
+    }
+
+    public Set<UUID> getRadioPlayers() {
+        return radioSongPlayer.getPlayerUUIDs();
+    }
+
+    public int getSongCount() {
+        return playlist.getCount();
+    }
+
+    public void playerJoins(Player player) {
+        radioSongPlayer.addPlayer(player);
+    }
+
+    public void playerLeaves(Player player) {
+        radioSongPlayer.removePlayer(player);
+    }
+
+    public boolean isJukeboxPlaying() {
+        return radioSongPlayer.isPlaying();
     }
 
     public void setDescription(String description) {
@@ -844,6 +922,9 @@ public class HousingWorld {
     }
 
     public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
+        if (eventType == EventType.PLAYER_JOIN) playerJoins(player);
+        if (eventType == EventType.PLAYER_QUIT) playerLeaves(player);
+
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
             ActionExecutor executor = new ActionExecutor();

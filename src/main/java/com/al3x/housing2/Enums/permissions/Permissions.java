@@ -14,7 +14,7 @@ public enum Permissions implements PermissionInterface{
     LAUNCH_PAD,
     COMMAND_TP,
     COMMAND_TP_OTHER,
-    JUKEBOX, //PSHHHHH this will probably never happen lmfao
+    JUKEBOX, //PSHHHHH this will probably never happen lmfao // sike -al3x
     KICK,
     BAN,
     MUTE,

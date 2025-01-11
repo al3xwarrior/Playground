@@ -1,8 +1,10 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
+import com.al3x.housing2.Menus.HousingMenu.JukeboxMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -135,6 +137,18 @@ public class HouseSettingsMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
             player.sendMessage("PvP Settings selected");
+        });
+
+        addItem(25, ItemBuilder.create(Material.JUKEBOX)
+                .name(colorize("&aMusic Settings"))
+                .description("Click to configure Music settings.")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), (e) -> {
+            if (house.hasPermission(player, Permissions.JUKEBOX)) {
+                new JukeboxMenu(main, player, house).open();
+                return;
+            }
+            player.sendMessage(colorize("&cYou do not have permission to modify the jukebox!"));
         });
 
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)
