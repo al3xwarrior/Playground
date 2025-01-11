@@ -32,6 +32,7 @@ public final class Main extends JavaPlugin {
     private ProtocolManager protocolManager;
     private CookieManager cookieManager;
     private ClipboardManager clipboardManager;
+    private LobbyDisplays lobbyDisplays;
 
     private Housing2Api api;
 
@@ -60,6 +61,7 @@ public final class Main extends JavaPlugin {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.cookieManager = new CookieManager(this, getDataFolder());
         this.clipboardManager = new ClipboardManager(this, getDataFolder());
+        this.lobbyDisplays = new LobbyDisplays(housesManager);
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
@@ -163,6 +165,7 @@ public final class Main extends JavaPlugin {
             housesManager.saveHouseAndUnload(house);
         }
         getServer().getLogger().info("[Housing2] Disabled");
+        lobbyDisplays.removeDisplays();
     }
 
     public static Main getInstance() {
@@ -171,6 +174,10 @@ public final class Main extends JavaPlugin {
 
     public CookieManager getCookieManager() {
         return this.cookieManager;
+    }
+
+    public LobbyDisplays getLobbyDisplays() {
+        return this.lobbyDisplays;
     }
 
 

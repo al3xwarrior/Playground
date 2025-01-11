@@ -79,7 +79,7 @@ public class Runnables {
                     house.getWorld().getPlayers().forEach(player -> HousingTabList.setTabList(player, house));
                 }
             }
-        }.runTaskTimer(main, 0, 20L));
+        }.runTaskTimer(main, 0, 40L));
 
         runnables.put("saveAll", new BukkitRunnable() {
             @Override
@@ -277,6 +277,13 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 2));
+
+        runnables.put("lobbyDisplays", new BukkitRunnable() {
+            @Override
+            public void run() {
+                main.getLobbyDisplays().updateLobbyDisplays();
+            }
+        }.runTaskTimer(main, 0L, 40));
     }
 
     public static void stopRunnables() {
