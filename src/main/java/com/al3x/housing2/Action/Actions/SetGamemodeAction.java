@@ -65,7 +65,7 @@ public class SetGamemodeAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + gamemode)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Projectile.values(), null
+                        ActionEditor.ActionItem.ActionType.ENUM, Gamemodes.values(), null
                 )
         );
 

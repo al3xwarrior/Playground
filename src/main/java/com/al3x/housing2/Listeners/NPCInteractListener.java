@@ -1,5 +1,6 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -35,7 +36,7 @@ public class NPCInteractListener implements Listener {
         HousingNPC npc = house.getNPC(citizensNPC.getId());
         if (npc == null) return;
 
-        if (house.getOwnerUUID().equals(player.getUniqueId()) && player.isSneaking() && rightClick) {
+        if (house.hasPermission(player, Permissions.ITEM_NPCS) && player.isSneaking() && rightClick) {
             new NPCMenu(main, player, npc).open();
             return;
         }

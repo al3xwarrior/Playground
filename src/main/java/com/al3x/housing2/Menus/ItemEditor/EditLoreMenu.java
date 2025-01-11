@@ -48,15 +48,36 @@ public class EditLoreMenu extends Menu {
                 itemBuilder.name("&aLine #" + (i + 1));
                 itemBuilder.info("&eCurrent Line", "");
                 itemBuilder.info(null, line);
-                itemBuilder.lClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+                itemBuilder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+                itemBuilder.rClick(ItemBuilder.ActionType.DELETE_YELLOW);
+                itemBuilder.shiftClick();
                 addItem(slots[i], itemBuilder.build(), e -> {
                     ItemMeta meta = item.getItemMeta();
-                    List<String> newLore = new ArrayList<>(meta.getLore());
-                    newLore.remove(line);
-                    meta.setLore(newLore);
-                    item.setItemMeta(meta);
-                    player.getInventory().setItemInMainHand(item);
-                    setupItems();
+                    ArrayList<String> newLore = new ArrayList<>(meta.getLore());
+                    if (e.isShiftClick()) {
+                        shiftLine(newLore, line, e.isRightClick());
+                        item.setItemMeta(meta);
+                        player.getInventory().setItemInMainHand(item);
+                        setupItems();
+                        return;
+                    }
+
+                    if (e.isRightClick()) {
+                        newLore.remove(line);
+                        meta.setLore(newLore);
+                        item.setItemMeta(meta);
+                        player.getInventory().setItemInMainHand(item);
+                        setupItems();
+                    } else {
+                        player.sendMessage(colorize("&eEnter the new line for the lore."));
+                        openChat(Main.getInstance(), line, (newLine) -> {
+                            newLore.set(newLore.indexOf(line), newLine);
+                            meta.setLore(newLore);
+                            item.setItemMeta(meta);
+                            player.getInventory().setItemInMainHand(item);
+                            setupItems();
+                        });
+                    }
                 });
             }
 
@@ -100,5 +121,20 @@ public class EditLoreMenu extends Menu {
                 .build(), e -> {
             new EditItemMainMenu(player).open();
         });
+    }
+
+    public void shiftLine(ArrayList<String> lore, String action, boolean forward) {
+        int index = lore.indexOf(action);
+
+        if (lore.size() < 2) return;
+
+        lore.remove(index);
+
+        if (forward) {
+            lore.add((index == lore.size()) ? 0 : index + 1, action);
+        } else {
+            lore.add((index == 0) ? lore.size() : index - 1, action);
+        }
+        setupItems();
     }
 }

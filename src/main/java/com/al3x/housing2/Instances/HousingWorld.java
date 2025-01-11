@@ -875,7 +875,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(player.getUniqueId().toString());
+            data = new PlayerData(player.getUniqueId().toString(), null, null, null);
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }

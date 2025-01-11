@@ -209,6 +209,11 @@ public class HousingNPC {
             @Override
             public void run() {
                 if (citizensNPC.isSpawned()) {
+                    if (citizensNPC.getEntity().getLocation().getY() < -64) {
+                        citizensNPC.despawn();
+                        citizensNPC.spawn(location);
+                    }
+
                     FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
                     followTrait.setProtect(false);
                     if (navigationType == NavigationType.PLAYER) {

@@ -19,6 +19,7 @@ commands:
     usage: "/testplaceholder <string>"
   placeholders:
   edit:
+  gamemode:
   wand:
     usage: "/wand"
     aliases: ["/", "wand", "housingwand"]

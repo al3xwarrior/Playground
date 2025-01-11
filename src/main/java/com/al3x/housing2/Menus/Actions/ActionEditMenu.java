@@ -227,7 +227,7 @@ public class ActionEditMenu extends Menu {
                             //Add this to check for events and such
                             actionMenu.setEvent(event);
                             actionMenu.setHousingNPC(housingNPC);
-
+                            actionMenu.setUpdate(update);
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
@@ -285,11 +285,19 @@ public class ActionEditMenu extends Menu {
                         PaginationMenu<Group> paginationMenu = new PaginationMenu<>(main, "Select a Group", groups, player, house, this, (group) -> {
                             try {
                                 // Set the field
-                                Field field = action.getClass().getDeclaredField(item.getVarName());
-                                field.setAccessible(true);
-                                field.set(action, group.getName());
-                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + group.getName()));
-                                open();
+                                if (action != null) {
+                                    Field field = action.getClass().getDeclaredField(item.getVarName());
+                                    field.setAccessible(true);
+                                    field.set(action, group.getName());
+                                    player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + group.getName()));
+                                    open();
+                                } else {
+                                    Field field = condition.getClass().getDeclaredField(item.getVarName());
+                                    field.setAccessible(true);
+                                    field.set(condition, group.getName());
+                                    player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + group.getName()));
+                                    open();
+                                }
                             } catch (NoSuchFieldException | IllegalAccessException ex) {
                                 Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
                                 player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));

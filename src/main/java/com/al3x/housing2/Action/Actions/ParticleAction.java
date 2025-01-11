@@ -7,19 +7,18 @@ import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.*;
+import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerWorldParticles;
+import com.comphenix.protocol.wrappers.WrappedParticle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import reactor.util.function.Tuple3;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.*;
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -36,6 +35,8 @@ public class ParticleAction extends HTSLImpl {
     private Double radius;
     private Double amount;
     private boolean globallyVisible;
+
+    public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
 
     public ParticleAction() {
         super("Particle Action");
@@ -367,11 +368,27 @@ public class ParticleAction extends HTSLImpl {
             case LINE -> locations = getLine(location, radius);
             case SQUARE -> locations = getSquare(location, radius, 40);
         }
+
+        if (particlesCooldownMap.containsKey(player.getUniqueId())) {
+            Duple<String, Integer> duple = particlesCooldownMap.get(player.getUniqueId());
+            if (duple.getFirst().equals(particle.name())) {
+                if (duple.getSecond() > 2000) {
+                    return;
+                }
+                particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), duple.getSecond() + 1));
+            } else {
+                particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
+            }
+        } else {
+            particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
+        }
         for (Location loc : locations) {
             if (globallyVisible) {
-                loc.getWorld().spawnParticle(particle.getParticle(), loc, NumberUtilsKt.toInt(amount));
+                for (Player p : house.getWorld().getPlayers()) {
+                    p.spawnParticle(particle.getParticle(), loc, amount.intValue());
+                }
             } else {
-                player.spawnParticle(particle.getParticle(), loc, NumberUtilsKt.toInt(amount));
+                player.spawnParticle(particle.getParticle(), loc, amount.intValue());
             }
         }
     }

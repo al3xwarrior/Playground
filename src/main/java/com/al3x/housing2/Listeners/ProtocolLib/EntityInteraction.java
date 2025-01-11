@@ -24,7 +24,7 @@ public class EntityInteraction {
                 Player player = event.getPlayer();
 
                 if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
-                Hologram hologram = housesManager.getHouse(player).getHologramInstance(id);
+                Hologram hologram = housesManager.getHouse(player.getWorld()).getHologramInstance(id);
                 if (hologram == null) return;
                 if (hologram.isDestroyed()) return;
 

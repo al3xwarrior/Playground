@@ -9,9 +9,11 @@ import com.al3x.housing2.Utils.PaginationList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -23,11 +25,21 @@ public class PaginationMenu<E> extends Menu {
     private Player player;
     private HousingWorld house;
     private List<Duple<E, ItemBuilder>> items;
-    private Consumer<E> con;
+    private BiConsumer<InventoryClickEvent, E> con;
     private Menu backMenu;
 
     private int currentPage = 1;
     private String search;
+
+    public PaginationMenu(Main main, String title, List<Duple<E, ItemBuilder>> items, Player player, HousingWorld house, Menu backMenu, BiConsumer<InventoryClickEvent, E> consumer) {
+        super(player, colorize(title), 9 * 6);
+        this.main = main;
+        this.player = player;
+        this.house = house;
+        this.items = items;
+        this.con = consumer;
+        this.backMenu = backMenu;
+    }
 
     public PaginationMenu(Main main, String title, List<Duple<E, ItemBuilder>> items, Player player, HousingWorld house, Menu backMenu, Consumer<E> consumer) {
         super(player, colorize(title), 9 * 6);
@@ -35,7 +47,7 @@ public class PaginationMenu<E> extends Menu {
         this.player = player;
         this.house = house;
         this.items = items;
-        this.con = consumer;
+        this.con = (event, e) -> consumer.accept(e);
         this.backMenu = backMenu;
     }
 
@@ -50,7 +62,7 @@ public class PaginationMenu<E> extends Menu {
         this.items = items;
     }
 
-    public void setConsumer(Consumer<E> consumer) {
+    public void setConsumer(BiConsumer<InventoryClickEvent, E> consumer) {
         this.con = consumer;
     }
 
@@ -82,18 +94,20 @@ public class PaginationMenu<E> extends Menu {
     public void setupItems() {
         clearItems();
         int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-        PaginationList<Duple<E, ItemBuilder>> paginationList = new PaginationList<>(items, slots.length);
-        List<Duple<E, ItemBuilder>> pageItems = paginationList.getPage(currentPage);
 
+        List<Duple<E, ItemBuilder>> newItems = items;
         if (search != null) {
-            pageItems = pageItems.stream().filter(i -> Color.removeColor(i.getSecond().getName().toLowerCase()).contains(search.toLowerCase())).toList();
+            newItems = newItems.stream().filter(i -> Color.removeColor(i.getSecond().getName().toLowerCase()).contains(search.toLowerCase())).toList();
         }
+
+        PaginationList<Duple<E, ItemBuilder>> paginationList = new PaginationList<>(newItems, slots.length);
+        List<Duple<E, ItemBuilder>> pageItems = paginationList.getPage(currentPage);
 
         //I really shouldn't have made this, but I did :)
         for (int i = 0; i < pageItems.size(); i++) {
             Duple<E, ItemBuilder> something = pageItems.get(i);
             addItem(slots[i], something.getSecond().build(), (event) -> {
-                con.accept(something.getFirst());
+                con.accept(event, something.getFirst());
             });
         }
 

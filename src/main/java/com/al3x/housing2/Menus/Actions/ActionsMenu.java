@@ -136,7 +136,7 @@ public class ActionsMenu extends Menu {
 
         // Conditions
         if (actions == null) {
-            PaginationList<Condition> paginationList = new PaginationList<>(conditions, allowedSlots.length);
+            PaginationList<Condition> paginationList = new PaginationList<>(conditions, 21);
             List<Condition> conditions = paginationList.getPage(currentPage);
 
             if (conditions == null || conditions.isEmpty()) {
@@ -210,7 +210,7 @@ public class ActionsMenu extends Menu {
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
                             //shift actions around
-                            shiftAction(action, finalI, e.isRightClick());
+                            shiftAction(action, finalI + (currentPage - 1)*21, e.isRightClick());
                             return;
                         }
 

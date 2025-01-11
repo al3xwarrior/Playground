@@ -89,9 +89,13 @@ public class PlaySoundAction extends HTSLImpl {
                             //Basically because Sound isnt a ENUM we cant just use the enum class
                             new PaginationMenu<>(Main.getInstance(),
                                     "&eSelect a Potion Effect", soundDuple,
-                                    player, house, backMenu, (potion) -> {
-                                sound = potion;
-                                backMenu.open();
+                                    player, house, backMenu, (e, potion) -> {
+                                if (e.isRightClick()) {
+                                    player.playSound(player.getLocation(), potion, 1.0F, 1.0F);
+                                } else {
+                                    sound = potion;
+                                    backMenu.open();
+                                }
                             }).open();
                             return true;
                         }

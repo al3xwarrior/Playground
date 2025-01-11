@@ -73,6 +73,8 @@ public final class Main extends JavaPlugin {
         getCommand("edit").setExecutor(new Edit(this));
         getCommand("setspawn").setExecutor(new SetSpawn(housesManager, this));
         getCommand("fly").setExecutor(new Fly(this));
+        getCommand("gamemode").setExecutor(new Gamemode(this));
+        getCommand("gamemode").setTabCompleter(new Gamemode.TabCompleter());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

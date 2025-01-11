@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
@@ -27,10 +28,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 import static com.al3x.housing2.Instances.HousesManager.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -61,7 +60,9 @@ public class JoinLeaveHouse implements Listener {
         scoreboard.setScoreboard(player);
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
-        if (house == null) { return; }
+        if (house == null) {
+            return;
+        }
 
         PlayerData data = house.loadOrCreatePlayerData(player);
 
@@ -74,7 +75,16 @@ public class JoinLeaveHouse implements Listener {
         player.teleport(house.getSpawn());
 
         resetPlayer(player);
-
+        try {
+            if (data.getInventory() != null) {
+                player.getInventory().setContents(Serialization.itemStacksFromBase64(data.getInventory()).toArray(new ItemStack[0]));
+            }
+            if (data.getEnderchest() != null) {
+                player.getEnderChest().setContents(Serialization.itemStacksFromBase64(data.getEnderchest()).toArray(new ItemStack[0]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // If the person joining is the owner
         if (house.getOwnerUUID().equals(player.getUniqueId())) {
             player.setGameMode(GameMode.CREATIVE);
@@ -106,6 +116,10 @@ public class JoinLeaveHouse implements Listener {
         if (from == null) return;
         from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
+
+        PlayerData data = from.loadOrCreatePlayerData(player);
+        data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
+        data.setEnderchest(Serialization.itemStacksToBase64(List.of(player.getEnderChest().getContents())));
     }
 
     @EventHandler
@@ -137,14 +151,15 @@ public class JoinLeaveHouse implements Listener {
         try {
             UUID worldUUID = UUID.fromString(worldName);
             house = housesManager.getHouse(worldUUID);
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException ignored) {
+        }
 
         // If what they are leaving is indeed a house, then we trigger the leave house method
         if (house != null) {
             leaveHouse(player, house);
         }
 
-        e.setQuitMessage(colorize( "&7&o" + player.getName() + " left the server."));
+        e.setQuitMessage(colorize("&7&o" + player.getName() + " left the server."));
     }
 
     @EventHandler

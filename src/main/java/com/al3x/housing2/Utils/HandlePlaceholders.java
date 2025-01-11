@@ -77,7 +77,11 @@ public class HandlePlaceholders {
         }
 
         public String run(Player player, HousingWorld house, MatchResult match) {
-            return runnable.apply(player, house, match);
+            try {
+                return runnable.apply(player, house, match);
+            } catch (Exception e) {
+                return "null";
+            }
         }
     }
 
@@ -102,10 +106,11 @@ public class HandlePlaceholders {
 
     public static void registerPlaceholders() {
         registerPlaceholder("%%player%%", (player, house) -> {
-            //Pjma wanted this so I added it
             return player.getName();
         });
-        registerPlaceholder("%player.name%", (player, house) -> player.getName());
+        registerPlaceholder("%player.name%", (player, house) -> {
+            return player.getName();
+        });
         registerPlaceholder("%player.displayname%", (player, house) -> player.getDisplayName());
         registerPlaceholder("%player.ping%", (player, house) -> String.valueOf(player.getPing()));
         registerPlaceholder("%player.isSprinting%", (player, house) -> String.valueOf(player.isSprinting()));

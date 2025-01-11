@@ -1,6 +1,8 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.Actions.ExplosionAction;
+import com.al3x.housing2.Action.Actions.ParticleAction;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -78,6 +80,9 @@ public class Runnables {
                 for (HousingWorld house : houses) {
                     house.getWorld().getPlayers().forEach(player -> HousingTabList.setTabList(player, house));
                 }
+
+                ParticleAction.particlesCooldownMap.clear();
+                ExplosionAction.amountDone.clear();
             }
         }.runTaskTimer(main, 0, 40L));
 
@@ -207,6 +212,7 @@ public class Runnables {
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     // They are in a house
+                    if (player.isDead()) continue;
                     if (!(player.getWorld().equals(lobby))) {
                         World world = player.getWorld();
                         HousingWorld house = main.getHousesManager().getHouse(world);
