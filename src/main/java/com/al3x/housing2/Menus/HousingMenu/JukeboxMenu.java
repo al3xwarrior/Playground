@@ -55,6 +55,10 @@ public class JukeboxMenu extends Menu {
         for (int i = 0; i < end; i++) {
             String songName = songNames.get(start + i);
             Song song = JukeBoxManager.getSong(songName);
+            if (song == null) {
+                Bukkit.getLogger().warning("Song " + songName + " is null");
+                continue;
+            }
 
             addItem(avaliableSlots[i], ItemBuilder.create(Material.JUKEBOX)
                     .name("&7" + song.getTitle())
