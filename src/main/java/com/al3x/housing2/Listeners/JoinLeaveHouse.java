@@ -119,7 +119,9 @@ public class JoinLeaveHouse implements Listener {
 
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
-        data.setEnderchest(Serialization.itemStacksToBase64(List.of(player.getEnderChest().getContents())));
+        data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
+
+        HousingTabList.lobbyTabList(player);
     }
 
     @EventHandler

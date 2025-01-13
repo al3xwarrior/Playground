@@ -52,7 +52,7 @@ public class MenuListener implements Listener {
             event.setCancelled(true);
             if (event.getCurrentItem() != null && !event.getCurrentItem().isEmpty()) {
                 ItemStack item = event.getCurrentItem();
-                itemMenu.consumer.accept(item);
+                itemMenu.consumer.accept(item.clone());
                 itemMenu.back.open();
             }
         }

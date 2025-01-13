@@ -93,7 +93,7 @@ public class SkinSelectorMenu extends Menu {
                 .description("&7Click to enter a custom skin UUID.");
         addItem(47, custom.build(), (e) -> {
             player.sendMessage(colorize("&eEnter the UUID of the skin you want to use. You can find this at https://mineskin.org."));
-            openChat(main, housingNPC.getSkinUUID(), (message) -> {
+            openChat(main, housingNPC.getSkinUUID() == null ? "" : housingNPC.getSkinUUID(), (message) -> {
                 housingNPC.setSkin(message);
                 Bukkit.getScheduler().runTask(main, () -> new NPCMenu(main, player, housingNPC).open());
             });

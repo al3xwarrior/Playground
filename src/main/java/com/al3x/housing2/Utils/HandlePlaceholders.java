@@ -14,6 +14,8 @@ import kotlin.sequences.Sequence;
 import kotlin.text.MatchResult;
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -105,6 +107,48 @@ public class HandlePlaceholders {
     }
 
     public static void registerPlaceholders() {
+
+        //Distance between locations placeholders
+        registerPlaceholder("regex:%distance/(.+),(.+),(.+) - (.+),(.+),(.+)%", "&6%distance/&7[x1],[y1],[z1] - [x2],[y2],[z2]&6%", (player, house, match) -> {
+            String whole2 = match.getGroups().get(0).getValue().substring(10, match.getGroups().get(0).getValue().length() - 1);
+            String whole = HandlePlaceholders.parsePlaceholders(player, house, whole2);
+            String[] split = whole.split(" - ");
+            String[] loc1 = split[0].split(",");
+            String[] loc2 = split[1].split(",");
+            if (loc1.length != 3 || loc2.length != 3) return "Invalid coordinates";
+            if (!NumberUtilsKt.isDouble(loc1[0]) || !NumberUtilsKt.isDouble(loc1[1]) || !NumberUtilsKt.isDouble(loc1[2]) || !NumberUtilsKt.isDouble(loc2[0]) || !NumberUtilsKt.isDouble(loc2[1]) || !NumberUtilsKt.isDouble(loc2[2]))
+                return "Invalid coordinates";
+
+            double x1 = Double.parseDouble(loc1[0]);
+            double y1 = Double.parseDouble(loc1[1]);
+            double z1 = Double.parseDouble(loc1[2]);
+            double x2 = Double.parseDouble(loc2[0]);
+            double y2 = Double.parseDouble(loc2[1]);
+            double z2 = Double.parseDouble(loc2[2]);
+
+            return String.valueOf(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)));
+        });
+
+        registerPlaceholder("regex:%distance/(.+) - (.+)%", "&6%distance/&7[x1,y1,z1] - [x2,y2,z2]&6%", (player, house, match) -> {
+            String whole2 = match.getGroups().get(0).getValue().substring(10, match.getGroups().get(0).getValue().length() - 1);
+            String whole = HandlePlaceholders.parsePlaceholders(player, house, whole2);
+            String[] split = whole.split(" - ");
+            String[] loc1 = split[0].split(",");
+            String[] loc2 = split[1].split(",");
+            if (loc1.length != 3 || loc2.length != 3) return "Invalid coordinates";
+            if (!NumberUtilsKt.isDouble(loc1[0]) || !NumberUtilsKt.isDouble(loc1[1]) || !NumberUtilsKt.isDouble(loc1[2]) || !NumberUtilsKt.isDouble(loc2[0]) || !NumberUtilsKt.isDouble(loc2[1]) || !NumberUtilsKt.isDouble(loc2[2]))
+                return "Invalid coordinates";
+
+            double x1 = Double.parseDouble(loc1[0]);
+            double y1 = Double.parseDouble(loc1[1]);
+            double z1 = Double.parseDouble(loc1[2]);
+            double x2 = Double.parseDouble(loc2[0]);
+            double y2 = Double.parseDouble(loc2[1]);
+            double z2 = Double.parseDouble(loc2[2]);
+
+            return String.valueOf(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)));
+        });
+
         registerPlaceholder("%%player%%", (player, house) -> {
             return player.getName();
         });
@@ -117,6 +161,10 @@ public class HandlePlaceholders {
         registerPlaceholder("%player.location.x%", (player, house) -> String.valueOf(player.getLocation().getX()));
         registerPlaceholder("%player.location.y%", (player, house) -> String.valueOf(player.getLocation().getY()));
         registerPlaceholder("%player.location.z%", (player, house) -> String.valueOf(player.getLocation().getZ()));
+        registerPlaceholder("%player.location.coords%", (player, house) -> {
+            Location loc = player.getLocation();
+            return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+        });
         registerPlaceholder("%player.location.pitch%", (player, house) -> String.valueOf(player.getLocation().getPitch()));
         registerPlaceholder("%player.location.yaw%", (player, house) -> String.valueOf(player.getLocation().getYaw()));
         registerPlaceholder("%player.health%", (player, house) -> String.valueOf(player.getHealth()));
@@ -248,6 +296,22 @@ public class HandlePlaceholders {
             if (loc == null) return "null";
             return loc.getBlock().getType().name();
         });
+        registerPlaceholder("regex:%raycast.block.coords/([0-9]+)%", "&6%raycast.block.coords/&7[range]&6%", (player, house, match) -> {
+            int range = Integer.parseInt(match.getGroups().get(1).getValue());
+            Location loc = player.getTargetBlock(null, range).getLocation();
+            if (loc == null) return "null";
+            return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+        });
+
+        registerPlaceholder("regex:%raycast.npc.id/([0-9]+)%", "&6%raycast.npc.id/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
+            if (citizensNPC != null) {
+                return String.valueOf(citizensNPC.getId());
+            }
+            return "null";
+        });
 
         registerPlaceholder("regex:%raycast.entity/([0-9]+)%", "&6%raycast.entity/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
@@ -278,6 +342,12 @@ public class HandlePlaceholders {
             Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return String.valueOf((int) entity.getLocation().getZ());
+        });
+        registerPlaceholder("regex:%raycast.entity.coords/([0-9]+)%", "&6%raycast.entity.coords/&7[range]&6%", (player, house, match) -> {
+            // Get the entity the player is looking at within 5 blocks
+            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            if (entity == null) return "null";
+            return (int) entity.getLocation().getX() + "," + (int) entity.getLocation().getY() + "," + (int) entity.getLocation().getZ();
         });
 
         // Standing on placeholders
@@ -487,10 +557,14 @@ public class HandlePlaceholders {
     }
 
     private static Entity getEntityLookingAt(Player player, int range) {
-        Location eye = player.getEyeLocation();
-        Vector direction = eye.getDirection();
-        RayTraceResult result = player.getWorld().rayTrace(eye, direction, range, FluidCollisionMode.NEVER, true, 0.0D, (entity) -> !entity.equals(player));
-        if (result == null || result.getHitEntity() == null) return null;
-        return result.getHitEntity();
+        try {
+            Location eye = player.getEyeLocation();
+            Vector direction = eye.getDirection();
+            RayTraceResult result = player.getWorld().rayTrace(eye, direction, range, FluidCollisionMode.NEVER, true, 0.0D, (entity) -> !entity.equals(player));
+            if (result == null || result.getHitEntity() == null) return null;
+            return result.getHitEntity();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

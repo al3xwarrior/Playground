@@ -75,9 +75,10 @@ public class HouseBrowserMenu extends Menu{
         List<HouseData> houses = new ArrayList<>(Main.getInstance().getHousesManager().getAllHouseData());
 
         houses.sort((house1, house2) -> {
+            if (house1 == null || house2 == null) return (house1 == null) ? -1 : 1;
             HousingWorld housingWorld = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house1.getHouseID()));
             HousingWorld housingWorld2 = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house2.getHouseID()));
-            
+
             if (housingWorld != null && housingWorld2 != null) {
                 return Integer.compare(housingWorld.getWorld().getPlayers().size(), housingWorld2.getWorld().getPlayers().size());
             } //else check cookies

@@ -89,8 +89,14 @@ public class TeleportAction extends HTSLImpl {
                     player.teleport(player.getLocation());
             case HOUSE_SPAWN ->
                     player.teleport(house.getSpawn());
-            case CUSTOM, PLAYER_LOCATION ->
-                    player.teleport(getLocationFromString(player, house, customLocation));
+            case CUSTOM, PLAYER_LOCATION -> {
+                Location loc = getLocationFromString(player, house, customLocation);
+                if (loc == null) {
+                    return true;
+                }
+                player.teleport(loc);
+            }
+
         }
         return true;
     }

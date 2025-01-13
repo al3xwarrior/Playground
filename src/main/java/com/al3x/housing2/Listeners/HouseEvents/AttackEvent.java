@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -26,6 +27,14 @@ public class AttackEvent implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) {return;}
+        lastAttacked.put(player.getUniqueId(), e.getEntity());
+        sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
+    }
+
+    @EventHandler
+    public void onProjectileDamage(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Projectile projectile)) {return;}
+        if (!(projectile.getShooter() instanceof Player player)) {return;}
         lastAttacked.put(player.getUniqueId(), e.getEntity());
         sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
     }

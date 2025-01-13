@@ -51,11 +51,13 @@ public class EditLoreMenu extends Menu {
                 itemBuilder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
                 itemBuilder.rClick(ItemBuilder.ActionType.DELETE_YELLOW);
                 itemBuilder.shiftClick();
+                int finalI = i;
                 addItem(slots[i], itemBuilder.build(), e -> {
                     ItemMeta meta = item.getItemMeta();
                     ArrayList<String> newLore = new ArrayList<>(meta.getLore());
                     if (e.isShiftClick()) {
-                        shiftLine(newLore, line, e.isRightClick());
+                        shiftLine(newLore, finalI, line, e.isRightClick());
+                        meta.setLore(newLore);
                         item.setItemMeta(meta);
                         player.getInventory().setItemInMainHand(item);
                         setupItems();
@@ -71,7 +73,7 @@ public class EditLoreMenu extends Menu {
                     } else {
                         player.sendMessage(colorize("&eEnter the new line for the lore."));
                         openChat(Main.getInstance(), line, (newLine) -> {
-                            newLore.set(newLore.indexOf(line), newLine);
+                            newLore.set(newLore.indexOf(line), "§r§f" + colorize(newLine));
                             meta.setLore(newLore);
                             item.setItemMeta(meta);
                             player.getInventory().setItemInMainHand(item);
@@ -108,7 +110,7 @@ public class EditLoreMenu extends Menu {
             openChat(Main.getInstance(), "", (newLine) -> {
                 ItemMeta meta = item.getItemMeta();
                 List<String> newLore = new ArrayList<>(meta.getLore() == null ? new ArrayList<>() : meta.getLore());
-                newLore.add(colorize(newLine));
+                newLore.add("§r§f" + colorize(newLine));
                 meta.setLore(newLore);
                 item.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(item);
@@ -123,9 +125,7 @@ public class EditLoreMenu extends Menu {
         });
     }
 
-    public void shiftLine(ArrayList<String> lore, String action, boolean forward) {
-        int index = lore.indexOf(action);
-
+    public void shiftLine(ArrayList<String> lore, int index, String action, boolean forward) {
         if (lore.size() < 2) return;
 
         lore.remove(index);

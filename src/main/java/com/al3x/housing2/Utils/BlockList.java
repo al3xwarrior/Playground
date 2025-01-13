@@ -69,37 +69,57 @@ public class BlockList {
         return blockList;
     }
 
+    public static List<String> completionsForArgument(String arg) {
+        List<String> completions = new ArrayList<String>();
+        String[] commas = arg.split(",");
+        for (String block : commas) {
+            if (block.contains("%")) {
+                String[] blockOptions = block.split("%");
+                if (blockOptions.length >= 1) {
+                    for (Material material : Material.values()) {
+                        completions.add(blockOptions[0] + "%" + material.name().toLowerCase());
+                    }
+                }
+            } else {
+                if (block.matches(".*\\d.*")) {
+                    for (Material material : Material.values()) {
+                        completions.add(block + "%" + material.name().toLowerCase());
+                    }
+                } else {
+                    //Percentage from 1 to 100
+                    for (Material material : Material.values()) {
+                        completions.add(material.name().toLowerCase());
+                    }
+                }
+            }
+        }
+        return completions;
+    }
+
     public static class TabCompleter implements org.bukkit.command.TabCompleter {
         @Nullable
         @Override
         public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String name, @NotNull String[] args) {
             List<String> completions = new ArrayList<String>();
             if (args.length == 1) {
-                String arg = args[0];
-                String[] commas = arg.split(",");
-                for (String block : commas) {
-                    if (block.contains("%")) {
-                        String[] blockOptions = block.split("%");
-                        if (blockOptions.length >= 1) {
-                            for (Material material : Material.values()) {
-                                completions.add(blockOptions[0] + "%" + material.name().toLowerCase());
-                            }
-                        }
-                    } else {
-                        if (block.matches(".*\\d.*")) {
-                            for (Material material : Material.values()) {
-                                completions.add(block + "%" + material.name().toLowerCase());
-                            }
-                        } else {
-                            //Percentage from 1 to 100
-                            for (Material material : Material.values()) {
-                                completions.add(material.name().toLowerCase());
-                            }
-                        }
-                    }
-                }
+                completions.addAll(completionsForArgument(args[0]));
             }
 
+            completions = completions.stream().filter(s -> s.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).toList();
+            return completions;
+        }
+    }
+
+    public static class DuoTabCompleter implements org.bukkit.command.TabCompleter {
+        @Nullable
+        @Override
+        public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String name, @NotNull String[] args) {
+            List<String> completions = new ArrayList<String>();
+            if (args.length == 1) {
+                completions.addAll(completionsForArgument(args[0]));
+            } else if (args.length == 2) {
+                completions.addAll(completionsForArgument(args[1]));
+            }
             completions = completions.stream().filter(s -> s.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).toList();
             return completions;
         }

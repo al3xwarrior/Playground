@@ -70,7 +70,7 @@ public class RemoveItemAction extends Action {
                         .info("&7Current Value", "")
                         .info(null, slotIndexToName((int) slot)),
                         (e, o) -> {
-                            new SlotSelectMenu((Player) e.getWhoClicked(), Main.getInstance(), backMenu, (slot) -> {
+                            new SlotSelectMenu((Player) e.getWhoClicked(), Main.getInstance(), backMenu, true, (slot) -> {
                                 this.slot = slot;
                             }).open();
                             return true;
@@ -119,7 +119,7 @@ public class RemoveItemAction extends Action {
         if (item == null) return true;
 
         if (slot == -1) {
-            player.getInventory().removeItem(item);
+            player.getInventory().removeItemAnySlot(item);
         } else if (slot == -2) {
             player.getInventory().setItemInMainHand(null);
         } else if (slot == -3) {

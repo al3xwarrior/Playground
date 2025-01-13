@@ -90,8 +90,8 @@ public class RepeatAction extends HTSLImpl {
     }
 
     @Override
-    public boolean canBeNested() {
-        return false;
+    public int nestLimit() {
+        return 4;
     }
 
     @Override

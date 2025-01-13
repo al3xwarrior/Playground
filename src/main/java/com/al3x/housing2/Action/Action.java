@@ -61,11 +61,11 @@ public abstract class Action {
     }
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        return null;
+        return editorMenu(house, backMenu);
     }
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        return null;
+        return editorMenu(house);
     }
 
     public abstract boolean execute(Player player, HousingWorld house);
@@ -95,8 +95,8 @@ public abstract class Action {
         return -1;
     }
 
-    public boolean canBeNested() {
-        return true;
+    public int nestLimit() {
+        return -1;
     }
 
     /**
@@ -120,12 +120,16 @@ public abstract class Action {
                 Field field = actionClass.getDeclaredField(key);
                 field.setAccessible(true);
                 if (field.getType().isEnum() && data.get(key) != null) {
-                    field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
-                    continue;
+                    if (data.get(key) instanceof String) {
+                        field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
+                        continue;
+                    } else if (data.get(key) instanceof Enum) {
+                        field.set(this, data.get(key));
+                        continue;
+                    }
                 }
                 field.set(this, data.get(key));
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | NoSuchFieldException ignored) {
             }
         }
     }
@@ -172,6 +176,8 @@ public abstract class Action {
             event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z)"));
             editMenu.openChat(Main.getInstance(), (current == null ? "" : current), (message) -> {
                 //pitch,yaw
+                String oldMessage = message;
+                message = HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, message);
                 String[] split = message.split(",");
                 if (split.length != 3) {
                     event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
@@ -185,10 +191,13 @@ public abstract class Action {
                         }
 
                         if (split[i].isEmpty()) continue;
+                        if (split[i].equalsIgnoreCase("null")) {
+                            split[i] = "0";
+                        }
 
-                        Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[i]));
+                        Float.parseFloat(split[i]);
                     }
-                    consumer.accept(message, Locations.CUSTOM);
+                    consumer.accept(oldMessage, Locations.CUSTOM);
                 } catch (NumberFormatException e) {
                     event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
                     return;
@@ -203,6 +212,8 @@ public abstract class Action {
     }
 
     protected Location getLocationFromString(Player player, HousingWorld house, String message) {
+        String oldMessage = message;
+        message = HandlePlaceholders.parsePlaceholders(player, house, message);
         String[] split = message.split(",");
         if (split.length != 3) {
             player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
@@ -211,9 +222,13 @@ public abstract class Action {
 
         Location loc = player.getLocation();
         try {
-            String x = HandlePlaceholders.parsePlaceholders(player, house, split[0]);
-            String y = HandlePlaceholders.parsePlaceholders(player, house, split[1]);
-            String z = HandlePlaceholders.parsePlaceholders(player, house, split[2]);
+            String x = split[0];
+            String y = split[1];
+            String z = split[2];
+
+            if (x.equalsIgnoreCase("null") || x.isEmpty()) return null;
+            if (y.equalsIgnoreCase("null") || y.isEmpty()) return null;
+            if (z.equalsIgnoreCase("null") || z.isEmpty()) return null;
 
             double x1 = (x.startsWith("~")) ? loc.getX() : Double.parseDouble(x);
             double y1 = (y.startsWith("~")) ? loc.getY() : Double.parseDouble(y);

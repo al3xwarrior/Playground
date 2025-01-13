@@ -13,6 +13,7 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
@@ -88,7 +89,7 @@ public class PlaySoundAction extends HTSLImpl {
                             }
                             //Basically because Sound isnt a ENUM we cant just use the enum class
                             new PaginationMenu<>(Main.getInstance(),
-                                    "&eSelect a Potion Effect", soundDuple,
+                                    "&eSelect a Sound", soundDuple,
                                     player, house, backMenu, (e, potion) -> {
                                 if (e.isRightClick()) {
                                     player.playSound(player.getLocation(), potion, 1.0F, 1.0F);
@@ -132,7 +133,7 @@ public class PlaySoundAction extends HTSLImpl {
                 )
         );
 
-        return new ActionEditor(4, "&ePlayer Stat Action Settings", items);
+        return new ActionEditor(4, "&ePlay Sound Action Settings", items);
     }
 
     @Override
@@ -142,8 +143,11 @@ public class PlaySoundAction extends HTSLImpl {
                     player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
             case HOUSE_SPAWN ->
                     player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
-            case CUSTOM ->
-                    player.playSound(getLocationFromString(player, house, customLocation), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            case CUSTOM -> {
+                if (customLocation == null) return true;
+                Location loc = getLocationFromString(player, house, customLocation);
+                if (loc != null) player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+            }
         }
         return true;
     }

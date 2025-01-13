@@ -81,8 +81,11 @@ public final class Main extends JavaPlugin {
         this.getCommand("wand").setExecutor(new Wand(this));
         this.getCommand("set").setExecutor(new Set(protoolsManager));
         this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
+        this.getCommand("replace").setExecutor(new Replace(protoolsManager));
+        this.getCommand("replace").setTabCompleter(new BlockList.DuoTabCompleter());
         this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
         this.getCommand("sphere").setTabCompleter(new BlockList.TabCompleter());
+        this.getCommand("undo").setExecutor(new Undo(protoolsManager));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);

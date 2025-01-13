@@ -36,8 +36,8 @@ public class ActionsMenu extends Menu {
     private EventType event;
     private Function function;
     private Menu backMenu;
-    private String varName;
     private Runnable update;
+    private int nestedLevel = 0;
     //1 is the new 0
     private int currentPage = 1;
     private final int itemsPerPage = 45;
@@ -50,6 +50,7 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.housingNPC = housingNPC;
         this.actions = housingNPC.getActions();
+        nestedLevel = 1;
     }
 
     // Events
@@ -64,6 +65,7 @@ public class ActionsMenu extends Menu {
             house.setEventActions(event, actions);
         };
         this.backMenu = new EventActionsMenu(main, player, house);
+        this.nestedLevel = 1;
     }
 
     public ActionsMenu(Main main, Player player, HousingWorld house, Function function, Menu backMenu) {
@@ -74,6 +76,7 @@ public class ActionsMenu extends Menu {
         this.function = function;
         this.actions = function.getActions();
         this.backMenu = backMenu;
+        this.nestedLevel = 1;
     }
 
     public ActionsMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, String varName) {
@@ -83,7 +86,6 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.actions = actions;
         this.backMenu = backMenu;
-        this.varName = varName;
 
         if (actions == null) {
             this.actions = house.getEventActions(event);
@@ -168,9 +170,9 @@ public class ActionsMenu extends Menu {
                             return;
                         }
 
-                        if (e.isLeftClick()) {
+                        if (e.isLeftClick() && condition.editorMenu(house, player, backMenu) != null) {
                             new ActionEditMenu(condition, main, player, house, this).open();
-                        } else {
+                        } else if (e.isRightClick()) {
                             removeCondition(condition);
                         }
                     });
@@ -220,7 +222,7 @@ public class ActionsMenu extends Menu {
                             return;
                         }
 
-                        if (e.isLeftClick()) {
+                        if (e.isLeftClick() && action.editorMenu(house, backMenu, player) != null) {
                             ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
                             menu.setEvent(event);
                             menu.setHousingNPC(housingNPC);
@@ -250,7 +252,7 @@ public class ActionsMenu extends Menu {
             addActionMeta.setDisplayName(colorize("&aAdd Action"));
             addAction.setItemMeta(addActionMeta);
             addItem(50, addAction, () -> {
-                AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, varName != null);
+                AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, nestedLevel);
                 menu.setEvent(event);
                 menu.setFunction(function);
                 menu.open();
@@ -312,6 +314,14 @@ public class ActionsMenu extends Menu {
 
     public void setUpdate(Runnable update) {
         this.update = update;
+    }
+
+    public int getNestedLevel() {
+        return nestedLevel;
+    }
+
+    public void setNestedLevel(int nestedLevel) {
+        this.nestedLevel = nestedLevel;
     }
 
     public void shiftAction(Action action, int index, boolean forward) {

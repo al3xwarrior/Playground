@@ -375,6 +375,7 @@ public class ItemBuilder {
         CLONE("clone", YELLOW),
         SELECT_REGION("select region", YELLOW),
         TOGGLE_EXPRESSION("toggle expression", YELLOW),
+        TOGGLE_RANGE("toggle range", YELLOW),
         PLAY_SOUND("preview sound", YELLOW),
         GIVE_ITEM("give item", YELLOW),
         CLEAR_SEARCH("clear search", YELLOW),

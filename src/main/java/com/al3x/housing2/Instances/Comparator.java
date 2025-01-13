@@ -22,6 +22,7 @@ public class Comparator {
                 case EQUALS -> value1.equals(value2);
                 case GREATER_THAN_OR_EQUAL -> value1.compareTo(value2) >= 0;
                 case GREATER_THAN -> value1.compareTo(value2) > 0;
+                case CONTAINS -> value1.contains(value2);
             };
         }
     }
@@ -33,6 +34,7 @@ public class Comparator {
             case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
+            case CONTAINS -> false;
         };
     }
 
@@ -43,6 +45,7 @@ public class Comparator {
             case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
+            case CONTAINS -> false;
         };
     }
 
@@ -53,6 +56,7 @@ public class Comparator {
             case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
+            case CONTAINS -> false;
         };
     }
 
@@ -63,6 +67,7 @@ public class Comparator {
             case EQUALS -> value1 == value2;
             case GREATER_THAN_OR_EQUAL -> value1 >= value2;
             case GREATER_THAN -> value1 > value2;
+            case CONTAINS -> false;
         };
     }
 }

@@ -39,11 +39,15 @@ public abstract class Condition {
     }
 
     public ActionEditor editorMenu(HousingWorld house, Player player) {
-        return null;
+        return editorMenu(house);
     }
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        return null;
+        return editorMenu(house);
+    }
+
+    public ActionEditor editorMenu(HousingWorld house, Player player, Menu backMenu) {
+        return editorMenu(house, backMenu);
     }
 
     public boolean execute(Player player, HousingWorld house, Cancellable event) {

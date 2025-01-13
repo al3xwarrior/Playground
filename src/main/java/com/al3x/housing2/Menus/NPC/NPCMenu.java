@@ -24,7 +24,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class NPCMenu extends Menu {
 
     private Main main;
-    private Player player;
+    public Player player;
     private HousingWorld house;
     private HousesManager housesManager;
     private HousingNPC housingNPC;
@@ -96,28 +96,16 @@ public class NPCMenu extends Menu {
         ItemMeta npcNameMeta = npcName.getItemMeta();
         npcNameMeta.setDisplayName(colorize("&aNPC Name"));
         npcName.setItemMeta(npcNameMeta);
-        addItem(32, npcName, () -> {
-            player.sendMessage(colorize("&7Enter the new name for the NPC:"));
+        addItem(32, npcName, (e) -> {
+            player.sendMessage(colorize("&eEnter the new name for the NPC:"));
             player.closeInventory();
-            Bukkit.getPluginManager().registerEvents(new Listener() {
-                @EventHandler
-                public void onPlayerChat(AsyncPlayerChatEvent e) {
-                    e.setCancelled(true);
-                    if (e.getPlayer().equals(player)) {
-                        String newMessage = e.getMessage();
-                        Bukkit.getScheduler().runTask(main, () -> {
-                            housingNPC.setName(newMessage);
-                            player.sendMessage(colorize("&aNpc name set to: " + newMessage));
-                        });
-
-                        // Unregister this listener after capturing the message
-                        AsyncPlayerChatEvent.getHandlerList().unregister(this);
-
-                        // Reopen the NPCMenu
-                        Bukkit.getScheduler().runTaskLater(main, () -> new NPCMenu(main, player, housingNPC).open(), 1L); // Delay slightly to allow chat event to complete
-                    }
-                }
-            }, main);
+            openChat(main, housingNPC.getName(), (newName) -> {
+                Bukkit.getScheduler().runTask(main, () -> {
+                    housingNPC.setName(newName);
+                    player.sendMessage(colorize("&aNpc name set to: " + newName));
+                    setupItems();
+                });
+            });
         });
 
         ItemBuilder navigation = ItemBuilder.create(Material.BLAZE_POWDER)

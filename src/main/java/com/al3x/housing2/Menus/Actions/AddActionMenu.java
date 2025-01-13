@@ -38,19 +38,19 @@ public class AddActionMenu extends Menu {
     private Function function;
     private EventType event;
     private List<Action> actions;
-    private boolean nested = false;
+    private int nestedLevel = 0;
 
     private String search = "";
 
     //Will be used for random actions and conditions
-    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, boolean nested) {
+    public AddActionMenu(Main main, Player player, HousingWorld house, List<Action> actions, Menu backMenu, int nestedLevel) {
         super(player, colorize("&aAdd Action"), 54);
         this.main = main;
         this.player = player;
         this.house = house;
         this.actions = actions;
         this.backMenu = backMenu;
-        this.nested = nested;
+        this.nestedLevel = nestedLevel;
         setupItems();
     }
 
@@ -186,7 +186,7 @@ public class AddActionMenu extends Menu {
                 continue;
             }
 
-            if (!action.canBeNested() && nested) continue;
+            if (action.nestLimit() != -1 && nestedLevel >= action.nestLimit()) continue;
 
             if (event != null) {
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(event)) continue;
@@ -204,6 +204,10 @@ public class AddActionMenu extends Menu {
         }
 
         return new PaginationList<>(newActions, 21);
+    }
+
+    public int getNestedLevel() {
+        return nestedLevel;
     }
 
     public void setFunction(Function function) {
