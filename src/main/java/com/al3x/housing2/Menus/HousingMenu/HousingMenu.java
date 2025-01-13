@@ -6,12 +6,12 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HouseSettingsMenu;
+import com.al3x.housing2.Menus.HousingMenu.PlayerListing.PlayerListingMenu;
 import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,7 +48,7 @@ public class HousingMenu extends Menu {
             playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
             playerListing.setItemMeta(playerListingMeta);
             addItem(8, playerListing, () -> {
-                player.sendMessage("Player Listing");
+                new PlayerListingMenu(main, player, house).open();
             });
         }
 

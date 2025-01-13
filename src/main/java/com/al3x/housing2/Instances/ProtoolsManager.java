@@ -3,7 +3,6 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -238,7 +237,7 @@ public class ProtoolsManager {
                 .name("&bRegion Selection Tool")
                 .description("&7Selects a region with left and right clicks, which can them be modified with other tools.\n\n&7Command alias: &b//\n\n&eLeft click to select point A.\n&eRight click to select point B.")
                 .punctuation(false)
-                .textWitdh(34)
+                .textWidth(34)
                 .build();
     }
 

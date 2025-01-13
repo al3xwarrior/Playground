@@ -2,15 +2,22 @@ package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Instances.Group
 import com.al3x.housing2.Instances.HousingWorld
+import com.al3x.housing2.Instances.Team
 
 // Per house player data, so groups, inventory, etc
 data class PlayerData(
     var group: String?,
+    var team: String?,
     var inventory: String?,
     var armor: String?,
     var enderchest: String?,
+    var muted: Boolean,
+    var banned: Boolean,
 ) {
     fun getGroupInstance(house: HousingWorld): Group {
-        return house.groups.find { it.name == group } ?: house.groups.find { it.name == house.defaultGroup }!!
+        return house.groups.find { it.name == group }!!
+    }
+    fun getTeamInstance(house: HousingWorld): Team {
+        return house.teams.find { it.name == team } ?: Team("No Team")
     }
 }

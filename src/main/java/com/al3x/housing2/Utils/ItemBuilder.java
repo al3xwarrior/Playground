@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
@@ -235,7 +234,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder textWitdh(int textWidth) {
+    public ItemBuilder textWidth(int textWidth) {
         this.textWidth = textWidth;
         return this;
     }
@@ -385,6 +384,8 @@ public class ItemBuilder {
         CYCLE_FORWARD("cycle forward", YELLOW),
         CYCLE_BACKWARD("cycle backwards", YELLOW),
         SAVE_LOCATION("save location", YELLOW),
+        TOGGLE_VISIBILITY("toggle visibility", YELLOW),
+        KICK("kick", YELLOW),
         ;
 
         private String action;

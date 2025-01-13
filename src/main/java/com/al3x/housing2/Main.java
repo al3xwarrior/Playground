@@ -11,15 +11,16 @@ import com.al3x.housing2.Placeholders.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
+import com.al3x.housing2.Utils.SkinCache;
 import com.al3x.housing2.api.Housing2Api;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import org.bukkit.Bukkit;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.datatransfer.Clipboard;
 import java.io.File;
 import java.util.Objects;
 
@@ -123,6 +124,10 @@ public final class Main extends JavaPlugin {
 
         HandlePlaceholders.registerPlaceholders();
 
+        Bukkit.getPluginManager().registerEvents(new SkinCache(), this);
+//        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, SkinCache::save, 0, 360000); // save skin cache every 5 minutes
+        // ^ this never triggers for some reason but its no biggie. only really needed in case the server crashes
+
         // PlaceholderAPI
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new CookiesPlaceholder(this).register();
@@ -161,12 +166,13 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getLogger().info("[Housing2] Saving and unloading houses...");
+        INSTANCE.getLogger().info("[Housing2] Saving and unloading houses...");
         Runnables.stopRunnables();
         for (HousingWorld house : housesManager.getConcurrentLoadedHouses().values()) {
             housesManager.saveHouseAndUnload(house);
         }
-        getServer().getLogger().info("[Housing2] Disabled");
+        SkinCache.save();
+        INSTANCE.getLogger().info("[Housing2] Disabled");
         lobbyDisplays.removeDisplays();
     }
 

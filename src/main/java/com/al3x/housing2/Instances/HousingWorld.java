@@ -543,6 +543,12 @@ public class HousingWorld {
     }
 
     public void sendPlayerToHouse(Player player) {
+        try {
+            if (houseData.getPlayerData().get(player.getUniqueId().toString()).getBanned()) {
+                player.sendMessage(colorize("&cYou are banned from " + name + "!"));
+                return;
+            }
+        } catch (NullPointerException ignored) {}
         if (loaded) {
             player.teleport(spawn);
             player.sendMessage(colorize("&aSending you to " + name + "&a..."));
@@ -875,7 +881,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(player.getUniqueId().toString(), null, null, null);
+            data = new PlayerData(null, null, null, null, null, false, false);
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }

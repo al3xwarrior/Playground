@@ -32,6 +32,7 @@ public enum Permissions implements PermissionInterface{
     COMMAND_GAMEMODE(false),
     COMMAND_EDITSTATS(false),
     CHANGE_PLAYER_GROUP,
+    CHANGE_PLAYER_TEAM(true),
     CHANGE_GAMERULES,
     HOUSING_MENU(true),
     HOUSE_SETTINGS(true),

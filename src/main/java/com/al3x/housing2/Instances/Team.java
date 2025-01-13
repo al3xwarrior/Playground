@@ -17,9 +17,9 @@ public class Team {
 
     public Team(String name) {
         this.name = name;
-        this.prefix = "§3[" + name.toUpperCase() + "] ";
-        this.color = "§3";
-        this.displayName = "§3" + name;
+        this.prefix = "§f[" + name.toUpperCase() + "] ";
+        this.color = "§f";
+        this.displayName = "§f" + name;
         this.suffix = "";
         this.friendlyFire = false;
     }
