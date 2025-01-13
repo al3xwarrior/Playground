@@ -49,6 +49,19 @@ public class ActionEditMenu extends Menu {
         return backMenu;
     }
 
+    public int getBackMenusNestedLevel() {
+        if (backMenu == null) {
+            return 0;
+        }
+        if (backMenu instanceof ActionsMenu) {
+            return ((ActionsMenu) backMenu).getNestedLevel();
+        }
+        if (backMenu instanceof AddActionMenu) {
+            return ((AddActionMenu) backMenu).getNestedLevel();
+        }
+        return 0;
+    }
+
     private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
         return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, menu, player);
     }
@@ -228,6 +241,7 @@ public class ActionEditMenu extends Menu {
                             actionMenu.setEvent(event);
                             actionMenu.setHousingNPC(housingNPC);
                             actionMenu.setUpdate(update);
+                            actionMenu.setNestedLevel(getBackMenusNestedLevel() + 1);
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());
@@ -248,6 +262,7 @@ public class ActionEditMenu extends Menu {
                             if (housingNPC != null) {
                                 actionMenu.setHousingNPC(housingNPC);
                             }
+                            actionMenu.setNestedLevel(getBackMenusNestedLevel() + 1);
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());

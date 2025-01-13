@@ -35,12 +35,14 @@ public class ApplyPotionEffectAction extends HTSLImpl {
     private PotionEffectType potionEffectType;
     private int level;
     private int duration;
+    private boolean hideParticles;
 
     public ApplyPotionEffectAction() {
         super("Apply Potion Effect Action");
         this.potionEffectType = PotionEffectType.SPEED;
         this.level = 1;
         this.duration = 60;
+        this.hideParticles = false;
     }
 
     public ApplyPotionEffectAction(PotionEffectType potionEffectType, int level, int duration) {
@@ -112,7 +114,15 @@ public class ApplyPotionEffectAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, duration)
                                 .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.INT, 1, 2000000 //Pretty easy way to do min and max
+                        ActionItem.ActionType.INT, -1, 2000000 //Pretty easy way to do min and max
+                ),
+                new ActionItem("hideParticles",
+                        ItemBuilder.create(Material.POTION)
+                                .name("&aHide Particles")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + (hideParticles ? "Yes" : "No"))
+                                .lClick(ActionType.CHANGE_YELLOW),
+                        ActionItem.ActionType.BOOLEAN
                 )
         );
         return new ActionEditor(4, "&ePotion Effect Action Settings", items);
@@ -120,7 +130,7 @@ public class ApplyPotionEffectAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.addPotionEffect(new PotionEffect(potionEffectType, duration, level));
+        player.addPotionEffect(new PotionEffect(potionEffectType, duration, level - 1, true, !hideParticles));
         return true;
     }
 
@@ -130,6 +140,7 @@ public class ApplyPotionEffectAction extends HTSLImpl {
         data.put("potion", potionEffectType.getName());
         data.put("duration", duration);
         data.put("level", level);
+        data.put("hideParticles", hideParticles);
         return data;
     }
 
@@ -146,6 +157,11 @@ public class ApplyPotionEffectAction extends HTSLImpl {
         duration = NumberUtilsKt.toInt((Double) data.get("duration"));
         if (!data.containsKey("level")) return;
         level = NumberUtilsKt.toInt((Double) data.get("level"));
+        if (!data.containsKey("hideParticles")) {
+            hideParticles = false;
+            return;
+        };
+        hideParticles = (Boolean) data.get("hideParticles");
     }
 
     @Override

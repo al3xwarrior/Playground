@@ -10,6 +10,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.Serialization;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -381,6 +382,12 @@ public class HousingWorld {
     }
 
     public void save() {
+        for (Player player : houseWorld.getPlayers()) {
+            PlayerData data = loadOrCreatePlayerData(player);
+            data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
+            data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
+        }
+
         try {
             houseData = HouseData.Companion.fromHousingWorld(this);
             File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
@@ -790,6 +797,10 @@ public class HousingWorld {
 
     public HousingNPC getNPC(int id) {
         return housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().orElse(null);
+    }
+
+    public HousingNPC getNPC(UUID uuid) {
+        return housingNPCS.stream().filter(npc -> npc.getNpcUUID().equals(uuid)).findFirst().orElse(null);
     }
 
     public void removeNPC(int id) {

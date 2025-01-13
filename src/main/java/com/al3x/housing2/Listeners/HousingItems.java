@@ -101,6 +101,8 @@ public class HousingItems implements Listener {
             return;
         }
 
+        if (house == null) return;
+
         // Click block
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 

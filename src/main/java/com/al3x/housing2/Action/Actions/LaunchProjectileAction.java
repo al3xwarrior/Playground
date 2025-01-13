@@ -160,6 +160,7 @@ public class LaunchProjectileAction extends HTSLImpl {
                 break;
         }
         proj.setVelocity(velocity);
+        proj.setShooter(player);
         return true;
     }
 

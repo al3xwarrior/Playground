@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -54,6 +55,20 @@ public class HologramEditorMenu extends Menu{
             openChat(main, hologram.getSpacing() + "", message -> {
                 try {
                     hologram.setSpacing(Double.parseDouble(message));
+                    Bukkit.getScheduler().runTask(main, () -> new HologramEditorMenu(main, player, hologram).open());
+                } catch (NumberFormatException e) {
+                    player.sendMessage("§cInvalid number!");
+                }
+            });
+        });
+
+        addItem(33 + add, ItemBuilder.create(Material.PISTON).name("&aStart Height").info("&eCurrent Value", "").info(null, hologram.getLocation().getY()).lClick(EDIT_ACTIONS).build(), () -> {
+            player.sendMessage("§eEnter the new start height:");
+            openChat(main, hologram.getLocation().getY() + "", message -> {
+                try {
+                    Location loc = hologram.getLocation().clone();
+                    loc.setY(Double.parseDouble(message));
+                    hologram.setLocation(loc);
                     Bukkit.getScheduler().runTask(main, () -> new HologramEditorMenu(main, player, hologram).open());
                 } catch (NumberFormatException e) {
                     player.sendMessage("§cInvalid number!");

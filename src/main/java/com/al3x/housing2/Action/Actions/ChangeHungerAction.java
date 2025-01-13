@@ -11,8 +11,7 @@ import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.Color;
-import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -31,12 +30,12 @@ public class ChangeHungerAction extends HTSLImpl {
     private static Gson gson = new Gson();
 
     private StatOperation mode;
-    private StatValue value;
+    private String value;
 
     public ChangeHungerAction() {
         super("Change Hunger Action");
         mode = StatOperation.SET;
-        value = new StatValue(false);
+        value = "20";
     }
 
     @Override
@@ -50,7 +49,7 @@ public class ChangeHungerAction extends HTSLImpl {
         builder.name("&eChange Hunger Level");
         builder.info("&eSettings", "");
         builder.info("Mode", mode.name());
-        builder.info("Value", value.toString());
+        builder.info("Value", value);
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -85,35 +84,19 @@ public class ChangeHungerAction extends HTSLImpl {
                         .info("&7Current Value", "")
                         .info(null, "&a" + value.toString())
                         .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                (event, obj) -> {
-                    if (event.getClick() == ClickType.MIDDLE) {
-                        value.setExpression(!value.isExpression());
-                        backMenu.open();
-                        return true;
-                    }
-
-                    if (value.isExpression()) {
-                        new ActionEditMenu(value, Main.getInstance(), backMenu.getOwner(), house, backMenu).open();
-                    } else {
-                        backMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                        backMenu.openChat(Main.getInstance(), value.getLiteralValue(), (value) -> {
-                            this.value.setLiteralValue(value);
-                            backMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
-                            Bukkit.getScheduler().runTaskLater(Main.getInstance(), backMenu::open, 1L);
-                        });
-                    }
-                    return true;
-                })
-        );
+                ActionEditor.ActionItem.ActionType.STRING
+        ));
         return new ActionEditor(6, "&eChange Hunger Settings", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Integer result = Stat.modifyIntIfInt(mode, player.getFoodLevel() + "", value.calculate(player, house));
-        if (result != null) {
-            player.setFoodLevel(result);
+        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
+        if (!NumberUtilsKt.isDouble(value)) {
+            return false;
         }
+        int val = Integer.parseInt(value);
+        player.setFoodLevel(val);
         return true;
     }
 
@@ -125,7 +108,7 @@ public class ChangeHungerAction extends HTSLImpl {
         this.mode = mode;
     }
 
-    public StatValue getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -133,7 +116,7 @@ public class ChangeHungerAction extends HTSLImpl {
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("mode", mode.name());
-        data.put("value", StatActionData.Companion.fromStatValue(value));
+        data.put("value", value);
         return data;
     }
 
@@ -145,12 +128,12 @@ public class ChangeHungerAction extends HTSLImpl {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         mode = StatOperation.valueOf((String) data.get("mode"));
-//        value = ((MoreStatData) data.get("value")).toStatValue();
+        value = (String) data.get("value");
     }
 
     @Override
     public String export(int indent) {
-        return " ".repeat(indent) + keyword() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
+        return " ".repeat(indent) + keyword() + " " + mode.getAlternative() + " " + Color.removeColor(value);
     }
 
     @Override

@@ -103,12 +103,16 @@ public class PaginationMenu<E> extends Menu {
         PaginationList<Duple<E, ItemBuilder>> paginationList = new PaginationList<>(newItems, slots.length);
         List<Duple<E, ItemBuilder>> pageItems = paginationList.getPage(currentPage);
 
-        //I really shouldn't have made this, but I did :)
-        for (int i = 0; i < pageItems.size(); i++) {
-            Duple<E, ItemBuilder> something = pageItems.get(i);
-            addItem(slots[i], something.getSecond().build(), (event) -> {
-                con.accept(event, something.getFirst());
-            });
+        if (pageItems != null) {
+            //I really shouldn't have made this, but I did :)
+            for (int i = 0; i < pageItems.size(); i++) {
+                Duple<E, ItemBuilder> something = pageItems.get(i);
+                addItem(slots[i], something.getSecond().build(), (event) -> {
+                    con.accept(event, something.getFirst());
+                });
+            }
+        } else {
+            addItem(22, new ItemBuilder().material(Material.BARRIER).name("&cNo Items Found").build());
         }
 
         // Search
@@ -124,7 +128,7 @@ public class PaginationMenu<E> extends Menu {
                 return;
             }
             player.sendMessage(colorize("&ePlease enter the search term:"));
-            openChat(main, search, (search) -> {
+            openChat(main, search == null ? "" : search, (search) -> {
                 this.search = search;
                 currentPage = 1;
                 Bukkit.getScheduler().runTaskLater(main, this::open, 1L);

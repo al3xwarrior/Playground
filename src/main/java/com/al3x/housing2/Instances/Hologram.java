@@ -133,6 +133,11 @@ public class Hologram {
         this.entitys = spawnHologramEntities();
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+        this.entitys = spawnHologramEntities();
+    }
+
     public void setLine(int index, String line) {
         this.text.set(index, line);
         this.entitys = spawnHologramEntities();

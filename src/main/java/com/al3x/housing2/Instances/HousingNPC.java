@@ -75,6 +75,8 @@ public class HousingNPC {
     private ItemStack leggings;
     private ItemStack boots;
 
+    private List<Location> waypoints;
+
     //Navigation properties
     private NavigationType navigationType;
     private NavigationType previousNavigationType;
@@ -97,6 +99,9 @@ public class HousingNPC {
         this.entityType = EntityType.valueOf(data.getNpcType());
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
+
+        if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
+        else this.waypoints = new ArrayList<>();
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
         configureLookCloseTrait();
@@ -121,6 +126,7 @@ public class HousingNPC {
         this.speed = 1.0;
         this.navigationType = NavigationType.STATIONARY;
         this.actions = new ArrayList<>();
+        this.waypoints = new ArrayList<>();
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
         configureLookCloseTrait();
@@ -393,6 +399,9 @@ public class HousingNPC {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             provider.addWaypoint(new Waypoint(loc));
+
+            List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
+            this.waypoints = new ArrayList<>(path.stream().map(Waypoint::getLocation).toList());
         }
     }
 
@@ -401,26 +410,38 @@ public class HousingNPC {
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             if (!path.isEmpty()) {
-                return path.remove(path.size() - 1).getLocation();
+                Location loc = path.getLast().getLocation();
+                this.waypoints = new ArrayList<>(path.stream().map(Waypoint::getLocation).toList());
+                return loc;
             }
         }
         return null;
     }
 
     public List<Waypoint> getPath() {
+        try {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             return (AbstractList<Waypoint>) provider.waypoints();
         }
         return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public List<Location> getWaypoints() {
         List<Location> waypoints = new ArrayList<>();
-        if (getPath() != null) {
-            for (Waypoint waypoint : getPath()) {
-                waypoints.add(waypoint.getLocation());
+        if (Bukkit.isPrimaryThread()) {
+            if (getPath() != null) {
+                for (Waypoint waypoint : getPath()) {
+                    waypoints.add(waypoint.getLocation());
+                }
+            } else {
+                waypoints = new ArrayList<>();
             }
+        } else {
+            waypoints = this.waypoints != null ? this.waypoints : new ArrayList<>();
         }
         return waypoints;
     }

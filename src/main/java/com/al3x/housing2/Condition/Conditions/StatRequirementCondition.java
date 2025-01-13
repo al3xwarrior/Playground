@@ -97,7 +97,8 @@ public class StatRequirementCondition extends Condition {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getPlayerStatByName(player, this.stat);
+        String statString = HandlePlaceholders.parsePlaceholders(player, house, this.stat);
+        Stat stat = house.getStatManager().getPlayerStatByName(player, statString);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
         String statValue = stat.getValue();
 

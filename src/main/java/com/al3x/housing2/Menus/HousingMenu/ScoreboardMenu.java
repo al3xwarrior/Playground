@@ -50,7 +50,7 @@ public class ScoreboardMenu extends Menu {
                     .build(), (e) -> {
 
                 if (e.isShiftClick()) {
-                    shiftLine(line[0], e.isRightClick());
+                    shiftLine(line[0], finalI, e.isRightClick());
                     return;
                 }
 
@@ -95,9 +95,8 @@ public class ScoreboardMenu extends Menu {
         );
     }
 
-    public void shiftLine(String action, boolean forward) {
+    public void shiftLine(String action, int index, boolean forward) {
         List<String> actions = house.getScoreboard();
-        int index = actions.indexOf(action);
 
         if (actions == null || actions.size() < 2) return;
 

@@ -143,7 +143,10 @@ public class ExplosionAction extends HTSLImpl {
             }
             case CUSTOM, PLAYER_LOCATION -> {
                 if (customLocation == null) return true;
-                world.createExplosion(getLocationFromString(player, house, customLocation), (float) power, false, false);
+                Location loc = getLocationFromString(player, house, customLocation);
+                if (loc != null) {
+                    world.createExplosion(loc, (float) power, false, false);
+                }
             }
         }
         return true;

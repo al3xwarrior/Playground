@@ -9,6 +9,8 @@ public enum StatComparator implements EnumMaterial, EnumHTSLAlternative {
     EQUALS(Material.LIME_STAINED_GLASS, "=="),
     GREATER_THAN_OR_EQUAL(Material.ORANGE_STAINED_GLASS, ">="),
     GREATER_THAN(Material.YELLOW_STAINED_GLASS, ">"),
+
+    CONTAINS(Material.LIME_STAINED_GLASS, "contains"),
     ;
 
     public Material material;

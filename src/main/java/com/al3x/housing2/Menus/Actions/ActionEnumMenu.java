@@ -44,17 +44,6 @@ public class ActionEnumMenu extends Menu {
     private int currentPage = 1;
     private String search = "";
 
-    // NPC
-    public ActionEnumMenu(Action action, ActionEditor.ActionItem item, Main main, Player player, HousingWorld house, HousingNPC housingNPC) {
-        super(player, "&eSelect Option (" + 1 + "/" + getItems(item, "").getPageCount() + ")", 54);
-        this.main = main;
-        this.action = action;
-        this.item = item;
-        this.player = player;
-        this.house = house;
-        this.housingNPC = housingNPC;
-    }
-
     // Events
     public ActionEnumMenu(Action action, ActionEditor.ActionItem item, Main main, Player player, HousingWorld house, EventType event, Menu backMenu) {
         super(player, "§eSelect Option (" + 1 + "/" + getItems(item, "").getPageCount() + ")", 54);

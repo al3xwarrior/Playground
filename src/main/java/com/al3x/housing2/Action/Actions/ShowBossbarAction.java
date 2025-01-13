@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -112,6 +113,8 @@ public class ShowBossbarAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        String title = HandlePlaceholders.parsePlaceholders(player, house, this.title);
+
         BossBar bossBar = Bukkit.createBossBar(colorize(title), barColor, barStyle);
         if (progress < 0) progress = 0;
         if (progress > 1) progress = 1;

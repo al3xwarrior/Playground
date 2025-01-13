@@ -21,4 +21,16 @@ public class HousingTabList {
 
         player.setPlayerListHeaderFooter(colorize(header), colorize(footer));
     }
+
+    public static void lobbyTabList(Player player) {
+        String header = "&bYou are playing on &e&lIDFK.AL3X.COM\n";
+        String tps = Bukkit.getServer().getTPS()[0] > 18 ? "&a" : Bukkit.getServer().getTPS()[0] > 15 ? "&e" : "&c";
+        tps += Math.round(Bukkit.getServer().getTPS()[0] * 10.0) / 10.0;
+        String footer = "&fPlayers: &7" + Bukkit.getOnlinePlayers().size() + "\n" +
+                "&cTPS: &f" + tps + " &7| &cPing: &f" + player.getPing() +
+                "\n" +
+                "&aNothing, Nothing & NOTHING! &c&lNOPE.NET";
+
+        player.setPlayerListHeaderFooter(colorize(header), colorize(footer));
+    }
 }
