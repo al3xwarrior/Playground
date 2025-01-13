@@ -36,21 +36,13 @@ public class HousingMenu extends Menu {
     @Override
     public void setupItems() {
 
-        ItemBuilder visbility = ItemBuilder.create(Material.RED_DYE);
-        visbility.name("&aVisibility");
-        addItem(0, visbility.build(), () -> {
-            player.sendMessage("Visibility");
+        ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
+        ItemMeta playerListingMeta = playerListing.getItemMeta();
+        playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
+        playerListing.setItemMeta(playerListingMeta);
+        addItem(8, playerListing, () -> {
+            new PlayerListingMenu(main, player, house).open();
         });
-
-        if (house.hasPermission(player, Permissions.CHANGE_PLAYER_GROUP)) {
-            ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
-            ItemMeta playerListingMeta = playerListing.getItemMeta();
-            playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
-            playerListing.setItemMeta(playerListingMeta);
-            addItem(8, playerListing, () -> {
-                new PlayerListingMenu(main, player, house).open();
-            });
-        }
 
         if (house.hasPermission(player, Permissions.PRO_TOOLS)) {
             ItemStack protools = new ItemStack(Material.STICK);
@@ -105,7 +97,7 @@ public class HousingMenu extends Menu {
             visitingRules.name("&aVisiting Rules");
             visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
             visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
-            addItem(27, visitingRules.build(), () -> {
+            addItem(0, visitingRules.build(), () -> {
                 //thanks chatgippity lol, I would have made this a lot more complicated
                 house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
                 player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
