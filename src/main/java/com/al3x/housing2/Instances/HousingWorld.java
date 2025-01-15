@@ -26,6 +26,7 @@ import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -91,6 +92,8 @@ public class HousingWorld {
 
     private boolean loaded = false;
     private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
+    public HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
+    private HousingScoreboard scoreboardInstance;
 
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
@@ -222,6 +225,8 @@ public class HousingWorld {
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
         this.launchPads = houseData.getLaunchPads() != null ? houseData.getLaunchPads() : new ArrayList<>(); //Used a new method for this :)
+
+        scoreboardInstance = new HousingScoreboard(this);
     }
 
     private void loadEventActions() {
@@ -329,6 +334,9 @@ public class HousingWorld {
         this.scoreboard.add("&7");
         this.scoreboard.add("&7Edit the scoreboard in the");
         this.scoreboard.add("&7systems menu!");
+
+
+        scoreboardInstance = new HousingScoreboard(this);
     }
 
     private void notifyOwnerOfFailure(OfflinePlayer owner) {
@@ -362,6 +370,9 @@ public class HousingWorld {
         properties.setValue(SlimeProperties.ENVIRONMENT, "normal");
         properties.setValue(SlimeProperties.WORLD_TYPE, "default");
         properties.setValue(SlimeProperties.DEFAULT_BIOME, "minecraft:plains");
+        properties.setValue(SlimeProperties.ALLOW_ANIMALS, false);
+        properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
+        properties.setValue(SlimeProperties.DRAGON_BATTLE, false);
         return properties;
     }
 
@@ -791,6 +802,10 @@ public class HousingWorld {
         return teams;
     }
 
+    public HousingScoreboard getScoreboardInstance() {
+        return scoreboardInstance;
+    }
+
     public void createNPC(Player player, Location location) {
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
@@ -817,6 +832,7 @@ public class HousingWorld {
                 CitizensAPI.getNPCRegistry().deregister(citizensNPC);
                 housingNPCS.remove(npc);
             }
+            npc.getHologram().remove();
         });
     }
 
@@ -828,13 +844,6 @@ public class HousingWorld {
         Hologram hologram = new Hologram(main, player, this, location);
         holograms.add(hologram);
         return hologram;
-    }
-
-    public Hologram getHologramInstance(int id) {
-        for (Hologram hologram : holograms) {
-            if (hologram.getEntitys().contains(id)) return hologram;
-        }
-        return null;
     }
 
     public List<Hologram> getHolograms() {

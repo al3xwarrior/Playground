@@ -137,6 +137,11 @@ public class PlaySoundAction extends HTSLImpl {
     }
 
     @Override
+    public int limit() {
+        return 10;
+    }
+
+    @Override
     public boolean execute(Player player, HousingWorld house) {
         switch (location) {
             case INVOKERS_LOCATION ->

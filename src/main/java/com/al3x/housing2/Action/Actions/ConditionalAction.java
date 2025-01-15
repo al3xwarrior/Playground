@@ -198,6 +198,11 @@ public class ConditionalAction extends Action {
     }
 
     @Override
+    public int limit() {
+        return 40;
+    }
+
+    @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         if (data.containsKey("conditions")) {
             //Imma just assume this will work

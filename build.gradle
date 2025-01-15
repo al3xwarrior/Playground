@@ -17,13 +17,17 @@ repositories {
     maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
     maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
     maven { url "https://repo.dmulloy2.net/repository/public/" }
+    maven { url 'https://maven.evokegames.gg/snapshots' }
+    maven { url "https://jitpack.io" }
     maven {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven { url = 'https://repo.extendedclip.com/releases/' }
-    maven { url "https://repo.fancyplugins.de/releases" }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://catcoder.pl.ua/snapshots' }
 }
 
 dependencies {
@@ -35,8 +39,10 @@ dependencies {
     compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
     implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation 'fr.mrmicky:fastboard:2.1.3'
+
+    implementation 'com.github.max1mde:HologramLib:1.6.4-Test'
     implementation files('libs/PacketWrapper.jar')
+    compileOnly files('libs/ProtocolSidebar.jar')
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
 

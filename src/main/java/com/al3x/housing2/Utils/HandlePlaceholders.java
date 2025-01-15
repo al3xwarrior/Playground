@@ -107,7 +107,7 @@ public class HandlePlaceholders {
     }
 
     public static void registerPlaceholders() {
-
+        registerPlaceholder("regex:%removeFormatting/(.+)%", "&6%removeFormatting/&7[message]&6%", (player, house, match) -> StringUtilsKt.removeStringFormatting(match.getGroups().get(1).getValue(), house, player));
         //Distance between locations placeholders
         registerPlaceholder("regex:%distance/(.+),(.+),(.+) - (.+),(.+),(.+)%", "&6%distance/&7[x1],[y1],[z1] - [x2],[y2],[z2]&6%", (player, house, match) -> {
             String whole2 = match.getGroups().get(0).getValue().substring(10, match.getGroups().get(0).getValue().length() - 1);
@@ -149,12 +149,8 @@ public class HandlePlaceholders {
             return String.valueOf(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)));
         });
 
-        registerPlaceholder("%%player%%", (player, house) -> {
-            return player.getName();
-        });
-        registerPlaceholder("%player.name%", (player, house) -> {
-            return player.getName();
-        });
+        registerPlaceholder("%%player%%", (player, house) -> player.getName());
+        registerPlaceholder("%player.name%", (player, house) -> player.getName());
         registerPlaceholder("%player.displayname%", (player, house) -> player.getDisplayName());
         registerPlaceholder("%player.ping%", (player, house) -> String.valueOf(player.getPing()));
         registerPlaceholder("%player.isSprinting%", (player, house) -> String.valueOf(player.isSprinting()));
@@ -196,7 +192,7 @@ public class HandlePlaceholders {
             return "";
         });
 
-        registerPlaceholder("%event.attack/attacker%", (player, house) -> {
+        registerPlaceholder("%event.attack.attacker%", (player, house) -> {
             if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) return player.getName();
             return "";
         });
@@ -299,13 +295,13 @@ public class HandlePlaceholders {
         registerPlaceholder("regex:%raycast.block.coords/([0-9]+)%", "&6%raycast.block.coords/&7[range]&6%", (player, house, match) -> {
             int range = Integer.parseInt(match.getGroups().get(1).getValue());
             Location loc = player.getTargetBlock(null, range).getLocation();
-            if (loc == null) return "null";
+            if (loc == null) return "null,null,null";
             return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
         });
 
-        registerPlaceholder("regex:%raycast.npc.id/([0-9]+)%", "&6%raycast.npc.id/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.npc.id/([0-9.]+)%", "&6%raycast.npc.id/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
             if (citizensNPC != null) {
                 return String.valueOf(citizensNPC.getId());
@@ -346,7 +342,7 @@ public class HandlePlaceholders {
         registerPlaceholder("regex:%raycast.entity.coords/([0-9]+)%", "&6%raycast.entity.coords/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
             Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
-            if (entity == null) return "null";
+            if (entity == null) return "null,null,null";
             return (int) entity.getLocation().getX() + "," + (int) entity.getLocation().getY() + "," + (int) entity.getLocation().getZ();
         });
 
@@ -457,13 +453,6 @@ public class HandlePlaceholders {
             return String.valueOf(Math.random() * (max - min) + min);
         });
 
-        //Regex for placeholders in placeholders
-        registerPlaceholder("regex:%(.+)%(.+)%%", "&6%&7[placeholder]%&7[placeholder]&6%", (player, house, match) -> {
-            String placeholder = match.getGroups().get(1).getValue();
-            String value = parsePlaceholders(player, house, match.getGroups().get(2).getValue());
-            return parsePlaceholders(player, house, "%" + placeholder + value + "%");
-        });
-
         //Regex for math between placeholders and numbers
         registerPlaceholder("regex:%math.double/(.+) ([+\\-*/]) (.+)%", "&6%math/&7[placeholder] [+ - * / % ^] [placeholder/number]&6%", (player, house, match) -> {
             String value1 = parsePlaceholders(player, house, match.getGroups().get(1).getValue());
@@ -556,7 +545,7 @@ public class HandlePlaceholders {
         }
     }
 
-    private static Entity getEntityLookingAt(Player player, int range) {
+    private static Entity getEntityLookingAt(Player player, double range) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();

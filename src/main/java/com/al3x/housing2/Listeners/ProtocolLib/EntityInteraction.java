@@ -18,17 +18,18 @@ public class EntityInteraction {
         Main.getInstance().getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Client.USE_ENTITY) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                // Handle packet
-                WrapperPlayClientUseEntity wrapper = new WrapperPlayClientUseEntity(event.getPacket());
-                int id = wrapper.getEntityId();
-                Player player = event.getPlayer();
-
-                if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
-                Hologram hologram = housesManager.getHouse(player.getWorld()).getHologramInstance(id);
-                if (hologram == null) return;
-                if (hologram.isDestroyed()) return;
-
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> new HologramEditorMenu(Main.getInstance(), player, hologram).open());
+//                // Handle packet
+//                WrapperPlayClientUseEntity wrapper = new WrapperPlayClientUseEntity(event.getPacket());
+//                int id = wrapper.getEntityId();
+//                System.out.println("Entity ID: " + id);
+//                Player player = event.getPlayer();
+//
+//                if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
+//                Hologram hologram = housesManager.getHouse(player.getWorld()).getHologramInstance(id, player);
+//                if (hologram == null) return;
+//                if (hologram.isDestroyed()) return;
+//
+//                Bukkit.getScheduler().runTask(Main.getInstance(), () -> new HologramEditorMenu(Main.getInstance(), player, hologram).open());
             }
         });
     }

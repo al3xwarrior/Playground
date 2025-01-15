@@ -51,6 +51,7 @@ public class ScoreboardMenu extends Menu {
 
                 if (e.isShiftClick()) {
                     shiftLine(line[0], finalI, e.isRightClick());
+                    house.getScoreboardInstance().createBoard();
                     return;
                 }
 
@@ -58,11 +59,13 @@ public class ScoreboardMenu extends Menu {
                     player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
                     openChat(main, line[0], (message) -> {
                         scoreboard.set(finalI, message);
+                        house.getScoreboardInstance().createBoard();
                         player.sendMessage(colorize("&aLine set to: " + message));
                         Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
                     });
                 } else {
                     scoreboard.remove(finalI);
+                    house.getScoreboardInstance().createBoard();
                     house.setScoreboard(scoreboard);
                     player.sendMessage(colorize("&cLine removed!"));
                     Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
@@ -85,6 +88,7 @@ public class ScoreboardMenu extends Menu {
                     List<String> newScoreboard = new ArrayList<>(house.getScoreboard());
                     newScoreboard.add("&eHello World!");
                     house.setScoreboard(newScoreboard);
+                    house.getScoreboardInstance().createBoard();
                     new ScoreboardMenu(main, player, house).open();
                 }
         );

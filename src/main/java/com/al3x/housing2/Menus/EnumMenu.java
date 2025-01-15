@@ -34,7 +34,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
     private static HashMap<UUID, String> searchMap = new HashMap<>();
 
     public EnumMenu(Main main, String title, E[] enums, Material material, Player player, HousingWorld house, Menu backMenu, Consumer<E> consumer) {
-        super(player, colorize(title + "(1/" + (getItems(enums, player).getPageCount()) + ")"), 9 * 6);
+        super(player, colorize(title + "(1/" + (getItems(enums, player, material).getPageCount()) + ")"), 9 * 6);
         this.title = title;
         this.main = main;
         this.player = player;
@@ -48,7 +48,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
 
     @Override
     public void open() {
-        this.inventory = Bukkit.createInventory(null, 9 * 6, colorize(title + " (" + currentPage + "/" + (getItems(enums, player).getPageCount()) + ")"));
+        this.inventory = Bukkit.createInventory(null, 9 * 6, colorize(title + " (" + currentPage + "/" + (getItems(enums, player, material).getPageCount()) + ")"));
         setupItems();
         if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
             AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
@@ -62,7 +62,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
         clearItems();
         int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
-        PaginationList<E> paginationList = getItems(enums, player);
+        PaginationList<E> paginationList = getItems(enums, player, material);
         List<E> pageItems = paginationList.getPage(currentPage);
 
         //I really shouldn't have made this, but I did :)
@@ -137,9 +137,9 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
 
     }
 
-    private static <T> PaginationList<T> getItems(T[] enums, Player player) {
+    private static <T> PaginationList<T> getItems(T[] enums, Player player, Material defaultMaterial) {
         List<T> items = new ArrayList<>();
-        Material material = null;
+        Material material = defaultMaterial;
         for (T item: enums) {
             if (item instanceof Material) material = (Material) item;
             if (item instanceof EnumMaterial) material = ((EnumMaterial) item).getMaterial();

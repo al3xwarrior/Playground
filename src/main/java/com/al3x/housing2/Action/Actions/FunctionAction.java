@@ -76,6 +76,11 @@ public class FunctionAction extends HTSLImpl {
     }
 
     @Override
+    public int limit() {
+        return 10;
+    }
+
+    @Override
     public boolean execute(Player player, HousingWorld house) {
         if (function == null) {
             return false;

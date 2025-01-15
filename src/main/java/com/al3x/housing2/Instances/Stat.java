@@ -23,6 +23,9 @@ public class Stat {
 
     public static String modifyStat(StatOperation operation, String value1, String value2) {
         //Check all possible combinations of value and this.value
+        if (value1 == null) value1 = "null";
+        if (value2 == null) value2 = "null";
+
         if (modifyDoubleIfInt(operation, value1, value2) != null) {
             return String.valueOf(modifyDoubleIfInt(operation, value1, value2));
         } else if (modifyIntIfDouble(operation, value1, value2) != null) {

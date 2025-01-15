@@ -17,8 +17,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
+import com.maximde.hologramlib.HologramLib;
+import com.maximde.hologramlib.hologram.HologramManager;
 import org.bukkit.Bukkit;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -34,10 +35,16 @@ public final class Main extends JavaPlugin {
     private CookieManager cookieManager;
     private ClipboardManager clipboardManager;
     private LobbyDisplays lobbyDisplays;
+    private HologramManager hologramManager;
 
     private Housing2Api api;
 
     private String mineSkinKey;
+
+    @Override
+    public void onLoad() {
+        HologramLib.onLoad(this);
+    }
 
     @Override
     public void onEnable() {
@@ -63,6 +70,11 @@ public final class Main extends JavaPlugin {
         this.cookieManager = new CookieManager(this, getDataFolder());
         this.clipboardManager = new ClipboardManager(this, getDataFolder());
         this.lobbyDisplays = new LobbyDisplays(housesManager);
+
+        HologramLib.getManager().ifPresentOrElse(
+                manager -> hologramManager = manager,
+                () -> getLogger().severe("Failed to initialize HologramLib manager.")
+        );
 
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
@@ -153,6 +165,10 @@ public final class Main extends JavaPlugin {
 
     public HousingCommandFramework getCommandFramework() {
         return commandFramework;
+    }
+
+    public HologramManager getHologramManager() {
+        return hologramManager;
     }
 
     public String getMineSkinKey() {

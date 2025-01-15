@@ -7,6 +7,7 @@ import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -79,7 +80,7 @@ public class ChatAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.sendMessage(colorize(parsePlaceholders(player, house, message)));
+        player.sendMessage(StringUtilsKt.housingStringFormatter(message, house, player));
         return true;
     }
 

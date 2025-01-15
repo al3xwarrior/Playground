@@ -525,6 +525,11 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
+    public int limit() {
+        return 10;
+    }
+
+    @Override
     public boolean requiresPlayer() {
         return true;
     }

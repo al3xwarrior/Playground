@@ -129,7 +129,7 @@ public class HousingItems implements Listener {
 
                 if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && house.hasPermission(player, Permissions.ITEM_HOLOGRAM)) {
                     e.setCancelled(true);
-                    house.createHologram(player, block.getLocation().add(new Vector(0.5, 0, 0.5)));
+                    house.createHologram(player, block.getLocation().add(new Vector(0.5, 2, 0.5)));
                 }
             }
         }

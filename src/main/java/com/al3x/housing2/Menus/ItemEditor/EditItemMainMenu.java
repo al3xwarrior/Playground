@@ -7,6 +7,8 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,7 +44,7 @@ public class EditItemMainMenu extends Menu {
             player.sendMessage(colorize("&eEnter the new name for the item."));
             openChat(Main.getInstance(), item.getItemMeta().getDisplayName(), (newName) -> {
                 ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(colorize(newName));
+                meta.displayName(StringUtilsKt.housingStringFormatter(newName));
                 item.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(item);
                 setupItems();
@@ -70,28 +72,6 @@ public class EditItemMainMenu extends Menu {
                 .description("Edit the actions which will be performed when the player uses this item.")
                 .lClick(EDIT_YELLOW)
                 .build(), e -> {
-//            if (e.isLeftClick()) {
-//                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.LEFT, new ArrayList<>()));
-//                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-//                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
-//                menu.setUpdate(() -> {
-//                    customItem.getActions().put(ClickType.LEFT, actions);
-//                    player.getInventory().setItemInMainHand(customItem.build());
-//                    setupItems();
-//                });
-//                menu.open();
-//            } else if (e.isRightClick()) {
-//                List<Action> actions = new ArrayList<>(customItem.getActions().getOrDefault(ClickType.RIGHT, new ArrayList<>()));
-//                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-//                ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, this, null);
-//                menu.setUpdate(() -> {
-//                    customItem.getActions().put(ClickType.RIGHT, actions);
-//                    player.getInventory().setItemInMainHand(customItem.build());
-//                    setupItems();
-//                });
-//                menu.open();
-//            }
-
             new EditActionTypesMenu(player, customItem).open();
         });
 

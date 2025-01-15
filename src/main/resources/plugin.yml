@@ -4,7 +4,7 @@ main: com.al3x.housing2.Main
 api-version: '1.20'
 authors: [ Al3x ]
 soft-depend: [PlaceholderAPI]
-depend: [Citizens, ProtocolLib, NoteBlockAPI]
+depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, ProtocolSidebar]
 loadbefore: [Citizens]
 commands:
   housing:

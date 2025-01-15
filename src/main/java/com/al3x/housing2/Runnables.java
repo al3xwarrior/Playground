@@ -9,31 +9,23 @@ import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.LaunchPad;
 import com.al3x.housing2.MineSkin.SkinData;
-import com.al3x.housing2.MineSkin.SkinResponse;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
-import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
+import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.checkerframework.checker.units.qual.A;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
 import java.util.*;
 
+import static com.al3x.housing2.Instances.Hologram.rainbow;
+import static com.al3x.housing2.Instances.Hologram.rainbowIndex;
 import static com.al3x.housing2.MineSkin.MineskinHandler.sendRequestForSkins;
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -69,18 +61,20 @@ public class Runnables {
             }
         }.runTaskTimer(main, 0, 20 * 5L));
 
-        runnables.put("updateScoreboard", new BukkitRunnable() {
+        runnables.put("updateThings", new BukkitRunnable() {
             @Override
             public void run() {
-                //Update scoreboard
-                Bukkit.getOnlinePlayers().forEach(HousingScoreboard::updateScoreboard);
-
                 //Update tablist
                 Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
                 for (HousingWorld house : houses) {
                     house.getWorld().getPlayers().forEach(player -> HousingTabList.setTabList(player, house));
                 }
+            }
+        }.runTaskTimer(main, 0, 20L));
 
+        runnables.put("updateCooldowns", new BukkitRunnable() {
+            @Override
+            public void run() {
                 ParticleAction.particlesCooldownMap.clear();
                 ExplosionAction.amountDone.clear();
             }
@@ -158,6 +152,13 @@ public class Runnables {
                 for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
                     for (Hologram holo : house.getHolograms()) {
                         holo.updateHologramEntity();
+                    }
+                    for (HousingNPC npc : house.getNPCs()) {
+                        npc.getHologram().updateHologramEntity();
+                    }
+                    rainbowIndex = rainbowIndex + 16;
+                    if (rainbowIndex >= rainbow.size()) {
+                        rainbowIndex = 0;
                     }
                 }
             }

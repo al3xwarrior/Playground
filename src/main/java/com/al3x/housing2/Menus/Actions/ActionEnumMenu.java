@@ -15,6 +15,7 @@ import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -238,8 +239,8 @@ public class ActionEnumMenu extends Menu {
                 items.add(new ItemBuilder().material(item.getEnumMaterial()).name("&e" + name));
             } else {
                 //Are there better ways to do this? Probably, do I care? No
-                if (value instanceof BarColor)
-                    items.add(new ItemBuilder().material(Color.fromColor((BarColor) value)).name("&e" + name));
+                if (value instanceof BossBar.Color)
+                    items.add(new ItemBuilder().material(Color.fromColor((BossBar.Color) value)).name("&e" + name));
 
                 if (value instanceof Material)
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));

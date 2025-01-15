@@ -129,7 +129,7 @@ public abstract class Action {
                     }
                 }
                 field.set(this, data.get(key));
-            } catch (IllegalAccessException | NoSuchFieldException ignored) {
+            } catch (Exception ignored) {
             }
         }
     }
@@ -175,7 +175,6 @@ public abstract class Action {
         if (obj instanceof Locations location && location == Locations.CUSTOM) {
             event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z)"));
             editMenu.openChat(Main.getInstance(), (current == null ? "" : current), (message) -> {
-                //pitch,yaw
                 String oldMessage = message;
                 message = HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, message);
                 String[] split = message.split(",");

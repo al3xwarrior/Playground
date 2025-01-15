@@ -7,14 +7,11 @@ import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Utils.scoreboard.HousingScoreboard;
+import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,18 +19,11 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.IOException;
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousesManager.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
 
 public class JoinLeaveHouse implements Listener {
 
@@ -56,13 +46,12 @@ public class JoinLeaveHouse implements Listener {
 
     private void joinHouse(Player player) {
         //Set the scoreboard
-        HousingScoreboard scoreboard = new HousingScoreboard();
-        scoreboard.setScoreboard(player);
-
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) {
             return;
         }
+
+        house.getScoreboardInstance().addPlayer(player);
 
         PlayerData data = house.loadOrCreatePlayerData(player);
 
@@ -114,6 +103,7 @@ public class JoinLeaveHouse implements Listener {
 
     private void leaveHouse(Player player, HousingWorld from) {
         if (from == null) return;
+        from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 

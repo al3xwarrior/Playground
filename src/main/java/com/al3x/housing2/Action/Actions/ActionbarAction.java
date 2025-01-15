@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
@@ -77,8 +78,7 @@ public class ActionbarAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(colorizeLegacyText(HandlePlaceholders.parsePlaceholders(player, house, colorize(message)))));
-
+        player.sendActionBar(StringUtilsKt.housingStringFormatter(message, house, player));
         return true;
     }
 

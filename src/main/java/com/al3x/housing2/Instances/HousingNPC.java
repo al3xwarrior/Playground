@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.NavigationType;
+import com.al3x.housing2.Instances.HousingData.HologramData;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
 import com.al3x.housing2.Main;
@@ -82,13 +83,13 @@ public class HousingNPC {
     private NavigationType previousNavigationType;
     private double speed;
 
+    private Hologram hologram;
+
     private List<Action> actions;
 
     private static final String[] NPC_NAMES = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
 
     public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
-        long start = System.currentTimeMillis();
-
         this.main = main;
         this.house = house;
         this.name = data.getNpcName();
@@ -99,6 +100,10 @@ public class HousingNPC {
         this.entityType = EntityType.valueOf(data.getNpcType());
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
+        this.hologram = data.getHologramData() != null ? HologramData.Companion.toData(data.getHologramData()) : new Hologram(
+                main, null, house, location.clone().add(0, 2.5, 0)
+        );
+        this.hologram.setHouse(house);
 
         if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
         else this.waypoints = new ArrayList<>();
@@ -112,7 +117,6 @@ public class HousingNPC {
 
         citizensNPC.spawn(location);
         startFollowTask();
-
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
@@ -127,6 +131,10 @@ public class HousingNPC {
         this.navigationType = NavigationType.STATIONARY;
         this.actions = new ArrayList<>();
         this.waypoints = new ArrayList<>();
+
+        this.hologram = new Hologram(main, player, house, location.clone().add(0, 2.5, 0));
+        this.hologram.removeLine(1);
+        this.hologram.removeLine(0);
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
         configureLookCloseTrait();
@@ -262,21 +270,6 @@ public class HousingNPC {
         }
     }
 
-    public void setHologramLines(List<String> lines) {
-        HologramTrait hologram = citizensNPC.getOrAddTrait(HologramTrait.class);
-        hologram.clear();
-        lines.forEach(hologram::addLine);
-        citizensNPC.addTrait(hologram);
-    }
-
-    public List<String> getHologramLines() {
-        return citizensNPC.getOrAddTrait(HologramTrait.class).getLines();
-    }
-
-    public List<String> getHolograms() {
-        return citizensNPC.getOrAddTrait(HologramTrait.class).getLines();
-    }
-
     public NPC getCitizensNPC() {
         return citizensNPC;
     }
@@ -303,6 +296,10 @@ public class HousingNPC {
 
     public String getName() {
         return name;
+    }
+
+    public Hologram getHologram() {
+        return hologram;
     }
 
     public String getSkinUUID() {

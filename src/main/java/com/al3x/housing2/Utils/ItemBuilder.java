@@ -1,6 +1,7 @@
 package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Main;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -254,8 +255,8 @@ public class ItemBuilder {
         }
 
         //Set the item name and lore
-        itemMeta.setDisplayName(colorize(name));
-        itemMeta.setLore(colorize(getLore()));
+        itemMeta.displayName(StringUtilsKt.housingStringFormatter(name));
+        itemMeta.lore(getLore());
 
         // Hide all item flags cause they are annoying and useless
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
@@ -274,7 +275,7 @@ public class ItemBuilder {
 
     public static ClickType[] order = new ClickType[]{ClickType.LEFT, ClickType.MIDDLE, ClickType.RIGHT};
 
-    private List<String> getLore() {
+    private List<Component> getLore() {
         List<String> labels = new ArrayList<>();
         //Action labels
         //<color>Click to <action>!
@@ -300,7 +301,12 @@ public class ItemBuilder {
             lore.addAll(extraLore);
         }
 
-        return lore;
+        ArrayList<Component> newLore = new ArrayList<>();
+        for (String line : lore) {
+            newLore.add(StringUtilsKt.housingStringFormatter(line));
+        }
+
+        return newLore;
     }
 
     public static ItemBuilder create(Material material) {

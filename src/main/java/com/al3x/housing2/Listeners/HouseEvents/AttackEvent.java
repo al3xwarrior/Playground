@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -24,18 +25,24 @@ public class AttackEvent implements Listener {
         this.housesManager = housesManager;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) {return;}
         lastAttacked.put(player.getUniqueId(), e.getEntity());
         sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
+        if (e.getEntity() instanceof Player) {
+            sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity(), e);
+        }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onProjectileDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Projectile projectile)) {return;}
         if (!(projectile.getShooter() instanceof Player player)) {return;}
         lastAttacked.put(player.getUniqueId(), e.getEntity());
         sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
+        if (e.getEntity() instanceof Player) {
+            sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity(), e);
+        }
     }
 }

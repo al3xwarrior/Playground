@@ -5,6 +5,8 @@ import com.al3x.housing2.Instances.CustomMenu;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -49,13 +51,13 @@ public class CustomMenuViewer extends Menu {
             }
             ItemStack item = customMenu.getItems().get(i).getFirst().clone();
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(colorize(HandlePlaceholders.parsePlaceholders(player, house, meta.getDisplayName())));
-            ArrayList<String> lore = new ArrayList<>();
+            meta.displayName(StringUtilsKt.housingStringFormatter(meta.getDisplayName(), house, player));
+            ArrayList<Component> lore = new ArrayList<>();
             List<String> oldLore = new ArrayList<>(meta.getLore() == null ? new ArrayList<>() : meta.getLore());
             for (String line : oldLore) {
-                lore.add(colorize(HandlePlaceholders.parsePlaceholders(player, house, line)));
+                lore.add(StringUtilsKt.housingStringFormatter(line, house, player));
             }
-            meta.setLore(lore);
+            meta.lore(lore);
             item.setItemMeta(meta);
             addItem(i, item, (e) -> {
                 new ActionExecutor(customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);

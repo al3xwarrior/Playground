@@ -165,6 +165,11 @@ public class LaunchProjectileAction extends HTSLImpl {
     }
 
     @Override
+    public int limit() {
+        return 5;
+    }
+
+    @Override
     public boolean mustBeSync() {
         return true;
     }

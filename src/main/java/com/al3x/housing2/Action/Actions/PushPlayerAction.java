@@ -146,6 +146,11 @@ public class PushPlayerAction extends HTSLImpl {
         return true;
     }
 
+    @Override
+    public int limit() {
+        return 10;
+    }
+
     public double getAmount() {
         return amount;
     }

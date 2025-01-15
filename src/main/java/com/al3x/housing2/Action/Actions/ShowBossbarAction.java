@@ -1,21 +1,21 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.attribute.*;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.fromColor;
@@ -23,24 +23,16 @@ import static com.al3x.housing2.Utils.Color.fromColor;
 public class ShowBossbarAction extends HTSLImpl {
 
     private String title;
-    private BarColor barColor;
-    private BarStyle barStyle;
+    private BossBar.Color barColor;
+    private BossBar.Overlay barStyle;
     private double progress;
 
     public ShowBossbarAction() {
         super("Show Bossbar Action");
         this.title = "&eHello World!";
-        this.barColor = BarColor.WHITE;
-        this.barStyle = BarStyle.SOLID;
+        this.barColor = BossBar.Color.WHITE;
+        this.barStyle = BossBar.Overlay.PROGRESS;
         this.progress = 1.0;
-    }
-
-    public ShowBossbarAction(String title, BarColor barColor, BarStyle barStyle, double progress) {
-        super("Show Bossbar Action");
-        this.title = title;
-        this.barColor = barColor;
-        this.barStyle = barStyle;
-        this.progress = progress;
     }
 
     @Override
@@ -88,7 +80,7 @@ public class ShowBossbarAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + barColor.name())
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, BarColor.values(), null
+                        ActionEditor.ActionItem.ActionType.ENUM, BossBar.Color.values(), null
                 ),
                 new ActionEditor.ActionItem("barStyle",
                         ItemBuilder.create(Material.FEATHER)
@@ -96,7 +88,7 @@ public class ShowBossbarAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + barStyle.name())
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, BarStyle.values(), Material.FEATHER
+                        ActionEditor.ActionItem.ActionType.ENUM, BossBar.Overlay.values(), Material.FEATHER
                 ),
                 new ActionEditor.ActionItem("progress",
                         ItemBuilder.create(Material.WRITTEN_BOOK)
@@ -108,40 +100,22 @@ public class ShowBossbarAction extends HTSLImpl {
                 )
         );
 
-        return new ActionEditor(4, "&eSend Title Action Settings", items);
+        return new ActionEditor(4, "&eShow Bossbar Action Settings", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        String title = HandlePlaceholders.parsePlaceholders(player, house, this.title);
-
-        BossBar bossBar = Bukkit.createBossBar(colorize(title), barColor, barStyle);
-        if (progress < 0) progress = 0;
-        if (progress > 1) progress = 1;
-        bossBar.setProgress(progress);
-        bossBar.addPlayer(player);
-        bossBar.setVisible(true);
+        BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), NumberUtilsKt.toFloat(progress), barColor, barStyle);
+        bossBar.addViewer(player);
+        if (!house.bossBars.containsKey(player.getUniqueId())) {
+            house.bossBars.put(player.getUniqueId(), new ArrayList<>());
+            house.bossBars.get(player.getUniqueId()).add(bossBar);
+        } else {
+            house.bossBars.get(player.getUniqueId()).add(bossBar);
+        }
         return true;
     }
 
-    public String getTitle() {
-        return title;
-    }
-    public BarColor getBarColor() {
-        return barColor;
-    }
-    public BarStyle getBarStyle() {
-        return barStyle;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setBarColor(BarColor barColor) {
-        this.barColor = barColor;
-    }
-    public void setBarStyle(BarStyle barStyle) {
-        this.barStyle = barStyle;
-    }
 
     @Override
     public LinkedHashMap<String, Object> data() {
@@ -151,6 +125,20 @@ public class ShowBossbarAction extends HTSLImpl {
         data.put("barStyle", barStyle);
         data.put("progress", progress);
         return data;
+    }
+
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        if (!data.containsKey("title")) return;
+        title = (String) data.get("title");
+        try {
+            barColor = (BossBar.Color) data.getOrDefault("barColor", BossBar.Color.WHITE);
+            barStyle = (BossBar.Overlay) data.getOrDefault("barStyle", BossBar.Overlay.PROGRESS);
+        } catch (Exception e) {
+           barColor = BossBar.Color.WHITE;
+           barStyle = BossBar.Overlay.PROGRESS;
+        }
+        progress = (double) data.get("progress");
     }
 
     @Override

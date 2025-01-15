@@ -153,6 +153,11 @@ public class ExplosionAction extends HTSLImpl {
     }
 
     @Override
+    public int limit() {
+        return 1;
+    }
+
+    @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("location", location.name());

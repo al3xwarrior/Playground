@@ -14,6 +14,7 @@ data class NPCData(
     val equipment: List<String>,
     val navigationType: String? = "null",
     val waypoints: List<LocationData>? = listOf(),
+    val hologramData: HologramData? = null,
     val speed: Float? = 1.0f
 ) {
 
@@ -34,6 +35,7 @@ data class NPCData(
                         it.equipment,
                         it.navigationType.name,
                         LocationData.fromLocationList(it.waypoints),
+                        if (it.hologram != null) HologramData.fromData(it.hologram!!) else null,
                         it.speed.toFloat()
                     )
                 )
