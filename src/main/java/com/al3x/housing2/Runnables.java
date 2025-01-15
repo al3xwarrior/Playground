@@ -16,6 +16,8 @@ import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -23,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.al3x.housing2.Instances.Hologram.rainbow;
 import static com.al3x.housing2.Instances.Hologram.rainbowIndex;
@@ -32,6 +35,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class Runnables {
     //Description, Runnable
     private static HashMap<String, BukkitTask> runnables = new HashMap<>();
+    public static ConcurrentHashMap<UUID, List<Entity>> entityMap = new ConcurrentHashMap<>();
     private static Gson gson = new Gson();
 
     public static void startRunnables(Main main) {
@@ -46,6 +50,23 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0, 20 * 5L));
+
+        runnables.put("cacheNearbyEntities", new BukkitRunnable() {
+            @Override
+            public void run() {
+                Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
+                for (HousingWorld house : houses) {
+                    for (Player player : house.getWorld().getPlayers()) {
+                        List<Entity> entities = new ArrayList<>();
+                        for (Entity entity : player.getNearbyEntities(50, 50, 50)) {
+                            if (!(entity instanceof LivingEntity)) continue;
+                            entities.add(entity);
+                        }
+                        entityMap.put(player.getUniqueId(), entities);
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0, 5));
 
         runnables.put("despawnProjectiles", new BukkitRunnable() {
             @Override

@@ -29,10 +29,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
@@ -545,15 +542,23 @@ public class HandlePlaceholders {
         }
     }
 
+    //I really should just remake this lol
     private static Entity getEntityLookingAt(Player player, double range) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
-            RayTraceResult result = player.getWorld().rayTrace(eye, direction, range, FluidCollisionMode.NEVER, true, 0.0D, (entity) -> !entity.equals(player));
-            if (result == null || result.getHitEntity() == null) return null;
-            return result.getHitEntity();
+            for (Entity entity : Runnables.entityMap.get(player.getUniqueId())) {
+                BoundingBox box = entity.getBoundingBox();
+                if (box != null) {
+                    RayTraceResult result = box.rayTrace(eye.toVector(), direction, range);
+                    if (result != null) {
+                        return entity;
+                    }
+                }
+            }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
 }
