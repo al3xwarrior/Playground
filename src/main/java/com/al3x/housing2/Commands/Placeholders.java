@@ -3,6 +3,7 @@ package com.al3x.housing2.Commands;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -61,7 +62,7 @@ public class Placeholders implements CommandExecutor {
         player.sendMessage(colorize("&eHousing Placeholders:"));
         player.sendMessage(colorize("&7Use &e/placeholders <filter> &7to filter the list."));
 
-        List<HandlePlaceholders.Placeholder> placeholders = HandlePlaceholders.getPlaceholders();
+        List<Placeholder> placeholders = Placeholder.placeholders;
         // Filter placeholders
         if (!filter.isEmpty()) {
             String search = filter.toLowerCase();
@@ -69,10 +70,10 @@ public class Placeholders implements CommandExecutor {
         }
 
         //Go through all placeholders and send them to the player
-        for (HandlePlaceholders.Placeholder placeholder : placeholders) {
+        for (Placeholder placeholder : placeholders) {
             TextComponent comp = new TextComponent(colorize("&7- &6" + placeholder +
-                    (placeholder.getDisplayName().equals(placeholder.getPlaceholder()) ?
-                            " &7(" + HandlePlaceholders.parsePlaceholders(player, house, placeholder.getPlaceholder()) + "&7)" :
+                    (!placeholder.hasArgs() ?
+                            " &7(" + placeholder.handlePlaceholder("", house, player) + "&7)" :
                             "") //Basically with this we are just checking if the placeholder has a unique display name, if it does we show the parsed value
             ));
             comp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, Color.removeColor(placeholder.getDisplayName())));

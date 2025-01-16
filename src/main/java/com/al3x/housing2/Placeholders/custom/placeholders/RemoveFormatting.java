@@ -14,11 +14,6 @@ public class RemoveFormatting extends Placeholder {
     }
 
     @Override
-    public String displayPlaceholder() {
-        return getPlaceholder();
-    }
-
-    @Override
     public boolean hasArgs() {
         return true;
     }

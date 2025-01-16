@@ -43,8 +43,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] number = split[1].replace("%", "").split(" ");
             try {
-                double val = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player));
-                int places = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player));
+                double val = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player, true));
+                int places = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player, true));
                 if (places == 0) {//If the places is 0, round the value to the nearest whole number
                     return String.valueOf((int) Math.round(val));
                 }
@@ -86,8 +86,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] number = split[1].replace("%", "").split(" ");
             try {
-                int min = Integer.parseInt(Placeholder.handlePlaceholders(number[0], house, player));
-                int max = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player));
+                int min = Integer.parseInt(Placeholder.handlePlaceholders(number[0], house, player, true));
+                int max = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player, true));
                 return String.valueOf((int) (Math.random() * (max - min + 1) + min));
             } catch (Exception e) {
                 return "0";
@@ -119,8 +119,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] number = split[1].replace("%", "").split(" ");
             try {
-                double min = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player));
-                double max = Double.parseDouble(Placeholder.handlePlaceholders(number[1], house, player));
+                double min = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player, true));
+                double max = Double.parseDouble(Placeholder.handlePlaceholders(number[1], house, player, true));
                 return String.valueOf(Math.random() * (max - min) + min);
             } catch (Exception e) {
                 return "0";
@@ -147,8 +147,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(num1 + num2);
             } catch (Exception e) {
                 return "0";
@@ -175,8 +175,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(num1 - num2);
             } catch (Exception e) {
                 return "0";
@@ -203,8 +203,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(num1 * num2);
             } catch (Exception e) {
                 return "0";
@@ -231,8 +231,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(num1 / num2);
             } catch (Exception e) {
                 return "0";
@@ -264,8 +264,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(num1 % num2);
             } catch (Exception e) {
                 return "0";
@@ -292,8 +292,8 @@ public class MathPlaceholders {
             String[] split = input.split("/");
             String[] numbers = split[1].replace("%", "").split(" ");
             try {
-                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
-                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(Math.pow(num1, num2));
             } catch (Exception e) {
                 return "0";

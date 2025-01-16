@@ -197,6 +197,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -205,7 +210,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     net.citizensnpcs.api.npc.NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
                     if (citizensNPC != null) {
@@ -242,6 +247,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -250,7 +260,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return entity.getName();
@@ -269,6 +279,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -277,7 +292,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return entity.getType().name();
@@ -296,6 +311,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -304,7 +324,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockX());
@@ -323,6 +343,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -331,7 +356,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockY());
@@ -350,6 +375,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -358,7 +388,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockZ());
@@ -377,6 +407,11 @@ public class Raycast {
             }
 
             @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
             public String handlePlaceholder(String input, HousingWorld house, Player player) {
                 if (player == null) {
                     return "null";
@@ -385,7 +420,7 @@ public class Raycast {
                     return "null";
                 }
                 try {
-                    int range = Integer.parseInt(input.split("/")[1]);
+                    double range = Double.parseDouble(input.split("/")[1]);
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         Location loc = entity.getLocation();

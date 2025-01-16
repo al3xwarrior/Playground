@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public abstract class Placeholder {
-    private static final Logger log = LoggerFactory.getLogger(Placeholder.class);
+    public static final Logger log = LoggerFactory.getLogger(Placeholder.class);
     public static List<Placeholder> placeholders = new ArrayList<>();
 
     public Placeholder() {
@@ -55,11 +55,16 @@ public abstract class Placeholder {
         return false;
     }
 
-    public String displayPlaceholder() {
+    public String getDisplayName() {
         return getPlaceholder();
     }
 
     public abstract String handlePlaceholder(String input, HousingWorld house, Player player);
+
+    @Override
+    public String toString() {
+        return getPlaceholder();
+    }
 
     private static boolean checkValid(Placeholder placeholder, String input) {
         String placeholderName;
@@ -83,6 +88,11 @@ public abstract class Placeholder {
     }
 
     public static String handlePlaceholders(String input, HousingWorld house, Player player) {
+        return handlePlaceholders(input, house, player, false);
+    }
+
+    public static String handlePlaceholders(String input, HousingWorld house, Player player, boolean nested) {
+        if (nested) input = input.replace("[", "%").replace("]", "%");
         String[] split = input.split("%");
         Iterator<String> iterator = Arrays.asList(split).iterator();
         String part = "";
@@ -92,11 +102,14 @@ public abstract class Placeholder {
                 continue;
             }
             part = "%" + part + "%";
+            if (part.contains("coords")) {
+                log.info("Coords: " + part);
+            }
             for (Placeholder placeholder : placeholders) {
                 if (!checkValid(placeholder, part)) {
                     continue;
                 }
-                String handled = placeholder.handlePlaceholder(part, house, player);
+                String handled = placeholder.handlePlaceholder(part.replace("%", ""), house, player);
                 if (handled != null) {
                     input = input.replace(part, handled);
                     break;

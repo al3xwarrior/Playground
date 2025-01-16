@@ -18,11 +18,6 @@ public class PlayerName extends Placeholder {
     }
 
     @Override
-    public String displayPlaceholder() {
-        return getPlaceholder();
-    }
-
-    @Override
     public String handlePlaceholder(String input, HousingWorld house, Player player) {
         if (player == null) {
             return "null";

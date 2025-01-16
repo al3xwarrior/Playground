@@ -139,7 +139,6 @@ public final class Main extends JavaPlugin {
         Runnables.startRunnables(this);
 
         Placeholder.registerPlaceholders();
-        HandlePlaceholders.registerPlaceholders();
 
         Bukkit.getPluginManager().registerEvents(new SkinCache(), this);
 //        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, SkinCache::save, 0, 360000); // save skin cache every 5 minutes

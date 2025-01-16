@@ -98,12 +98,12 @@ public class TestPlaceholder implements CommandExecutor {
             }
 
             if (args.length == 0) {
-                return HandlePlaceholders.getPlaceholders().stream().map((p) -> Color.removeColor(p.getDisplayName())).toList();
+                return Placeholder.placeholders.stream().map((p) -> Color.removeColor(p.getDisplayName())).toList();
             }
 
             if (args.length == 1) {
                 String arg = args[0];
-                List<String> placeholders = new ArrayList<>(HandlePlaceholders.getPlaceholders().stream().map((p) -> Color.removeColor(p.getDisplayName())).toList());
+                List<String> placeholders = new ArrayList<>(Placeholder.placeholders.stream().map((p) -> Color.removeColor(p.getDisplayName())).toList());
                 placeholders.removeIf((p) -> !p.toLowerCase().startsWith(args[0].toLowerCase()));
 
                 ArrayList<String> newCompletions = new ArrayList<>();
@@ -135,7 +135,7 @@ public class TestPlaceholder implements CommandExecutor {
                 case "global_stat" ->
                         house.getStatManager().getGlobalStats().stream().map(Stat::getStatName).toList();
                 case "placeholder" ->
-                        HandlePlaceholders.getPlaceholders().stream().map(HandlePlaceholders.Placeholder::getPlaceholder).toList();
+                        Placeholder.placeholders.stream().map(Placeholder::getPlaceholder).toList();
                 default -> List.of();
             };
         }

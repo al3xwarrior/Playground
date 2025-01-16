@@ -4,6 +4,8 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 public class Distance extends Placeholder {
     @Override
     public String getPlaceholder() {
@@ -21,16 +23,23 @@ public class Distance extends Placeholder {
             return "0";
         }
         String[] split = input.split("/");
-        String[] coords = Placeholder.handlePlaceholders(split[1], house, player).replace("%", "").split(" - ");
-        String[] coords1 = coords[0].split(",");
-        String[] coords2 = coords[1].split(",");
-        double x1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[0], house, player));
-        double y1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[1], house, player));
-        double z1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[2], house, player));
-        double x2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[0], house, player));
-        double y2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[1], house, player));
-        double z2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[2], house, player));
-        double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
-        return String.valueOf(distance);
+        String afterOne = String.join("/", Arrays.copyOfRange(split, 1, split.length));
+        String[] coords = afterOne.split(" - ");
+        String[] coords1 = Placeholder.handlePlaceholders(coords[0], house, player, true).split(",");
+        String[] coords2 = Placeholder.handlePlaceholders(coords[1], house, player, true).split(",");
+        System.out.println(Arrays.toString(coords1));
+        System.out.println(Arrays.toString(coords2));
+        try {
+            double x1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[0], house, player, true));
+            double y1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[1], house, player, true));
+            double z1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[2], house, player, true));
+            double x2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[0], house, player, true));
+            double y2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[1], house, player, true));
+            double z2 = Double.parseDouble(Placeholder.handlePlaceholders(coords2[2], house, player, true));
+            double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
+            return String.valueOf(distance);
+        } catch (Exception e) {
+            return "null";
+        }
     }
 }
