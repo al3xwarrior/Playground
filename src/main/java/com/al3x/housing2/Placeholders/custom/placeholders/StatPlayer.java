@@ -33,7 +33,7 @@ public class StatPlayer extends Placeholder {
             return "0";
         }
         String statName = StringUtilsKt.substringAfter(input, "/");
-        statName = Placeholder.handlePlaceholders(statName, house, player);
+        statName = Placeholder.handlePlaceholders(statName, house, player, true);
         return house.getStatManager().getPlayerStatByName(player, statName).formatValue();
     }
 }

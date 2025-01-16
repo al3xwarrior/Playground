@@ -24,7 +24,7 @@ public class RemoveFormatting extends Placeholder {
             return "0";
         }
         String placeholder = StringUtilsKt.substringAfter(input, "/");
-        String value = Placeholder.handlePlaceholders(placeholder, house, player);
+        String value = Placeholder.handlePlaceholders(placeholder, house, player, true);
         return StringUtilsKt.removeStringFormatting(value, house, player);
     }
 }
