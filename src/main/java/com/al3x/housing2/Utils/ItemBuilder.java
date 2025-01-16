@@ -377,6 +377,7 @@ public class ItemBuilder {
         TOGGLE_YELLOW("toggle", YELLOW),
         EXPORT_YELLOW("export", YELLOW),
         IMPORT_YELLOW("import", YELLOW),
+        JOIN_YELLOW("join", YELLOW),
         TELEPORT("teleport", YELLOW),
         CLONE("clone", YELLOW),
         SELECT_REGION("select region", YELLOW),

@@ -4,6 +4,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class HouseBrowserMenu extends Menu{
+public class HouseBrowserMenu extends Menu {
 
     private Player player;
     private HousesManager housesManager;
@@ -36,22 +37,14 @@ public class HouseBrowserMenu extends Menu{
             HouseData house = houses.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
 
-            ItemStack icon = new ItemStack(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"));
-            ItemMeta meta = icon.getItemMeta();
+            ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"))
+                    .name("&a" + house.getHouseName())
+                    .description(colorize(house.getDescription()))
+                    .info("&7Players", "&a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0))
+                    .info("&7Cookies", "&6" + house.getCookies())
+                    .lClick(ItemBuilder.ActionType.JOIN_YELLOW);
 
-            meta.setDisplayName(colorize("&a" + house.getHouseName()));
-            meta.setLore(Arrays.asList(
-                    colorize(house.getDescription()),
-                    "",
-                    colorize("&7Players: &a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0)),
-                    colorize("&7Cookies: &6" + house.getCookies()),
-                    "",
-                    colorize("&eClick to Join!")
-            ));
-
-            icon.setItemMeta(meta);
-
-            addItem(i, icon, () -> {
+            addItem(i, icon.build(), () -> {
                 if (housingWorld != null) {
                     housingWorld.sendPlayerToHouse(player);
                 } else {

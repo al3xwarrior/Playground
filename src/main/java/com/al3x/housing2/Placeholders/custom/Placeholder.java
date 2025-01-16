@@ -102,9 +102,6 @@ public abstract class Placeholder {
                 continue;
             }
             part = "%" + part + "%";
-            if (part.contains("coords")) {
-                log.info("Coords: " + part);
-            }
             for (Placeholder placeholder : placeholders) {
                 if (!checkValid(placeholder, part)) {
                     continue;

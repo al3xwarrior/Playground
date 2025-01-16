@@ -2,6 +2,7 @@ package com.al3x.housing2.Placeholders.custom.placeholders;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.entity.Player;
 
 import java.util.Iterator;
@@ -31,12 +32,8 @@ public class StatPlayer extends Placeholder {
         if (input.split("/").length < 2) {
             return "0";
         }
-        String statName = input.split("/")[1].replace("%", "");
-
-        if (statName.contains("[") && statName.contains("]")) {
-            statName = statName.substring(statName.indexOf("[") + 1, statName.indexOf("]"));
-            statName = Placeholder.handlePlaceholders("%" + statName + "%", house, player);
-        }
+        String statName = StringUtilsKt.substringAfter(input, "/");
+        statName = Placeholder.handlePlaceholders(statName, house, player);
         return house.getStatManager().getPlayerStatByName(player, statName).formatValue();
     }
 }

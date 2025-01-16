@@ -3,6 +3,7 @@ package com.al3x.housing2.Placeholders.custom.placeholders;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Runnables;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
@@ -12,6 +13,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Raycast {
@@ -53,10 +55,11 @@ public class Raycast {
             if (args.length < 2) {
                 return "null";
             }
+            String[] a = input.split("/");
+            String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
             try {
-                int range = Integer.parseInt(args[1]);
-                Location loc = player.getTargetBlock(null, range).getLocation();
-                return String.valueOf(loc.getBlockX());
+                int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
+                return player.getTargetBlock(null, range).getType().name();
             } catch (NumberFormatException e) {
                 return "null";
             }
@@ -82,8 +85,10 @@ public class Raycast {
                 if (args.length < 2) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    int range = Integer.parseInt(args[1]);
+                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Location loc = player.getTargetBlock(null, range).getLocation();
                     return String.valueOf(loc.getBlockX());
                 } catch (NumberFormatException e) {
@@ -112,8 +117,10 @@ public class Raycast {
                 if (args.length < 2) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    int range = Integer.parseInt(args[1]);
+                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Location loc = player.getTargetBlock(null, range).getLocation();
                     return String.valueOf(loc.getBlockY());
                 } catch (NumberFormatException e) {
@@ -142,8 +149,10 @@ public class Raycast {
                 if (args.length < 2) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    int range = Integer.parseInt(args[1]);
+                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Location loc = player.getTargetBlock(null, range).getLocation();
                     return String.valueOf(loc.getBlockZ());
                 } catch (NumberFormatException e) {
@@ -173,8 +182,10 @@ public class Raycast {
                 if (args.length < 2) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    int range = Integer.parseInt(args[1]);
+                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Location loc = player.getTargetBlock(null, range).getLocation();
                     return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
                 } catch (NumberFormatException e) {
@@ -209,8 +220,10 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     net.citizensnpcs.api.npc.NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
                     if (citizensNPC != null) {
@@ -259,14 +272,15 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String arg1 = StringUtilsKt.substringAfter(input, "/");
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return entity.getName();
                     }
                     return "null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }
@@ -291,14 +305,16 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return entity.getType().name();
                     }
                     return "null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }
@@ -323,14 +339,16 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockX());
                     }
                     return "null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }
@@ -355,14 +373,16 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockY());
                     }
                     return "null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }
@@ -387,14 +407,16 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         return String.valueOf(entity.getLocation().getBlockZ());
                     }
                     return "null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }
@@ -419,15 +441,17 @@ public class Raycast {
                 if (!input.contains("/")) {
                     return "null";
                 }
+                String[] a = input.split("/");
+                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
                 try {
-                    double range = Double.parseDouble(input.split("/")[1]);
+                    double range = Double.parseDouble(Placeholder.handlePlaceholders(arg1, house, player, true));
                     Entity entity = getEntityLookingAt(player, range);
                     if (entity != null) {
                         Location loc = entity.getLocation();
                         return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
                     }
                     return "null,null,null";
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     return "null";
                 }
             }

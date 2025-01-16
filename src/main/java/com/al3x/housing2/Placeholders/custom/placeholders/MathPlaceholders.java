@@ -2,6 +2,7 @@ package com.al3x.housing2.Placeholders.custom.placeholders;
 
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -40,8 +41,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] number = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] number = split.split(" ");
             try {
                 double val = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player, true));
                 int places = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player, true));
@@ -83,8 +84,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] number = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] number = split.replace("%", "").split(" ");
             try {
                 int min = Integer.parseInt(Placeholder.handlePlaceholders(number[0], house, player, true));
                 int max = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player, true));
@@ -116,8 +117,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] number = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] number = split.split(" ");
             try {
                 double min = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player, true));
                 double max = Double.parseDouble(Placeholder.handlePlaceholders(number[1], house, player, true));
@@ -144,8 +145,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
@@ -172,8 +173,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
@@ -200,8 +201,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
@@ -228,8 +229,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
@@ -261,8 +262,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
@@ -289,8 +290,8 @@ public class MathPlaceholders {
             if (input.split("/").length < 2) {
                 return "0";
             }
-            String[] split = input.split("/");
-            String[] numbers = split[1].replace("%", "").split(" ");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));

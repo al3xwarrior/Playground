@@ -11,6 +11,7 @@ import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -569,11 +570,11 @@ public class HousingWorld {
         } catch (NullPointerException ignored) {}
         if (loaded) {
             player.teleport(spawn);
-            player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+            player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
         } else {
             onLoad.add(house -> {
                 player.teleport(house.getSpawn());
-                player.sendMessage(colorize("&aSending you to " + name + "&a..."));
+                player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
             });
         }
     }

@@ -28,6 +28,7 @@ data class StatData(
             statMap.forEach { (uuid, statList) ->
                 val list = mutableListOf<StatData>()
                 statList.forEach {
+                    if (it.value == null) return@forEach
                     list.add(StatData(it.uuid.toString(), it.statName, it.value))
                 }
                 map[uuid.toString()] = list

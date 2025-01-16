@@ -3,8 +3,10 @@ package com.al3x.housing2.Placeholders.custom.placeholders;
 import com.al3x.housing2.Instances.CommandRegistry;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Command {
@@ -28,9 +30,11 @@ public class Command {
             if (a.length < 2) {
                 return "null";
             }
+            String arg1 = StringUtilsKt.substringAfter(input, "/");
+
 
             try {
-                int index = Integer.parseInt(a[1].replace("%", ""));
+                int index = Integer.parseInt(arg1);
                 if (CommandRegistry.commandArgsResults.containsKey(player.getUniqueId())) {
                     List<String> args = CommandRegistry.commandArgsResults.get(player.getUniqueId());
                     if (args.size() > index) {

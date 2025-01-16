@@ -1,6 +1,7 @@
 package com.al3x.housing2.Utils.tablist;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class HousingTabList {
                 "\n" +
                 "&aNothing, Nothing & NOTHING! &c&lNOPE.NET";
 
-        player.setPlayerListHeaderFooter(colorize(header), colorize(footer));
+        player.sendPlayerListHeaderAndFooter(StringUtilsKt.housingStringFormatter(header), StringUtilsKt.housingStringFormatter(footer));
     }
 
     public static void lobbyTabList(Player player) {

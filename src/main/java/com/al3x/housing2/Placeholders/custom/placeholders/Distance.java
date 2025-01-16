@@ -27,8 +27,6 @@ public class Distance extends Placeholder {
         String[] coords = afterOne.split(" - ");
         String[] coords1 = Placeholder.handlePlaceholders(coords[0], house, player, true).split(",");
         String[] coords2 = Placeholder.handlePlaceholders(coords[1], house, player, true).split(",");
-        System.out.println(Arrays.toString(coords1));
-        System.out.println(Arrays.toString(coords2));
         try {
             double x1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[0], house, player, true));
             double y1 = Double.parseDouble(Placeholder.handlePlaceholders(coords1[1], house, player, true));

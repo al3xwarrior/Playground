@@ -23,11 +23,8 @@ public class RemoveFormatting extends Placeholder {
         if (input.split("/").length < 2) {
             return "0";
         }
-        String placeholder = input.split("/")[1].replace("%", "");
-        if (placeholder.contains("[") && placeholder.contains("]")) {
-            placeholder = placeholder.substring(placeholder.indexOf("[") + 1, placeholder.indexOf("]"));
-        }
-        String value = Placeholder.handlePlaceholders("%" + placeholder + "%", house, player);
+        String placeholder = StringUtilsKt.substringAfter(input, "/");
+        String value = Placeholder.handlePlaceholders(placeholder, house, player);
         return StringUtilsKt.removeStringFormatting(value, house, player);
     }
 }
