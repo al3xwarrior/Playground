@@ -135,6 +135,10 @@ public class ConditionalAction extends Action {
             result = true;
         } else {
             for (Condition condition : conditions) {
+                if (condition.requiresPlayer() && player == null) {
+                    result = false;
+                    continue;
+                }
                 if (condition.execute(player, house, event) != not) {
                     result = true;
                     if (matchAnyCondition) break;

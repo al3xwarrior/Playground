@@ -153,6 +153,11 @@ public class Hologram {
         // Create new entities for each line of text
         for (Player player : house.getWorld().getPlayers()) {
             if (entitys.containsKey(player)) {
+                if (player.getWorld() != house.getWorld()) {
+                    entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
+                    entitys.remove(player);
+                    return;
+                }
                 for (int i = 0; i < entitys.get(player).size(); i++) {
                     updateIndivualHologram(entitys.get(player).get(i), i, player);
                 }

@@ -37,6 +37,10 @@ public class ActionExecutor {
         queue.addAll(actions);
     }
 
+    public List<Action> getQueue() {
+        return queue;
+    }
+
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
         AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
@@ -65,6 +69,10 @@ public class ActionExecutor {
             if (pause == 0) {
                 returnVal.set(action.execute(player, house, event, this));
                 continue;
+            }
+
+            if (action.requiresPlayer() && player == null) {
+                return true;
             }
 
             Action finalAction = action;

@@ -81,17 +81,9 @@ public class AddActionMenu extends Menu {
                 ItemBuilder item = new ItemBuilder();
                 action.createAddDisplayItem(item);
                 addItem(slots[i] - 1, item.build(), () -> {
-                    if (action.limit() != -1) {
-                        int count = 0;
-                        for (Action a : this.actions) {
-                            if (a.toString().equals(action.toString())) {
-                                count++;
-                            }
-                        }
-                        if (count >= action.limit()) {
-                            player.sendMessage(colorize("&cYou can only have " + action.limit() + " of this action!"));
-                            return;
-                        }
+                    if (ActionEditMenu.isLimitReached(actions, action)) {
+                        player.sendMessage(colorize("&cYou have reached the limit for this action!"));
+                        return;
                     }
 
                     if (action instanceof PauseAction) {

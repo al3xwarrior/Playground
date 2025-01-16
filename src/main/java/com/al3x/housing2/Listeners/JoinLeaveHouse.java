@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Instances.HousingScoreboard;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
 import org.bukkit.GameMode;
@@ -80,7 +81,7 @@ public class JoinLeaveHouse implements Listener {
         }
         // Normal player joins
         else {
-            player.setGameMode(GameMode.SURVIVAL);
+            player.setGameMode(((Gamemodes) house.getPermission(player, Permissions.GAMEMODE)).getGameMode());
         }
     }
 
@@ -103,6 +104,7 @@ public class JoinLeaveHouse implements Listener {
 
     private void leaveHouse(Player player, HousingWorld from) {
         if (from == null) return;
+        player.displayName(StringUtilsKt.housingStringFormatter(player.getName()));
         from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
@@ -158,7 +160,11 @@ public class JoinLeaveHouse implements Listener {
     public void playerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         e.setJoinMessage(colorize("&7&o" + player.getName() + " joined the server."));
-        resetPlayer(player);
+        if (player.getWorld().getName().equals("world")) {
+            resetPlayer(player);
+        } else {
+            joinHouse(player);
+        }
     }
 
 }

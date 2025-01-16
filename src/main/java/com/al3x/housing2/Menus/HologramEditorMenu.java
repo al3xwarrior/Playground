@@ -215,7 +215,7 @@ public class HologramEditorMenu extends Menu {
                         return;
                     }
                     try {
-                        hologram.setBackgroundColor(Color.fromRGB(Integer.parseInt(message, 16)).asARGB());
+                        hologram.setBackgroundColor(Color.fromRGB(Integer.parseInt(message.replace("#", ""), 24)).asARGB());
                         Bukkit.getScheduler().runTask(main, () -> new HologramDisplaySettingsMenu(main, player, hologram).open());
                     } catch (NumberFormatException e) {
                         player.sendMessage("§cInvalid number!");

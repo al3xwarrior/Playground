@@ -7,7 +7,8 @@ import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
-import com.al3x.housing2.Placeholders.CookiesPlaceholder;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
@@ -137,6 +138,7 @@ public final class Main extends JavaPlugin {
 
         Runnables.startRunnables(this);
 
+        Placeholder.registerPlaceholders();
         HandlePlaceholders.registerPlaceholders();
 
         Bukkit.getPluginManager().registerEvents(new SkinCache(), this);

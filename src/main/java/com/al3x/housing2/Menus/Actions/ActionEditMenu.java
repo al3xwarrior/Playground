@@ -103,6 +103,21 @@ public class ActionEditMenu extends Menu {
         return editor.getTitle();
     }
 
+    public static boolean isLimitReached(List<Action> actions, Action action) {
+        if (action.limit() != -1) {
+            int count = 0;
+            for (Action a : actions) {
+                if (a.toString().equals(action.toString())) {
+                    count++;
+                }
+            }
+            if (count >= action.limit()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void setupItems() {
         if (update != null) update.run();

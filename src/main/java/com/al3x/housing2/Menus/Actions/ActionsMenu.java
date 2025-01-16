@@ -217,6 +217,10 @@ public class ActionsMenu extends Menu {
                         }
 
                         if (e.getClick() == ClickType.MIDDLE) {
+                            if (ActionEditMenu.isLimitReached(actions, action)) {
+                                player.sendMessage(colorize("&cYou have reached the limit for this action!"));
+                                return;
+                            }
                             this.actions.add(finalI, action.clone());
                             setupItems();
                             return;

@@ -1,4 +1,4 @@
-package com.al3x.housing2.Placeholders;
+package com.al3x.housing2.Placeholders.papi;
 
 import com.al3x.housing2.Main;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;

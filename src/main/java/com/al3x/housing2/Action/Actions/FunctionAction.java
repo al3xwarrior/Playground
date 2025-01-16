@@ -90,11 +90,9 @@ public class FunctionAction extends HTSLImpl {
             return false;
         }
         if (runForAllPlayers) {
-            for (Player p : house.getWorld().getPlayers()) {
-                functionData.execute(Main.getInstance(), p, house);
-            }
+            functionData.execute(Main.getInstance(), null, house, false);
         } else {
-            functionData.execute(Main.getInstance(), player, house);
+            functionData.execute(Main.getInstance(), player, house, false);
         }
         return true;
     }

@@ -1,0 +1,303 @@
+package com.al3x.housing2.Placeholders.custom.placeholders;
+
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+
+public class MathPlaceholders {
+    public MathPlaceholders() {
+        new Round();
+        new RandomInt();
+        new RandomDouble();
+        new Add();
+        new Subtract();
+        new Multiply();
+        new Divide();
+        new Modulus();
+        new Power();
+    }
+
+    private static class Round extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.round/[number] [places]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%round/[number] [places]%");
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] number = split[1].replace("%", "").split(" ");
+            try {
+                double val = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player));
+                int places = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player));
+                if (places == 0) {//If the places is 0, round the value to the nearest whole number
+                    return String.valueOf((int) Math.round(val));
+                }
+
+                //Round the value to the specified number of decimal places
+                String returning = String.valueOf(Math.round(val * Math.pow(10, places)) / Math.pow(10, places));
+                //If the value is a decimal, and the decimal is not the same as the places, add 0's to the end
+                if (returning.contains(".") && returning.split("\\.")[1].length() < places) {
+                    returning += "0".repeat(places - returning.split("\\.")[1].length());
+                }
+                return returning;
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class RandomInt extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.randomInt/[min] [max]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%random.int/[min] [max]%");
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] number = split[1].replace("%", "").split(" ");
+            try {
+                int min = Integer.parseInt(Placeholder.handlePlaceholders(number[0], house, player));
+                int max = Integer.parseInt(Placeholder.handlePlaceholders(number[1], house, player));
+                return String.valueOf((int) (Math.random() * (max - min + 1) + min));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class RandomDouble extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.randomDouble/[min] [max]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%random.double/[min] [max]%");
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] number = split[1].replace("%", "").split(" ");
+            try {
+                double min = Double.parseDouble(Placeholder.handlePlaceholders(number[0], house, player));
+                double max = Double.parseDouble(Placeholder.handlePlaceholders(number[1], house, player));
+                return String.valueOf(Math.random() * (max - min) + min);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Add extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.add/[number1] [number2]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(num1 + num2);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Subtract extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.subtract/[number1] [number2]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(num1 - num2);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Multiply extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.multiply/[number1] [number2]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(num1 * num2);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Divide extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.divide/[number1] [number2]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(num1 / num2);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Modulus extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.modulus/[number1] [number2]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%math.mod/[number1] [number2]%");
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(num1 % num2);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class Power extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.power/[number1] [number2]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 2) {
+                return "0";
+            }
+            String[] split = input.split("/");
+            String[] numbers = split[1].replace("%", "").split(" ");
+            try {
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player));
+                return String.valueOf(Math.pow(num1, num2));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+}

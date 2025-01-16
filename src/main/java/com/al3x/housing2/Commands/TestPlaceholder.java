@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import kotlin.text.MatchResult;
@@ -40,6 +41,24 @@ public class TestPlaceholder implements CommandExecutor {
 
         if (strings.length == 0) {
             player.sendMessage("Usage: /testplaceholder <string>");
+            return true;
+        }
+
+        if (strings[0].equals("new")) {
+            if (main.getHousesManager().getHouse(player.getWorld()) == null) {
+                player.sendMessage(colorize("&cYou are not in a house!"));
+                return true;
+            }
+
+            HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
+
+            if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
+                player.sendMessage(colorize("&cYou do not have permission to view placeholders in this house!"));
+                return true;
+            }
+
+            String message = String.join(" ", strings.length > 1 ? Arrays.copyOfRange(strings, 1, strings.length) : new String[0]);
+            player.sendMessage(colorize("&e" + Placeholder.handlePlaceholders(message, house, player)));
             return true;
         }
 

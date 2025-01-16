@@ -925,6 +925,13 @@ public class HousingWorld {
         return false; //Other permission types will be checked by itself
     }
 
+    public Object getPermission(Player player, Permissions permission) {
+        if (player.getUniqueId().equals(ownerUUID)) return true;
+        PlayerData data = playersData.get(player.getUniqueId().toString());
+        if (data == null) return false;
+        return data.getGroupInstance(this).getPermissions().get(permission);
+    }
+
     public boolean hasSystem(Player player) {
         Permissions[] permission = {
                 EDIT_ACTIONS,

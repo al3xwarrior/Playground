@@ -122,7 +122,7 @@ public class Runnables {
                     if (house == null || house.getFunctions() == null) continue;
                     house.getFunctions().forEach(function -> {
                         if (function.getTicks() != null && TICKS % function.getTicks() == 0) {
-                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, house));
+                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, house, true));
                         }
                     });
                 }

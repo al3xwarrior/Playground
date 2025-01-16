@@ -372,11 +372,13 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
-        if (location == null) {
-            return true;
-        }
-        summonParticles(player, house, location);
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
+            if (location == null) {
+                return;
+            }
+            summonParticles(player, house, location);
+        });
         return true;
     }
 

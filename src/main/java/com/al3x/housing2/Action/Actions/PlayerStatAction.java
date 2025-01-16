@@ -218,6 +218,7 @@ public class PlayerStatAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        if (player == null) return true;
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
         Stat stat = house.getStatManager().getPlayerStatByName(player, name);
 

@@ -117,7 +117,7 @@ public class RepeatAction extends HTSLImpl {
         ActionExecutor executor = new ActionExecutor();
         for (int i = 0; i < timesInt; i++) {
             executor.addActions(subActions);
-            executor.execute(player, house, null);
+            if (!executor.execute(player, house, null)) break;
         }
         return true;
     }

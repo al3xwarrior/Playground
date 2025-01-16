@@ -101,7 +101,6 @@ public class StatRequirementCondition extends Condition {
         Stat stat = house.getStatManager().getPlayerStatByName(player, statString);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
         String statValue = stat.getValue();
-
         if (ignoreCase) {
             statValue = statValue.toLowerCase();
             compareValue = compareValue.toLowerCase();

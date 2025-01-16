@@ -121,8 +121,8 @@ public class ShowBossbarAction extends HTSLImpl {
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("title", title);
-        data.put("barColor", barColor);
-        data.put("barStyle", barStyle);
+        data.put("barColor", barColor.name());
+        data.put("barStyle", barStyle.name());
         data.put("progress", progress);
         return data;
     }
@@ -132,8 +132,8 @@ public class ShowBossbarAction extends HTSLImpl {
         if (!data.containsKey("title")) return;
         title = (String) data.get("title");
         try {
-            barColor = (BossBar.Color) data.getOrDefault("barColor", BossBar.Color.WHITE);
-            barStyle = (BossBar.Overlay) data.getOrDefault("barStyle", BossBar.Overlay.PROGRESS);
+            barColor = BossBar.Color.valueOf((String) data.getOrDefault("barColor", "WHITE"));
+            barStyle = BossBar.Overlay.valueOf((String) data.getOrDefault("barStyle", "PROGRESS"));
         } catch (Exception e) {
            barColor = BossBar.Color.WHITE;
            barStyle = BossBar.Overlay.PROGRESS;

@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Listeners.HouseEvents.AttackEvent;
 import com.al3x.housing2.Listeners.HouseEvents.ChangeHeldItem;
 import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Runnables;
 import kotlin.Function;
 import kotlin.sequences.Sequence;
@@ -189,7 +190,7 @@ public class HandlePlaceholders {
             return "";
         });
 
-        registerPlaceholder("%event.attack.attacker%", (player, house) -> {
+        registerPlaceholder("%event.attack/attacker%", (player, house) -> {
             if (AttackEvent.lastAttacked.containsKey(player.getUniqueId())) return player.getName();
             return "";
         });
@@ -297,7 +298,6 @@ public class HandlePlaceholders {
         });
 
         registerPlaceholder("regex:%raycast.npc.id/([0-9.]+)%", "&6%raycast.npc.id/&7[range]&6%", (player, house, match) -> {
-            // Get the entity the player is looking at within 5 blocks
             Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
             if (citizensNPC != null) {
@@ -306,39 +306,39 @@ public class HandlePlaceholders {
             return "null";
         });
 
-        registerPlaceholder("regex:%raycast.entity/([0-9]+)%", "&6%raycast.entity/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity/([0-9.]+)%", "&6%raycast.entity/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return entity.getName();
         });
-        registerPlaceholder("regex:%raycast.entity.type/([0-9]+)%", "&6%raycast.entity.type/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity.type/([0-9.]+)%", "&6%raycast.entity.type/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return (entity.hasMetadata("NPC")) ? "NPC" : entity.getType().name();
         });
-        registerPlaceholder("regex:%raycast.entity.x/([0-9]+)%", "&6%raycast.entity.x/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity.x/([0-9.]+)%", "&6%raycast.entity.x/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return String.valueOf((int) entity.getLocation().getX());
         });
-        registerPlaceholder("regex:%raycast.entity.y/([0-9]+)%", "&6%raycast.entity.y/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity.y/([0-9.]+)%", "&6%raycast.entity.y/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return String.valueOf((int) entity.getLocation().getY());
         });
-        registerPlaceholder("regex:%raycast.entity.z/([0-9]+)%", "&6%raycast.entity.z/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity.z/([0-9.]+)%", "&6%raycast.entity.z/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null";
             return String.valueOf((int) entity.getLocation().getZ());
         });
-        registerPlaceholder("regex:%raycast.entity.coords/([0-9]+)%", "&6%raycast.entity.coords/&7[range]&6%", (player, house, match) -> {
+        registerPlaceholder("regex:%raycast.entity.coords/([0-9.]+)%", "&6%raycast.entity.coords/&7[range]&6%", (player, house, match) -> {
             // Get the entity the player is looking at within 5 blocks
-            Entity entity = getEntityLookingAt(player, Integer.parseInt(match.getGroups().get(1).getValue()));
+            Entity entity = getEntityLookingAt(player, Double.parseDouble(match.getGroups().get(1).getValue()));
             if (entity == null) return "null,null,null";
             return (int) entity.getLocation().getX() + "," + (int) entity.getLocation().getY() + "," + (int) entity.getLocation().getZ();
         });
@@ -505,6 +505,10 @@ public class HandlePlaceholders {
 
 
     public static String parsePlaceholders(Player player, HousingWorld house, String s) {
+        if (true) {
+            return com.al3x.housing2.Placeholders.custom.Placeholder.handlePlaceholders(s, house, player);
+        }
+
         StringBuilder result = new StringBuilder(s);
 
         for (Placeholder placeholder : placeholders) {
