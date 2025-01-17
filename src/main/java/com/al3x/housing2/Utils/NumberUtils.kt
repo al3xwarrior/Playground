@@ -11,7 +11,8 @@ fun Double.toFloat(): Float {
     return this.toFloat()
 }
 
-fun String.isDouble(): Boolean {
+fun String?.isDouble(): Boolean {
+    if (this == null) return false
     try {
         parseDouble(this)
         return true
@@ -20,7 +21,8 @@ fun String.isDouble(): Boolean {
     }
 }
 
-fun String.isInt(): Boolean {
+fun String?.isInt(): Boolean {
+    if (this == null) return false
     try {
         parseInt(this)
         return true

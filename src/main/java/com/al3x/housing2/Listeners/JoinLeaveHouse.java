@@ -4,6 +4,7 @@ import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
@@ -11,6 +12,8 @@ import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -49,6 +52,15 @@ public class JoinLeaveHouse implements Listener {
         //Set the scoreboard
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) {
+            return;
+        }
+
+        if (CitizensAPI.getNPCRegistry().isNPC(player)) {
+            NPC cNPC = CitizensAPI.getNPCRegistry().getNPC(player);
+            HousingNPC npc = house.getNPC(cNPC.getId());
+            if (npc != null && npc.isCanBePlayer()) {
+
+            }
             return;
         }
 

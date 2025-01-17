@@ -15,7 +15,8 @@ data class NPCData(
     val navigationType: String? = "null",
     val waypoints: List<LocationData>? = listOf(),
     val hologramData: HologramData? = null,
-    val speed: Float? = 1.0f
+    val speed: Float? = 1.0f,
+    var canBePlayer: Boolean = false
 ) {
 
     companion object {
@@ -36,7 +37,8 @@ data class NPCData(
                         it.navigationType.name,
                         LocationData.fromLocationList(it.waypoints),
                         if (it.hologram != null) HologramData.fromData(it.hologram!!) else null,
-                        it.speed.toFloat()
+                        it.speed.toFloat(),
+                        it.isCanBePlayer
                     )
                 )
             }

@@ -92,7 +92,7 @@ public abstract class Placeholder {
     }
 
     public static String handlePlaceholders(String input, HousingWorld house, Player player, boolean nested) {
-        if (nested) input = input.replace("[", "%").replace("]", "%");
+        if (nested) input = input.replaceFirst("\\[", "%").replaceFirst("]", "%");
         String[] split = input.split("%");
         Iterator<String> iterator = Arrays.asList(split).iterator();
         String part = "";

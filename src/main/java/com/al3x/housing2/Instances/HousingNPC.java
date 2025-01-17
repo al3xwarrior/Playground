@@ -15,7 +15,6 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
 import net.citizensnpcs.trait.FollowTrait;
-import net.citizensnpcs.trait.HologramTrait;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
@@ -68,6 +67,8 @@ public class HousingNPC {
     private EntityType entityType;
     private String skinUUID;
 
+    private boolean canBePlayer = false;
+
     // Equipment
     private ItemStack hand;
     private ItemStack offHand;
@@ -103,6 +104,7 @@ public class HousingNPC {
         this.hologram = data.getHologramData() != null ? HologramData.Companion.toData(data.getHologramData()) : new Hologram(
                 main, null, house, location.clone().add(0, 2.5, 0)
         );
+        this.canBePlayer = data.getCanBePlayer();
         this.hologram.setHouse(house);
 
         if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
@@ -114,7 +116,6 @@ public class HousingNPC {
         configureNavigation(data);
 
         setSkin(data.getNpcSkin());
-
         citizensNPC.spawn(location);
         startFollowTask();
     }
@@ -270,6 +271,10 @@ public class HousingNPC {
         }
     }
 
+    public boolean isCanBePlayer() {
+        return canBePlayer;
+    }
+
     public NPC getCitizensNPC() {
         return citizensNPC;
     }
@@ -308,6 +313,10 @@ public class HousingNPC {
 
     public Location getLocation() {
         return citizensNPC.isSpawned() ? citizensNPC.getEntity().getLocation() : location;
+    }
+
+    public void setCanBePlayer(boolean canBePlayer) {
+        this.canBePlayer = canBePlayer;
     }
 
     public void setLocation(Location location) {

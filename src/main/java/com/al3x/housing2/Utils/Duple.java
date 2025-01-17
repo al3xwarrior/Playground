@@ -23,4 +23,8 @@ public class Duple<T, E> {
     public E getSecond() {
         return second;
     }
+
+    public static <T, E> Duple<T, E> of(T first, E second) {
+        return new Duple<>(first, second);
+    }
 }

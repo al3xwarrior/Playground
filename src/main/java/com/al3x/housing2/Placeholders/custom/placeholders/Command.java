@@ -22,6 +22,11 @@ public class Command {
         }
 
         @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
         public String handlePlaceholder(String input, HousingWorld house, Player player) {
             if (player == null) {
                 return "null";

@@ -18,6 +18,8 @@ public class MathPlaceholders {
         new Divide();
         new Modulus();
         new Power();
+        new SQRT();
+        new ABS();
     }
 
     private static class Round extends Placeholder {
@@ -296,6 +298,58 @@ public class MathPlaceholders {
                 double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
                 double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
                 return String.valueOf(Math.pow(num1, num2));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class SQRT extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.sqrt/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.sqrt(num));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private static class ABS extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.abs/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.abs(num));
             } catch (Exception e) {
                 return "0";
             }

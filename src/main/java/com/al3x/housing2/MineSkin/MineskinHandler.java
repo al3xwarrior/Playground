@@ -61,8 +61,6 @@ public class MineskinHandler {
                 }
             } catch (Exception ignored) {
             }
-        } catch (IOException | InterruptedException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (IOException | InterruptedException | URISyntaxException e) {}
     }
 }
