@@ -60,6 +60,7 @@ public class SkinCache implements Listener {
     }
 
     public static HashMap<String, String> getSkins() {
+        if (skins.isEmpty()) return null;
         return skins;
     }
 

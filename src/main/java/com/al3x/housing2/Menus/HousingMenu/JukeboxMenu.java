@@ -5,18 +5,20 @@ import com.al3x.housing2.Instances.JukeBoxManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.PaginationList;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
+import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
 
 public class JukeboxMenu extends Menu {
 
@@ -24,6 +26,8 @@ public class JukeboxMenu extends Menu {
     private Player player;
     private HousingWorld house;
     private int page;
+    private String search = "";
+    int[] avaliableSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
     public JukeboxMenu(Main main, Player player, HousingWorld house) {
         super(player, colorize("&7Jukebox"), 54);
@@ -34,29 +38,23 @@ public class JukeboxMenu extends Menu {
         setupItems();
     }
 
-    public JukeboxMenu(Main main, Player player, HousingWorld house, int page) {
-        super(player, colorize("&7Jukebox"), 54);
-        this.main = main;
-        this.player = player;
-        this.house = house;
-        this.page = page;
-        setupItems();
-    }
-
     @Override
     public void setupItems() {
-        int[] avaliableSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-
         List<String> songNames = JukeBoxManager.getSongNames();
+        if (songNames == null) {
+            addItem(22, ItemBuilder.create(Material.BEDROCK)
+                    .name("&cNo songs found!")
+                    .description("&7There are no songs found plugins songs folder.")
+                    .build());
+            return;
+        }
 
-        int start = (page - 1) * 21;
-        int end = Math.min(start + 21, songNames.size() - start);
+        PaginationList<Song> paginationList = getSongs();
+        List<Song> songList = paginationList.getPage(page);
 
-        for (int i = 0; i < end; i++) {
-            String songName = songNames.get(start + i);
-            Song song = JukeBoxManager.getSong(songName);
+        for (int i = 0; i < songList.size(); i++) {
+            Song song = songList.get(i);
             if (song == null) {
-                Bukkit.getLogger().warning("Song " + songName + " is null");
                 continue;
             }
 
@@ -69,11 +67,11 @@ public class JukeboxMenu extends Menu {
                 if (house.isJukeboxPlaying() && house.songInPlaylist(song)) {
                     Bukkit.getLogger().info("Removing song");
                     house.removeSong(song);
-                    new JukeboxMenu(main, player, house, page).open();
+                    open();
                 } else {
                     Bukkit.getLogger().info("Adding song");
                     house.addSong(song);
-                    new JukeboxMenu(main, player, house, page).open();
+                    open();
                 }
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
             });
@@ -90,7 +88,7 @@ public class JukeboxMenu extends Menu {
                 .build(), (e) -> {
             house.stopMusic();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-            new JukeboxMenu(main, player, house, page).open();
+            open();
         });
 
         if (house.isJukeboxPlaying()) {
@@ -101,7 +99,7 @@ public class JukeboxMenu extends Menu {
                     .build(), (e) -> {
                 house.stopMusic();
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-                new JukeboxMenu(main, player, house, page).open();
+                open();
             });
         } else {
             addItem(50, ItemBuilder.create(Material.RED_DYE)
@@ -111,7 +109,7 @@ public class JukeboxMenu extends Menu {
                     .build(), (e) -> {
                 house.startMusic();
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-                new JukeboxMenu(main, player, house, page).open();
+                open();
             });
         }
 
@@ -122,21 +120,52 @@ public class JukeboxMenu extends Menu {
                 .build(), () -> {
             house.skipSong();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-            new JukeboxMenu(main, player, house, page).open();
+            open();
         });
 
-        if (page > 1){
-            addItem(45, ItemBuilder.create(Material.ARROW)
-                    .name("&cPrevious Page")
-                    .build(), (e) -> new JukeboxMenu(main, player, house, page - 1).open()
-            );
+        if (paginationList.getPageCount() > 1) {
+            ItemBuilder forwardArrow = new ItemBuilder();
+            forwardArrow.material(Material.ARROW);
+            forwardArrow.name("&aNext Page");
+            forwardArrow.description("&ePage " + (page + 1));
+            addItem(53, forwardArrow.build(), () -> {
+                if (page + 1 > paginationList.getPageCount()) return;
+                page++;
+                open();
+            });
         }
 
-        if (page * 21 < songNames.size()) {
-            addItem(53, ItemBuilder.create(Material.ARROW)
-                    .name("&aNext Page")
-                    .build(), (e) -> new JukeboxMenu(main, player, house, page + 1).open()
-            );
+        if (page > 1) {
+            ItemBuilder backArrow = new ItemBuilder();
+            backArrow.material(Material.ARROW);
+            backArrow.name("&aPrevious Page");
+            backArrow.description("&ePage " + (page - 1));
+            addItem(45, backArrow.build(), () -> {
+                if (page - 1 < 1) return;
+                page--;
+                open();
+            });
         }
+    }
+
+    private PaginationList<Song> getSongs() {
+        List<Song> songsArray = new ArrayList<>();
+
+        File[] files = new File(main.getDataFolder() + "/songs/").listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (i == files.length) break;
+            if (files[i] == null) break;
+
+            File file = files[i];
+            Song song = NBSDecoder.parse(file);
+
+            songsArray.add(song);
+        }
+
+        if (search != null) {
+            songsArray = songsArray.stream().filter(song -> song.getTitle().toLowerCase().contains(search.toLowerCase())).collect(Collectors.toList());
+        }
+
+        return new PaginationList<>(songsArray, avaliableSlots.length);
     }
 }

@@ -11,6 +11,8 @@ import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import dev.lone.itemsadder.api.CustomStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -61,6 +63,18 @@ public class HousingMenu extends Menu {
             items.setItemMeta(itemsMeta);
             addItem(23, items, () -> {
                 new ItemsMenu(main, player, house).open();
+            });
+        }
+
+        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")) {
+            CustomStack stack = CustomStack.getInstance("ruby_large");
+            if (stack == null) return;
+            ItemStack items = stack.getItemStack();
+            ItemMeta itemsMeta = items.getItemMeta();
+            itemsMeta.setDisplayName(colorize("&cCustom Items"));
+            items.setItemMeta(itemsMeta);
+            addItem(24, items, () -> {
+                new CustomItemBrowserMenu(main, player, house).open();
             });
         }
 

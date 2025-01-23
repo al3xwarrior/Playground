@@ -63,7 +63,9 @@ public class PlayerListingMenu extends Menu {
                 boolean online = player.getWorld().getPlayers().contains(listedPlayer.getPlayer());
 
                 ItemBuilder item = ItemBuilder.create(Material.PLAYER_HEAD);
-                item.skullTexture(SkinCache.getSkins().get(listedPlayer.getUniqueId().toString()));
+                HashMap<String, String> skullData = SkinCache.getSkins();
+                if (skullData == null) return;
+                item.skullTexture(skullData.get(listedPlayer.getUniqueId().toString()));
                 item.name(colorize("&f" + listedPlayer.getName() + ((!online || player.canSee(listedPlayer.getPlayer())) ? "" : " &7(hidden)")));
 
                 item.info("Online", (online) ? "&aYes" : "&cNo");

@@ -49,6 +49,7 @@ public enum ActionEnum {
     EXPLOSION("Explosion Action", ExplosionAction.class),
     START_HOUSE_MUSIC("Start House Music Action", StartHouseMusicAction.class),
     STOP_HOUSE_MUSIC("Stop House Music Action", StopHouseMusicAction.class),
+    CHANGE_PLAYER_ATTRIBUTE("Change Player Attribute Action", ChangePlayerAttributeAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;

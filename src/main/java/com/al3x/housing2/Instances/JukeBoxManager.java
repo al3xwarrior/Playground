@@ -41,6 +41,7 @@ public class JukeBoxManager {
     }
 
     public static List<String> getSongNames() {
+        if (songs.isEmpty()) return null;
         return new ArrayList<>(songs.keySet());
     }
 

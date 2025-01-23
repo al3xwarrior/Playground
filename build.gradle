@@ -52,6 +52,9 @@ dependencies {
 
     // note block
     compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.2'
+
+    // items adder
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'
 }
 
 tasks.withType(JavaCompile) {
