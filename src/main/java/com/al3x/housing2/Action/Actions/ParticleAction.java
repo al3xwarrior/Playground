@@ -254,44 +254,8 @@ public class ParticleAction extends HTSLImpl {
 
     public List<Location> getLine(Location location, Location loc2, int amount, Player player, HousingWorld house) {
         List<Location> locations = new ArrayList<>();
-        Vector direction = location.getDirection();
-        switch (this.direction) {
-            case UP -> direction = new Vector(0, 1, 0);
-            case DOWN -> direction = new Vector(0, -1, 0);
-            case NORTH -> direction = new Vector(0, 0, -1);
-            case SOUTH -> direction = new Vector(0, 0, 1);
-            case EAST -> direction = new Vector(1, 0, 0);
-            case WEST -> direction = new Vector(-1, 0, 0);
-            case LEFT -> {
-                Vector dir = location.getDirection();
-                direction = new Vector(-dir.getZ(), 0, dir.getX()).normalize();
-            }
-            case RIGHT -> {
-                Vector dir = location.getDirection();
-                direction = new Vector(dir.getZ(), 0, -dir.getX()).normalize();
-            }
-            case CUSTOM -> {
-                String[] split = customDirection.split(",");
-                if (split.length != 2) {
-                    return locations;
-                }
-                //pitch,yaw
-                try {
-                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
-                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector vector = new Vector();
-                    double rotX = yaw;
-                    double rotY = pitch;
-                    vector.setY(-Math.sin(Math.toRadians(rotY)));
-                    double xz = Math.cos(Math.toRadians(rotY));
-                    vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
-                    vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
-                    direction = vector;
-                } catch (NumberFormatException e) {
-                    return locations;
-                }
-            }
-        }
+
+        Vector direction = loc2.toVector().subtract(location.toVector()).normalize();
         double distance = location.distance(loc2);
         double increment = distance / amount;
         for (double i = 0; i < distance; i += increment) {
@@ -372,13 +336,11 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
-            if (location == null) {
-                return;
-            }
-            summonParticles(player, house, location);
-        });
+        Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
+        if (location == null) {
+            return true;
+        }
+        summonParticles(player, house, location);
         return true;
     }
 

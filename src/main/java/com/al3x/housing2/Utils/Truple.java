@@ -15,6 +15,7 @@ public class Truple<T, E, B> {
     public Truple(T first, E second, B third) {
         this.first = first;
         this.second = second;
+        this.third = third;
     }
 
     public T getFirst() {

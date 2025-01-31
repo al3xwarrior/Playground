@@ -15,7 +15,7 @@ data class PlayerData(
     var banned: Boolean,
 ) {
     fun getGroupInstance(house: HousingWorld): Group {
-        return house.groups.find { it.name == group }!!
+        return house.groups.find { it != null && it.name != null && it.name == group } ?: Group("No Group")
     }
     fun getTeamInstance(house: HousingWorld): Team {
         return house.teams.find { it.name == team } ?: Team("No Team")

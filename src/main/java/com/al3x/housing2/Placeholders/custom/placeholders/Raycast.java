@@ -10,6 +10,7 @@ import com.al3x.housing2.Utils.Truple;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -54,15 +55,15 @@ public class Raycast {
             if (player == null) {
                 return "null";
             }
-            String[] args = input.split("/");
-            if (args.length < 2) {
+            if (!input.contains("/")) {
                 return "null";
             }
             String[] a = input.split("/");
-            String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
+            String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+            Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
             try {
-                int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
-                return player.getTargetBlock(null, range).getType().name();
+                Double range = argsHandled.getFirst();
+                return getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getType().name();
             } catch (NumberFormatException e) {
                 return "null";
             }
@@ -84,16 +85,15 @@ public class Raycast {
                 if (player == null) {
                     return "null";
                 }
-                String[] args = input.split("/");
-                if (args.length < 2) {
+                if (!input.contains("/")) {
                     return "null";
                 }
                 String[] a = input.split("/");
-                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
-                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
-                    Location loc = player.getTargetBlock(null, range).getLocation();
-                    return String.valueOf(loc.getBlockX());
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockX());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -116,16 +116,15 @@ public class Raycast {
                 if (player == null) {
                     return "null";
                 }
-                String[] args = input.split("/");
-                if (args.length < 2) {
+                if (!input.contains("/")) {
                     return "null";
                 }
                 String[] a = input.split("/");
-                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
-                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
-                    Location loc = player.getTargetBlock(null, range).getLocation();
-                    return String.valueOf(loc.getBlockY());
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockY());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -148,16 +147,15 @@ public class Raycast {
                 if (player == null) {
                     return "null";
                 }
-                String[] args = input.split("/");
-                if (args.length < 2) {
+                if (!input.contains("/")) {
                     return "null";
                 }
                 String[] a = input.split("/");
-                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
-                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
-                    Location loc = player.getTargetBlock(null, range).getLocation();
-                    return String.valueOf(loc.getBlockZ());
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -181,16 +179,16 @@ public class Raycast {
                 if (player == null) {
                     return "null";
                 }
-                String[] args = input.split("/");
-                if (args.length < 2) {
+                if (!input.contains("/")) {
                     return "null";
                 }
                 String[] a = input.split("/");
-                String arg1 = String.join("/", Arrays.asList(a).subList(1, a.length));
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
-                    int range = Integer.parseInt(Placeholder.handlePlaceholders(arg1, house, player, true));
-                    Location loc = player.getTargetBlock(null, range).getLocation();
-                    return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+                    Double range = argsHandled.getFirst();
+                    org.bukkit.block.Block block = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    return block.getLocation().getBlockX() + "," + block.getLocation().getBlockY() + "," + block.getLocation().getBlockZ();
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -225,7 +223,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Entity entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst();
@@ -278,7 +276,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Entity entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst();
@@ -313,7 +311,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Entity entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst();
@@ -348,7 +346,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
@@ -383,7 +381,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
@@ -418,7 +416,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
@@ -453,7 +451,7 @@ public class Raycast {
                 }
                 String[] a = input.split("/");
                 String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args);
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
@@ -469,7 +467,7 @@ public class Raycast {
         }
     }
 
-    private static Duple<Entity, Vector> getEntityLookingAt(Player player, double range, String pitch, String yaw) {
+    private static org.bukkit.block.Block getBlockLookingAt(Player player, double range, String yaw, String pitch) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
@@ -482,6 +480,9 @@ public class Raycast {
                 }
 
                 if (pitch.startsWith("~")) {
+                    if (pitch.equals("~")) {
+                        pitch = "~0";
+                    }
                     eyePitch += Double.parseDouble(pitch.substring(1));
                 }
 
@@ -490,6 +491,70 @@ public class Raycast {
                 }
 
                 if (yaw.startsWith("~")) {
+                    if (yaw.equals("~")) {
+                        yaw = "~0";
+                    }
+                    eyeYaw += Double.parseDouble(yaw.substring(1));
+                }
+
+                direction = new Vector();
+
+                double rotX = eyeYaw;
+                double rotY = eyePitch;
+
+                direction.setY(-Math.sin(Math.toRadians(rotY)));
+
+                double xz = Math.cos(Math.toRadians(rotY));
+
+                direction.setX(-xz * Math.sin(Math.toRadians(rotX)));
+                direction.setZ(xz * Math.cos(Math.toRadians(rotX)));
+            }
+
+            org.bukkit.block.Block lastBlock = null;
+            for (double i = 0; i <= range; i += 0.5) {
+                Location loc = eye.clone().add(direction.clone().multiply(i));
+                org.bukkit.block.Block block = loc.getBlock();
+
+                if (block.getType().isSolid()) {
+                    lastBlock = block;
+                    break;
+                }
+                lastBlock = block;
+            }
+            return lastBlock;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Duple<Entity, Vector> getEntityLookingAt(Player player, double range, String yaw, String pitch) {
+        try {
+            Location eye = player.getEyeLocation();
+            Vector direction = eye.getDirection();
+            if (pitch != null && yaw != null) {
+                double eyePitch = eye.getPitch();
+                double eyeYaw = eye.getYaw();
+
+                if (NumberUtilsKt.isDouble(pitch)) {
+                    eyePitch = Double.parseDouble(pitch);
+                }
+
+                if (pitch.startsWith("~")) {
+                    if (pitch.equals("~")) {
+                        eyePitch = 0;
+                    }
+                    eyePitch += Double.parseDouble(pitch.substring(1));
+                }
+
+                if (NumberUtilsKt.isDouble(yaw)) {
+                    eyeYaw = Double.parseDouble(yaw);
+                }
+
+                if (yaw.startsWith("~")) {
+                    if (yaw.equals("~")) {
+                        eyePitch = 0;
+                    }
                     eyeYaw += Double.parseDouble(yaw.substring(1));
                 }
 
@@ -523,12 +588,12 @@ public class Raycast {
         return null;
     }
 
-    private static Truple<Double, String, String> handleRaycastArgs(String args) {
+    private static Truple<Double, String, String> handleRaycastArgs(String args, HousingWorld house, Player player) {
         if (args.contains(" ")) {
             String[] split = args.split(" ");
             if (split.length < 3) {
                 try {
-                    String arg1S = Placeholder.handlePlaceholders(split[0], null, null, true);
+                    String arg1S = Placeholder.handlePlaceholders(split[0], house, player, true);
                     double arg1 = Double.parseDouble(arg1S);
                     return new Truple<>(arg1, null, null);
                 } catch (NumberFormatException e) {
@@ -536,17 +601,17 @@ public class Raycast {
                 }
             }
             try {
-                String arg1S = Placeholder.handlePlaceholders(split[0], null, null, true);
+                String arg1S = Placeholder.handlePlaceholders(split[0], house, player, true);
                 double arg1 = Double.parseDouble(arg1S);
-                String arg2 = Placeholder.handlePlaceholders(split[1], null, null, true);
-                String arg3 = Placeholder.handlePlaceholders(split[2], null, null, true);
+                String arg2 = Placeholder.handlePlaceholders(split[1], house, player, true);
+                String arg3 = Placeholder.handlePlaceholders(split[2], house, player, true);
                 return new Truple<>(arg1, arg2, arg3);
             } catch (NumberFormatException e) {
                 return new Truple<>(0.0, null, null);
             }
         } else {
             try {
-                String arg1S = Placeholder.handlePlaceholders(args, null, null, true);
+                String arg1S = Placeholder.handlePlaceholders(args, house, player, true);
                 double arg1 = Double.parseDouble(arg1S);
                 return new Truple<>(arg1, null, null);
             } catch (NumberFormatException e) {
