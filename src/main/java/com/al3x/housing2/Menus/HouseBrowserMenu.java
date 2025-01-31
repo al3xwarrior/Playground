@@ -31,6 +31,12 @@ public class HouseBrowserMenu extends Menu {
     @Override
     public void setupItems() {
         List<HouseData> houses = getSortedHouses();
+        if (houses.isEmpty()) {
+            addItem(22, ItemBuilder.create(Material.BARRIER)
+                    .name("&c&oThere are no public houses to display!")
+                    .build(), () -> {});
+            return;
+        }
         houses = houses.stream().filter(house -> Objects.equals(house.getPrivacy(), "PUBLIC")).toList();
 
         for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
@@ -66,7 +72,6 @@ public class HouseBrowserMenu extends Menu {
 
     public static @NotNull List<HouseData> getSortedHouses() {
         List<HouseData> houses = new ArrayList<>(Main.getInstance().getHousesManager().getAllHouseData());
-
         houses.sort((house1, house2) -> {
             if (house1 == null || house2 == null) return (house1 == null) ? -1 : 1;
             HousingWorld housingWorld = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house1.getHouseID()));

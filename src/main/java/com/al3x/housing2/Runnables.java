@@ -225,10 +225,10 @@ public class Runnables {
             public void run() {
                 World lobby = Bukkit.getWorld("world"); // main world must be called world (by default it is)
 
+                // TODO: prob should move this somewhere else
                 ItemStack browserItem = ItemBuilder.create(Material.COMPASS).name("&aHousing Browser &7(Right-Click)").build();
                 ItemStack myHouses = ItemBuilder.create(Material.GRASS_BLOCK).name("&aMy Houses &7(Right-Click)").build();
-                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMxMzVlYTMxYmMxNWJlMTM0NjJiZjEwZTkxMmExNDBlNWE3ZDY4ZWY0YmQyNmUzZDc1MDU1OWQ1MDJiZjk1In19fQ==")
-                        .name("&aRandom House &7(Right-Click)").build();
+                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("8a084d0a1c6fc2163de30d8b148ab4d363220d5c972d5f88eb8dc86176ccdb3e").name("&aRandom House &7(Right-Click)").build();
                 ItemStack ownerMenu = ItemBuilder.create(Material.NETHER_STAR).name("&dHousing Menu &7(Right-Click)").build();
                 ItemStack playerMenu = ItemBuilder.create(Material.DARK_OAK_DOOR).name("&aHousing Menu &7(Right-Click)").build();
 
@@ -306,12 +306,14 @@ public class Runnables {
             }
         }.runTaskTimer(main, 0L, 2));
 
+        /* Will bring this back after the beta.
         runnables.put("lobbyDisplays", new BukkitRunnable() {
             @Override
             public void run() {
                 main.getLobbyDisplays().updateLobbyDisplays();
             }
         }.runTaskTimer(main, 0L, 40));
+         */
     }
 
     public static void stopRunnables() {

@@ -14,8 +14,10 @@ import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +25,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.io.IOException;
 import java.util.*;
@@ -31,11 +34,9 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class JoinLeaveHouse implements Listener {
 
-    private Main main;
     private HousesManager housesManager;
 
-    public JoinLeaveHouse(Main main, HousesManager housesManager) {
-        this.main = main;
+    public JoinLeaveHouse(HousesManager housesManager) {
         this.housesManager = housesManager;
     }
 
@@ -46,6 +47,38 @@ public class JoinLeaveHouse implements Listener {
         player.setFoodLevel(20);
         player.setMaximumNoDamageTicks(20); // 10 i think?
         player.getInventory().clear();
+        player.setGameMode(GameMode.ADVENTURE);
+
+        // Attributes (https://minecraft.wiki/w/Attribute) I hope the website is right!
+        player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(1);
+        player.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(4);
+        player.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
+        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_LUCK).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_MAX_ABSORPTION).setBaseValue(4);
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1);
+        player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1);
+        player.getAttribute(Attribute.GENERIC_STEP_HEIGHT).setBaseValue(0.6);
+        player.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).setBaseValue(0.42);
+        player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
+        player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(3);
+        player.getAttribute(Attribute.PLAYER_BLOCK_BREAK_SPEED).setBaseValue(1);
+        player.getAttribute(Attribute.GENERIC_GRAVITY).setBaseValue(0.08);
+        player.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).setBaseValue(3);
+        player.getAttribute(Attribute.GENERIC_FALL_DAMAGE_MULTIPLIER).setBaseValue(1);
+        player.getAttribute(Attribute.GENERIC_BURNING_TIME).setBaseValue(1);
+        player.getAttribute(Attribute.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE).setBaseValue(0);
+        player.getAttribute(Attribute.PLAYER_MINING_EFFICIENCY).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_OXYGEN_BONUS).setBaseValue(0);
+        player.getAttribute(Attribute.PLAYER_SNEAKING_SPEED).setBaseValue(0.3);
+        player.getAttribute(Attribute.PLAYER_SUBMERGED_MINING_SPEED).setBaseValue(0.2);
+        player.getAttribute(Attribute.PLAYER_SWEEPING_DAMAGE_RATIO).setBaseValue(0);
+        player.getAttribute(Attribute.GENERIC_WATER_MOVEMENT_EFFICIENCY).setBaseValue(0);
     }
 
     private void joinHouse(Player player) {
@@ -177,6 +210,7 @@ public class JoinLeaveHouse implements Listener {
         } else {
             joinHouse(player);
         }
+        player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
 
 }

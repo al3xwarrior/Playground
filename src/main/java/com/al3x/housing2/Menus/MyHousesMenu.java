@@ -51,6 +51,7 @@ public class MyHousesMenu extends Menu {
                 HousingWorld newHouse = housesManager.createHouse(player, HouseSize.LARGE);
                 player.sendMessage(colorize("&aYour house has been created!"));
                 newHouse.sendPlayerToHouse(player);
+                new MyHousesMenu(main, player, player).open();
             });
             return;
         } else if (!housesManager.playerHasHouse(target)) {

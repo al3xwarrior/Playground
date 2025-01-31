@@ -77,6 +77,7 @@ public final class Main extends JavaPlugin {
                 () -> getLogger().severe("Failed to initialize HologramLib manager.")
         );
 
+        getCommand("visit").setExecutor(new Visit());
         getCommand("housing").setExecutor(new Housing(housesManager, this));
         getCommand("housing").setTabCompleter(new Housing.TabCompleter());
         getCommand("home").setExecutor(new Home(this));
@@ -89,6 +90,7 @@ public final class Main extends JavaPlugin {
         getCommand("fly").setExecutor(new Fly(this));
         getCommand("gamemode").setExecutor(new Gamemode(this));
         getCommand("gamemode").setTabCompleter(new Gamemode.TabCompleter());
+        getCommand("hub").setExecutor(new Hub());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
@@ -102,7 +104,7 @@ public final class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
@@ -110,6 +112,8 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityLimitListener(), this);
 
 //        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 
