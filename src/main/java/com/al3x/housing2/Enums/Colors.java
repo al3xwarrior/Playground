@@ -18,6 +18,7 @@ public enum Colors implements EnumMaterial{
     RED("§c", Material.RED_DYE),
     LIGHT_PURPLE("§d", Material.MAGENTA_DYE),
     YELLOW("§e", Material.YELLOW_DYE),
+    WHITE("§f", Material.BONE_MEAL),
     ;
 
     private final Material material;

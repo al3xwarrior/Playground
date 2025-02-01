@@ -336,6 +336,36 @@ public class ActionEditMenu extends Menu {
                         break;
                     }
 
+                    case TEAM: {
+                        List<Duple<Team, ItemBuilder>> teams = new ArrayList<>();
+                        for (Team team : house.getTeams()) {
+                            teams.add(new Duple<>(team, ItemBuilder.create(Material.PAPER).name(team.getName()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                        }
+                        PaginationMenu<Team> paginationMenu = new PaginationMenu<>(main, "Select a Team", teams, player, house, this, (team) -> {
+                            try {
+                                // Set the field
+                                if (action != null) {
+                                    Field field = action.getClass().getDeclaredField(item.getVarName());
+                                    field.setAccessible(true);
+                                    field.set(action, team.getName());
+                                    player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + team.getName()));
+                                    open();
+                                } else {
+                                    Field field = condition.getClass().getDeclaredField(item.getVarName());
+                                    field.setAccessible(true);
+                                    field.set(condition, team.getName());
+                                    player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + team.getName()));
+                                    open();
+                                }
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                Bukkit.getLogger().warning("Failed to set field " + item.getVarName() + " in " + action.getName());
+                                player.sendMessage(colorize("&cFailed to set field " + item.getBuilder().getName() + " in " + action.getName()));
+                            }
+                        });
+                        paginationMenu.open();
+                        break;
+                    }
+
                     case REGION: {
                         List<Duple<Region, ItemBuilder>> regions = new ArrayList<>();
                         for (Region region : house.getRegions()) {
