@@ -57,7 +57,6 @@ public class ConditionalAction extends Action {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.REDSTONE);
         builder.name("&eConditional");
-        builder.description("Change the settings for this action");
         builder.info("&eSettings", "");
         builder.info("Conditions", conditions.size());
         builder.info("If Actions", ifActions.size());

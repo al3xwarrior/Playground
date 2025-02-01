@@ -27,7 +27,6 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ChangeHungerAction extends HTSLImpl {
-    private static Gson gson = new Gson();
 
     private StatOperation mode;
     private String value;

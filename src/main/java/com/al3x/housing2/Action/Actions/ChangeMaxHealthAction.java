@@ -48,7 +48,6 @@ public class ChangeMaxHealthAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.DANDELION);
         builder.name("&eChange Max Health");
-        builder.description("Set the users max health");
         builder.info("&eSettings", "");
         builder.info("Health", "&a" + health);
         builder.info("Operation", "&a" + mode.toString());
@@ -62,6 +61,7 @@ public class ChangeMaxHealthAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.DANDELION);
         builder.name("&aChange Max Health Action");
+        builder.description("Set the user's maximum health.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

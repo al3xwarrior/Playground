@@ -54,7 +54,7 @@ public class GlobalStatAction extends HTSLImpl {
 
     @Override
     public String toString() {
-        // add the first 3 statinances then do ... <number of statinstances - 3> more
+        // add the first 3 statinstances then do ... <number of statinstances - 3> more
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < Math.min(3, statInstances.size()); i++) {

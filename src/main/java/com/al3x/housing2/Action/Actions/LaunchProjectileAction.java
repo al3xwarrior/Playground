@@ -65,7 +65,7 @@ public class LaunchProjectileAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.ARROW);
         builder.name("&aLaunch Projectile Action");
-        builder.description("Launch a projectile in a direction.");
+        builder.description("Launches a projectile in a direction.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

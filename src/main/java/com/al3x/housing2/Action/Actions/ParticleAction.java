@@ -62,7 +62,7 @@ public class ParticleAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.skullTexture("4461d9d06c0bf4a7af4b16fd12831e2be0cf42e6e55e9c0d311a2a8965a23b34");
-        builder.name("&eParticle Action");
+        builder.name("&eDisplay Particles");
         builder.info("&eSettings", "");
         builder.info("Particle&6", particle.name());
         builder.info("Type&6", type.name());
@@ -86,7 +86,7 @@ public class ParticleAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.skullTexture("4461d9d06c0bf4a7af4b16fd12831e2be0cf42e6e55e9c0d311a2a8965a23b34");
-        builder.name("&aParticle Action");
+        builder.name("&aDisplay Particles");
         builder.description("Do stuff with particles.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }

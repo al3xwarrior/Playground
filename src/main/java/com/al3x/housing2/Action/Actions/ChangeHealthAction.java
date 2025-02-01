@@ -28,8 +28,6 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ChangeHealthAction extends HTSLImpl {
-    private static Gson gson = new Gson();
-
     private StatOperation mode;
     private String value;
 
@@ -96,10 +94,8 @@ public class ChangeHealthAction extends HTSLImpl {
         if (!NumberUtilsKt.isDouble(value)) {
             return true;
         }
-        Double result = Double.parseDouble(value);
-        if (result != null) {
-            player.setHealth(result);
-        }
+        double result = Double.parseDouble(value);
+        player.setHealth(result);
         return true;
     }
 

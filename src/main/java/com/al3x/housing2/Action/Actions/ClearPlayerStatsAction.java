@@ -23,7 +23,7 @@ public class ClearPlayerStatsAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.BARRIER);
-        builder.name("&eClear Player Stats Action");
+        builder.name("&eClear Player Stats");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
@@ -32,6 +32,7 @@ public class ClearPlayerStatsAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.BARRIER);
         builder.name("&aClear Player Stats");
+        builder.description("Clears all of the player's stats.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

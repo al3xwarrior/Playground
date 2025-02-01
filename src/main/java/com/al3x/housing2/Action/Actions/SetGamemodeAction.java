@@ -39,7 +39,7 @@ public class SetGamemodeAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.DAYLIGHT_DETECTOR);
-        builder.name("&eSet Gamemode Action");
+        builder.name("&eSet Gamemode");
         builder.info("&eSettings", "");
         builder.info("Gamemode", "&a" + gamemode.toString());
 
@@ -51,8 +51,8 @@ public class SetGamemodeAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.DAYLIGHT_DETECTOR);
-        builder.name("&aSet Gamemode Action");
-        builder.description("Sets a players gamemode.");
+        builder.name("&aSet Gamemode");
+        builder.description("Sets a player's gamemode.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

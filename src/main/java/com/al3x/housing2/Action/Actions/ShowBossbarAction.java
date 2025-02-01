@@ -43,7 +43,7 @@ public class ShowBossbarAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.WITHER_SKELETON_SKULL);
-        builder.name("&eShow Bossbar Action");
+        builder.name("&eDisplay Bossbar");
         builder.info("&eSettings", "");
         builder.info("Title", title);
         builder.info("Color", barColor.name());
@@ -58,8 +58,8 @@ public class ShowBossbarAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.WITHER_SKELETON_SKULL);
-        builder.name("&aShow Bossbar Action");
-        builder.description("Display a bossbar to a player.");
+        builder.name("&aDisplay Bossbar");
+        builder.description("Displays a bossbar for the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

@@ -47,7 +47,7 @@ public class PushPlayerAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PISTON);
-        builder.name("&ePush Player Action");
+        builder.name("&ePush Player");
         builder.info("&eSettings", "");
         builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
         builder.info("Velocity", "&a" + amount);
@@ -60,7 +60,7 @@ public class PushPlayerAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PISTON);
-        builder.name("&aPush Player Action");
+        builder.name("&aPush Player");
         builder.description("Propel a player in a direction.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
         builder.extraLore("&8&oThank you Home Depot"); //Yes I did add #extraLore just for this joke

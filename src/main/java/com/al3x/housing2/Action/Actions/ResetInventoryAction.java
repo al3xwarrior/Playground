@@ -37,6 +37,7 @@ public class ResetInventoryAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.STONE);
         builder.name("&aReset Inventory");
+        builder.description("Resets the player's inventory.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

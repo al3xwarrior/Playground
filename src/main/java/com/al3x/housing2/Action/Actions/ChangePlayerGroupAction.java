@@ -38,7 +38,6 @@ public class ChangePlayerGroupAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.name("&eChange Player Group");
-        builder.description("Change the player's group.");
         builder.info("&eSettings", "");
         builder.info("Group", (group == null ? "&aNot Set" : "&6" + group));
         builder.info("Demotion Protection", (demotionProtection ? "&aEnabled" : "&cDisabled"));

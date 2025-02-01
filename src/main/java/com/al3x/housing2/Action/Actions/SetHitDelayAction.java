@@ -39,7 +39,6 @@ public class SetHitDelayAction extends HTSLImpl {
         builder.material(Material.PLAYER_HEAD);
         builder.skullTexture("564af0db50a03f5d45a0c6dda47928981bf47ad66dd90a4dd7e92317dbe857d1");
         builder.name("&eSet Hit Delay");
-        builder.description("Set the users hit delay. This is the time in ticks between each hit. Default is 10 ticks (0.5 seconds)");
         builder.info("&eSettings", "");
         builder.info("Delay", "&a" + delay);
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -51,13 +50,14 @@ public class SetHitDelayAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.skullTexture("564af0db50a03f5d45a0c6dda47928981bf47ad66dd90a4dd7e92317dbe857d1");
-        builder.name("&aSet Hit Delay Action");
+        builder.name("&aSet Hit Delay");
+        builder.description("Set the users hit delay. This is the time in ticks between each hit. Default is 10 ticks (0.5 seconds)");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionItem> items = Arrays.asList(
+        List<ActionItem> items = List.of(
                 new ActionItem("delay",
                         ItemBuilder.create(Material.BOOK)
                                 .name("&aDelay")

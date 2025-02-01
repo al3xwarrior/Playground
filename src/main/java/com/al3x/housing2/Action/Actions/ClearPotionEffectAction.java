@@ -49,7 +49,7 @@ public class ClearPotionEffectAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.GLASS_BOTTLE);
-        builder.name("&eClear Potion Effect Action").description("Clears all or a specific potion effect");
+        builder.name("&eClear Potion Effect");
         builder.info("&eSettings", "");
         builder.info("Potion", "&a" + potionEffectType.getName());
         builder.info("Clear All", ((clearAll) ? "&aYes" : "&cNo"));
@@ -61,6 +61,7 @@ public class ClearPotionEffectAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.GLASS_BOTTLE);
         builder.name("&eClear Potion Effect");
+        builder.description("Clears all or a specific potion effect");
         builder.lClick(ActionType.ADD_YELLOW);
     }
 

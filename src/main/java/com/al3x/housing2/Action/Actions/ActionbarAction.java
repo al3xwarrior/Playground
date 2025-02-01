@@ -48,7 +48,7 @@ public class ActionbarAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.WRITABLE_BOOK);
-        builder.name("&eActionbar Action").description("Sends a actionbar message");
+        builder.name("&eDisplay Action Bar");
         builder.info("&eSettings", "").info("Message", message);
         builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
         builder.shiftClick();

@@ -37,6 +37,7 @@ public class KillPlayerAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.IRON_BARS);
         builder.name("&aKill Player");
+        builder.description("Kills the player");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

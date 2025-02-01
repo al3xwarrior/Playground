@@ -23,7 +23,7 @@ public class ClearGlobalStatsAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.BARRIER);
-        builder.name("&eClear Global Stats Action");
+        builder.name("&eClear Global Stats");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
@@ -32,6 +32,7 @@ public class ClearGlobalStatsAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.BARRIER);
         builder.name("&aClear Global Stats");
+        builder.description("Resets all global stats.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

@@ -34,6 +34,7 @@ public class CloseMenuAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHEST);
         builder.name("&aClose Menu");
+        builder.description("Closes the player's currently open menu.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

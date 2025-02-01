@@ -47,7 +47,6 @@ public class RepeatAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.REPEATER);
         builder.name("&eRepeat Action");
-        builder.description("Change the settings for this action");
         builder.info("&eSettings", "");
         builder.info("Actions", subActions.size());
         builder.info("Times", times);
