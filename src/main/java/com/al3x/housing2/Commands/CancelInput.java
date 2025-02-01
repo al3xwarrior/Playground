@@ -20,6 +20,12 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class CancelInput implements CommandExecutor {
 
+    private final Main main;
+
+    public CancelInput(Main main) {
+        this.main = main;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) {
