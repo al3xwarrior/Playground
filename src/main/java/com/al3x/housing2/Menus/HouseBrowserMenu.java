@@ -5,6 +5,10 @@ import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.PaginationList;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import com.xxmicloxx.NoteBlockAPI.model.Song;
+import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,7 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -20,11 +26,15 @@ public class HouseBrowserMenu extends Menu {
 
     private Player player;
     private HousesManager housesManager;
+    private int page;
+    private String search = "";
+    int[] avaliableSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
 
     public HouseBrowserMenu(Player player, HousesManager housesManager) {
         super(player, "&7Housing Browser", 54);
         this.player = player;
         this.housesManager = housesManager;
+        this.page = 1;
         setupItems();
     }
 
@@ -37,9 +47,13 @@ public class HouseBrowserMenu extends Menu {
                     .build(), () -> {});
             return;
         }
-        houses = houses.stream().filter(house -> Objects.equals(house.getPrivacy(), "PUBLIC")).toList();
 
-        for (int i = 0; i < (Math.min(houses.size(), 44)); i++) {
+        PaginationList<HouseData> paginationList = getHouses();
+        List<HouseData> houseList = paginationList.getPage(page);
+
+        //houses = houses.stream().filter(house -> Objects.equals(house.getPrivacy(), "PUBLIC")).toList();
+
+        for (int i = 0; i < houseList.size(); i++) {
             HouseData house = houses.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
 
@@ -68,6 +82,42 @@ public class HouseBrowserMenu extends Menu {
                 }
             });
         }
+
+        if (paginationList.getPageCount() > 1) {
+            ItemBuilder forwardArrow = new ItemBuilder();
+            forwardArrow.material(Material.ARROW);
+            forwardArrow.name("&aNext Page");
+            forwardArrow.description("&ePage " + (page + 1));
+            addItem(53, forwardArrow.build(), () -> {
+                if (page + 1 > paginationList.getPageCount()) return;
+                page++;
+                open();
+            });
+        }
+
+        if (page > 1) {
+            ItemBuilder backArrow = new ItemBuilder();
+            backArrow.material(Material.ARROW);
+            backArrow.name("&aPrevious Page");
+            backArrow.description("&ePage " + (page - 1));
+            addItem(45, backArrow.build(), () -> {
+                if (page - 1 < 1) return;
+                page--;
+                open();
+            });
+        }
+    }
+
+    private PaginationList<HouseData> getHouses() {
+        List<HouseData> housesArray = new ArrayList<>(HouseBrowserMenu.getSortedHouses());
+
+        housesArray = housesArray.stream().filter(houseData -> Objects.equals(houseData.getPrivacy(), "PUBLIC")).toList();
+
+        if (search != null) {
+            housesArray = housesArray.stream().filter(houseData -> StringUtilsKt.removeStringFormatting(houseData.getHouseName().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
+        }
+
+        return new PaginationList<>(housesArray, avaliableSlots.length);
     }
 
     public static @NotNull List<HouseData> getSortedHouses() {
