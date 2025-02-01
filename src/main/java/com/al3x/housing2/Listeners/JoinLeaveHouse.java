@@ -57,7 +57,8 @@ public class JoinLeaveHouse implements Listener {
         player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(1);
         player.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).setBaseValue(0);
         player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(4);
-        player.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
+        //error with the one below
+//        player.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(0);
         player.getAttribute(Attribute.GENERIC_LUCK).setBaseValue(0);
         player.getAttribute(Attribute.GENERIC_MAX_ABSORPTION).setBaseValue(4);
@@ -131,6 +132,9 @@ public class JoinLeaveHouse implements Listener {
             player.setGameMode(((Gamemodes) house.getPermission(player, Permissions.GAMEMODE)).getGameMode());
         }
 
+        //give player permission "housing.world.<worlduuid>"
+        player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true);
+
         // Cookies
         // CookieManager.givePhysicalCookie(player);
     }
@@ -158,6 +162,8 @@ public class JoinLeaveHouse implements Listener {
         from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
+
+        player.addAttachment(Main.getInstance(), "housing.world." + from.getHouseUUID(), false);
 
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));

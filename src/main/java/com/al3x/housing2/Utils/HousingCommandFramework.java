@@ -8,10 +8,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class HousingCommandFramework {
     private SimpleCommandMap map;
+    public static List<String> customCommands = new ArrayList<>();
     private Plugin plugin;
     public HousingCommandFramework(Main main) {
         this.plugin = main;
@@ -33,10 +36,14 @@ public class HousingCommandFramework {
 
     public void registerCommand(String fallback, Command command) {
         map.register(fallback, command);
+        customCommands.add(command.getName());
+        customCommands.addAll(command.getAliases());
     }
 
     public void unregisterCommand(Command command, HousingWorld world) {
         command.unregister(map);
+        customCommands.remove(command.getName());
+        customCommands.removeAll(command.getAliases());
 
         //I am not 100% sure if this is the best way, but it works :)
         try {
@@ -51,4 +58,6 @@ public class HousingCommandFramework {
         }
 
     }
+
+
 }

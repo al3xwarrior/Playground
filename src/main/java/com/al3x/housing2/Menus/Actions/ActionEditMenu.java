@@ -344,9 +344,9 @@ public class ActionEditMenu extends Menu {
                         PaginationMenu<Region> paginationMenu = new PaginationMenu<>(main, "Select a Region", regions, player, house, this, (region) -> {
                             try {
                                 // Set the field
-                                Field field = action.getClass().getDeclaredField(item.getVarName());
+                                Field field = condition.getClass().getDeclaredField(item.getVarName());
                                 field.setAccessible(true);
-                                field.set(action, region.getName());
+                                field.set(condition, region.getName());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + region.getName()));
                                 open();
                             } catch (NoSuchFieldException | IllegalAccessException ex) {

@@ -263,7 +263,9 @@ public class HousingWorld {
 
     private void loadCommands() {
         for (Command command : commands) {
-            main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
+            CommandRegistry r = command.getCommand();
+            r.setPermission("housing.world." + houseUUID.toString());
+            main.getCommandFramework().registerCommand(houseUUID.toString(), r);
         }
     }
 
@@ -867,7 +869,9 @@ public class HousingWorld {
             return null;
         Command command = new Command(name);
         commands.add(command);
-        main.getCommandFramework().registerCommand(houseUUID.toString(), command.getCommand());
+        CommandRegistry r = command.getCommand();
+        r.setPermission("housing.world." + houseUUID.toString());
+        main.getCommandFramework().registerCommand(houseUUID.toString(), r);
         return command;
     }
 

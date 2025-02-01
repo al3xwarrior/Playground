@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Command {
-    private BukkitCommand command;
+    private CommandRegistry command;
 
     private boolean loaded;
     private String name;
@@ -56,7 +56,7 @@ public class Command {
         return usage.toString();
     }
 
-    public BukkitCommand getCommand() {
+    public CommandRegistry getCommand() {
         if (command == null) {
             command = new CommandRegistry(name, this);
         }
