@@ -48,6 +48,9 @@ public class JoinLeaveHouse implements Listener {
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
 
+        player.sendActionBar("");
+        player.sendTitle("", "");
+
         // Attributes (https://minecraft.wiki/w/Attribute) I hope the website is right!
         player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(0);
         player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(0);
