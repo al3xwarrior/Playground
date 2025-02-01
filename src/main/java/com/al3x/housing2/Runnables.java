@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.LaunchPad;
+import com.al3x.housing2.Listeners.LobbyListener;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -223,56 +224,7 @@ public class Runnables {
         runnables.put("items", new BukkitRunnable() {
             @Override
             public void run() {
-                World lobby = Bukkit.getWorld("world"); // main world must be called world (by default it is)
-
-                // TODO: prob should move this somewhere else
-                ItemStack browserItem = ItemBuilder.create(Material.COMPASS).name("&aHousing Browser &7(Right-Click)").build();
-                ItemStack myHouses = ItemBuilder.create(Material.GRASS_BLOCK).name("&aMy Houses &7(Right-Click)").build();
-                ItemStack randomHouse = ItemBuilder.create(Material.PLAYER_HEAD).skullTexture("8a084d0a1c6fc2163de30d8b148ab4d363220d5c972d5f88eb8dc86176ccdb3e").name("&aRandom House &7(Right-Click)").build();
-                ItemStack ownerMenu = ItemBuilder.create(Material.NETHER_STAR).name("&dHousing Menu &7(Right-Click)").build();
-                ItemStack playerMenu = ItemBuilder.create(Material.DARK_OAK_DOOR).name("&aHousing Menu &7(Right-Click)").build();
-
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    // They are in a house
-                    if (player.isDead()) continue;
-                    if (!(player.getWorld().equals(lobby))) {
-                        World world = player.getWorld();
-                        HousingWorld house = main.getHousesManager().getHouse(world);
-
-                        PlayerInventory inv = player.getInventory();
-                        if (inv.contains(browserItem) || inv.contains(myHouses) || inv.contains(randomHouse)) {
-                            inv.remove(browserItem);
-                            inv.remove(myHouses);
-                            inv.remove(randomHouse);
-                        }
-
-                        // Player Owns House
-                        if (house.hasPermission(player, Permissions.HOUSING_MENU)) {
-                            if (inv.contains(ownerMenu)) continue;
-                            inv.setItem(8, ownerMenu);
-                        } else { // Doesn't own house
-                            if (inv.contains(playerMenu)) continue;
-                            inv.setItem(8, playerMenu);
-                        }
-                    } else {
-                        PlayerInventory inv = player.getInventory();
-
-                        if (inv.contains(ownerMenu) || inv.contains(playerMenu)) {
-                            inv.remove(ownerMenu);
-                            inv.remove(playerMenu);
-                        }
-
-                        if (!inv.contains(browserItem)) {
-                            inv.setItem(0, browserItem);
-                        }
-                        if (!inv.contains(myHouses)) {
-                            inv.setItem(1, myHouses);
-                        }
-                        if (!inv.contains(randomHouse)) {
-                            inv.setItem(2, randomHouse);
-                        }
-                    }
-                }
+                LobbyListener.lobbyItems(main);
             }
         }.runTaskTimer(main, 0L, 20));
 

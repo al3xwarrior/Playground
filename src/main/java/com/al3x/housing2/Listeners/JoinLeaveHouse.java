@@ -2,18 +2,17 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
-import com.al3x.housing2.Instances.HousingNPC;
-import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
+import com.mongodb.internal.logging.LogMessage;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.kyori.adventure.Adventure;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -128,6 +127,9 @@ public class JoinLeaveHouse implements Listener {
         else {
             player.setGameMode(((Gamemodes) house.getPermission(player, Permissions.GAMEMODE)).getGameMode());
         }
+
+        // Cookies
+        // CookieManager.givePhysicalCookie(player);
     }
 
     private void loadPermissions(Player player, HousingWorld house, PlayerData data) {

@@ -2,6 +2,9 @@ package com.al3x.housing2.Listeners.HouseEvents;
 
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,6 +16,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
+import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ChatEvent implements Listener {
     public static HashMap<UUID, AsyncPlayerChatEvent> lastChatEvent = new HashMap<>();
@@ -24,9 +28,22 @@ public class ChatEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent e) {
+        Player player = e.getPlayer();
+        World world = player.getWorld();
+
+        // Lobby Chat
+        if (world.getName().equals("world")) {
+            e.setCancelled(true);
+            String message = PlaceholderAPI.setPlaceholders(player, "%luckperms_prefix%" + player.getName() + "&7: &f");
+            for (Player p : world.getPlayers()) {
+                p.sendMessage(colorize(message) + e.getMessage());
+            }
+            return;
+        }
+
         if (e.isCancelled()) return;
-        lastChatEvent.put(e.getPlayer().getUniqueId(), e);
-        sendEventExecution(housesManager, EventType.PLAYER_CHAT, e.getPlayer(), e);
+        lastChatEvent.put(player.getUniqueId(), e);
+        sendEventExecution(housesManager, EventType.PLAYER_CHAT, player, e);
     }
 
     @EventHandler

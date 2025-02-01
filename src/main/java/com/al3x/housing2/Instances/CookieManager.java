@@ -72,7 +72,7 @@ public class CookieManager {
 
     public int getCookiesToGive(Player player) {
         if (player.hasPermission("housing2.admin")) {
-            return 25;
+            return 5;
         }
         return 1;
     }
