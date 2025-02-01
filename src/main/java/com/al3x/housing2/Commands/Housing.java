@@ -15,13 +15,11 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +29,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class Housing implements CommandExecutor {
 
     private final Main main;
-    private HousesManager housesManager;
+    private final HousesManager housesManager;
 
     public Housing(HousesManager housesManager, Main main) {
         this.housesManager = housesManager;
@@ -40,12 +38,10 @@ public class Housing implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("This command can only be done by players.");
             return true;
         }
-
-        Player player = (Player) commandSender;
 
         if (strings.length > 0) {
             if (strings[0].equalsIgnoreCase("create")) {
@@ -84,7 +80,7 @@ public class Housing implements CommandExecutor {
                     return true;
                 }
 
-                if (strings.length < 1) {
+                if (strings.length < 2) {
                     player.sendMessage(colorize("&cYou need to supply a name!"));
                     return true;
                 }
@@ -115,10 +111,6 @@ public class Housing implements CommandExecutor {
             if (strings[0].equalsIgnoreCase("visit")) {
                 if (strings.length == 2) {
                     OfflinePlayer target = Bukkit.getOfflinePlayer(strings[1]);
-                    if (target == null) {
-                        player.sendMessage(colorize("&cThere is no player with that username online!"));
-                        return true;
-                    }
 
                     if (!housesManager.playerHasHouse(target)) {
                         player.sendMessage(colorize("&cThat player doesn't have a house!"));

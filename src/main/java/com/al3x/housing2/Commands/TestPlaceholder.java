@@ -24,7 +24,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class TestPlaceholder implements CommandExecutor {
 
-    private Main main;
+    private final Main main;
 
     public TestPlaceholder(Main main) {
         this.main = main;
@@ -32,33 +32,13 @@ public class TestPlaceholder implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("Only players can use this command");
             return true;
         }
 
-        Player player = (Player) commandSender;
-
         if (strings.length == 0) {
             player.sendMessage("Usage: /testplaceholder <string>");
-            return true;
-        }
-
-        if (strings[0].equals("new")) {
-            if (main.getHousesManager().getHouse(player.getWorld()) == null) {
-                player.sendMessage(colorize("&cYou are not in a house!"));
-                return true;
-            }
-
-            HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
-
-            if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
-                player.sendMessage(colorize("&cYou do not have permission to view placeholders in this house!"));
-                return true;
-            }
-
-            String message = String.join(" ", strings.length > 1 ? Arrays.copyOfRange(strings, 1, strings.length) : new String[0]);
-            player.sendMessage(colorize("&e" + Placeholder.handlePlaceholders(message, house, player)));
             return true;
         }
 

@@ -10,18 +10,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class Set implements CommandExecutor {
-    private ProtoolsManager protoolsManager;
+    private final ProtoolsManager protoolsManager;
 
     public Set(ProtoolsManager protoolsManager) {
         this.protoolsManager = protoolsManager;
     }
 
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("You must be a player to use this command.");
             return true;
         }
-        Player player = (Player)commandSender;
 
         if (strings.length != 1) {
             player.sendMessage(Color.colorize("&cUsage: //set <blocks>"));

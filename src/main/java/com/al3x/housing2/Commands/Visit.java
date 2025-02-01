@@ -22,10 +22,6 @@ public class Visit implements CommandExecutor {
 
         if (strings.length == 1) {
             OfflinePlayer target = Bukkit.getOfflinePlayer(strings[0]);
-            if (target == null) {
-                player.sendMessage(colorize("&cThere is no player with that username online!"));
-                return true;
-            }
 
             if (!Main.getInstance().getHousesManager().playerHasHouse(target)) {
                 player.sendMessage(colorize("&cThat player doesn't have a house!"));
