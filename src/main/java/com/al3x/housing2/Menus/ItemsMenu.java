@@ -171,9 +171,10 @@ public class ItemsMenu extends Menu {
 
         ItemStack inventorySelector = HousingItems.inventoryInteractorItem(Material.HOPPER);
         addItem(13, inventorySelector, () -> {
-            new EnumMenu<>(main, "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
-                player.getInventory().addItem(HousingItems.inventoryInteractorItem(m));
-            }).open();
+//            new EnumMenu<>(main, "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
+//                player.getInventory().addItem(HousingItems.inventoryInteractorItem(m));
+//            }).open();
+            player.sendMessage("Inventory Selector selected");
         });
 
         ItemStack xSocialMediaHead = getCustomSkull("91b7a0c210e6cdf5a35fd8197e6e24a038315bbe3bdcd1bcc3630bf26f59ec5c");

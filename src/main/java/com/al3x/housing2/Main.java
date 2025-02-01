@@ -13,7 +13,6 @@ import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
-import com.al3x.housing2.api.Housing2Api;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
@@ -38,8 +37,6 @@ public final class Main extends JavaPlugin {
     private LobbyDisplays lobbyDisplays;
     private HologramManager hologramManager;
 
-    private Housing2Api api;
-
     private String mineSkinKey;
 
     @Override
@@ -60,9 +57,6 @@ public final class Main extends JavaPlugin {
         } else {
             getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
         }
-
-        api = Housing2Api.Companion.getInstance();
-        api.start();
 
         this.housesManager = new HousesManager(this);
         this.protoolsManager = new ProtoolsManager(this, housesManager);

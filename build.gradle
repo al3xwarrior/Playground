@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.gradleup.shadow' version '8.3.3'
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+    id "io.papermc.paperweight.userdev" version "2.0.0-beta.14"
 }
 
 group = 'com.al3x'
@@ -28,10 +29,11 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
     maven { url 'https://jitpack.io' }
     maven { url 'https://catcoder.pl.ua/snapshots' }
+    maven { url "https://repo.nexomc.com/releases" }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
     compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
         transitive = false
     }
@@ -46,15 +48,11 @@ dependencies {
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
 
-    // Ktor is not lightweight, but is my favorite web framework
-    implementation "io.ktor:ktor-server-core:3.0.3"
-    implementation "io.ktor:ktor-server-netty:3.0.3"
-
     // note block
     compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.2'
 
     // items adder
-    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'
+    compileOnly("com.nexomc:nexo:0.10.0")
 }
 
 tasks.withType(JavaCompile) {

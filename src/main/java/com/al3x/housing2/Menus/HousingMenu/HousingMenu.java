@@ -11,7 +11,7 @@ import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
-import dev.lone.itemsadder.api.CustomStack;
+import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -66,16 +66,17 @@ public class HousingMenu extends Menu {
             });
         }
 
-        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")) {
-            CustomStack stack = CustomStack.getInstance("ruby_large");
-            if (stack == null) return;
-            ItemStack items = stack.getItemStack();
-            ItemMeta itemsMeta = items.getItemMeta();
-            itemsMeta.setDisplayName(colorize("&cCustom Items"));
-            items.setItemMeta(itemsMeta);
-            addItem(24, items, () -> {
-                new CustomItemBrowserMenu(main, player, house).open();
-            });
+        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("Nexo")) {
+            com.nexomc.nexo.items.ItemBuilder builder = NexoItems.itemFromId("ruby_large");
+            if (builder != null) {
+                ItemStack items = builder.build();
+                ItemMeta itemsMeta = items.getItemMeta();
+                itemsMeta.setDisplayName(colorize("&cCustom Items"));
+                items.setItemMeta(itemsMeta);
+                addItem(24, items, () -> {
+                    new CustomItemBrowserMenu(main, player, house).open();
+                });
+            }
         }
 
         ItemStack travel = new ItemStack(Material.SPRUCE_DOOR);

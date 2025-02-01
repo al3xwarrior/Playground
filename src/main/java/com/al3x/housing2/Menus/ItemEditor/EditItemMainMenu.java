@@ -3,11 +3,15 @@ package com.al3x.housing2.Menus.ItemEditor;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
+import com.al3x.housing2.Listeners.HousingItems;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NexoItemBuilderUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import com.nexomc.nexo.api.NexoItems;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.al3x.housing2.Enums.permissions.Permissions.ITEMS;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.*;
 
@@ -33,6 +38,8 @@ public class EditItemMainMenu extends Menu {
 
         Item customItem = Item.fromItemStack(player.getInventory().getItemInMainHand());
         ItemStack item = customItem.getBase();
+
+        HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
 
         addItem(13, item);
 
@@ -81,6 +88,28 @@ public class EditItemMainMenu extends Menu {
                 .lClick(EDIT_YELLOW)
                 .build(), e -> {
             new EditFlagMenu(player).open();
+        });
+
+        addItem(42, ItemBuilder.create(Material.GRASS_BLOCK)
+                .name("&aSet Item Type")
+                .description("Edit the material of the item.")
+                .lClick(EDIT_YELLOW)
+                .build(), e -> {
+            new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
+                if (NexoItems.idFromItem(player.getInventory().getItemInMainHand()) == null) {
+                    player.getInventory().setItemInMainHand(item.withType(m));
+                    return;
+                } else {
+                    com.nexomc.nexo.items.ItemBuilder ib = NexoItems.builderFromItem(player.getInventory().getItemInMainHand());
+                    if (ib == null) {
+                        player.sendMessage(colorize("&cError: Could not get Nexo Item Builder."));
+                        return;
+                    }
+                    ib = NexoItemBuilderUtilsKt.setTypeZ(ib, m);
+                    player.getInventory().setItemInMainHand(ib.build());
+                }
+                setupItems();
+            }).open();
         });
 
 

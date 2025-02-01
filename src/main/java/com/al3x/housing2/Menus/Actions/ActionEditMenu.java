@@ -14,7 +14,6 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StackUtils;
-import com.al3x.housing2.api.Housing2Api;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -488,27 +487,27 @@ public class ActionEditMenu extends Menu {
                 new ActionClipboardMenu(player, main, house, action, this).open();
             });
 
-            ItemBuilder editExternally = ItemBuilder.create(Material.PURPLE_DYE).name("&eEdit Externally").lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-            addItem(((editor.getRows() - 1) * 9) + 2, editExternally.build(), (e) -> {
-                TextComponent text = Component.text("Exporting to external editor...").color(TextColor.color(0xFFEE00));
-                player.sendMessage(text);
-                Housing2Api.Companion.getInstance().addEditing(
-                        player.getUniqueId().toString(), UUID.randomUUID().toString(), action
-                );
-
-                text = Component.text("Exported successfully, open it ").append(
-                        Component.text("here").color(TextColor.color(0x00FF00)).decorate(TextDecoration.UNDERLINED)
-                                .clickEvent(ClickEvent.openUrl("http://localhost:8080/action?uuid=" + player.getUniqueId()))
-                                .hoverEvent(Component.text("Click to open the external editor")
-                                        .color(TextColor.color(0xFFEE00))
-                                )
-                ).append(
-                        Component.text(" §c[Back]").clickEvent(ClickEvent.runCommand("/cancelinput"))
-                                .hoverEvent(Component.text("§eClick to go back to where you were"))
-                ).color(TextColor.color(0xFFEE00));
-                player.sendMessage(text);
-                player.closeInventory();
-            });
+//            ItemBuilder editExternally = ItemBuilder.create(Material.PURPLE_DYE).name("&eEdit Externally").lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+//            addItem(((editor.getRows() - 1) * 9) + 2, editExternally.build(), (e) -> {
+//                TextComponent text = Component.text("Exporting to external editor...").color(TextColor.color(0xFFEE00));
+//                player.sendMessage(text);
+//                Housing2Api.Companion.getInstance().addEditing(
+//                        player.getUniqueId().toString(), UUID.randomUUID().toString(), action
+//                );
+//
+//                text = Component.text("Exported successfully, open it ").append(
+//                        Component.text("here").color(TextColor.color(0x00FF00)).decorate(TextDecoration.UNDERLINED)
+//                                .clickEvent(ClickEvent.openUrl("http://localhost:8080/action?uuid=" + player.getUniqueId()))
+//                                .hoverEvent(Component.text("Click to open the external editor")
+//                                        .color(TextColor.color(0xFFEE00))
+//                                )
+//                ).append(
+//                        Component.text(" §c[Back]").clickEvent(ClickEvent.runCommand("/cancelinput"))
+//                                .hoverEvent(Component.text("§eClick to go back to where you were"))
+//                ).color(TextColor.color(0xFFEE00));
+//                player.sendMessage(text);
+//                player.closeInventory();
+//            });
         }
     }
 

@@ -60,7 +60,6 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
     @Override
     public void setupItems() {
         clearItems();
-        int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
         PaginationList<E> paginationList = getItems(enums, player, material);
         List<E> pageItems = paginationList.getPage(currentPage);
@@ -73,7 +72,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
                 if (e instanceof EnumMaterial) material = ((EnumMaterial) e).getMaterial();
                 if (material == null) continue;
                 if (material.equals(Material.AIR)) continue;
-                addItem(slots[i], ItemBuilder.create((material))
+                addItem(i, ItemBuilder.create((material))
                         .name(colorize("&a" + e.name()))
                         .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
                         .build(), (event) -> {
@@ -145,7 +144,6 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
             if (item instanceof EnumMaterial) material = ((EnumMaterial) item).getMaterial();
             if (material == null) continue;
             if (!material.isItem()) continue;
-            if (material.isLegacy()) continue;
             if (material.equals(Material.AIR)) continue;
             items.add(item);
         }
@@ -155,7 +153,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
             items = items.stream().filter(e -> Color.removeColor(e.toString().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
         }
 
-        PaginationList<T> paginationList = new PaginationList<>(items, 21);
+        PaginationList<T> paginationList = new PaginationList<>(items, 36);
 
         return paginationList;
     }
