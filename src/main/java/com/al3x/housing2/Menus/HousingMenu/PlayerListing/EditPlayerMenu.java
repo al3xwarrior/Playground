@@ -54,6 +54,10 @@ public class EditPlayerMenu extends Menu {
         if (online && house.hasPermission(player, Permissions.KICK)) {
             addItem(slots[i], new ItemBuilder().material(Material.IRON_BARS).name(colorize("&cKick Player")).lClick(ItemBuilder.ActionType.KICK).build(), (e) -> {
                 if (!e.isLeftClick()) return;
+                if (targetPlayer.getPlayer().equals(player)) {
+                    player.sendMessage(colorize("&cYou can't kick yourself silly!"));
+                    return;
+                }
                 if (online) house.kickPlayerFromHouse(targetPlayer.getPlayer());
             });
             i++;
@@ -62,6 +66,10 @@ public class EditPlayerMenu extends Menu {
         if (house.hasPermission(player, MUTE)) {
             addItem(slots[i], new ItemBuilder().material(Material.CHAIN).name(colorize((targetPlayerData.getMuted()) ? "&aUnmute Player" : "&cMute Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
+                if (targetPlayer.getPlayer().equals(player)) {
+                    player.sendMessage(colorize("&cYou can't mute yourself silly!"));
+                    return;
+                }
                 targetPlayerData.setMuted(!targetPlayerData.getMuted());
                 open();
             });
@@ -71,6 +79,10 @@ public class EditPlayerMenu extends Menu {
         if (house.hasPermission(player, BAN)) {
             addItem(slots[i], new ItemBuilder().material(Material.BARRIER).name(colorize((targetPlayerData.getBanned()) ? "&aUnban Player" : "&cBan Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
+                if (targetPlayer.getPlayer().equals(player)) {
+                    player.sendMessage(colorize("&cYou can't ban yourself silly!"));
+                    return;
+                }
                 targetPlayerData.setBanned(!targetPlayerData.getBanned());
                 if (online) house.kickPlayerFromHouse(targetPlayer.getPlayer());
                 open();

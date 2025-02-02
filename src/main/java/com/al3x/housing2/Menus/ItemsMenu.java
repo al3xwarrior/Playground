@@ -39,7 +39,7 @@ public class ItemsMenu extends Menu {
             mailboxMeta.setDisplayName(colorize("&aMailbox"));
             mailbox.setItemMeta(mailboxMeta);
             addItem(slot++, mailbox, () -> {
-                player.sendMessage("Mailbox selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -49,7 +49,7 @@ public class ItemsMenu extends Menu {
             eggHuntBlockMeta.setDisplayName(colorize("&aEgg Hunt Block"));
             eggHuntBlock.setItemMeta(eggHuntBlockMeta);
             addItem(slot++, eggHuntBlock, () -> {
-                player.sendMessage("Egg Hunt Block selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -59,7 +59,7 @@ public class ItemsMenu extends Menu {
             teleportPadMeta.setDisplayName(colorize("&aTeleport Pad"));
             teleportPad.setItemMeta(teleportPadMeta);
             addItem(slot++, teleportPad, () -> {
-                player.sendMessage("Teleport Pad selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -82,7 +82,7 @@ public class ItemsMenu extends Menu {
             parkourBlockMeta.setDisplayName(colorize("&aParkour Block"));
             parkourBlock.setItemMeta(parkourBlockMeta);
             addItem(slot++, parkourBlock, () -> {
-                player.sendMessage("Parkour Block selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -92,7 +92,7 @@ public class ItemsMenu extends Menu {
             actionPadMeta.setDisplayName(colorize("&aAction Pad"));
             actionPad.setItemMeta(actionPadMeta);
             addItem(slot++, actionPad, () -> {
-                player.sendMessage("Action Pad selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -120,7 +120,7 @@ public class ItemsMenu extends Menu {
             actionButtonMeta.setDisplayName(colorize("&aAction Button"));
             actionButton.setItemMeta(actionButtonMeta);
             addItem(slot++, actionButton, () -> {
-                player.sendMessage("Action Button selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -130,7 +130,7 @@ public class ItemsMenu extends Menu {
             statLeaderboardMeta.setDisplayName(colorize("&aStat Leaderboard"));
             statLeaderboard.setItemMeta(statLeaderboardMeta);
             addItem(slot++, statLeaderboard, () -> {
-                player.sendMessage("Stat Leaderboard selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -140,7 +140,7 @@ public class ItemsMenu extends Menu {
             parkourLeaderboardMeta.setDisplayName(colorize("&aParkour Leaderboard"));
             parkourLeaderboard.setItemMeta(parkourLeaderboardMeta);
             addItem(slot++, parkourLeaderboard, () -> {
-                player.sendMessage("Parkour Leaderboard selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -165,7 +165,7 @@ public class ItemsMenu extends Menu {
             biomeStickMeta.setDisplayName(colorize("&aBiome Stick"));
             biomeStick.setItemMeta(biomeStickMeta);
             addItem(slot++, biomeStick, () -> {
-                player.sendMessage("Biome Stick selected");
+                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
             });
         }
 
@@ -174,7 +174,7 @@ public class ItemsMenu extends Menu {
 //            new EnumMenu<>(main, "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
 //                player.getInventory().addItem(HousingItems.inventoryInteractorItem(m));
 //            }).open();
-            player.sendMessage("Inventory Selector selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack xSocialMediaHead = getCustomSkull("91b7a0c210e6cdf5a35fd8197e6e24a038315bbe3bdcd1bcc3630bf26f59ec5c");
@@ -182,7 +182,7 @@ public class ItemsMenu extends Menu {
         xSocialMediaHeadMeta.setDisplayName(colorize("&bX"));
         xSocialMediaHead.setItemMeta(xSocialMediaHeadMeta);
         addItem(18, xSocialMediaHead, () -> {
-            player.sendMessage("X Social Media selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack youtubeHead = getCustomSkull("3042c7bc2db85347e6a36928e9a146b4fc3e1def4febf279391be15de7f46e");
@@ -190,7 +190,7 @@ public class ItemsMenu extends Menu {
         youtubeHeadMeta.setDisplayName(colorize("&cYoutube"));
         youtubeHead.setItemMeta(youtubeHeadMeta);
         addItem(19, youtubeHead, () -> {
-            player.sendMessage("Youtube selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack instagramHead = getCustomSkull("ac88d6163fabe7c5e62450eb37a074e2e2c88611c998536dbd8429faa0819453");
@@ -198,7 +198,7 @@ public class ItemsMenu extends Menu {
         instagramHeadMeta.setDisplayName(colorize("&7Instagram"));
         instagramHead.setItemMeta(instagramHeadMeta);
         addItem(20, instagramHead, () -> {
-            player.sendMessage("Instagram selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack twitchHead = getCustomSkull("46be65f44cd21014c8cddd0158bf75227adcb1fd179f4c1acd158c88871a13f");
@@ -206,7 +206,7 @@ public class ItemsMenu extends Menu {
         twitchHeadMeta.setDisplayName(colorize("&5Twitch"));
         twitchHead.setItemMeta(twitchHeadMeta);
         addItem(21, twitchHead, () -> {
-            player.sendMessage("Twitch selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack discordHead = getCustomSkull("7873c12bffb5251a0b88d5ae75c7247cb39a75ff1a81cbe4c8a39b311ddeda");
@@ -214,7 +214,7 @@ public class ItemsMenu extends Menu {
         discordHeadMeta.setDisplayName(colorize("&9Discord"));
         discordHead.setItemMeta(discordHeadMeta);
         addItem(22, discordHead, () -> {
-            player.sendMessage("Discord selected");
+            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
         ItemStack dragonEgg = new ItemStack(Material.DRAGON_EGG);
