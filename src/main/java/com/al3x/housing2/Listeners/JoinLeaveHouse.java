@@ -16,6 +16,7 @@ import net.kyori.adventure.Adventure;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -110,15 +111,6 @@ public class JoinLeaveHouse implements Listener {
 
         //Set the tablist
         HousingTabList.setTabList(player, house);
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            for (Player o : house.getWorld().getPlayers()) {
-                if (p.equals(o)) {
-                    continue;
-                }
-                p.hidePlayer(Main.getInstance(), o);
-            }
-        }
 
         house.setGuests();
         player.teleport(house.getSpawn());
@@ -237,7 +229,8 @@ public class JoinLeaveHouse implements Listener {
         } else {
             joinHouse(player);
         }
-        player.teleport(Bukkit.getWorld("world").getSpawnLocation().add(0.5, 0, 0.5));
+        player.teleport(new Location(Bukkit.getWorld("world"), -6.5, 68, 5.5));
+        HousingTabList.lobbyTabList(player);
     }
 
 }

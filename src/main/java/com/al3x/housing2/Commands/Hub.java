@@ -1,6 +1,7 @@
 package com.al3x.housing2.Commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,7 +20,7 @@ public class Hub implements CommandExecutor, TabExecutor {
 
         World hub = Bukkit.getWorld("world");
         if (hub == null) return true;
-        player.teleport(hub.getSpawnLocation());
+        player.teleport(new Location(hub, -6.5, 68, 5.5));
         return true;
     }
 

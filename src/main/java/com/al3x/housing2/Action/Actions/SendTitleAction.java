@@ -8,11 +8,15 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -133,9 +137,9 @@ public class SendTitleAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        String title = HandlePlaceholders.parsePlaceholders(player, house, this.title);
-        String subtitle = HandlePlaceholders.parsePlaceholders(player, house, this.subtitle);
-        player.sendTitle(colorize(title), colorize(subtitle), NumberUtilsKt.toInt(fadeIn), NumberUtilsKt.toInt(stay), NumberUtilsKt.toInt(fadeOut));
+        Component title = StringUtilsKt.housingStringFormatter(this.title, house, player);
+        Component subtitle = StringUtilsKt.housingStringFormatter(this.subtitle, house, player);
+        player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis((long) fadeIn), Duration.ofMillis((long) stay), Duration.ofMillis((long) fadeOut))));
         return true;
     }
 

@@ -94,6 +94,17 @@ public class TeleportAction extends HTSLImpl {
                 if (loc == null) {
                     return true;
                 }
+
+                if (loc.getX() > 255) {
+                    loc.setX(255);
+                }
+                if (loc.getZ() > 255) {
+                    loc.setY(255);
+                }
+                if (loc.getY() > 255) {
+                    loc.setY(255);
+                }
+
                 player.teleport(loc);
             }
 

@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.AsyncTask;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -89,10 +90,9 @@ public class ActionExecutor {
                 }, (long) pause);
             } else {
                 double finalPause = pause;
-                scheduler.runTaskAsynchronously(Main.getInstance(), () -> {
-                    try {
-                        Thread.sleep((long) (finalPause * 50));
-                    } catch (InterruptedException ignored) {
+                house.runInThread(new AsyncTask((millis, task) -> {
+                    if (millis % (50 * finalPause) != 0) {
+                        return;
                     }
 
                     if (finalAction.mustBeSync()) {
@@ -102,18 +102,19 @@ public class ActionExecutor {
                     } else {
                         returnVal.set(finalAction.execute(player, house, event, this));
                     }
-                });
+                }));
             }
         }
 
         if (isPaused) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
-            scheduler.runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            house.runInThread(new AsyncTask((millis, task) -> {
                 if (!isPaused) {
                     scheduler.runTask(Main.getInstance(), () -> {
                         execute(player, house, event);
                     });
+                    task.cancel();
                 }
-            }, 0, 1);
+            }));
         }
 
         return returnVal.get();

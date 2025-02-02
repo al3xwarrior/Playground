@@ -33,7 +33,7 @@ public class HousingScoreboard {
             sidebar.destroy();
         }
 
-        this.sidebar = ProtocolSidebar.newAdventureSidebar(Component.text("HOUSING TUAH").color(NamedTextColor.YELLOW).decorate(TextDecoration.BOLD), main);
+        this.sidebar = ProtocolSidebar.newAdventureSidebar(Component.text("PLAYGROUND").color(NamedTextColor.YELLOW).decorate(TextDecoration.BOLD), main);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
         LocalDateTime now = LocalDateTime.now();

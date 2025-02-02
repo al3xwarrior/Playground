@@ -6,6 +6,7 @@ import com.al3x.housing2.Listeners.HouseEvents.DamageEvent;
 import com.al3x.housing2.Listeners.HouseEvents.PlayerDropItem;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.tablist.HousingTabList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -45,6 +46,8 @@ public class LobbyListener implements Listener {
                 World world = player.getWorld();
                 HousingWorld house = main.getHousesManager().getHouse(world);
 
+                if (house == null) continue;
+
                 PlayerInventory inv = player.getInventory();
                 if (inv.contains(browserItem) || inv.contains(myHouses) || inv.contains(randomHouse)) {
                     inv.remove(browserItem);
@@ -67,6 +70,8 @@ public class LobbyListener implements Listener {
                     inv.remove(ownerMenu);
                     inv.remove(playerMenu);
                 }
+
+                HousingTabList.lobbyTabList(player);
 
                 if (!inv.contains(browserItem)) {
                     inv.setItem(0, browserItem);
