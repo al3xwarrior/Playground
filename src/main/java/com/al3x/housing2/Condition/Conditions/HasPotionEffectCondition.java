@@ -33,7 +33,7 @@ public class HasPotionEffectCondition extends Condition {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.POTION);
-        builder.name("&aGamemode Requirement");
+        builder.name("&aHas Potion Effect");
         builder.description("Requires the user to have the specified potion effect.");
         builder.info("Potion Effect", (potionEffect == null ? "&aNot Set" : "&6" + potionEffect));
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -44,7 +44,7 @@ public class HasPotionEffectCondition extends Condition {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.POTION);
-        builder.name("&eGamemode Requirement");
+        builder.name("&eHas Potion Effect");
         builder.description("Requires the user to have the specified potion effect.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
