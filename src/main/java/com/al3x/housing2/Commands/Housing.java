@@ -158,7 +158,7 @@ public class Housing implements CommandExecutor {
 
                     HousingWorld house = housesManager.getHouse(player.getWorld());
 
-                    if (house.hasPermission(player, Permissions.COMMAND_EDITSTATS) && !player.hasPermission("housing.playerstats")) {
+                    if (!house.hasPermission(player, Permissions.COMMAND_EDITSTATS)) {
                         player.sendMessage(colorize("&cYou do not have permission to view player stats!"));
                         return true;
                     }
@@ -185,7 +185,7 @@ public class Housing implements CommandExecutor {
                         player.sendMessage(colorize("&cYou are not in a house!"));
                         return true;
                     }
-                    if (house.hasPermission(player, Permissions.COMMAND_EDITSTATS) && !player.hasPermission("housing.globalstats")) {
+                    if (!house.hasPermission(player, Permissions.COMMAND_EDITSTATS)) {
                         player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
                         return true;
                     }
@@ -202,21 +202,6 @@ public class Housing implements CommandExecutor {
                 }
 
                 player.sendMessage(colorize("&cUsage: /housing globalstats"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("save") && player.hasPermission("housing.save")) {
-                if (housesManager.getHouse(player.getWorld()) == null) {
-                    player.sendMessage(colorize("&cYou are not in a house!"));
-                    return true;
-                }
-                housesManager.saveHouseAndUnload(housesManager.getHouse(player.getWorld()));
-                player.sendMessage(colorize("&aHouses saved and unloaded!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("editor") && player.hasPermission("housing.editor")) {
-
                 return true;
             }
 

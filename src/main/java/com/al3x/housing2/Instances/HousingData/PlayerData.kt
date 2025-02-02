@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Instances.Group
 import com.al3x.housing2.Instances.HousingWorld
+import com.al3x.housing2.Instances.Stat
 import com.al3x.housing2.Instances.Team
 import net.minecraft.stats.Stats
 
@@ -15,6 +16,7 @@ data class PlayerData(
     var muted: Boolean,
     var banned: Boolean,
     var stats: List<StatData>,
+    @Transient var cacheStats: List<Stat> = ArrayList()
 ) {
     fun getGroupInstance(house: HousingWorld): Group {
         return house.groups.find { it != null && it.name != null && it.name == group } ?: Group("No Group")

@@ -112,9 +112,12 @@ public class JoinLeaveHouse implements Listener {
         HousingTabList.setTabList(player, house);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!p.getWorld().equals(player.getWorld())) continue;
-            p.hidePlayer(Main.getInstance(), player);
-            player.hidePlayer(Main.getInstance(), p);
+            for (Player o : house.getWorld().getPlayers()) {
+                if (p.equals(o)) {
+                    continue;
+                }
+                p.hidePlayer(Main.getInstance(), o);
+            }
         }
 
         house.setGuests();
@@ -234,7 +237,7 @@ public class JoinLeaveHouse implements Listener {
         } else {
             joinHouse(player);
         }
-        player.teleport(Bukkit.getWorld("world").getSpawnLocation());
+        player.teleport(Bukkit.getWorld("world").getSpawnLocation().add(0.5, 0, 0.5));
     }
 
 }

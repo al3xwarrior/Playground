@@ -30,10 +30,9 @@ public class ChatEvent implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         World world = player.getWorld();
-
+        e.setCancelled(true);
         // Lobby Chat
         if (world.getName().equals("world")) {
-            e.setCancelled(true);
             String message = PlaceholderAPI.setPlaceholders(player, "%luckperms_prefix%" + player.getName() + "&7: &f");
             for (Player p : world.getPlayers()) {
                 p.sendMessage(colorize(message) + e.getMessage());
@@ -41,9 +40,17 @@ public class ChatEvent implements Listener {
             return;
         }
 
-        if (e.isCancelled()) return;
         lastChatEvent.put(player.getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_CHAT, player, e);
+
+        if (e.isCancelled()) {
+            return;
+        }
+
+        String message = PlaceholderAPI.setPlaceholders(player, "%luckperms_prefix%" + player.getName() + "&7: &f");
+        for (Player p : world.getPlayers()) {
+            p.sendMessage(colorize(message) + e.getMessage());
+        }
     }
 
     @EventHandler

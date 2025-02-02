@@ -216,6 +216,9 @@ public class HousingWorld {
         this.groups = houseData.getGroups() != null ? GroupData.Companion.toList(houseData.getGroups()) : new ArrayList<>();
         this.teams = houseData.getTeams() != null ? TeamData.Companion.toList(houseData.getTeams()) : new ArrayList<>();
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
+        for (PlayerData playerData : playersData.values()) {
+            if (playerData.getStats() != null) playerData.setCacheStats(StatData.Companion.toList(playerData.getStats()));
+        }
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
         loadEventActions();
@@ -262,7 +265,7 @@ public class HousingWorld {
         }
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
-        this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0) : spawn;
+        this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
         TrashCanListener.initTrashCans(trashCans);
     }
 
@@ -298,7 +301,7 @@ public class HousingWorld {
         }
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
-        this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
+        this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5);
     }
 
     private void ensureUniqueHouseUUID() {
@@ -412,6 +415,10 @@ public class HousingWorld {
             PlayerData data = loadOrCreatePlayerData(player);
             data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
             data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
+        }
+
+        for (PlayerData playerData : playersData.values()) {
+            if (playerData.getStats() != null) playerData.setStats(StatData.Companion.fromList(playerData.getCacheStats()));
         }
 
         try {
@@ -922,7 +929,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(null, null, null, null, null, false, false, new ArrayList<>());
+            data = new PlayerData(null, null, null, null, null, false, false, new ArrayList<>(), new ArrayList<>());
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }

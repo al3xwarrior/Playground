@@ -17,8 +17,10 @@ public class StatManager {
     }
 
     public Stat getPlayerStatByName(Player player, String name) {
-        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
-
+        List<Stat> playerStats = house.getPlayersData().get(player.getUniqueId().toString()).getCacheStats();
+        if (playerStats == null) {
+            return new Stat(name, "0.0");
+        }
         for (Stat stat : playerStats) {
             if (stat.getStatName().equals(name)) {
                 return stat;
@@ -58,16 +60,16 @@ public class StatManager {
     }
 
     public List<Stat> getPlayerStats(Player player) {
-        return StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
+        return house.getPlayersData().get(player.getUniqueId().toString()).getCacheStats();
     }
 
     public void addPlayerStat(Player player, Stat stat) {
-        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
+        List<Stat> playerStats = house.getPlayersData().get(player.getUniqueId().toString()).getCacheStats();
         playerStats.add(stat);
     }
 
     public boolean hasStat(Player player, String name) {
-        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
+        List<Stat> playerStats = house.getPlayersData().get(player.getUniqueId().toString()).getCacheStats();
 
         for (Stat stat : playerStats) {
             if (stat.getStatName().equals(name)) {

@@ -10,7 +10,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class HousingTabList {
 
     public static void setTabList(Player player, HousingWorld world) {
-        String header = "&bYou are playing on &e&lIDFK.AL3X.COM\n";
+        String header = "&bYou are playing on &e&lPLAYGROUND.REDSTONE.LLC\n";
         String tps = Bukkit.getServer().getTPS()[0] > 18 ? "&a" : Bukkit.getServer().getTPS()[0] > 15 ? "&e" : "&c";
         tps += Math.round(Bukkit.getServer().getTPS()[0] * 10.0) / 10.0;
         String footer = "\n&fYou are in &a" + world.getName() + "&f, by &b" + world.getOwnerName() + "\n\n" +
@@ -24,7 +24,7 @@ public class HousingTabList {
     }
 
     public static void lobbyTabList(Player player) {
-        String header = "&bYou are playing on &e&lIDFK.AL3X.COM\n";
+        String header = "&bYou are playing on &e&lPLAYGROUND.REDSTONE.LLC\n";
         String tps = Bukkit.getServer().getTPS()[0] > 18 ? "&a" : Bukkit.getServer().getTPS()[0] > 15 ? "&e" : "&c";
         tps += Math.round(Bukkit.getServer().getTPS()[0] * 10.0) / 10.0;
         String footer = "&fPlayers: &7" + Bukkit.getOnlinePlayers().size() + "\n" +
