@@ -24,7 +24,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class TestPlaceholder implements CommandExecutor {
 
-    private Main main;
+    private final Main main;
 
     public TestPlaceholder(Main main) {
         this.main = main;
@@ -32,12 +32,10 @@ public class TestPlaceholder implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("Only players can use this command");
             return true;
         }
-
-        Player player = (Player) commandSender;
 
         if (strings.length == 0) {
             player.sendMessage("Usage: /testplaceholder <string>");

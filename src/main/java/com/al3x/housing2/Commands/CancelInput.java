@@ -28,12 +28,10 @@ public class CancelInput implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("This command can only be done by players.");
             return true;
         }
-
-        Player player = (Player) commandSender;
 
         if (MenuManager.getListener(player) != null) AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
         MenuManager.getPlayerMenu(player).open();

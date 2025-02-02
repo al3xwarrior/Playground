@@ -23,7 +23,7 @@ public class ClearEnderChestAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.ENDER_CHEST);
-        builder.name("&eClear Enderchest Action");
+        builder.name("&eClear Ender Chest");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
@@ -31,7 +31,8 @@ public class ClearEnderChestAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.ENDER_CHEST);
-        builder.name("&aClear Enderchest");
+        builder.name("&aClear Ender Chest");
+        builder.description("Clears the player's ender chest.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

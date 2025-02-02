@@ -52,13 +52,13 @@ public class TeleportAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.ENDER_PEARL);
         builder.name("&aTeleport Player");
-        builder.description("Apply this action to teleport the player.");
+        builder.description("Teleports the player to a location.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
+        List<ActionEditor.ActionItem> items = List.of(
                 new ActionEditor.ActionItem("location",
                         ItemBuilder.create(Material.COMPASS)
                                 .name("&eLocation")

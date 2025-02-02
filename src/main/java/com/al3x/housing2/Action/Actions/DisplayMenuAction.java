@@ -55,6 +55,7 @@ public class DisplayMenuAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHEST);
         builder.name("&aDisplay Menu");
+        builder.description("Displays a menu to the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

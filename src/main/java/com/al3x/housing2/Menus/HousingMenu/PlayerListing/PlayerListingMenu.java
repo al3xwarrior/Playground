@@ -80,7 +80,7 @@ public class PlayerListingMenu extends Menu {
                 if (house.hasPermission(player, CHANGE_PLAYER_GROUP) || house.hasPermission(player, EDIT_PERMISSIONS_AND_GROUP))
                     item.info("Group", listedPlayerData.getGroupInstance(house).getDisplayName());
                 if (house.hasPermission(player, CHANGE_PLAYER_TEAM) || house.hasPermission(player, EDIT_TEAMS))
-                    item.info("Team", listedPlayerData.getTeamInstance(house).getDisplayName());
+                    item.info("Team", listedPlayerData.getTeamInstance(house).getName());
 
                 item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
 

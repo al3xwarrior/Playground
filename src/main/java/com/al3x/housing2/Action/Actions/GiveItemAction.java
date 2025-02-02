@@ -44,7 +44,6 @@ public class GiveItemAction extends Action {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHEST);
         builder.name("&eGive Item");
-        builder.description("Give an item to the player");
         builder.info("&eSettings", "");
         builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType()));
         builder.info("Allow Multiple", allowMultiple ? "&aYes" : "&cNo");
@@ -59,6 +58,7 @@ public class GiveItemAction extends Action {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHEST);
         builder.name("&aGive Item");
+        builder.description("Gives an item to the player");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

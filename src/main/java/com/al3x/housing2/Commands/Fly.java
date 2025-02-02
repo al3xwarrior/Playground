@@ -7,15 +7,19 @@ import com.al3x.housing2.Menus.ItemEditor.EditItemMainMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static org.bukkit.Material.AIR;
 
-public class Fly implements CommandExecutor {
+public class Fly implements CommandExecutor, TabExecutor {
 
-    private Main main;
+    private final Main main;
 
     public Fly(Main main) {
         this.main = main;
@@ -23,12 +27,10 @@ public class Fly implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("Only players can use this command");
             return true;
         }
-
-        Player player = (Player) commandSender;
 
         if (main.getHousesManager().getHouse(player.getWorld()) == null) {
             player.sendMessage(colorize("&cYou are not in a house!"));
@@ -51,5 +53,10 @@ public class Fly implements CommandExecutor {
             player.sendMessage(colorize("&aYou have enabled fly mode!"));
         }
         return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return List.of();
     }
 }

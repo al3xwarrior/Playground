@@ -46,7 +46,7 @@ public class ClearBossbarAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.WITHER_SKELETON_SKULL);
         builder.name("&aClear Bossbars");
-        builder.description("Clears all bossbars from the players screen.");
+        builder.description("Clears all bossbars from the player's screen.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

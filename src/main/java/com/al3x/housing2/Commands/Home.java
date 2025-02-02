@@ -5,12 +5,16 @@ import com.al3x.housing2.Menus.MyHousesMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class Home implements CommandExecutor {
+import java.util.List;
 
-    private Main main;
+public class Home implements CommandExecutor, TabExecutor {
+
+    private final Main main;
 
     public Home(Main main) {
         this.main = main;
@@ -18,15 +22,18 @@ public class Home implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("Only players can use this command");
             return true;
         }
 
-        Player player = (Player) commandSender;
-
         new MyHousesMenu(main, player, player).open();
 
-        return false;
+        return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return List.of();
     }
 }

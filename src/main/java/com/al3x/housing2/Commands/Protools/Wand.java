@@ -11,18 +11,18 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class Wand implements CommandExecutor {
-    private HousesManager houseManager;
+    private final HousesManager houseManager;
 
     public Wand(Main main) {
         this.houseManager = main.getHousesManager();
     }
 
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("You must be a player to use this command.");
             return true;
         }
-        Player player = (Player)commandSender;
+
         if (this.houseManager.hasPermissionInHouse(player, Permissions.PRO_TOOLS)) {
             player.getInventory().addItem(ProtoolsManager.getWand());
             return true;

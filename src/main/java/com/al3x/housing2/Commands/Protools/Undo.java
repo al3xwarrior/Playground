@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class Undo implements CommandExecutor {
-    private ProtoolsManager protoolsManager;
+    private final ProtoolsManager protoolsManager;
 
     public Undo(ProtoolsManager protoolsManager) {
         this.protoolsManager = protoolsManager;
@@ -17,11 +17,10 @@ public class Undo implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("You must be a player to use this command.");
             return true;
         }
-        Player player = (Player)commandSender;
 
         if (protoolsManager.canUseProtools(player, true)) {
             protoolsManager.undo(player);

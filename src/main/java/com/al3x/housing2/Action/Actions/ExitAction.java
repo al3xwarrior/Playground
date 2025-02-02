@@ -37,7 +37,7 @@ public class ExitAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.BEDROCK);
         builder.name("&aExit");
-        builder.description("Stops executing the remaining actions.");
+        builder.description("Stops executing any remaining actions.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

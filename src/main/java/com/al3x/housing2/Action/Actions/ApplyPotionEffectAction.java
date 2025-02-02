@@ -58,7 +58,7 @@ public class ApplyPotionEffectAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.POTION);
-        builder.name("&eApply Potion Effect Action").description("Applys a potion effect to the player");
+        builder.name("&eApply Potion Effect");
         builder.info("&eSettings", "");
         builder.info("Potion", "&a" + potionEffectType.getName());
         builder.info("Level", "&a" + level);
@@ -71,6 +71,7 @@ public class ApplyPotionEffectAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.POTION);
         builder.name("&eApply Potion Effect");
+        builder.description("Applies a potion effect to the player");
         builder.lClick(ActionType.ADD_YELLOW);
     }
 

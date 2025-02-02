@@ -31,6 +31,7 @@ public class StopHouseMusicAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.MUSIC_DISC_11);
         builder.name("&aStop House Music");
+        builder.description("Stops the house music.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

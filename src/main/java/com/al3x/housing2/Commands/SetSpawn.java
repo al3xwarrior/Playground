@@ -7,10 +7,14 @@ import com.al3x.housing2.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class SetSpawn implements CommandExecutor {
+import java.util.List;
+
+public class SetSpawn implements CommandExecutor, TabExecutor {
 
     private final Main main;
     private HousesManager housesManager;
@@ -38,5 +42,10 @@ public class SetSpawn implements CommandExecutor {
         house.setSpawn(player.getLocation());
         player.sendMessage("§aHouses spawn set to your current location.");
         return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return List.of();
     }
 }

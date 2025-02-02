@@ -31,6 +31,7 @@ public class StartHouseMusicAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.MUSIC_DISC_PIGSTEP);
         builder.name("&aStart House Music");
+        builder.description("Starts the house music.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

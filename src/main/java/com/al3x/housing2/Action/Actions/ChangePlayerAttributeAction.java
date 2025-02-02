@@ -53,7 +53,7 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.HOPPER);
         builder.name("&aChange Player Attribute");
-        builder.description("Change the player's specified attribute by a specified amount.");
+        builder.description("Adjust the player's attributes.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

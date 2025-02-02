@@ -35,7 +35,6 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.IRON_AXE);
         builder.name("&eApply Inventory Layout");
-        builder.description("Runs a function");
         builder.info("&eSettings", "");
         builder.info("Inventory Layout", (layout == null ? "&cNone" : "&6" + layout));
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -47,6 +46,7 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.IRON_AXE);
         builder.name("&aApply Inventory Layout");
+        builder.description("Applies an inventory layout to the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

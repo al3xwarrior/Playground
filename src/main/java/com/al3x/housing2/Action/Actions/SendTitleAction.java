@@ -62,7 +62,7 @@ public class SendTitleAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.BOOK);
-        builder.name("&eSend Title Action");
+        builder.name("&eDisplay Title");
         builder.info("&eSettings", "");
         builder.info("Title", title);
         builder.info("Subtitle", subtitle);
@@ -78,8 +78,8 @@ public class SendTitleAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.BOOK);
-        builder.name("&aSend Title Action");
-        builder.description("Displays a Title and Subtitle to the player with a defined Fade In, Stay, and Fade Out time.");
+        builder.name("&aDisplay Title");
+        builder.description("Displays a Title and Subtitle to the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

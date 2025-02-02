@@ -47,8 +47,7 @@ public class ChatAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PAPER);
-        builder.name("&eSend a chat message");
-        builder.description("Sends a chat message");
+        builder.name("&eDisplay Chat Message");
         builder.info("&eSettings", "");
         builder.info("Message", message);
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -59,13 +58,14 @@ public class ChatAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PAPER);
-        builder.name("&aSend a Chat Message");
+        builder.name("&aDisplay Chat Message");
+        builder.description("Sends a chat message to the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionItem> items = Arrays.asList(
+        List<ActionItem> items = List.of(
                 new ActionItem("message",
                         ItemBuilder.create(Material.WRITTEN_BOOK)
                                 .name("&aMessage")

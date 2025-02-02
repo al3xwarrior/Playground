@@ -41,7 +41,7 @@ public class ExplosionAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.TNT_MINECART);
-        builder.name("&eExplosion Player");
+        builder.name("&eExplosion");
         builder.info("&eSettings", "");
         builder.info("Location", "&a" + (location == CUSTOM ? customLocation : location));
         builder.info("Power", "&a" + power);

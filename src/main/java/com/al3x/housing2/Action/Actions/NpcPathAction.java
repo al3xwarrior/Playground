@@ -82,7 +82,6 @@ public class NpcPathAction extends Action {
     public void createDisplayItem(ItemBuilder builder, HousingWorld house) {
         builder.material(Material.DIAMOND_AXE);
         builder.name("&eChange NPC Navigation");
-        builder.description("Change the navigation of a given NPC");
         builder.info("&eSettings", "");
         builder.info("NPC", (npcId == -1 ? "&cNone" : "&6" + (house.getNPC(npcId) == null ? "Unknown NPC" : house.getNPC(npcId).getName())));
         builder.info("Mode", mode.name());
@@ -123,7 +122,7 @@ public class NpcPathAction extends Action {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.DIAMOND_AXE);
         builder.name("&aChange NPC Navigation");
-        builder.description("Change the navigation of a given NPC");
+        builder.description("Change the navigation of a given NPC.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

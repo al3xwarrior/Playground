@@ -38,7 +38,6 @@ public class RemoveItemAction extends Action {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.CAULDRON);
         builder.name("&eRemove Item");
-        builder.description("Give an item to the player");
         builder.info("&eSettings", "");
         builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType()));
         builder.info("Slot", slotIndexToName((int) slot));
@@ -51,6 +50,7 @@ public class RemoveItemAction extends Action {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.CAULDRON);
         builder.name("&aRemove Item");
+        builder.description("Remove an item from the player's inventory.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

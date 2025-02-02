@@ -32,7 +32,7 @@ public class CancelAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.TNT);
-        builder.name("&eCancel Action");
+        builder.name("&eCancel Event");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.changeOrderLore(true);
     }
@@ -41,7 +41,7 @@ public class CancelAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.TNT);
         builder.name("&aCancel Event");
-        builder.description("Apply this action to cancel this event.");
+        builder.description("Cancels the event from running.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

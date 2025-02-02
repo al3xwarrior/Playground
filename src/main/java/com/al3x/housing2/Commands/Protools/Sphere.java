@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class Sphere implements CommandExecutor {
-    private ProtoolsManager protoolsManager;
+    private final ProtoolsManager protoolsManager;
 
     public Sphere(ProtoolsManager protoolsManager) {
         this.protoolsManager = protoolsManager;
@@ -20,11 +20,10 @@ public class Sphere implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("You must be a player to use this command.");
             return true;
         }
-        Player player = (Player)commandSender;
 
         if (strings.length != 2) {
             player.sendMessage(Color.colorize("&cUsage: //sphere <radius> <block[s]>"));

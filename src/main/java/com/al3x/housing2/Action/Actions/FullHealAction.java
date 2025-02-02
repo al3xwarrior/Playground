@@ -37,6 +37,7 @@ public class FullHealAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.GOLDEN_APPLE);
         builder.name("&aFull Heal");
+        builder.description("Fully heals the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

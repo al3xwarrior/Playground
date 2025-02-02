@@ -41,7 +41,6 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.name("&eChange Player Display Name");
-        builder.description("Change the display name of the player");
         builder.info("&eSettings", "");
         builder.info("Name", name);
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -53,7 +52,7 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PLAYER_HEAD);
         builder.name("&aChange Player Display Name");
-        builder.description("Apply this action to change the player's display name.");
+        builder.description("Changes the display name of the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

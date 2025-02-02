@@ -38,7 +38,6 @@ public class FunctionAction extends HTSLImpl {
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.ACTIVATOR_RAIL);
         builder.name("&eTrigger Function");
-        builder.description("Runs a function");
         builder.info("&eSettings", "");
         builder.info("Function", (function == null ? "&cNone" : "&6" + function));
         builder.info("Run for all players", runForAllPlayers ? "&aYes" : "&cNo");
@@ -51,6 +50,7 @@ public class FunctionAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.ACTIVATOR_RAIL);
         builder.name("&aTrigger Function");
+        builder.description("Executes a given function");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 

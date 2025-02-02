@@ -9,6 +9,7 @@ public enum ActionEnum {
     CONDITIONAL("Conditional Action", ConditionalAction.class),
     CANCEL("Cancel Action", CancelAction.class),
     CHANGE_PLAYER_GROUP("Change Player Group", ChangePlayerGroupAction.class),
+    CHANGE_PLAYER_TEAM("Change Player Team", ChangePlayerTeamAction.class),
     KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
     FULL_HEAL("Full Heal Action", FullHealAction.class),
     PUSH_PLAYER("Push Player Action", PushPlayerAction.class),
