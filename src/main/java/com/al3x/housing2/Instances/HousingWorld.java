@@ -139,8 +139,9 @@ public class HousingWorld {
         setupWorldBorder();
         setupDefaultScoreboard();
         addDefaultGroups(owner);
-        loaded = true;
         save();
+        loaded = true;
+        onLoad.forEach(consumer -> consumer.accept(this));
     }
 
     private void initialize(Main main, OfflinePlayer owner, String name) {

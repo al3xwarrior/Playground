@@ -45,13 +45,14 @@ public class MyHousesMenu extends Menu {
                 // This should never happen and most likely shoudnt even be here, but just in case!
                 if (housesManager.playerHasHouse(target)) {
                     player.sendMessage(colorize("&cYou already have a house!"));
+                    return;
                 }
 
                 player.sendMessage(colorize("&eCreating your house..."));
+                player.closeInventory();
                 HousingWorld newHouse = housesManager.createHouse(player, HouseSize.LARGE);
                 player.sendMessage(colorize("&aYour house has been created!"));
                 newHouse.sendPlayerToHouse(player);
-                new MyHousesMenu(main, player, player).open();
             });
             return;
         } else if (!housesManager.playerHasHouse(target)) {

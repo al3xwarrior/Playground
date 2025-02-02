@@ -65,7 +65,6 @@ public class HousesManager {
 
     public HousingWorld createHouse(Player owner, HouseSize size) {
         HousingWorld house = new HousingWorld(main, owner, size);
-        house.sendPlayerToHouse(owner);
 
         concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
 
@@ -237,11 +236,20 @@ public class HousesManager {
     }
 
     public void deleteHouse(UUID houseUUID) {
-        for (HousingWorld house : concurrentLoadedHouses.values()) {
-            if (house.getHouseUUID().equals(houseUUID)) {
-                house.delete();
+        HousingWorld house = getHouse(houseUUID);
+        if (house != null) {
+            concurrentLoadedHouses.remove(houseUUID.toString());
+            house.delete();
+            housesById.remove(houseUUID.toString());
+            playerHouses.get(house.getOwnerUUID()).remove(houseUUID.toString());
+        } else {
+            HouseData houseData = getHouseData(houseUUID.toString());
+            if (houseData != null) {
+                playerHouses.get(UUID.fromString(houseData.getOwnerID())).remove(houseUUID.toString());
+                HousingWorld h2 = new HousingWorld(main, Bukkit.getOfflinePlayer(houseData.getOwnerID()), houseUUID.toString());
+                h2.delete();
+                housesById.remove(houseUUID.toString());
                 concurrentLoadedHouses.remove(houseUUID.toString());
-                return;
             }
         }
     }
