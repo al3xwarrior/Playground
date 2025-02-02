@@ -40,21 +40,22 @@ public class HouseBrowserMenu extends Menu {
 
     @Override
     public void setupItems() {
-        List<HouseData> houses = getSortedHouses();
-        if (houses.isEmpty()) {
-            addItem(22, ItemBuilder.create(Material.BARRIER)
-                    .name("&c&oThere are no public houses to display!")
-                    .build(), () -> {});
-            return;
-        }
+
 
         PaginationList<HouseData> paginationList = getHouses();
         List<HouseData> houseList = paginationList.getPage(page);
 
         //houses = houses.stream().filter(house -> Objects.equals(house.getPrivacy(), "PUBLIC")).toList();
 
+        if (houseList == null || houseList.isEmpty()) {
+            addItem(22, ItemBuilder.create(Material.BARRIER)
+                    .name("&c&oThere are no public houses to display!")
+                    .build(), () -> {});
+            return;
+        }
+
         for (int i = 0; i < houseList.size(); i++) {
-            HouseData house = houses.get(i);
+            HouseData house = houseList.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
 
             ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"))
