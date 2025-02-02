@@ -77,17 +77,20 @@ public class BlockList {
                 String[] blockOptions = block.split("%");
                 if (blockOptions.length >= 1) {
                     for (Material material : Material.values()) {
+                        if (!material.isBlock()) continue;
                         completions.add(blockOptions[0] + "%" + material.name().toLowerCase());
                     }
                 }
             } else {
                 if (block.matches(".*\\d.*")) {
                     for (Material material : Material.values()) {
+                        if (!material.isBlock()) continue;
                         completions.add(block + "%" + material.name().toLowerCase());
                     }
                 } else {
                     //Percentage from 1 to 100
                     for (Material material : Material.values()) {
+                        if (!material.isBlock()) continue;
                         completions.add(material.name().toLowerCase());
                     }
                 }

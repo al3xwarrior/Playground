@@ -11,6 +11,7 @@ import org.bukkit.Material
 data class HouseData(
     val ownerID: String,
     val houseID: String,
+    var ownerName: String? = null,
     var houseName: String,
     var description: String,
     var size: Int,
@@ -46,6 +47,7 @@ data class HouseData(
             val houseData = HouseData(
                 world.ownerUUID.toString(),
                 world.houseUUID.toString(),
+                world.owner.name,
                 world.name,
                 world.description,
                 world.size,

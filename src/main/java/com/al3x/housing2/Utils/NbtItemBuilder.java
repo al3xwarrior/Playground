@@ -49,6 +49,11 @@ public class NbtItemBuilder {
         return this;
     }
 
+    public NbtItemBuilder setString(String namespace, String key, String value) {
+        nbt.set(new NamespacedKey(namespace, key), PersistentDataType.STRING, value);
+        return this;
+    }
+
     public NbtItemBuilder setInt(String key, int value) {
         nbt.set(new NamespacedKey(Main.getInstance(), key), PersistentDataType.INTEGER, value);
         return this;

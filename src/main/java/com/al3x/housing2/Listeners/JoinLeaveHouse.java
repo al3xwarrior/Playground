@@ -13,6 +13,7 @@ import com.mongodb.internal.logging.LogMessage;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.Adventure;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -48,40 +49,41 @@ public class JoinLeaveHouse implements Listener {
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
 
+        player.playerListName(Component.text(player.getName()));
         player.sendActionBar("");
         player.sendTitle("", "");
 
         // Attributes (https://minecraft.wiki/w/Attribute) I hope the website is right!
-        player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(1);
-        player.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(4);
+        player.getAttribute(Attribute.ARMOR).setBaseValue(0);
+        player.getAttribute(Attribute.ARMOR_TOUGHNESS).setBaseValue(0);
+        player.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(1);
+        player.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0);
+        player.getAttribute(Attribute.ATTACK_SPEED).setBaseValue(4);
         //error with the one below
-//        player.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
-        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_LUCK).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_MAX_ABSORPTION).setBaseValue(4);
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-        player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1);
-        player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1);
-        player.getAttribute(Attribute.GENERIC_STEP_HEIGHT).setBaseValue(0.6);
-        player.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).setBaseValue(0.42);
-        player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
-        player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(3);
-        player.getAttribute(Attribute.PLAYER_BLOCK_BREAK_SPEED).setBaseValue(1);
-        player.getAttribute(Attribute.GENERIC_GRAVITY).setBaseValue(0.08);
-        player.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).setBaseValue(3);
-        player.getAttribute(Attribute.GENERIC_FALL_DAMAGE_MULTIPLIER).setBaseValue(1);
-        player.getAttribute(Attribute.GENERIC_BURNING_TIME).setBaseValue(1);
-        player.getAttribute(Attribute.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE).setBaseValue(0);
-        player.getAttribute(Attribute.PLAYER_MINING_EFFICIENCY).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_OXYGEN_BONUS).setBaseValue(0);
-        player.getAttribute(Attribute.PLAYER_SNEAKING_SPEED).setBaseValue(0.3);
-        player.getAttribute(Attribute.PLAYER_SUBMERGED_MINING_SPEED).setBaseValue(0.2);
-        player.getAttribute(Attribute.PLAYER_SWEEPING_DAMAGE_RATIO).setBaseValue(0);
-        player.getAttribute(Attribute.GENERIC_WATER_MOVEMENT_EFFICIENCY).setBaseValue(0);
+//        player.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
+        player.getAttribute(Attribute.KNOCKBACK_RESISTANCE).setBaseValue(0);
+        player.getAttribute(Attribute.LUCK).setBaseValue(0);
+        player.getAttribute(Attribute.MAX_ABSORPTION).setBaseValue(4);
+        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+        player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1);
+        player.getAttribute(Attribute.SCALE).setBaseValue(1);
+        player.getAttribute(Attribute.STEP_HEIGHT).setBaseValue(0.6);
+        player.getAttribute(Attribute.JUMP_STRENGTH).setBaseValue(0.42);
+        player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
+        player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).setBaseValue(3);
+        player.getAttribute(Attribute.BLOCK_BREAK_SPEED).setBaseValue(1);
+        player.getAttribute(Attribute.GRAVITY).setBaseValue(0.08);
+        player.getAttribute(Attribute.SAFE_FALL_DISTANCE).setBaseValue(3);
+        player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER).setBaseValue(1);
+        player.getAttribute(Attribute.BURNING_TIME).setBaseValue(1);
+        player.getAttribute(Attribute.EXPLOSION_KNOCKBACK_RESISTANCE).setBaseValue(0);
+        player.getAttribute(Attribute.MINING_EFFICIENCY).setBaseValue(0);
+        player.getAttribute(Attribute.MOVEMENT_EFFICIENCY).setBaseValue(0);
+        player.getAttribute(Attribute.OXYGEN_BONUS).setBaseValue(0);
+        player.getAttribute(Attribute.SNEAKING_SPEED).setBaseValue(0.3);
+        player.getAttribute(Attribute.SUBMERGED_MINING_SPEED).setBaseValue(0.2);
+        player.getAttribute(Attribute.SWEEPING_DAMAGE_RATIO).setBaseValue(0);
+        player.getAttribute(Attribute.WATER_MOVEMENT_EFFICIENCY).setBaseValue(0);
     }
 
     private void joinHouse(Player player) {
@@ -109,6 +111,12 @@ public class JoinLeaveHouse implements Listener {
         //Set the tablist
         HousingTabList.setTabList(player, house);
 
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!p.getWorld().equals(player.getWorld())) continue;
+            p.hidePlayer(Main.getInstance(), player);
+            player.hidePlayer(Main.getInstance(), p);
+        }
+
         house.setGuests();
         player.teleport(house.getSpawn());
 
@@ -129,7 +137,12 @@ public class JoinLeaveHouse implements Listener {
         }
         // Normal player joins
         else {
-            player.setGameMode(((Gamemodes) house.getPermission(player, Permissions.GAMEMODE)).getGameMode());
+            if (house.getPermission(player, Permissions.GAMEMODE) instanceof LinkedTreeMap<?,?> gamemodeMap) {
+                Gamemodes value = Gamemodes.valueOf((String) gamemodeMap.get("name"));
+                player.setGameMode(value.getGameMode());
+            } else {
+                player.setGameMode(((Gamemodes) house.getPermission(player, Permissions.GAMEMODE)).getGameMode());
+            }
         }
 
         //give player permission "housing.world.<worlduuid>"
@@ -159,12 +172,12 @@ public class JoinLeaveHouse implements Listener {
     private void leaveHouse(Player player, HousingWorld from) {
         if (from == null) return;
         player.displayName(StringUtilsKt.housingStringFormatter(player.getName()));
+        player.playerListName(Component.text(player.getName()));
         from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
         from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 
         player.addAttachment(Main.getInstance(), "housing.world." + from.getHouseUUID(), false);
-
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));

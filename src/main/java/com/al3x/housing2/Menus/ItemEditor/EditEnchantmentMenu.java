@@ -79,7 +79,7 @@ public class EditEnchantmentMenu extends Menu {
                 .lClick(ADD_YELLOW)
                 .build(), e -> {
             List<Duple<Enchantment, ItemBuilder>> enchantments = new ArrayList<>();
-            for (Enchantment enchantment : Registry.ENCHANTMENT) {
+            for (Enchantment enchantment : Enchantment.values()) {
                 if (enchantment.canEnchantItem(item)) {
                     ItemBuilder itemBuilder = ItemBuilder.create(Material.ENCHANTED_BOOK);
                     itemBuilder.name("&a" + StringUtilsKt.formatCapitalize(enchantment.getKey().getKey()));

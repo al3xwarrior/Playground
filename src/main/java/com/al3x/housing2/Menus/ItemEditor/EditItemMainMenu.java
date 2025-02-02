@@ -9,6 +9,7 @@ import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.NexoItemBuilderUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.nexomc.nexo.api.NexoItems;
@@ -96,18 +97,13 @@ public class EditItemMainMenu extends Menu {
                 .lClick(EDIT_YELLOW)
                 .build(), e -> {
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
-                if (NexoItems.idFromItem(player.getInventory().getItemInMainHand()) == null) {
-                    player.getInventory().setItemInMainHand(item.withType(m));
-                    return;
-                } else {
-                    com.nexomc.nexo.items.ItemBuilder ib = NexoItems.builderFromItem(player.getInventory().getItemInMainHand());
-                    if (ib == null) {
-                        player.sendMessage(colorize("&cError: Could not get Nexo Item Builder."));
-                        return;
-                    }
-                    ib = NexoItemBuilderUtilsKt.setTypeZ(ib, m);
-                    player.getInventory().setItemInMainHand(ib.build());
+                ItemStack i = item.withType(m);
+                NbtItemBuilder builder = new NbtItemBuilder(i);
+                if (builder.getString("nexoItem") != null) {
+                    System.out.println("Setting texture");
+                    builder.setString("minecraft", "item_model", "minecraft:paper");
                 }
+                player.getInventory().setItemInMainHand(i);
                 setupItems();
             }).open();
         });

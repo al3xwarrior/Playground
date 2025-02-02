@@ -127,16 +127,6 @@ public class NPCMenu extends Menu {
             player.closeInventory();
         });
 
-        ItemStack canBePlayer = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta canBePlayerMeta = canBePlayer.getItemMeta();
-        canBePlayerMeta.setDisplayName(colorize("&aCan be Player"));
-        canBePlayer.setItemMeta(canBePlayerMeta);
-        addItem(36, canBePlayer, () -> {
-            housingNPC.setCanBePlayer(!housingNPC.isCanBePlayer());
-            player.sendMessage(colorize("&aCan be Player set to: " + housingNPC.isCanBePlayer()));
-            setupItems();
-        });
-
         ItemBuilder npcInfo = ItemBuilder.create(Material.PAPER)
                 .name("&aNPC Info")
                 .description("Information about this NPC")
@@ -145,7 +135,6 @@ public class NPCMenu extends Menu {
                 .info("Entity Type", "&b" + housingNPC.getEntityType().name())
                 .info("Navigation Type", "&6" + housingNPC.getNavigationType().name())
                 .info("Look at Players", housingNPC.isLookAtPlayer() ? "&aYes" : "&cNo")
-                .info("Can be Player", housingNPC.isCanBePlayer() ? "&aYes" : "&cNo")
                 .lClick(ItemBuilder.ActionType.SAVE_LOCATION);
         addItem(48, npcInfo.build(), () -> {
             housingNPC.setLocation(housingNPC.getLocation());

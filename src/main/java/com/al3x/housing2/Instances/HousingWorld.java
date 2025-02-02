@@ -56,6 +56,7 @@ public class HousingWorld {
 
     private UUID ownerUUID;
     private UUID houseUUID;
+    private String ownerName;
     private String name;
     private String description;
     private int size;
@@ -138,6 +139,7 @@ public class HousingWorld {
         setupWorldBorder();
         setupDefaultScoreboard();
         addDefaultGroups(owner);
+        loaded = true;
         save();
     }
 

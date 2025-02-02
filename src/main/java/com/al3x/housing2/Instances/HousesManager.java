@@ -65,6 +65,7 @@ public class HousesManager {
 
     public HousingWorld createHouse(Player owner, HouseSize size) {
         HousingWorld house = new HousingWorld(main, owner, size);
+        house.sendPlayerToHouse(owner);
 
         concurrentLoadedHouses.put(house.getHouseUUID().toString(), house);
 
@@ -198,12 +199,28 @@ public class HousesManager {
         return false;
     }
 
+    public boolean playerHasHouse(String playerName) {
+        for (HousingWorld house : getLoadedHouses()) {
+            if (house.getOwner().getName() == null) continue;
+            if (house.getOwner().getName().equalsIgnoreCase(playerName)) return true;
+        }
+
+        for (HouseData houseData : getAllHouseData()) {
+            if (houseData.getOwnerName() == null) {
+                continue;
+            }
+            if (houseData.getOwnerName().equalsIgnoreCase(playerName)) return true;
+        }
+        return false;
+    }
+
     public void deleteHouse(Player owner) {
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
                 concurrentLoadedHouses.remove(house.getHouseUUID().toString());
                 house.delete();
-                return;
+                housesById.remove(house.getHouseUUID().toString());
+                playerHouses.get(owner.getUniqueId()).remove(house.getHouseUUID().toString());
             }
         }
 
@@ -212,6 +229,7 @@ public class HousesManager {
                 playerHouses.get(owner.getUniqueId()).remove(houseID);
                 HousingWorld house = new HousingWorld(main, owner, houseID);
                 house.delete();
+                housesById.remove(houseID);
                 concurrentLoadedHouses.remove(house.getHouseUUID().toString());
                 return;
             }

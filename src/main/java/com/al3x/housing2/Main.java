@@ -10,7 +10,6 @@ import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
-import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -20,9 +19,13 @@ import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public final class Main extends JavaPlugin {
@@ -65,6 +68,8 @@ public final class Main extends JavaPlugin {
         this.cookieManager = new CookieManager(this, getDataFolder());
         this.clipboardManager = new ClipboardManager(this, getDataFolder());
         this.lobbyDisplays = new LobbyDisplays(housesManager);
+
+        loadItemsToCache();
 
         HologramLib.getManager().ifPresentOrElse(
                 manager -> hologramManager = manager,
@@ -206,5 +211,24 @@ public final class Main extends JavaPlugin {
         return this.lobbyDisplays;
     }
 
+    public LinkedHashMap<String, Integer> items = new LinkedHashMap<>();
+    public void loadItemsToCache() {
+        //read the resource "items.yml" and load it into the cache
+        items.clear();
+        File itemsFile = new File(getDataFolder(), "items.yml");
+        if (!itemsFile.exists()) {
+            itemsFile.getParentFile().mkdirs();
+            saveResource("items.yml", true);
+        }
+        YamlConfiguration customConfig = new YamlConfiguration();
+        try {
+            customConfig.load(itemsFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
 
+        for (String key : customConfig.getKeys(false)) {
+            items.put(key, customConfig.getInt(key));
+        }
+    }
 }

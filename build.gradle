@@ -11,7 +11,6 @@ version = '1.0'
 repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-    maven { url 'https://repo.inventivetalent.org/repository/public/' }
     maven { url 'https://oss.sonatype.org/content/groups/public/' }
     maven { url 'https://repo.onarandombox.com/content/groups/public/' }
     maven { url 'https://maven.citizensnpcs.co/repo' }
@@ -33,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
         transitive = false
     }

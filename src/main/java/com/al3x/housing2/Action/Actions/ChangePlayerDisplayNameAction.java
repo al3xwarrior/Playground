@@ -76,6 +76,7 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
     public boolean execute(Player player, HousingWorld house) {
         if (house.getWorld().getPlayers().contains(player)) {
             player.playerListName(StringUtilsKt.housingStringFormatter(name, house, player));
+            player.displayName(StringUtilsKt.housingStringFormatter(name, house, player));
         }
         return true;
     }

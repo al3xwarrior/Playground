@@ -44,24 +44,6 @@ public class TestPlaceholder implements CommandExecutor {
             return true;
         }
 
-        if (strings[0].equals("new")) {
-            if (main.getHousesManager().getHouse(player.getWorld()) == null) {
-                player.sendMessage(colorize("&cYou are not in a house!"));
-                return true;
-            }
-
-            HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
-
-            if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
-                player.sendMessage(colorize("&cYou do not have permission to view placeholders in this house!"));
-                return true;
-            }
-
-            String message = String.join(" ", strings.length > 1 ? Arrays.copyOfRange(strings, 1, strings.length) : new String[0]);
-            player.sendMessage(colorize("&e" + Placeholder.handlePlaceholders(message, house, player)));
-            return true;
-        }
-
         if (main.getHousesManager().getHouse(player.getWorld()) == null) {
             player.sendMessage(colorize("&cYou are not in a house!"));
             return true;

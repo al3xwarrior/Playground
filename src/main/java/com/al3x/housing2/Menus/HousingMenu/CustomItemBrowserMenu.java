@@ -114,7 +114,7 @@ public class CustomItemBrowserMenu extends Menu {
 
             com.nexomc.nexo.items.ItemBuilder ib = NexoItems.itemFromId(name);
             if (ib == null) continue;
-            ItemStack item = NexoItemBuilderUtilsKt.makeItem(ib).build();
+            ItemStack item = NexoItemBuilderUtilsKt.makeItem(ib);
             itemsArray.add(new CustomItem(name, item));
         }
 

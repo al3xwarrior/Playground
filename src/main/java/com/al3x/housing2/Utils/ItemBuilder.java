@@ -260,7 +260,7 @@ public class ItemBuilder {
 
         // Hide all item flags cause they are annoying and useless
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-        itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey(Main.getInstance(), "dummy"), 0, AttributeModifier.Operation.ADD_NUMBER)); // needed to correctly hide attributes
+        itemMeta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey(Main.getInstance(), "dummy"), 0, AttributeModifier.Operation.ADD_NUMBER)); // needed to correctly hide attributes
 
         stack.setItemMeta(itemMeta);
         //Add glow effect

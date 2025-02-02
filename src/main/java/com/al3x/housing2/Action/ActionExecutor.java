@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -15,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
-    long pause = 0;
+    double pause = 0;
     boolean isPaused = false;
 
     public ActionExecutor() {
@@ -52,8 +54,13 @@ public class ActionExecutor {
 
             action = queue.removeFirst();
 
-            if (action instanceof PauseAction) { //Add time every time a new one comes in
-                pause += (long) ((PauseAction) action).getDuration();
+            if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
+                String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
+                if (!NumberUtilsKt.isDouble(dur)) {
+                    return false;
+                }
+                double duration = Double.parseDouble(dur);
+                pause += duration;
                 continue;
             }
 
@@ -79,12 +86,12 @@ public class ActionExecutor {
             if (String.valueOf(pause).equals(String.valueOf(Math.round(pause)))) {
                 scheduler.runTaskLater(Main.getInstance(), () -> {
                     returnVal.set(finalAction.execute(player, house, event, this));
-                }, pause);
+                }, (long) pause);
             } else {
-                long finalPause = pause;
+                double finalPause = pause;
                 scheduler.runTaskAsynchronously(Main.getInstance(), () -> {
                     try {
-                        Thread.sleep(finalPause * 50);
+                        Thread.sleep((long) (finalPause * 50));
                     } catch (InterruptedException ignored) {
                     }
 

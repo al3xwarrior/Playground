@@ -106,7 +106,7 @@ public class AddActionMenu extends Menu {
             }
         }
 
-        if (paginationList.getPageCount() > 1) {
+        if (page < paginationList.getPageCount()) {
             ItemBuilder forwardArrow = new ItemBuilder();
             forwardArrow.material(Material.ARROW);
             forwardArrow.name("&aNext Page");

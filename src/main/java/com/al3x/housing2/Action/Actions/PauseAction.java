@@ -4,7 +4,9 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,13 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PauseAction extends HTSLImpl {
-    double duration = 5.0; // in ticks
+    String duration = "5.0"; // in ticks
 
     public PauseAction() {
         super("Pause Action");
@@ -58,23 +61,20 @@ public class PauseAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + duration)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.0, 2000.0
+                        ActionEditor.ActionItem.ActionType.STRING
                 )
         );
 
         return new ActionEditor(4, "&ePause Action Settings", items);
     }
 
-    public void setDuration(double duration) {
-        this.duration = duration;
-    }
-
-    public double getDuration() {
-        return duration;
-    }
-
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        String dur = Placeholder.handlePlaceholders(duration, house, player);
+        if (!NumberUtilsKt.isDouble(dur)) {
+            return false;
+        }
+        double duration = Double.parseDouble(dur);
         try {
             Thread.sleep((long) duration * 50); // ~50ms per tick
         } catch (InterruptedException e) {
@@ -83,11 +83,22 @@ public class PauseAction extends HTSLImpl {
         return true;
     }
 
+    public String getDuration() {
+        return duration;
+    }
+
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("duration", duration);
         return data;
+    }
+
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        if (data.containsKey("duration")) {
+            duration = data.get("duration").toString();
+        }
     }
 
     @Override
