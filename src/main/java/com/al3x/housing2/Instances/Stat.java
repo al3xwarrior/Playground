@@ -11,12 +11,10 @@ import static com.al3x.housing2.Enums.StatOperation.*;
 
 public class Stat {
 
-    private UUID uuid;
     private String stat;
     private String value;
 
-    public Stat(UUID uuid, String stat, String value) {
-        this.uuid = uuid;
+    public Stat(String stat, String value) {
         this.stat = stat;
         this.value = value;
     }
@@ -156,10 +154,6 @@ public class Stat {
 
     public String getStatName() {
         return stat;
-    }
-
-    public UUID getUUID() {
-        return uuid;
     }
 
 }

@@ -26,7 +26,6 @@ data class HouseData(
     var scoreboard: List<String>,
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
-    var playerStats: HashMap<String, List<StatData>>,
     var commands: List<CommandData>? = arrayListOf(),
     var regions: List<RegionData>? = arrayListOf(),
     var layouts: List<LayoutData>? = arrayListOf(),
@@ -39,7 +38,8 @@ data class HouseData(
     var trashCans: List<LocationData>? = arrayListOf(),
     var launchPads: List<LaunchPad>? = arrayListOf(),
     val seed: String,
-    var functions: List<FunctionData>? = arrayListOf()
+    var functions: List<FunctionData>? = arrayListOf(),
+    var version: Int?,
 ) {
 
     companion object {
@@ -61,7 +61,6 @@ data class HouseData(
                 world.scoreboard,
                 NPCData.fromList(world.npCs),
                 fromList(world.statManager.globalStats),
-                fromHashMap(world.statManager.playerStats),
                 CommandData.fromList(world.commands),
                 RegionData.fromList(world.regions),
                 LayoutData.fromList(world.layouts),
@@ -74,7 +73,8 @@ data class HouseData(
                 LocationData.fromLocationList(world.trashCans),
                 world.launchPads,
                 world.seed,
-                FunctionData.fromList(world.functions)
+                FunctionData.fromList(world.functions),
+                world.version,
             )
             return houseData
         }

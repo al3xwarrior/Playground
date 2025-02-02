@@ -12,9 +12,12 @@ import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.Updater;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI;
 import com.infernalsuite.aswm.api.exceptions.UnknownWorldException;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
@@ -28,6 +31,7 @@ import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.bossbar.BossBar;
+import net.neoforged.srgutils.INamedMappingFile;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -86,6 +90,8 @@ public class HousingWorld {
     private List<LaunchPad> launchPads;
     private String seed;
     private Random random;
+    private Integer version;
+
     public HouseData houseData;
 
     // Jukebox
@@ -174,6 +180,8 @@ public class HousingWorld {
         this.radioSongPlayer = new RadioSongPlayer(playlist);
         radioSongPlayer.setRepeatMode(RepeatMode.ALL);
         radioSongPlayer.setRandom(true);
+
+        this.version = Updater.LATEST_VERSION;
     }
 
     private void loadHouseData(OfflinePlayer owner, String name) {
@@ -183,8 +191,9 @@ public class HousingWorld {
             return;
         }
         try {
-            String json = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            JsonObject json = Updater.update(JsonParser.parseString(Files.readString(file.toPath(), StandardCharsets.UTF_8)).getAsJsonObject());
             houseData = GSON.fromJson(json, HouseData.class);
+
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
             notifyOwnerOfFailure(owner);
@@ -200,7 +209,6 @@ public class HousingWorld {
         this.timeCreated = houseData.getTimeCreated();
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
         this.icon = houseData.getIcon() != null ? Material.valueOf(houseData.getIcon()) : Material.OAK_DOOR;
-        this.statManager.setPlayerStats(StatData.Companion.toHashMap(houseData.getPlayerStats()));
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
@@ -215,6 +223,7 @@ public class HousingWorld {
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
+        this.version = houseData.getVersion();
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -621,6 +630,10 @@ public class HousingWorld {
         return name;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
     public Long getTimeCreated() {
         return timeCreated;
     }
@@ -909,7 +922,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(null, null, null, null, null, false, false);
+            data = new PlayerData(null, null, null, null, null, false, false, new ArrayList<>());
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }

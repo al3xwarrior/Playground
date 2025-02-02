@@ -5,7 +5,6 @@ import java.util.*
 import kotlin.collections.HashMap
 
 data class StatData(
-    val id: String,
     val name: String,
     val value: String //Can be a string, double, or int
 ) {
@@ -29,7 +28,7 @@ data class StatData(
                 val list = mutableListOf<StatData>()
                 statList.forEach {
                     if (it.value == null) return@forEach
-                    list.add(StatData(it.uuid.toString(), it.statName, it.value))
+                    list.add(StatData(it.statName, it.value))
                 }
                 map[uuid.toString()] = list
             }
@@ -41,7 +40,7 @@ data class StatData(
             statMap.forEach { (uuid, statList) ->
                 val list = mutableListOf<Stat>()
                 statList.forEach {
-                    list.add(Stat(UUID.fromString(it.id), it.name, it.value))
+                    list.add(Stat(it.name, it.value))
                 }
                 map[UUID.fromString(uuid)] = list
             }
@@ -51,7 +50,7 @@ data class StatData(
         fun fromList(statList: List<Stat>): List<StatData> {
             val list = mutableListOf<StatData>()
             statList.forEach {
-                list.add(StatData(it.uuid.toString(), it.statName, it.value))
+                list.add(StatData(it.statName, it.value))
             }
             return list
         }
@@ -59,7 +58,7 @@ data class StatData(
         fun toList(statList: List<StatData>): List<Stat> {
             val list = mutableListOf<Stat>()
             statList.forEach {
-                list.add(Stat(UUID.fromString(it.id), it.name, it.value))
+                list.add(Stat(it.name, it.value))
             }
             return list
         }

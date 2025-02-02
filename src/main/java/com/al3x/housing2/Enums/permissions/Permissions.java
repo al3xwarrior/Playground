@@ -58,8 +58,8 @@ public enum Permissions implements PermissionInterface{
     ITEM_ACTION_BUTTON,
     ITEM_LEADERBOARD,
     ITEM_TRASHCAN,
-    ITEM_BIOME_STICK
-
+    ITEM_BIOME_STICK,
+    RESET_PLAYER_DATA(true),
     ;
 
     Class<? extends PermissionInterface> subEnum;

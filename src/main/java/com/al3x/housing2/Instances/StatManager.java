@@ -1,23 +1,23 @@
 package com.al3x.housing2.Instances;
 
+import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Instances.HousingData.StatData;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
 public class StatManager {
 
-    private HashMap<UUID, List<Stat>> playerStats;
     private List<Stat> globalStats;
     private HousingWorld house;
 
     public StatManager(HousingWorld house) {
         this.house = house;
-        this.playerStats = new HashMap<>();
         this.globalStats = new ArrayList<>();
     }
 
     public Stat getPlayerStatByName(Player player, String name) {
-        List<Stat> playerStats = this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
 
         for (Stat stat : playerStats) {
             if (stat.getStatName().equals(name)) {
@@ -26,11 +26,22 @@ public class StatManager {
         }
 
         // If no stat found, return a default stat with value 0
-        Stat defaultStat = new Stat(player.getUniqueId(), name, "0.0");
-//        playerStats.add(defaultStat);
-//
-//        this.playerStats.put(player.getUniqueId(), playerStats);
-        return defaultStat;
+        return new Stat(name, "0.0");
+
+    }
+
+    public Stat getPlayerStatByName(PlayerData player, String name) {
+        List<Stat> playerStats = StatData.Companion.toList(player.getStats());
+
+        for (Stat stat : playerStats) {
+            if (stat.getStatName().equals(name)) {
+                return stat;
+            }
+        }
+
+        // If no stat found, return a default stat with value 0
+        return new Stat(name, "0.0");
+
     }
 
     public Stat getGlobalStatByName(String name) {
@@ -41,23 +52,22 @@ public class StatManager {
         }
 
         // If no stat found, return a default stat with value 0
-        Stat defaultStat = new Stat(UUID.randomUUID(), name, "0.0");
+        Stat defaultStat = new Stat(name, "0.0");
 //        globalStats.add(defaultStat);
         return defaultStat;
     }
 
     public List<Stat> getPlayerStats(Player player) {
-        return this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        return StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
     }
 
     public void addPlayerStat(Player player, Stat stat) {
-        List<Stat> playerStats = this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
         playerStats.add(stat);
-        this.playerStats.put(player.getUniqueId(), playerStats);
     }
 
     public boolean hasStat(Player player, String name) {
-        List<Stat> playerStats = this.playerStats.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        List<Stat> playerStats = StatData.Companion.toList(house.getPlayersData().get(player.getUniqueId().toString()).getStats());
 
         for (Stat stat : playerStats) {
             if (stat.getStatName().equals(name)) {
@@ -76,14 +86,6 @@ public class StatManager {
         }
 
         return false;
-    }
-
-    public HashMap<UUID, List<Stat>> getPlayerStats() {
-        return playerStats;
-    }
-
-    public void setPlayerStats(HashMap<UUID, List<Stat>> playerStats) {
-        this.playerStats = playerStats;
     }
 
 

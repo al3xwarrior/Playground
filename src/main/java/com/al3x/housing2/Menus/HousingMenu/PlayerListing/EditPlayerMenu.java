@@ -45,6 +45,12 @@ public class EditPlayerMenu extends Menu {
         PlayerData targetPlayerData = house.getPlayersData().get(targetPlayer.getUniqueId().toString());
         PlayerData playerData = house.getPlayersData().get(player.getUniqueId().toString());
 
+        addItem(31, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+            new PlayerListingMenu(main, player, house).open();
+        });
+
+        if (playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() && targetPlayer.getPlayer() != player) return; // less group priority, cant edit
+
         if (online && house.hasPermission(player, Permissions.KICK)) {
             addItem(slots[i], new ItemBuilder().material(Material.IRON_BARS).name(colorize("&cKick Player")).lClick(ItemBuilder.ActionType.KICK).build(), (e) -> {
                 if (!e.isLeftClick()) return;
@@ -88,7 +94,7 @@ public class EditPlayerMenu extends Menu {
             i++;
         }
 
-        if (house.hasPermission(player, CHANGE_PLAYER_GROUP) || house.hasPermission(player, EDIT_PERMISSIONS_AND_GROUP)) {
+        if ((house.hasPermission(player, CHANGE_PLAYER_GROUP) || house.hasPermission(player, EDIT_PERMISSIONS_AND_GROUP))) {
             addItem(slots[i], new ItemBuilder().material(Material.PLAYER_HEAD).name(colorize("&eCycle Group")).info("Current Group", "&7" + targetPlayerData.getGroupInstance(house).getDisplayName()).lClick(CYCLE_FORWARD).rClick(CYCLE_BACKWARD).build(), (e) -> {
                 int groupIndex = house.getGroups().indexOf(targetPlayerData.getGroupInstance(house));
 
@@ -129,7 +135,9 @@ public class EditPlayerMenu extends Menu {
             i++;
         }
 
-        addItem(31, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        if (!house.hasPermission(player, RESET_PLAYER_DATA) || targetPlayer.getPlayer() == player) return;
+        addItem(35, new ItemBuilder().material(Material.TNT).name(colorize("&aReset Player Data")).description("Clears ALL player data of this player, including stats, inventory, group, and team.").mClick(RESET).build(), (e) -> {
+            house.getPlayersData().remove(targetPlayer.getUniqueId().toString());
             new PlayerListingMenu(main, player, house).open();
         });
 

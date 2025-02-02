@@ -394,6 +394,7 @@ public class ItemBuilder {
         SAVE_LOCATION("save location", YELLOW),
         TOGGLE_VISIBILITY("toggle visibility", YELLOW),
         KICK("kick", YELLOW),
+        RESET("reset", YELLOW)
         ;
 
         private String action;

@@ -222,11 +222,15 @@ public class PlayerStatAction extends HTSLImpl {
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
         Stat stat = house.getStatManager().getPlayerStatByName(player, name);
 
+        Bukkit.getLogger().info("before: " + stat.getValue());
+
         for (StatInstance instance : statInstances) {
             if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
                 player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
             }
         }
+
+        Bukkit.getLogger().info("after: " + stat.getValue());
 
         if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
             if (house.getStatManager().hasStat(player, name)) {
