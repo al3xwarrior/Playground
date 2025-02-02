@@ -1,56 +1,61 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Enums.VelocityOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Menus.PaginationMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.al3x.housing2.Utils.Color.colorize;
+public class SetVelocityAction extends HTSLImpl {
 
-public class PushPlayerAction extends HTSLImpl {
     private PushDirection direction;
+    private VelocityOperation operation;
     private String customDirection;
     private double amount;
 
-    public PushPlayerAction() {
-        super("Push Player Action");
+    public SetVelocityAction() {
+        super("Set Velocity Action");
         this.direction = PushDirection.FORWARD;
+        this.operation = VelocityOperation.SET;
         this.amount = 1.5;
     }
 
-    public PushPlayerAction(Double amount, PushDirection direction) {
-        super("Push Player Action");
+    public SetVelocityAction(Double amount, PushDirection direction, VelocityOperation operation) {
+        super("Set Velocity Action");
         this.direction = direction;
         this.amount = amount;
+        this.operation = operation;
     }
 
     @Override
     public String toString() {
-        return "PushPlayerAction (Amount: " + amount + ")";
+        return "SetVelocityAction (Amount: " + amount + ")";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.PISTON);
-        builder.name("&ePush Player");
+        builder.name("&eSet Velocity");
         builder.info("&eSettings", "");
+        builder.info("Operation", "&a" + operation);
         builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
-        builder.info("Velocity", "&a" + amount);
+        builder.info("Power", "&a" + amount);
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -60,7 +65,7 @@ public class PushPlayerAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.PISTON);
-        builder.name("&aPush Player");
+        builder.name("&aSet Velocity");
         builder.description("Propel a player in a direction.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
         builder.extraLore("&8&oThank you Home Depot"); //Yes I did add #extraLore just for this joke
@@ -69,9 +74,30 @@ public class PushPlayerAction extends HTSLImpl {
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
         List<ActionEditor.ActionItem> items = Arrays.asList(
+                new ActionEditor.ActionItem("operation",
+                        ItemBuilder.create(Material.COMPASS)
+                                .name("&eOperation")
+                                .description("How the player's current velocity will be adjusted.")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + operation)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        (event, obj) -> {
+                            List<Duple<VelocityOperation, ItemBuilder>> operations = new ArrayList<>();
+                            for (VelocityOperation operation : VelocityOperation.values()) {
+                                operations.add(new Duple<>(operation, ItemBuilder.create(operation.getMaterial()).name("&a" + operation)));
+                            }
+                            new PaginationMenu<>(Main.getInstance(), "&eSelect an operation", operations, editMenu.getOwner(), house, editMenu, (operation) -> {
+                                this.operation = operation;
+                                editMenu.open();
+                            }).open();
+
+                            return true;
+                        }
+                ),
                 new ActionEditor.ActionItem("direction",
                         ItemBuilder.create(Material.COMPASS)
                                 .name("&eDirection")
+                                .description("The direction of the velocity adjustment.")
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + direction)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
@@ -79,44 +105,48 @@ public class PushPlayerAction extends HTSLImpl {
                         (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
                             customDirection = str;
                             direction = dir;
+                            editMenu.open();
                         })
                 ),
                 new ActionEditor.ActionItem("amount",
                         ItemBuilder.create(Material.SLIME_BALL)
-                                .name("&eVelocity")
+                                .name("&ePower")
+                                .description("The amount of force to apply to the velocity adjustment.")
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + amount)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.1, 100.0 //Pretty easy to change the max value
+                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.0, 100.0 //Pretty easy to change the max value
                 )
         );
 
-        return new ActionEditor(4, "&ePush Player Action Settings", items);
+        return new ActionEditor(4, "&eSet Velocity Action Settings", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Vector playerVelocity = new Vector();
+        Vector playerVelocity = player.getVelocity();
+        Vector velocityAdjustment = new Vector();
+
         switch (direction) {
-            case FORWARD -> playerVelocity.add(player.getEyeLocation().getDirection().multiply(amount));
-            case BACKWARD -> playerVelocity.add(player.getEyeLocation().getDirection().multiply(-amount));
-            case UP -> playerVelocity.add(new Vector(0, amount, 0));
-            case DOWN -> playerVelocity.add(new Vector(0, -amount, 0));
-            case NORTH -> playerVelocity.add(new Vector(0, 0, -amount));
-            case SOUTH -> playerVelocity.add(new Vector(0, 0, amount));
-            case EAST -> playerVelocity.add(new Vector(amount, 0, 0));
-            case WEST -> playerVelocity.add(new Vector(-amount, 0, 0));
+            case FORWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(amount));
+            case BACKWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(-amount));
+            case UP -> velocityAdjustment.add(new Vector(0, amount, 0));
+            case DOWN -> velocityAdjustment.add(new Vector(0, -amount, 0));
+            case NORTH -> velocityAdjustment.add(new Vector(0, 0, -amount));
+            case SOUTH -> velocityAdjustment.add(new Vector(0, 0, amount));
+            case EAST -> velocityAdjustment.add(new Vector(amount, 0, 0));
+            case WEST -> velocityAdjustment.add(new Vector(-amount, 0, 0));
             case LEFT -> {
                 Vector direction = player.getEyeLocation().getDirection();
                 // Rotate the direction 90 degrees counterclockwise (left)
                 Vector left = new Vector(-direction.getZ(), 0, direction.getX()).normalize().multiply(amount);
-                playerVelocity.add(left);
+                velocityAdjustment.add(left);
             }
             case RIGHT -> {
                 Vector direction = player.getEyeLocation().getDirection();
                 // Rotate the direction 90 degrees clockwise (right)
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
-                playerVelocity.add(right);
+                velocityAdjustment.add(right);
             }
             case CUSTOM -> {
                 if (customDirection == null) {
@@ -134,7 +164,7 @@ public class PushPlayerAction extends HTSLImpl {
                     custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
                     custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
                     custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
-                    playerVelocity.add(custom);
+                    velocityAdjustment.add(custom);
                 } catch (NumberFormatException e) {
                     return true;
                 }
@@ -142,6 +172,14 @@ public class PushPlayerAction extends HTSLImpl {
         }
         //This way it can get two different velocities at the same time
         //ex. UP and FORWARD
+        switch (operation) {
+            case VelocityOperation.SET -> playerVelocity = velocityAdjustment;
+            case VelocityOperation.ADD -> playerVelocity.add(velocityAdjustment);
+            case VelocityOperation.SUBTRACT -> playerVelocity.subtract(velocityAdjustment);
+            case VelocityOperation.MULTIPLY -> playerVelocity.multiply(velocityAdjustment);
+            case VelocityOperation.DIVIDE -> playerVelocity.divide(velocityAdjustment);
+            case VelocityOperation.MOD -> playerVelocity = playerVelocity.crossProduct(velocityAdjustment);
+        }
         player.setVelocity(playerVelocity);
         return true;
     }
@@ -174,6 +212,7 @@ public class PushPlayerAction extends HTSLImpl {
         data.put("amount", amount);
         data.put("customDirection", customDirection);
         data.put("direction", direction);
+        data.put("operation", operation);
         return data;
     }
 
@@ -185,7 +224,8 @@ public class PushPlayerAction extends HTSLImpl {
     @Override
     public String export(int indent) {
         String dir = direction == PushDirection.CUSTOM ? customDirection : direction.name();
-        return " ".repeat(indent) + keyword() + " " + amount + " " + dir;
+        String operation = this.operation.name();
+        return " ".repeat(indent) + keyword() + " " + operation + " " + dir + " " + amount;
     }
 
     @Override

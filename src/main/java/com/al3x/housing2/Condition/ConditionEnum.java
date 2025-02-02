@@ -16,6 +16,7 @@ public enum ConditionEnum {
     HAS_POTION_EFFECT("Has Potion Effect", HasPotionEffectCondition.class),
     IS_SNEAKING("Is Sneaking", IsSneakingCondition.class),
     IS_FLYING("Is Flying", IsFlyingCondition.class),
+    IS_GLIDING("Is Gliding", IsGlidingCondition.class),
     HEALTH_REQUIREMENT("Health Requirement", HealthRequirementCondition.class),
     MAXHEALTH_REQUIREMENT("Max Health Requirement", MaxHealthRequirementCondition.class),
     HUNGER_REQUIREMENT("Hunger Requirement", HungerRequirementCondition.class),

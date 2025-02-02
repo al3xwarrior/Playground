@@ -12,7 +12,7 @@ public enum ActionEnum {
     CHANGE_PLAYER_TEAM("Change Player Team", ChangePlayerTeamAction.class),
     KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
     FULL_HEAL("Full Heal Action", FullHealAction.class),
-    PUSH_PLAYER("Push Player Action", PushPlayerAction.class),
+    SET_VELOCITY("Set Velocity Action", SetVelocityAction.class),
     SEND_TITLE("Send Title Action", SendTitleAction.class),
     ACTIONBAR("Actionbar Action", ActionbarAction.class),
     RESET_INVENTORY("Reset Inventory Action", ResetInventoryAction.class),
