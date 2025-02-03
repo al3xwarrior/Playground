@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
@@ -43,7 +44,7 @@ public class Function {
         this.global = global;
     }
 
-    public void execute(Main main, Player player, HousingWorld house, boolean automatic) {
+    public void execute(Main main, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
         if (!loaded) return;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
@@ -56,12 +57,18 @@ public class Function {
                 players = house.getWorld().getPlayers();
             }
         }
-        ActionExecutor executor = new ActionExecutor();
 
-        for (Player p : players) {
-            List<Action> actions = new ArrayList<>(this.actions);
-            executor.addActions(actions);
-            executor.execute(p, house, null);
+        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
+        ActionExecutor executor = new ActionExecutor(parent);
+        List<Action> actions = new ArrayList<>(this.actions);
+        executor.addActions(actions);
+        if (parent == null) {
+            parent = new ParentActionExecutor();
+            executor.setParent(parent);
+            parent.addExecutor(executor);
+            for (Player p : players) {
+                parent.execute(p, house, null);
+            }
         }
     }
 

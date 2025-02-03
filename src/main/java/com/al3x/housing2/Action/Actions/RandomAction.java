@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -10,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -79,6 +81,11 @@ public class RandomAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return false; // Not used
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
         if (subActions.isEmpty()) {
             return true;
         }

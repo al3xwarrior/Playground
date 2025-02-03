@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -13,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +93,11 @@ public class RepeatAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return true;
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
         if (subActions.isEmpty()) {
             return true;
         }
@@ -113,11 +116,14 @@ public class RepeatAction extends HTSLImpl {
             timesInt = 20;
         }
 
-        ActionExecutor executor = new ActionExecutor();
+        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
+
+        ActionExecutor executor = new ActionExecutor(parent);
         for (int i = 0; i < timesInt; i++) {
             executor.addActions(subActions);
-            if (!executor.execute(player, house, null)) break;
+            if (parent != null && !executor.execute(player, house, null)) break;
         }
+
         return true;
     }
 

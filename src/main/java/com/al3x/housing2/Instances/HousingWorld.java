@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
@@ -102,7 +103,7 @@ public class HousingWorld {
 
     private boolean loaded = false;
     private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
-    private List<AsyncTask> runInThread = new ArrayList<>();
+    private ConcurrentHashMultiset<AsyncTask> runInThread = ConcurrentHashMultiset.create();
     public HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
     private HousingScoreboard scoreboardInstance;
 
@@ -158,7 +159,7 @@ public class HousingWorld {
         return new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(25);
                 } catch (InterruptedException e) {
                     return;
                 }
@@ -1023,9 +1024,10 @@ public class HousingWorld {
 
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
-            ActionExecutor executor = new ActionExecutor();
+            ParentActionExecutor parent = new ParentActionExecutor();
+            ActionExecutor executor = new ActionExecutor(parent);
             executor.addActions(actions);
-            executor.execute(player, this, event);
+            parent.execute(player, this, event);
             return event != null && event.isCancelled();
         }
         return false;

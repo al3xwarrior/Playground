@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,9 +20,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
     double pause = 0;
+    ParentActionExecutor parent;
     boolean isPaused = false;
 
-    public ActionExecutor() {
+    public ActionExecutor(@Nullable ParentActionExecutor parent) {
+        this.parent = parent;
+
+        if (parent != null) this.parent.addExecutor(this);
     }
 
     public ActionExecutor(List<Action> action) {
@@ -40,6 +45,14 @@ public class ActionExecutor {
         queue.addAll(actions);
     }
 
+    public ParentActionExecutor getParent() {
+        return parent;
+    }
+
+    public void setParent(ParentActionExecutor parent) {
+        this.parent = parent;
+    }
+
     public List<Action> getQueue() {
         return queue;
     }
@@ -47,74 +60,58 @@ public class ActionExecutor {
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
         AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        Action action;
-        while (!queue.isEmpty()) {
-            if (isPaused) {
-                break;
+
+        AtomicBoolean canMoveOn = new AtomicBoolean(true);
+        house.runInThread(new AsyncTask((millis, task) -> {
+            if (!canMoveOn.get() && millis % (50 * pause) == 0) {
+                canMoveOn.set(true);
             }
 
-            action = queue.removeFirst();
+            if (!canMoveOn.get() || isPaused) {
+                return;
+            }
+
+            if (queue.isEmpty()) {
+                task.cancel();
+                return;
+            }
+
+            Action action = queue.removeFirst();
 
             if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
                 if (!NumberUtilsKt.isDouble(dur)) {
-                    return false;
+                    return;
                 }
                 double duration = Double.parseDouble(dur);
                 pause += duration;
-                continue;
+                task.reset();
+                canMoveOn.set(false);
+                return;
             }
 
             if (action instanceof ExitAction) {
                 returnVal.set(false);
-                return false;
+                task.cancel();
+                return;
             }
 
-            if (!returnVal.get()) {
-                return false;
-            }
-
-            if (pause == 0) {
-                returnVal.set(action.execute(player, house, event, this));
-                continue;
-            }
-
-            if (action.requiresPlayer() && player == null) {
-                return true;
-            }
-
-            Action finalAction = action;
-            if (String.valueOf(pause).equals(String.valueOf(Math.round(pause)))) {
-                scheduler.runTaskLater(Main.getInstance(), () -> {
-                    returnVal.set(finalAction.execute(player, house, event, this));
-                }, (long) pause);
+            if (action.mustBeSync()) {
+                scheduler.runTask(Main.getInstance(), () -> {
+                    returnVal.set(action.execute(player, house, event, this));
+                });
             } else {
-                double finalPause = pause;
-                house.runInThread(new AsyncTask((millis, task) -> {
-                    if (millis % (50 * finalPause) != 0) {
-                        return;
-                    }
-
-                    if (finalAction.mustBeSync()) {
-                        scheduler.runTask(Main.getInstance(), () -> {
-                            returnVal.set(finalAction.execute(player, house, event, this));
-                        });
-                    } else {
-                        returnVal.set(finalAction.execute(player, house, event, this));
-                    }
-                }));
+                returnVal.set(action.execute(player, house, event, this));
             }
-        }
 
-        if (isPaused) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
-            house.runInThread(new AsyncTask((millis, task) -> {
-                if (!isPaused) {
-                    scheduler.runTask(Main.getInstance(), () -> {
-                        execute(player, house, event);
-                    });
-                    task.cancel();
-                }
-            }));
+            if (parent != null && !parent.running && !parent.executors.isEmpty()) {
+                parent.nano = System.nanoTime();
+                parent.execute(player, house, event);
+            }
+        }));
+
+        if (parent != null && !parent.running && !parent.executors.isEmpty()) {
+            parent.execute(player, house, event);
         }
 
         return returnVal.get();

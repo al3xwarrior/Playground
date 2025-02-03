@@ -24,15 +24,15 @@ public class AsyncTask {
         return runnable;
     }
 
+    public void reset() {
+        millis = 0;
+    }
+
     public void run() {
         if (runnable == null) {
             return;
         }
-        runnable.accept(millis++, this);
-
-        if (millis > 1000) {
-            millis = 0;
-        }
+        runnable.accept(millis += 25, this);
     }
 
     public void cancel() {

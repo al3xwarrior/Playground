@@ -1,6 +1,7 @@
 package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -174,7 +175,10 @@ public class HousingItems implements Listener {
         if (customItem == null) return;
 
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
-            new ActionExecutor(customItem.getActions().get(clickType)).execute(player, house, event);
+            ParentActionExecutor parent = new ParentActionExecutor();
+            ActionExecutor executor = new ActionExecutor(parent);
+            executor.addActions(customItem.getActions().get(clickType));
+            parent.execute(player, house, event);
         }
     }
 

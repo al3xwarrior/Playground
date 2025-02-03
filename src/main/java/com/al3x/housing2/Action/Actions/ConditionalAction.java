@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -11,6 +12,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.maven.model.Parent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -128,7 +130,7 @@ public class ConditionalAction extends Action {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
         boolean result = false;
         if (conditions.isEmpty()) {
             result = true;
@@ -150,7 +152,9 @@ public class ConditionalAction extends Action {
             }
         }
 
-        ActionExecutor executor = new ActionExecutor();
+        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
+
+        ActionExecutor executor = new ActionExecutor(parent);
         executor.addActions((result ? ifActions : elseActions));
         return executor.execute(player, house, event);
     }

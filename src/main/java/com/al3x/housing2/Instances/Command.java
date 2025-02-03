@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Main;
 import org.bukkit.Material;
@@ -64,9 +65,10 @@ public class Command {
     }
 
     public void execute(Player player, HousingWorld world) {
-        ActionExecutor executor = new ActionExecutor();
+        ParentActionExecutor parent = new ParentActionExecutor();
+        ActionExecutor executor = new ActionExecutor(parent);
         executor.addActions(actions);
-        executor.execute(player, world, null);
+        parent.execute(player, world, null);
     }
 
 

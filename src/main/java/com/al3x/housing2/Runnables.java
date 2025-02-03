@@ -3,6 +3,7 @@ package com.al3x.housing2;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.ExplosionAction;
 import com.al3x.housing2.Action.Actions.ParticleAction;
+import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -123,7 +124,7 @@ public class Runnables {
                     if (house == null || house.getFunctions() == null) continue;
                     house.getFunctions().forEach(function -> {
                         if (function.getTicks() != null && TICKS % function.getTicks() == 0) {
-                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, house, true));
+                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, house, true, null));
                         }
                     });
                 }
@@ -205,14 +206,16 @@ public class Runnables {
                                     player.getLocation().getBlockZ() >= minZ && player.getLocation().getBlockZ() <= maxZ) {
                                 if (!region.getPlayersInRegion().contains(player.getUniqueId())) {
                                     region.getPlayersInRegion().add(player.getUniqueId());
-                                    ActionExecutor executor = new ActionExecutor();
+                                    ParentActionExecutor parent = new ParentActionExecutor();
+                                    ActionExecutor executor = new ActionExecutor(parent);
                                     executor.addActions(region.getEnterActions());
-                                    executor.execute(player, house, null);
+                                    parent.execute(player, house, null);
                                 }
                             } else if (region.getPlayersInRegion().contains(player.getUniqueId())) {
-                                ActionExecutor executor = new ActionExecutor();
+                                ParentActionExecutor parent = new ParentActionExecutor();
+                                ActionExecutor executor = new ActionExecutor(parent);
                                 executor.addActions(region.getExitActions());
-                                executor.execute(player, house, null);
+                                parent.execute(player, house, null);
                                 region.getPlayersInRegion().remove(player.getUniqueId());
                             }
                         });
