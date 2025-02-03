@@ -93,6 +93,7 @@ public class HousingWorld {
     private Random random;
     private Thread thread;
     private Integer version;
+    private ArrayList<Player> adminModeUsers = new ArrayList<>();
 
     public HouseData houseData;
 
@@ -630,6 +631,19 @@ public class HousingWorld {
         }
     }
 
+    public void sendPlayerToHouse(Player player, boolean force) {
+        adminModeUsers.add(player);
+        if (loaded) {
+            player.teleport(spawn);
+            player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
+        } else {
+            onLoad.add(house -> {
+                player.teleport(house.getSpawn());
+                player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
+            });
+        }
+    }
+
     public List<Command> getCommands() {
         return commands;
     }
@@ -975,7 +989,7 @@ public class HousingWorld {
     }
 
     public boolean hasPermission(Player player, Permissions permission) {
-        if (player.getUniqueId().equals(ownerUUID)) return true;
+        if (player.getUniqueId().equals(ownerUUID) || isAdminMode(player)) return true;
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) return false;
         Object permissionValue = data.getGroupInstance(this).getPermissions().get(permission);
@@ -984,7 +998,7 @@ public class HousingWorld {
     }
 
     public Object getPermission(Player player, Permissions permission) {
-        if (player.getUniqueId().equals(ownerUUID)) return true;
+        if (player.getUniqueId().equals(ownerUUID) || isAdminMode(player)) return true;
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) return false;
         return data.getGroupInstance(this).getPermissions().get(permission);
@@ -1013,6 +1027,8 @@ public class HousingWorld {
     }
 
     public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
+        if (isAdminMode(player)) return false;
+
         if (eventType == EventType.PLAYER_JOIN) playerJoins(player);
         if (eventType == EventType.PLAYER_QUIT) playerLeaves(player);
 
@@ -1045,5 +1061,13 @@ public class HousingWorld {
 
     public Team getTeam(String team) {
         return teams.stream().filter(t -> t.getName().equals(team)).findFirst().orElse(null);
+    }
+
+    public boolean isAdminMode(Player player) {
+        return adminModeUsers.contains(player);
+    }
+
+    public void removeFromAdminMode(Player player) {
+        adminModeUsers.remove(player);
     }
 }

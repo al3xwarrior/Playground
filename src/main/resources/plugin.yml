@@ -34,3 +34,4 @@ commands:
     aliases: ["/replace"]
   undo:
     aliases: ["/undo"]
+  WTFMap:

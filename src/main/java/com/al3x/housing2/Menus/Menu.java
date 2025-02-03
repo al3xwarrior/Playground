@@ -30,6 +30,7 @@ public abstract class Menu {
     private int size;
     private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
+    private Map<Integer, Consumer<InventoryClickEvent>> shiftLeftClickActions = new HashMap<>();
     protected Player player;
 
     public Menu(Player player, String title, int size) {
@@ -70,18 +71,14 @@ public abstract class Menu {
             int slot = event.getSlot();
             Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
             Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
-
-            if (leftAction != null && rightAction == null) {
-                leftAction.accept(event); // Run the left-click action
-
-
-                return;
-            }
+            Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
 
             if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
                 leftAction.accept(event); // Run the left-click action
             } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
                 rightAction.accept(event); // Run the right-click action
+            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
+                shiftLeftAction.accept(event); // Run the shift-left-click action
             }
         }
     }
@@ -117,6 +114,13 @@ public abstract class Menu {
         inventory.setItem(slot, item);
         leftClickActions.put(slot, (e) -> leftClickAction.run());
         rightClickActions.put(slot, (e) -> rightClickAction.run());
+    }
+
+    public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction, Runnable shiftLeftClickAction) {
+        inventory.setItem(slot, item);
+        leftClickActions.put(slot, (e) -> leftClickAction.run());
+        rightClickActions.put(slot, (e) -> rightClickAction.run());
+        shiftLeftClickActions.put(slot, (e) -> shiftLeftClickAction.run());
     }
 
     public void openChat(Main main, Consumer<String> consumer) {

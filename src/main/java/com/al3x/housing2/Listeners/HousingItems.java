@@ -47,6 +47,11 @@ public class HousingItems implements Listener {
     @EventHandler
     public void moveToOffhand(PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
+
+        if (player.getWorld().getName().equals("world")) {
+            return;
+        }
+
         ItemStack item = event.getOffHandItem();
         Item customItem = Item.fromItemStack(item);
         if (customItem != null) {

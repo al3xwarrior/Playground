@@ -91,7 +91,7 @@ public class MyHousesMenu extends Menu {
                             "\n\n&7Players: &a" + (world[0] != null ? world[0].getGuests() : 0) +
                             "\n&7Cookies: &6" + house.getCookies() +
                             "\n\n&7Privacy: " + HousePrivacy.valueOf(house.getPrivacy()).asString() +
-                            "\n\n&eClick to Join!" + //WHY ARENT YOU USING THE LCLICK AND RCLICK ACTIONS?????
+                            "\n\n&eClick to Join!" + ((player.hasPermission("housing2.admin")) ? "\n&cSHIFT+LEFT-CLICK to Join in &4ADMIN MODE&c!" : "") + //WHY ARENT YOU USING THE LCLICK AND RCLICK ACTIONS?????
                             (house.getOwnerID().equals(player.getUniqueId().toString()) ? colorize("\n&eRight Click to Manage!") : "")))
                     .punctuation(false)
                     .build(), () -> {
@@ -112,10 +112,14 @@ public class MyHousesMenu extends Menu {
                     return;
                 }
                 new EditHouseMenu(main, player, main.getHousesManager().getHouse(player)).open();
+            }, () -> {
+                if (player.hasPermission("housing.admin")) {
+                    player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));
+                    world[0].sendPlayerToHouse(player, true);
+                    return;
+                }
             });
         }
-
-
     }
 
     private int[] getSlots(int amount) {

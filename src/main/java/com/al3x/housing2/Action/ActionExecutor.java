@@ -60,6 +60,8 @@ public class ActionExecutor {
     }
 
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
+        if (house.isAdminMode(player)) return false;
+
         AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
@@ -93,7 +95,8 @@ public class ActionExecutor {
                 return;
             }
 
-            if (action instanceof ExitAction) {
+            // If the player is not in the world, treat it also as the exit action (stop)
+            if (action instanceof ExitAction || !player.getWorld().equals(house.getWorld())) {
                 returnVal.set(false);
                 task.cancel();
                 return;

@@ -165,6 +165,9 @@ public class JoinLeaveHouse implements Listener {
     }
 
     private void leaveHouse(Player player, HousingWorld from) {
+        if (from.isAdminMode(player)) {
+            from.removeFromAdminMode(player);
+        }
         if (from == null) return;
         player.displayName(StringUtilsKt.housingStringFormatter(player.getName()));
         player.playerListName(Component.text(player.getName()));
