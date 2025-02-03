@@ -61,9 +61,9 @@ public class Function {
         ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
         ActionExecutor executor = new ActionExecutor(parent);
         List<Action> actions = new ArrayList<>(this.actions);
-        executor.addActions(actions);
         if (parent == null) {
             for (Player p : players) {
+                executor.addActions(actions);
                 parent = new ParentActionExecutor();
                 executor.setParent(parent);
                 parent.addExecutor(executor);
