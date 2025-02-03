@@ -23,6 +23,8 @@ public class ActionExecutor {
     ParentActionExecutor parent;
     boolean isPaused = false;
 
+    long currentTime = System.currentTimeMillis();
+
     public ActionExecutor(@Nullable ParentActionExecutor parent) {
         this.parent = parent;
 
@@ -62,9 +64,10 @@ public class ActionExecutor {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
         AtomicBoolean canMoveOn = new AtomicBoolean(true);
-        house.runInThread(new AsyncTask((millis, task) -> {
-            if (!canMoveOn.get() && millis % (50 * pause) == 0) {
+        house.runInThread(new AsyncTask((task) -> {
+            if (!canMoveOn.get() && currentTime + pause * 50 < System.currentTimeMillis()) {
                 canMoveOn.set(true);
+                pause = 0;
             }
 
             if (!canMoveOn.get() || isPaused) {
@@ -85,7 +88,7 @@ public class ActionExecutor {
                 }
                 double duration = Double.parseDouble(dur);
                 pause += duration;
-                task.reset();
+                currentTime = System.currentTimeMillis();
                 canMoveOn.set(false);
                 return;
             }

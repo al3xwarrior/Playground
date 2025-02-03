@@ -33,7 +33,6 @@ import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.bossbar.BossBar;
-import net.neoforged.srgutils.INamedMappingFile;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -154,15 +153,10 @@ public class HousingWorld {
         onLoad.forEach(consumer -> consumer.accept(this));
     }
 
-
-    private Thread getThread() {
+    private long currentTime = System.currentTimeMillis();
+    private Thread makeThread() {
         return new Thread(() -> {
             while (true) {
-                try {
-                    Thread.sleep(25);
-                } catch (InterruptedException e) {
-                    return;
-                }
                 if (runInThread.isEmpty()) {
                     continue;
                 }
@@ -202,7 +196,7 @@ public class HousingWorld {
         this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
-        this.thread = getThread();
+        this.thread = makeThread();
         this.thread.start();
         try {
             this.loader = main.getLoader();

@@ -33,7 +33,7 @@ public class ParentActionExecutor {
 
         running = true;
         while (!executors.isEmpty()) {
-            if (System.nanoTime() - nano > 1000000) {
+            if (System.nanoTime() - nano > 1000000000) {
                 System.out.println("Took too long");
                 return true;
             }

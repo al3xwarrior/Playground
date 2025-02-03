@@ -7,11 +7,11 @@ import java.util.function.Consumer;
 public class AsyncTask {
     UUID id;
     //1000ms
-    BiConsumer<Integer, AsyncTask> runnable;
+    Consumer<AsyncTask> runnable;
 
     int millis = 0;
 
-    public AsyncTask(BiConsumer<Integer, AsyncTask> runnable) {
+    public AsyncTask(Consumer< AsyncTask> runnable) {
         this.id = UUID.randomUUID();
         this.runnable = runnable;
     }
@@ -20,7 +20,7 @@ public class AsyncTask {
         return id;
     }
 
-    public BiConsumer<Integer, AsyncTask> getRunnable() {
+    public Consumer<AsyncTask> getRunnable() {
         return runnable;
     }
 
@@ -32,7 +32,7 @@ public class AsyncTask {
         if (runnable == null) {
             return;
         }
-        runnable.accept(millis += 25, this);
+        runnable.accept(this);
     }
 
     public void cancel() {
