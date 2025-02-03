@@ -63,10 +63,10 @@ public class Function {
         List<Action> actions = new ArrayList<>(this.actions);
         executor.addActions(actions);
         if (parent == null) {
-            parent = new ParentActionExecutor();
-            executor.setParent(parent);
-            parent.addExecutor(executor);
             for (Player p : players) {
+                parent = new ParentActionExecutor();
+                executor.setParent(parent);
+                parent.addExecutor(executor);
                 parent.execute(p, house, null);
             }
         }
