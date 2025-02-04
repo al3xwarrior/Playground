@@ -3,10 +3,13 @@ package com.al3x.housing2.Menus.ItemEditor;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import static com.al3x.housing2.Utils.Color.colorize;
 
 public class EditFlagMenu extends Menu {
     public EditFlagMenu(Player player) {
@@ -28,6 +31,11 @@ public class EditFlagMenu extends Menu {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             item.setItemMeta(meta);
+            if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS) && !hideEnchants) {
+                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                return;
+            }
             player.getInventory().setItemInMainHand(item);
             setupItems();
         });
@@ -43,6 +51,11 @@ public class EditFlagMenu extends Menu {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             }
             item.setItemMeta(meta);
+            if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ATTRIBUTES) && !hideAttributes) {
+                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                return;
+            }
             player.getInventory().setItemInMainHand(item);
             setupItems();
         });
@@ -59,6 +72,11 @@ public class EditFlagMenu extends Menu {
             }
 
             item.setItemMeta(meta);
+            if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP) && !hideAdditional) {
+                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                return;
+            }
             player.getInventory().setItemInMainHand(item);
             setupItems();
         });

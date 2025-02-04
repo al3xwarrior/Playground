@@ -132,7 +132,7 @@ public abstract class Menu {
         TextComponent cancelComp = new TextComponent(" §c[CANCEL]");
         cancelComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cancelinput"));
         cancelComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClick to cancel")));
-        TextComponent previousComp = new TextComponent(" §b[Previous]");
+        TextComponent previousComp = new TextComponent(" §b[PREVIOUS]");
         previousComp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, previous));
         previousComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§bClick to paste previous value")));
         player.spigot().sendMessage(previousComp, cancelComp);
