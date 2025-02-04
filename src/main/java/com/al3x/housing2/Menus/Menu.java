@@ -123,6 +123,13 @@ public abstract class Menu {
         shiftLeftClickActions.put(slot, (e) -> shiftLeftClickAction.run());
     }
 
+    public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction, Consumer<InventoryClickEvent> shiftLeftClickAction) {
+        inventory.setItem(slot, item);
+        leftClickActions.put(slot, (e) -> leftClickAction.run());
+        rightClickActions.put(slot, (e) -> rightClickAction.run());
+        shiftLeftClickActions.put(slot, shiftLeftClickAction);
+    }
+
     public void openChat(Main main, Consumer<String> consumer) {
         openChat(main, "", consumer);
     }

@@ -197,7 +197,7 @@ public final class Main extends JavaPlugin {
         }
         SkinCache.save();
         INSTANCE.getLogger().info("[Housing2] Disabled");
-        lobbyDisplays.removeDisplays();
+        // lobbyDisplays.removeDisplays();
     }
 
     public static Main getInstance() {

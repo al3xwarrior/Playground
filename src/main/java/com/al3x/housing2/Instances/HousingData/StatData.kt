@@ -50,6 +50,7 @@ data class StatData(
         fun fromList(statList: List<Stat>): List<StatData> {
             val list = mutableListOf<StatData>()
             statList.forEach {
+                if (it.value == null) return@forEach
                 list.add(StatData(it.statName, it.value))
             }
             return list
