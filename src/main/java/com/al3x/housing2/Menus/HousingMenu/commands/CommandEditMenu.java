@@ -32,7 +32,7 @@ public class CommandEditMenu extends Menu {
                 .name(colorize("&aRename Command"))
                 .description("Change the name of this command.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new name for this command: ");
             openChat(main, command.getName(), (message) -> {
                 command.setName(message);
@@ -44,7 +44,7 @@ public class CommandEditMenu extends Menu {
                 .name(colorize("&aEdit Arguments"))
                 .description("Edit the arguments of this command.\n\n&fCurrent: &a" + command.getArgs().size() + " arguments")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new CommandArgumentsEditMenu(main, player, house, command).open();
         });
 
@@ -53,7 +53,7 @@ public class CommandEditMenu extends Menu {
                 .name(colorize("&aEdit Group Priority"))
                 .description("Edit the group priority of this command.\n\n&fCurrent: &a" + command.getPriorityRequired() + "\n\n&cNOT IMPLEMENTED YET.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new group priority for this command: ");
             openChat(main, command.getPriorityRequired() + "", (message) -> {
                 try {
@@ -70,7 +70,7 @@ public class CommandEditMenu extends Menu {
         addItem(30, ItemBuilder.create(Material.TNT)
                 .name(colorize("&aDelete Command"))
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             command.setLoaded(false, house);
             house.getCommands().remove(command);
             new CommandsMenu(main, player, house).open();
@@ -80,7 +80,7 @@ public class CommandEditMenu extends Menu {
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Commands")
-                .build(), (e) -> {
+                .build(), () -> {
             new CommandsMenu(main, player, house).open();
         });
     }

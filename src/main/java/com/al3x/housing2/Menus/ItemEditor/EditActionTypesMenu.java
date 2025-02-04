@@ -31,7 +31,7 @@ public class EditActionTypesMenu extends Menu {
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.LEFT).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), event -> {
+                .build(), () -> {
             openActionsMenu(ClickType.LEFT);
         });
         addItem(12, ItemBuilder.create(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
@@ -40,7 +40,7 @@ public class EditActionTypesMenu extends Menu {
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.RIGHT).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), event -> {
+                .build(), () -> {
             openActionsMenu(ClickType.RIGHT);
         });
         addItem(13, ItemBuilder.create(Material.DROPPER)
@@ -49,7 +49,7 @@ public class EditActionTypesMenu extends Menu {
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.DROP).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), event -> {
+                .build(), () -> {
             openActionsMenu(ClickType.DROP);
         });
         addItem(14, ItemBuilder.create(Material.DROPPER)
@@ -60,7 +60,7 @@ public class EditActionTypesMenu extends Menu {
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.CONTROL_DROP).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), event -> {
+                .build(), () -> {
             if (item.getBase().getMaxStackSize() == 1) {
                 return;
             }
@@ -72,14 +72,14 @@ public class EditActionTypesMenu extends Menu {
                 .info("&eActions", "")
                 .info(null, item.getActions().get(ClickType.SWAP_OFFHAND).size() + " actions")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), event -> {
+                .build(), () -> {
             openActionsMenu(ClickType.SWAP_OFFHAND);
         });
 
         //back
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name("&cBack")
-                .build(), event -> {
+                .build(), () -> {
             new EditItemMainMenu(player).open();
         });
     }

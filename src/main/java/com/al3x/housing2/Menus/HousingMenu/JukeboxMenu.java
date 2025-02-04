@@ -63,7 +63,7 @@ public class JukeboxMenu extends Menu {
                     .description("&7Author: &f" + song.getAuthor() + "\n&7Description: &f" + song.getDescription() + "\n&7Length: &f" + song.getLength() + "s\n\n&e&lClick to " + (!house.isJukeboxPlaying() || !house.songInPlaylist(song) ? "&a&lAdd" : "&c&lRemove") + " &e&lthis song to the playlist!")
                     .glow(house.isJukeboxPlaying() && house.songInPlaylist(song))
                     .punctuation(false)
-                    .build(), (e) -> {
+                    .build(), () -> {
                 if (house.isJukeboxPlaying() && house.songInPlaylist(song)) {
                     Bukkit.getLogger().info("Removing song");
                     house.removeSong(song);
@@ -79,13 +79,13 @@ public class JukeboxMenu extends Menu {
 
         addItem(48, ItemBuilder.create(Material.ARROW)
                 .name("&cGo Back")
-                .build(), (e) -> new HousingMenu(main, player, house).open()
+                .build(), () -> new HousingMenu(main, player, house).open()
         );
 
         addItem(49, ItemBuilder.create(Material.ANVIL)
                 .name("&cClear Playlist")
                 .description("&7Click to clear the playlist!")
-                .build(), (e) -> {
+                .build(), () -> {
             house.stopMusic();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
             open();
@@ -96,7 +96,7 @@ public class JukeboxMenu extends Menu {
                     .name("&7Currently Playing")
                     .description("&7Click to stop the music!")
                     .punctuation(false)
-                    .build(), (e) -> {
+                    .build(), () -> {
                 house.stopMusic();
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
                 open();
@@ -106,7 +106,7 @@ public class JukeboxMenu extends Menu {
                     .name("&7Currently Stopped")
                     .description("&7Click to start the music!")
                     .punctuation(false)
-                    .build(), (e) -> {
+                    .build(), () -> {
                 house.startMusic();
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
                 open();

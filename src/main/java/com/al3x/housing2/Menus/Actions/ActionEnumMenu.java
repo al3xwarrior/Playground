@@ -177,7 +177,7 @@ public class ActionEnumMenu extends Menu {
             addItem(53, new ItemBuilder().material(ARROW)
                     .name("&eNext Page")
                     .description("&ePage " + (currentPage + 1))
-                    .build(), (e) -> {
+                    .build(), () -> {
                 if (currentPage >= paginationList.getPageCount()) return;
                 currentPage++;
                 open();
@@ -188,7 +188,7 @@ public class ActionEnumMenu extends Menu {
             addItem(45, new ItemBuilder().material(ARROW)
                     .name("&ePrevious Page")
                     .description("&ePage " + (currentPage - 1))
-                    .build(), (e) -> {
+                    .build(), () -> {
                 if (currentPage <= 1) return;
                 currentPage--;
                 open();
@@ -217,7 +217,7 @@ public class ActionEnumMenu extends Menu {
 
         addItem(49, new ItemBuilder().material(ARROW).name("&cGo Back")
                 .description((backMenu != null) ? "&7Back to " + backMenu.getTitle() : "&7Back to previous menu")
-                .build(), (e) -> {
+                .build(), () -> {
             // not sure why this wasnt here? (prob bald) si
             if (backMenu != null) {
                 backMenu.open();

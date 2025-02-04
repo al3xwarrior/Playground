@@ -63,12 +63,12 @@ public class FunctionsMenu extends Menu {
                 });
             }
         } else {
-            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), (e) -> {
+            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), () -> {
             });
         }
 
         if (currentPage > 1) {
-            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), (e) -> {
+            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), () -> {
                 currentPage--;
                 setupItems();
                 open();
@@ -76,18 +76,18 @@ public class FunctionsMenu extends Menu {
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), () -> {
                 currentPage++;
                 setupItems();
                 open();
             });
         }
 
-        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), () -> {
             new SystemsMenu(main, player, house).open();
         });
 
-        addItem(50, new ItemBuilder().material(Material.PAPER).name(colorize("&aCreate Function")).build(), (e) -> {
+        addItem(50, new ItemBuilder().material(Material.PAPER).name(colorize("&aCreate Function")).build(), () -> {
             player.sendMessage(colorize("&eEnter the name of the function:"));
             openChat(main, (s) -> {
                 Bukkit.getScheduler().runTask(main, () -> {

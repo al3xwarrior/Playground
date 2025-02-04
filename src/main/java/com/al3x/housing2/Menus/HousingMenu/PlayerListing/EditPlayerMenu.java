@@ -45,11 +45,11 @@ public class EditPlayerMenu extends Menu {
         PlayerData targetPlayerData = house.getPlayersData().get(targetPlayer.getUniqueId().toString());
         PlayerData playerData = house.getPlayersData().get(player.getUniqueId().toString());
 
-        addItem(31, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        addItem(31, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), () -> {
             new PlayerListingMenu(main, player, house).open();
         });
 
-        if (playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() && targetPlayer.getPlayer() != player) return; // less group priority, cant edit
+        if (playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() || targetPlayer.getPlayer() == player) return; // less group priority, cant edit
 
         if (online && house.hasPermission(player, Permissions.KICK)) {
             addItem(slots[i], new ItemBuilder().material(Material.IRON_BARS).name(colorize("&cKick Player")).lClick(ItemBuilder.ActionType.KICK).build(), (e) -> {
@@ -148,7 +148,7 @@ public class EditPlayerMenu extends Menu {
         }
 
         if (!house.hasPermission(player, RESET_PLAYER_DATA) || targetPlayer.getPlayer() == player) return;
-        addItem(35, new ItemBuilder().material(Material.TNT).name(colorize("&aReset Player Data")).description("Clears ALL player data of this player, including stats, inventory, group, and team.").mClick(RESET).build(), (e) -> {
+        addItem(35, new ItemBuilder().material(Material.TNT).name(colorize("&aReset Player Data")).description("Clears ALL player data of this player, including stats, inventory, group, and team.").mClick(RESET).build(), () -> {
             house.getPlayersData().remove(targetPlayer.getUniqueId().toString());
             new PlayerListingMenu(main, player, house).open();
         });

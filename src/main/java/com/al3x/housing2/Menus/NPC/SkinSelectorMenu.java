@@ -91,7 +91,7 @@ public class SkinSelectorMenu extends Menu {
                 .info("&eCurrent Value", "")
                 .info(null, housingNPC.getSkinUUID() == null ? "&cNONE" : housingNPC.getSkinUUID())
                 .description("&7Click to enter a custom skin UUID.");
-        addItem(47, custom.build(), (e) -> {
+        addItem(47, custom.build(), () -> {
             player.sendMessage(colorize("&eEnter the UUID of the skin you want to use. You can find this at https://mineskin.org."));
             openChat(main, housingNPC.getSkinUUID() == null ? "" : housingNPC.getSkinUUID(), (message) -> {
                 housingNPC.setSkin(message);

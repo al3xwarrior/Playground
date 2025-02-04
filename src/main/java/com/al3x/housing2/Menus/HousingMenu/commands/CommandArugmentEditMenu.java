@@ -35,7 +35,7 @@ public class CommandArugmentEditMenu extends Menu {
                 .name(colorize("&aRename Argument"))
                 .description("Change the name of this argument.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new name for this argument: ");
             openChat(main, arg.getName(), (message) -> {
                 arg.setName(message);
@@ -47,7 +47,7 @@ public class CommandArugmentEditMenu extends Menu {
                 .name(colorize("&aEdit Type"))
                 .description("Change the type of this argument.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             EnumMenu<Command.ArgType> enumMenu = new EnumMenu<>(main, "Select Type", Command.ArgType.values(), arg.getType().getMaterial(), player, house, this, (type) -> {
                 arg.setType(type);
                 open();
@@ -60,7 +60,7 @@ public class CommandArugmentEditMenu extends Menu {
                 .name(colorize("&aToggle Required"))
                 .description("Change if this argument is required.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             arg.setRequired(!arg.isRequired());
             open();
         });
@@ -71,7 +71,7 @@ public class CommandArugmentEditMenu extends Menu {
                     .name(colorize("&aToggle Greedy"))
                     .description("Change if this argument is greedy.")
                     .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                    .build(), (e) -> {
+                    .build(), () -> {
                 arg.setGreedy(!arg.isGreedy());
                 open();
             });
@@ -81,7 +81,7 @@ public class CommandArugmentEditMenu extends Menu {
         addItem(40, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Arugments")
-                .build(), (e) -> {
+                .build(), () -> {
             new CommandArgumentsEditMenu(main, player, house, command).open();
         });
     }

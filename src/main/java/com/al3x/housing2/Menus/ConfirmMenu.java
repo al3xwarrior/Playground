@@ -19,14 +19,14 @@ public class ConfirmMenu extends Menu{
     public void setupItems() {
         addItem(11, ItemBuilder.create(Material.GREEN_TERRACOTTA)
                 .name(colorize("&aConfirm"))
-                .build(), (e) -> {
+                .build(), () -> {
             onConfirm.run();
             back.open();
         });
 
         addItem(15, ItemBuilder.create(Material.RED_TERRACOTTA)
                 .name(colorize("&cCancel"))
-                .build(), (e) -> {
+                .build(), () -> {
             back.open();
         });
     }

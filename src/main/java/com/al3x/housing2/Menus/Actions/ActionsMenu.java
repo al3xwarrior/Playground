@@ -14,6 +14,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -103,7 +104,9 @@ public class ActionsMenu extends Menu {
     }
 
     private void removeAction(Action action) {
-        actions.remove(action);
+        boolean a = actions.remove(action);
+        if (a) Bukkit.getLogger().info("removed");
+        else Bukkit.getLogger().info("not removed");
         setupItems();
     }
 
@@ -226,13 +229,17 @@ public class ActionsMenu extends Menu {
                             return;
                         }
 
+                        Bukkit.getLogger().info("got here");
+
                         if (e.isLeftClick() && action.editorMenu(house, backMenu, player) != null) {
+                            Bukkit.getLogger().info("true");
                             ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
                             menu.setEvent(event);
                             menu.setHousingNPC(housingNPC);
                             menu.setUpdate(update);
                             menu.open();
                         } else {
+                            Bukkit.getLogger().info("false");
                             removeAction(action);
                         }
                     });

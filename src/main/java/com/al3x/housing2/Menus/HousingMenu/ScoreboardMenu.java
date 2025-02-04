@@ -90,7 +90,7 @@ public class ScoreboardMenu extends Menu {
 
         addItem(40, ItemBuilder.create(Material.ARROW)
                 .name("&cGo Back")
-                .build(), (e) -> new SystemsMenu(main, player, house).open()
+                .build(), () -> new SystemsMenu(main, player, house).open()
         );
     }
 
