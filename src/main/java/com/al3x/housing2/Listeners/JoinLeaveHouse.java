@@ -74,6 +74,8 @@ public class JoinLeaveHouse implements Listener {
                 }
             }
         }
+
+        Main.getInstance().getProtoolsManager().clearSelection(player);
     }
 
     private void joinHouse(Player player) {

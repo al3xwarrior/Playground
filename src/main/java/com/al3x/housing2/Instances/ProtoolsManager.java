@@ -269,6 +269,10 @@ public class ProtoolsManager {
         return this.selections.get(player.getUniqueId());
     }
 
+    public void clearSelection(Player player) {
+        this.selections.remove(player.getUniqueId());
+    }
+
     public Map<UUID, Long> getCooldowns() {
         return this.cooldowns;
     }
