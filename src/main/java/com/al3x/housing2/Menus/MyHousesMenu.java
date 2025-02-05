@@ -10,6 +10,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -84,17 +85,19 @@ public class MyHousesMenu extends Menu {
             Date date = new Date(houseCreationDate);
             String formattedDate = formatter.format(date);
 
-            addItem(slots[i], ItemBuilder.create(Material.valueOf(house.getIcon()))
+            ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon()))
                     .name(colorize(house.getHouseName()))
                     .description(colorize("&7" + house.getDescription() +
                             "\n\n&7Created: &a" + formattedDate +
                             "\n\n&7Players: &a" + (world[0] != null ? world[0].getGuests() : 0) +
                             "\n&7Cookies: &6" + house.getCookies() +
                             "\n\n&7Privacy: " + HousePrivacy.valueOf(house.getPrivacy()).asString() +
-                            "\n\n&eClick to Join!" + ((player.hasPermission("housing2.admin")) ? "\n&cSHIFT+LEFT-CLICK to Join in &4ADMIN MODE&c!" : "") + //WHY ARENT YOU USING THE LCLICK AND RCLICK ACTIONS?????
+                            "\n\n&eClick to Join!" + ((player.hasPermission("housing2.admin")) ? "\n&cShift-click to Join! &4[ADMIN]" : "") + //WHY ARENT YOU USING THE LCLICK AND RCLICK ACTIONS?????
                             (house.getOwnerID().equals(player.getUniqueId().toString()) ? colorize("\n&eRight Click to Manage!") : "")))
-                    .punctuation(false)
-                    .build(), () -> {
+                    .punctuation(false);
+            if (player.hasPermission("housing2.admin")) icon.extraLore("&8" + house.getHouseID());
+
+            addItem(slots[i], icon.build(), () -> {
                 if (HousePrivacy.valueOf(house.getPrivacy()) != HousePrivacy.PUBLIC) {
                     if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                         player.sendMessage(colorize("&cThis house is private!"));

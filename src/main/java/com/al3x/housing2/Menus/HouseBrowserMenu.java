@@ -62,7 +62,7 @@ public class HouseBrowserMenu extends Menu {
                     .info("&7Players", "&a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0))
                     .info("&7Cookies", "&6" + house.getCookies())
                     .lClick(ItemBuilder.ActionType.JOIN_YELLOW);
-            if (player.hasPermission("housing2.admin")) icon.extraLore("&8ID: " + house.getHouseID());
+            if (player.hasPermission("housing2.admin")) icon.extraLore("&8" + house.getHouseID());
 
             addItem(i, icon.build(), () -> {
                 if (housingWorld != null) {
