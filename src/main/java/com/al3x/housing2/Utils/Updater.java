@@ -17,9 +17,12 @@ public class Updater {
         } catch (Exception e) {
             version = 0;
         }
-
-
+        
         switch (version) {
+            /*
+                Moved all player stats from "playerStats" hashmap into part of "playerData"
+                Removed uuid field from player and global stats
+             */
             case 0: {
 
                 JsonObject playerStats = data.getAsJsonObject("playerStats");
@@ -48,6 +51,9 @@ public class Updater {
                     stat.getAsJsonObject().remove("id");
 
                 }
+
+            }
+            case 1: {
 
             }
 

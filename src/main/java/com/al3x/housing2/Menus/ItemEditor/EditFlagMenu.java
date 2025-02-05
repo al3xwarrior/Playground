@@ -2,8 +2,13 @@ package com.al3x.housing2.Menus.ItemEditor;
 
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +25,7 @@ public class EditFlagMenu extends Menu {
     public void setupItems() {
         ItemStack item = player.getInventory().getItemInMainHand();
         ItemMeta meta = item.getItemMeta();
+
         boolean hideEnchants = meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS);
         addItem(10, ItemBuilder.create(hideEnchants ? Material.GRAY_DYE : Material.LIME_DYE)
                 .name("&aEnchantments")
@@ -27,12 +33,20 @@ public class EditFlagMenu extends Menu {
                 .build(), () -> {
             if (hideEnchants) {
                 meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+                item.setItemMeta(meta);
             } else {
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                if (meta.getEnchants().isEmpty()) { // Needs at least 1 enchantment to work
+                    meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    item.setItemMeta(meta);
+                    item.removeEnchantment(Enchantment.UNBREAKING);
+                } else {
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    item.setItemMeta(meta);
+                }
             }
-            item.setItemMeta(meta);
             if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS) && !hideEnchants) {
-                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.sendMessage(colorize("&cAn error occurred while trying to apply this flag!"));
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 return;
             }
@@ -47,12 +61,20 @@ public class EditFlagMenu extends Menu {
                 .build(), () -> {
             if (hideAttributes) {
                 meta.removeItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                item.setItemMeta(meta);
             } else {
-                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                if (meta.getAttributeModifiers() == null) { // Needs at least 1 attribute to work
+                    meta.addAttributeModifier(Attribute.ARMOR, new AttributeModifier(new NamespacedKey(".", "."), 0.0, AttributeModifier.Operation.ADD_NUMBER));
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                    item.setItemMeta(meta);
+                    meta.removeAttributeModifier(Attribute.ARMOR);
+                } else {
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                    item.setItemMeta(meta);
+                }
             }
-            item.setItemMeta(meta);
             if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ATTRIBUTES) && !hideAttributes) {
-                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.sendMessage(colorize("&cAn error occurred while trying to apply this flag!"));
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 return;
             }
@@ -73,7 +95,7 @@ public class EditFlagMenu extends Menu {
 
             item.setItemMeta(meta);
             if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP) && !hideAdditional) {
-                player.sendMessage(colorize("&cFlag is incompatible with item!"));
+                player.sendMessage(colorize("&cAn error occurred while trying to apply this flag!"));
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 return;
             }
