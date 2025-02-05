@@ -13,8 +13,7 @@ public enum VelocityOperation implements EnumMaterial, EnumHTSLAlternative {
     ADD(GREEN_STAINED_GLASS, "+", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     SUBTRACT(RED_STAINED_GLASS, "-", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     MULTIPLY(ORANGE_STAINED_GLASS, "*", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
-    DIVIDE(BLUE_STAINED_GLASS, "/", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
-    MOD(MAGENTA_STAINED_GLASS, "%", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2")));
+    DIVIDE(BLUE_STAINED_GLASS, "/", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2")));
 
     private final Material material;
     private final String asString;
