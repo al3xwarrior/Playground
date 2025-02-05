@@ -75,7 +75,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
                 addItem(i, ItemBuilder.create((material))
                         .name(colorize("&a" + e.name()))
                         .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                        .build(), (event) -> {
+                        .build(), () -> {
                     con.accept(e);
                 });
             }
@@ -107,7 +107,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
             addItem(45, ItemBuilder.create(Material.ARROW)
                     .name(colorize("&ePrevious Page"))
                     .description("&ePage " + (currentPage - 1))
-                    .build(), (event) -> {
+                    .build(), () -> {
                 if (currentPage <= 1) return;
                 currentPage--;
                 open();
@@ -119,7 +119,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
             addItem(53, ItemBuilder.create(Material.ARROW)
                     .name(colorize("&eNext Page"))
                     .description("&ePage " + (currentPage + 1))
-                    .build(), (event) -> {
+                    .build(), () -> {
                 if (currentPage >= paginationList.getPageCount()) return;
                 currentPage++;
                 open();
@@ -130,7 +130,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
         addItem(49, ItemBuilder.create(Material.BARRIER)
                 .name(colorize("&cBack"))
                 .description("To " + backMenu.getTitle())
-                .build(), (event) -> {
+                .build(), () -> {
             backMenu.open();
         });
 

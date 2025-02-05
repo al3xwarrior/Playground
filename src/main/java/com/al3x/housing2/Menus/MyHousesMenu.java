@@ -115,7 +115,12 @@ public class MyHousesMenu extends Menu {
             }, () -> {
                 if (player.hasPermission("housing.admin")) {
                     player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));
-                    world[0].sendPlayerToHouse(player, true);
+                    if (world[0] != null) {
+                        world[0].sendPlayerToHouse(player, true);
+                    } else {
+                        world[0] = housesManager.loadHouse(target, house.getHouseID());
+                        world[0].sendPlayerToHouse(player, true);
+                    }
                     return;
                 }
             });

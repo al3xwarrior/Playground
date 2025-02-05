@@ -35,7 +35,7 @@ public class RegionEditMenu extends Menu {
                 .name(colorize("&aRename Region"))
                 .description("Change the name of this region.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new name for this region: ");
             openChat(main, region.getName(), (message) -> {
                 region.setName(message);
@@ -60,7 +60,7 @@ public class RegionEditMenu extends Menu {
                 .name(colorize("&aPvP Settings"))
                 .description("Toggle stuff, tbd.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("&cComing one day...");
 //            new PvPSettingsMenu(main, player, house, region).open();
         });
@@ -70,7 +70,7 @@ public class RegionEditMenu extends Menu {
                 .name(colorize("&aEntry Actions"))
                 .description("Add actions to be executed when entering this region.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new ActionsMenu(main, player, house, region.getEnterActions(), this, null).open();
         });
 
@@ -79,7 +79,7 @@ public class RegionEditMenu extends Menu {
                 .name(colorize("&aExit Actions"))
                 .description("Add actions to be executed when exiting this region.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new ActionsMenu(main, player, house, region.getExitActions(), this, null).open();
         });
 
@@ -88,7 +88,7 @@ public class RegionEditMenu extends Menu {
         addItem(50, ItemBuilder.create(Material.TNT)
                 .name(colorize("&aDelete Region"))
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             region.setLoaded(false);
             house.getRegions().remove(region);
             new RegionsMenu(main, player, house).open();
@@ -98,7 +98,7 @@ public class RegionEditMenu extends Menu {
         addItem(49, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Commands")
-                .build(), (e) -> {
+                .build(), () -> {
             new RegionsMenu(main, player, house).open();
         });
     }

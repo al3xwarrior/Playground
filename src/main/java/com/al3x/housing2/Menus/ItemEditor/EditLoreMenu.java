@@ -89,7 +89,7 @@ public class EditLoreMenu extends Menu {
             if (page > 1) {
                 addItem(45, ItemBuilder.create(Material.ARROW)
                         .name("&7Previous Page")
-                        .build(), e -> {
+                        .build(), () -> {
                     page--;
                     setupItems();
                 });
@@ -98,7 +98,7 @@ public class EditLoreMenu extends Menu {
             if (page < paginationList.getPageCount()) {
                 addItem(53, ItemBuilder.create(Material.ARROW)
                         .name("&7Next Page")
-                        .build(), e -> {
+                        .build(), () -> {
                     page++;
                     setupItems();
                 });
@@ -107,7 +107,7 @@ public class EditLoreMenu extends Menu {
 
         addItem(50, ItemBuilder.create(Material.PAPER)
                 .name("&aAdd Line")
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new line for the lore."));
             openChat(Main.getInstance(), "", (newLine) -> {
                 ItemMeta meta = item.getItemMeta();
@@ -122,7 +122,7 @@ public class EditLoreMenu extends Menu {
 
         addItem(49, ItemBuilder.create(Material.ARROW)
                 .name("&aGo Back")
-                .build(), e -> {
+                .build(), () -> {
             new EditItemMainMenu(player).open();
         });
     }

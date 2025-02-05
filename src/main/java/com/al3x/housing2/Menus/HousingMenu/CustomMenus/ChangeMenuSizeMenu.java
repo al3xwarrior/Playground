@@ -26,7 +26,7 @@ public class ChangeMenuSizeMenu extends Menu {
                     .name("&a" + i + " Rows")
                     .glow(customMenu.getRows() == i)
                     .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                    .build(), (e) -> {
+                    .build(), () -> {
                 customMenu.setRows(finalI);
                 new CustomMenuEditMenu(player, customMenu).open();
             });
@@ -35,7 +35,7 @@ public class ChangeMenuSizeMenu extends Menu {
         //back
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name("&cBack")
-                .build(), (e) -> {
+                .build(), () -> {
             new CustomMenuEditMenu(player, customMenu).open();
         });
     }

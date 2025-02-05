@@ -59,7 +59,7 @@ public class RegionsMenu extends Menu {
         }
 
         if (currentPage > 1) {
-            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), (e) -> {
+            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), () -> {
                 currentPage--;
                 setupItems();
                 open();
@@ -67,18 +67,18 @@ public class RegionsMenu extends Menu {
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), () -> {
                 currentPage++;
                 setupItems();
                 open();
             });
         }
 
-        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), () -> {
             new SystemsMenu(main, player, house).open();
         });
 
-        addItem(50, new ItemBuilder().material(Material.WOODEN_AXE).name(colorize("&aCreate Region")).build(), (e) -> {
+        addItem(50, new ItemBuilder().material(Material.WOODEN_AXE).name(colorize("&aCreate Region")).build(), () -> {
             if (Main.getInstance().getProtoolsManager().getSelection(player) == null) {
                 player.sendMessage(colorize("&cYou must make a selection first!"));
                 return;

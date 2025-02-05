@@ -877,6 +877,10 @@ public class HousingWorld {
     }
 
     public void createNPC(Player player, Location location) {
+        if (housingNPCS.size() > 50) {
+            player.sendMessage(colorize("&cYou have reached the maximum amount of NPCs!"));
+            return;
+        }
         HousingNPC npc = new HousingNPC(main, player, location, this);
         housingNPCS.add(npc);
     }
@@ -911,6 +915,10 @@ public class HousingWorld {
     }
 
     public Hologram createHologram(Player player, Location location) {
+        if (holograms.size() > 50) {
+            player.sendMessage(colorize("&cYou have reached the maximum amount of holograms!"));
+            return null;
+        }
         Hologram hologram = new Hologram(main, player, this, location);
         holograms.add(hologram);
         return hologram;

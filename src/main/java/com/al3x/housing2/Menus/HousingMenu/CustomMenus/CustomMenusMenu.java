@@ -54,7 +54,7 @@ public class CustomMenusMenu extends Menu {
         }
 
         if (currentPage > 1) {
-            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), (e) -> {
+            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), () -> {
                 currentPage--;
                 setupItems();
                 open();
@@ -62,18 +62,18 @@ public class CustomMenusMenu extends Menu {
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), () -> {
                 currentPage++;
                 setupItems();
                 open();
             });
         }
 
-        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), () -> {
             new SystemsMenu(main, player, house).open();
         });
 
-        addItem(50, new ItemBuilder().material(Material.PAPER).name(colorize("&aCreate Menu")).build(), (e) -> {
+        addItem(50, new ItemBuilder().material(Material.PAPER).name(colorize("&aCreate Menu")).build(), () -> {
             player.sendMessage(colorize("&ePlease enter the title of the new menu."));
             openChat(main, (message) -> {
                 CustomMenu customMenu = new CustomMenu(message, 6);

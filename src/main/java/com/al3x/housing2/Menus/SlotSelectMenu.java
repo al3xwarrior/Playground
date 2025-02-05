@@ -36,7 +36,7 @@ public class SlotSelectMenu extends Menu {
         //Helmet
         addItem(1, ItemBuilder.create(Material.CHAINMAIL_HELMET).name("&aHelmet")
                 .description("&8Manual Slot 103")
-                .build(), e -> {
+                .build(), () -> {
             slotRunnable.accept(103);
             backMenu.open();
         });
@@ -44,7 +44,7 @@ public class SlotSelectMenu extends Menu {
         //Chestplate
         addItem(2, ItemBuilder.create(Material.CHAINMAIL_CHESTPLATE).name("&aChestplate")
                 .description("&8Manual Slot 102")
-                .build(), e -> {
+                .build(), () -> {
             slotRunnable.accept(102);
             backMenu.open();
         });
@@ -52,7 +52,7 @@ public class SlotSelectMenu extends Menu {
         //Leggings
         addItem(3, ItemBuilder.create(Material.CHAINMAIL_LEGGINGS).name("&aLeggings")
                 .description("&8Manual Slot 101")
-                .build(), e -> {
+                .build(), () -> {
             slotRunnable.accept(101);
             backMenu.open();
         });
@@ -60,7 +60,7 @@ public class SlotSelectMenu extends Menu {
         //Boots
         addItem(4, ItemBuilder.create(Material.CHAINMAIL_BOOTS).name("&aBoots")
                 .description("&8Manual Slot 100")
-                .build(), e -> {
+                .build(), () -> {
             slotRunnable.accept(100);
             backMenu.open();
         });
@@ -69,7 +69,7 @@ public class SlotSelectMenu extends Menu {
             //First Available Slot (-1)
             addItem(6, ItemBuilder.create(Material.WHITE_STAINED_GLASS).name("&aFirst Available Slot")
                     .description("&8Manual Slot -1")
-                    .build(), e -> {
+                    .build(), () -> {
                 slotRunnable.accept(-1);
                 backMenu.open();
             });
@@ -77,7 +77,7 @@ public class SlotSelectMenu extends Menu {
             //Main Hand (-2)
             addItem(7, ItemBuilder.create(Material.WOODEN_SWORD).name("&aMain Hand")
                     .description("&8Manual Slot -2")
-                    .build(), e -> {
+                    .build(), () -> {
                 slotRunnable.accept(-2);
                 backMenu.open();
             });
@@ -85,7 +85,7 @@ public class SlotSelectMenu extends Menu {
             //Off Hand (-3)
             addItem(8, ItemBuilder.create(Material.SHIELD).name("&aOff Hand")
                     .description("&8Manual Slot -3")
-                    .build(), e -> {
+                    .build(), () -> {
                 slotRunnable.accept(-3);
                 backMenu.open();
             });
@@ -96,7 +96,7 @@ public class SlotSelectMenu extends Menu {
             int finalI = i;
             addItem(i + 9, ItemBuilder.create(Material.GRAY_STAINED_GLASS_PANE).name("&aInventory Slot " + (i + 1))
                     .description("&8Manual Slot " + (i + 9))
-                    .build(), e -> {
+                    .build(), () -> {
                 slotRunnable.accept(finalI + 9);
                 backMenu.open();
             });
@@ -107,7 +107,7 @@ public class SlotSelectMenu extends Menu {
             int finalI = i;
             addItem(i + 4*9, ItemBuilder.create(Material.WHITE_STAINED_GLASS).name("&aHotbar Slot " + (i + 1))
                     .description("&8Manual Slot " + i)
-                    .build(), e -> {
+                    .build(), () -> {
                 slotRunnable.accept(finalI);
                 backMenu.open();
             });
@@ -116,7 +116,7 @@ public class SlotSelectMenu extends Menu {
         //Manual Input
         addItem(53, ItemBuilder.create(Material.PAPER).name("&aManual Input")
                 .description("&8Enter a manual slot number")
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the manual slot number:"));
             openChat(main, "", (s) -> {
                 try {
@@ -132,7 +132,7 @@ public class SlotSelectMenu extends Menu {
         //Close
         addItem(49, ItemBuilder.create(Material.ARROW).name("&cClose")
                 .description("&8Close this menu")
-                .build(), e -> {
+                .build(), () -> {
             player.closeInventory();
             backMenu.open();
         });

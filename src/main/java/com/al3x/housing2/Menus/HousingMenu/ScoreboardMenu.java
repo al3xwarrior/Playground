@@ -47,30 +47,25 @@ public class ScoreboardMenu extends Menu {
                     .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                     .rClick(ItemBuilder.ActionType.DELETE_YELLOW)
                     .shiftClick()
-                    .build(), (e) -> {
+                    .build(), () -> {
 
-                if (e.isShiftClick()) {
-                    shiftLine(line[0], finalI, e.isRightClick());
-                    house.getScoreboardInstance().createBoard();
-                    return;
-                }
+                        player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
+                        openChat(main, line[0], (message) -> {
+                            scoreboard.set(finalI, message);
+                            house.getScoreboardInstance().createBoard();
+                        });
 
-                if (e.isLeftClick()) {
-                    player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
-                    openChat(main, line[0], (message) -> {
-                        scoreboard.set(finalI, message);
+                    }, () -> {
+                        scoreboard.remove(finalI);
                         house.getScoreboardInstance().createBoard();
-                        player.sendMessage(colorize("&aLine set to: " + message));
+                        house.setScoreboard(scoreboard);
+                        player.sendMessage(colorize("&cLine removed!"));
                         Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
-                    });
-                } else {
-                    scoreboard.remove(finalI);
-                    house.getScoreboardInstance().createBoard();
-                    house.setScoreboard(scoreboard);
-                    player.sendMessage(colorize("&cLine removed!"));
-                    Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
-                }
-            });
+                    }, (e) -> {
+                        shiftLine(line[0], finalI, e.isRightClick());
+                        house.getScoreboardInstance().createBoard();
+                    }
+            );
         }
 
         addItem(41, ItemBuilder.create(Material.PAPER)
@@ -95,7 +90,7 @@ public class ScoreboardMenu extends Menu {
 
         addItem(40, ItemBuilder.create(Material.ARROW)
                 .name("&cGo Back")
-                .build(), (e) -> new SystemsMenu(main, player, house).open()
+                .build(), () -> new SystemsMenu(main, player, house).open()
         );
     }
 

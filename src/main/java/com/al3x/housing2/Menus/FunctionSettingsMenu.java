@@ -32,7 +32,7 @@ public class FunctionSettingsMenu extends Menu {
                 .name(colorize("&aRename Function"))
                 .description("Change the name of this function.")
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             openChat(main, function.getName(), (message) -> {
                 function.setName(message);
             });
@@ -43,7 +43,7 @@ public class FunctionSettingsMenu extends Menu {
                 .name(colorize("&aEdit Description"))
                 .description("Edit the description of this function.\n\n" + function.getDescription())
                 .lClick(ItemBuilder.ActionType.RENAME_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             openChat(main, function.getDescription(), (message) -> {
                 function.setDescription(message);
             });
@@ -54,7 +54,7 @@ public class FunctionSettingsMenu extends Menu {
                 .name(colorize("&aEdit Icon"))
                 .description("Change the icon of this function.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             EnumMenu<Material> enumMenu = new EnumMenu<>(main, "Select Icon", Material.values(), Material.MAP, player, house, this, (material) -> {
                 function.setMaterial(material);
                 open();
@@ -69,7 +69,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("If enabled, this function will not run for all players in the house.\n\n&7Only really matters for automatic executions.")
                 .info("&7Current", (function.isGlobal() ? "&aEnabled" : "&cDisabled"))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             function.setGlobal(!function.isGlobal());
             setupItems();
         });
@@ -78,7 +78,7 @@ public class FunctionSettingsMenu extends Menu {
         addItem(30, ItemBuilder.create(Material.TNT)
                 .name(colorize("&aDelete Function"))
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             function.setLoaded(false);
             house.getFunctions().remove(function);
             new FunctionsMenu(main, player, house).open();
@@ -88,7 +88,7 @@ public class FunctionSettingsMenu extends Menu {
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Functions")
-                .build(), (e) -> {
+                .build(), () -> {
             new FunctionsMenu(main, player, house).open();
         });
 
@@ -98,7 +98,7 @@ public class FunctionSettingsMenu extends Menu {
                 .description("Functions can be enabled to automatically executed for all players in houses every X amount of ticks. TIP: 1 second is 20 ticks\n\n&8Rip Poison loops :(")
                 .info("&7Current", (function.getTicks() == null ? "&cDisabled" : "&a" + function.getTicks() + " ticks"))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the amount of ticks you want this function to run every (1 second is 20 ticks): "));
             openChat(main, (function.getTicks() != null ? function.getTicks().toString() : ""), (message) -> {
                 try {
