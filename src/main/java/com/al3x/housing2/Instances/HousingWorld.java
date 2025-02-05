@@ -7,6 +7,7 @@ import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.WeatherTypes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
@@ -71,6 +72,10 @@ public class HousingWorld {
     private int cookieWeek;
     private long timeCreated;
     private Location spawn;
+    private long ingameTime;
+    private boolean dayLightCycle;
+    private WeatherTypes weather;
+    private boolean weatherCycle;
     private List<String> scoreboard;
     private HousePrivacy privacy;
     private Material icon;
@@ -257,6 +262,10 @@ public class HousingWorld {
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
         this.version = houseData.getVersion();
+        this.ingameTime = houseData.getIngameTime() != null ? houseData.getIngameTime() : 6000L;
+        this.dayLightCycle = houseData.getDayLightCycle() != null ? houseData.getDayLightCycle() : false;
+        this.weather = houseData.getWeather() != null ? houseData.getWeather() : WeatherTypes.SUNNY;
+        this.weatherCycle = houseData.getWeatherCycle() != null ? houseData.getWeatherCycle() : false;
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -295,6 +304,27 @@ public class HousingWorld {
         }
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
+        houseWorld.setTime(this.ingameTime);
+        houseWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, this.dayLightCycle);
+        switch (this.weather) {
+            case WeatherTypes.SUNNY -> {
+                houseWorld.setStorm(false);
+                houseWorld.setThundering(false);
+            }
+            case WeatherTypes.RAINING -> {
+                houseWorld.setStorm(true);
+                houseWorld.setThundering(false);
+            }
+            case WeatherTypes.STORMING -> {
+                houseWorld.setStorm(true);
+                houseWorld.setThundering(true);
+            }
+            case WeatherTypes.THUNDER -> {
+                houseWorld.setStorm(false);
+                houseWorld.setThundering(true);
+            }
+        }
+        houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, this.weatherCycle);
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
         TrashCanListener.initTrashCans(trashCans);
     }
@@ -324,6 +354,10 @@ public class HousingWorld {
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
         this.size = determineHouseSize(size);
+        this.ingameTime = 6000L;
+        this.dayLightCycle = false;
+        this.weather = WeatherTypes.SUNNY;
+        this.weatherCycle = false;
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
@@ -331,6 +365,9 @@ public class HousingWorld {
         }
         slimeWorld = world;
         this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
+        houseWorld.setTime(ingameTime);
+        houseWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, dayLightCycle);
+        houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, weatherCycle);
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5);
     }
 
@@ -716,6 +753,22 @@ public class HousingWorld {
     public int getCookies() {
         return cookies;
     }
+
+    public boolean getDaylightCycle() {return dayLightCycle;}
+
+    public void setDayLightCycle(boolean value) { this.dayLightCycle = value; }
+
+    public long getIngameTime() {return ingameTime;}
+
+    public void setIngameTime(long value) { this.ingameTime = value; }
+
+    public WeatherTypes getWeather() {return weather;}
+
+    public void setWeather(WeatherTypes value) {this.weather = value;}
+
+    public boolean getWeatherCycle() {return weatherCycle;}
+
+    public void setWeatherCycle(boolean value) {this.weatherCycle = value;}
 
     public void giveCookies(Player player, int amount) {
         cookieGivers.add(player.getUniqueId());

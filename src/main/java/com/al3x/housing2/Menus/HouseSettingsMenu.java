@@ -5,6 +5,8 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.HousingMenu.JukeboxMenu;
+import com.al3x.housing2.Menus.HousingMenu.TimeSelectorMenu;
+import com.al3x.housing2.Menus.HousingMenu.WeatherSelectorMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,14 +31,22 @@ public class HouseSettingsMenu extends Menu {
     public void setupItems() {
 
         addItem(10, ItemBuilder.create(Material.CLOCK)
+                .name(colorize("&aTime Selector"))
+                .description("Click to select the time settings for your house.")
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .build(), (e) -> {
+            new TimeSelectorMenu(main, player, house).open();
+        });
+
+        addItem(11, ItemBuilder.create(Material.WATER_BUCKET)
                 .name(colorize("&aWeather Selector"))
                 .description("Click to select the weather settings for your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), (e) -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
+            new WeatherSelectorMenu(main, player, house).open();
         });
 
-        addItem(11, ItemBuilder.create(Material.PLAYER_HEAD)
+        addItem(12, ItemBuilder.create(Material.PLAYER_HEAD)
                 .name(colorize("&aMax Players"))
                 .description("Click to change the maximum number of players allowed.")
                 .skullTexture("889ee0b7fef957ed9b464756e9e5615468a9c40c6c0b13f451f33b4103891eab")
@@ -45,7 +55,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(12, ItemBuilder.create(Material.OAK_SIGN)
+        addItem(13, ItemBuilder.create(Material.OAK_SIGN)
                 .name(colorize("&aSet House Name"))
                 .description("Click to change the name of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -56,7 +66,7 @@ public class HouseSettingsMenu extends Menu {
             });
         });
 
-        addItem(13, ItemBuilder.create(Material.OAK_SIGN)
+        addItem(14, ItemBuilder.create(Material.OAK_SIGN)
                 .name(colorize("&aSet House Description"))
                 .description("Click to change the description of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -67,7 +77,7 @@ public class HouseSettingsMenu extends Menu {
             });
         });
 
-        addItem(14, ItemBuilder.create(Material.GRASS_BLOCK)
+        addItem(15, ItemBuilder.create(Material.GRASS_BLOCK)
                 .name(colorize("&aPlot Size"))
                 .description("Click to modify the plot size.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -75,7 +85,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(15, ItemBuilder.create(Material.NAME_TAG)
+        addItem(16, ItemBuilder.create(Material.NAME_TAG)
                 .name(colorize("&aHouse Tags"))
                 .description("Click to edit the house tags.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -83,7 +93,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(16, ItemBuilder.create(Material.BOOK)
+        addItem(19, ItemBuilder.create(Material.BOOK)
                 .name(colorize("&aHouse Language"))
                 .description("Click to change the language settings for your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -91,7 +101,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(19, ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
+        addItem(20, ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
                 .name(colorize("&aParkour Settings"))
                 .description("Click to configure the parkour settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -99,7 +109,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(20, ItemBuilder.create(Material.PAPER)
+        addItem(21, ItemBuilder.create(Material.PAPER)
                 .name(colorize("&aJoin/Leave Messages"))
                 .description("Click to set the join/leave messages for your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
@@ -107,7 +117,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(21, ItemBuilder.create(Material.PAPER)
+        addItem(22, ItemBuilder.create(Material.PAPER)
                 .name(colorize("&aDoor/Fence Auto-Reset"))
                 .description("Click to enable/disable automatic door and fence resetting.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
@@ -115,7 +125,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(22, ItemBuilder.create(Material.PAPER)
+        addItem(23, ItemBuilder.create(Material.PAPER)
                 .name(colorize("&aStatuses"))
                 .description("Click to manage the status settings of your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
@@ -123,7 +133,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(23, ItemBuilder.create(Material.FEATHER)
+        addItem(24, ItemBuilder.create(Material.FEATHER)
                 .name(colorize("&aPlayer Data"))
                 .description("Click to view or modify player data.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -131,7 +141,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(24, ItemBuilder.create(Material.IRON_SWORD)
+        addItem(25, ItemBuilder.create(Material.IRON_SWORD)
                 .name(colorize("&aPvP Settings"))
                 .description("Click to configure PvP settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -139,7 +149,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
-        addItem(25, ItemBuilder.create(Material.JUKEBOX)
+        addItem(28, ItemBuilder.create(Material.JUKEBOX)
                 .name(colorize("&aMusic Settings"))
                 .description("Click to configure Music settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
