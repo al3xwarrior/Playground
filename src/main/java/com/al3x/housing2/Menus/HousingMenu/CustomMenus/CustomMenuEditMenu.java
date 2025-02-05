@@ -27,7 +27,7 @@ public class CustomMenuEditMenu extends Menu {
                 .name("&aChange Title")
                 .description("Change the title of this menu.")
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new title for this menu: ");
             openChat(main, customMenu.getTitle(), (message) -> {
                 customMenu.setTitle(message);
@@ -37,7 +37,7 @@ public class CustomMenuEditMenu extends Menu {
         addItem(13, ItemBuilder.create(Material.BEACON)
                 .name("&aChange Menu Size")
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new ChangeMenuSizeMenu(player, customMenu).open();
         });
 
@@ -45,27 +45,27 @@ public class CustomMenuEditMenu extends Menu {
                 .name("&aEdit Menu Elements")
                 .description("Edit the specific item elements in this menu.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new EditMenuElementsMenu(player, customMenu).open();
         });
 
         addItem(30, ItemBuilder.create(Material.TNT)
                 .name("&aDelete Menu")
                 .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new ConfirmMenu(player, new CustomMenusMenu(main, player, house), () -> {
                 house.getCustomMenus().remove(customMenu);
             }).open();
         });
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name("&aGo Back")
-                .build(), (e) -> {
+                .build(), () -> {
             new CustomMenusMenu(main, player, house).open();
         });
         addItem(32, ItemBuilder.create(Material.CHEST)
                 .name("&aView Menu")
                 .lClick(ItemBuilder.ActionType.VIEW_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new CustomMenuViewer(player, customMenu).open();
         });
 
@@ -73,7 +73,7 @@ public class CustomMenuEditMenu extends Menu {
                 .name("&aSet Refresh Rate")
                 .info("Current", "&a" + customMenu.getRefreshRate())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage("§eEnter the new refresh rate for this menu: ");
             openChat(main, String.valueOf(customMenu.getRefreshRate()), (message) -> {
                 try {

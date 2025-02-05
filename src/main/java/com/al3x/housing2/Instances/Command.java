@@ -165,6 +165,7 @@ public class Command {
 
     public void setName(String name) {
         this.name = name;
+        command.setName(name);
     }
 
     public boolean isLoaded() {

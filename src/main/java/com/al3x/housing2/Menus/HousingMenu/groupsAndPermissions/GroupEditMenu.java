@@ -37,7 +37,7 @@ public class GroupEditMenu extends Menu {
                     .description("Change the name of the group")
                     .info("&7Current Name", "&7" + group.getName())
                     .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                    .build(), e -> {
+                    .build(), () -> {
 
                 player.sendMessage(colorize("&eEnter the new name for the group:"));
                 openChat(main, group.getName(), (s) -> {
@@ -51,7 +51,7 @@ public class GroupEditMenu extends Menu {
                 .description("Change the prefix of the group")
                 .info("&7Current Prefix", "&7" + group.getPrefix())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new prefix for the group:"));
             openChat(main, group.getPrefix(), (s) -> {
                 group.setPrefix(s);
@@ -64,7 +64,7 @@ public class GroupEditMenu extends Menu {
                 .description("Change the suffix of the group")
                 .info("&7Current Suffix", "&7" + group.getSuffix())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new suffix for the group:"));
             openChat(main, group.getSuffix(), (s) -> {
                 group.setSuffix(s);
@@ -76,7 +76,7 @@ public class GroupEditMenu extends Menu {
                 .description("Change the display name of the group")
                 .info("&7Current Display Name", "&7" + group.getDisplayName())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new display name for the group:"));
             openChat(main, group.getDisplayName(), (s) -> {
                 group.setDisplayName(s);
@@ -88,7 +88,7 @@ public class GroupEditMenu extends Menu {
                 .description("Change the color of the group")
                 .info("&7Current Color", group.getColor() + StringUtilsKt.formatCapitalize(fromColorcode(group.getColor()).name()))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EnumMenu<>(main, "&7Select Group Color", Colors.values(), null, player, house, this, (color) -> {
                 group.setColor(color.getColorcode());
                 open();
@@ -100,7 +100,7 @@ public class GroupEditMenu extends Menu {
                 .description("Change the priority of the group")
                 .info("&7Current Priority", "&7" + group.getPriority())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new priority for the group:"));
             openChat(main, String.valueOf(group.getPriority()), (s) -> {
                 group.setPriority(Integer.parseInt(s));
@@ -113,7 +113,7 @@ public class GroupEditMenu extends Menu {
                     .skullTexture("86f125004a8ffa6e4a4ec7b178606d0670c28a75b9cde59e011e66e91a66cf14")
                     .description("Change the permissions the players have within this group.")
                     .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                    .build(), e -> {
+                    .build(), () -> {
                 new PermissionsMenu(player, main, house, group).open();
             });
             i++;//in case we add more items
@@ -124,7 +124,7 @@ public class GroupEditMenu extends Menu {
                     .description("Set this group as the default group for new players.")
                     .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
                     .info("Current Default Group", "&a" + house.getDefaultGroup())
-                    .build(), e -> {
+                    .build(), () -> {
                 house.setDefaultGroup(group.getName());
             });
         }
@@ -133,14 +133,14 @@ public class GroupEditMenu extends Menu {
             addItem(48, ItemBuilder.create(Material.TNT).name("&cDelete Group")
                     .description("Delete this group.")
                     .lClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                    .build(), e -> {
+                    .build(), () -> {
                 house.getGroups().remove(group);
                 new GroupsMenu(player, main, house).open();
             });
         }
 
         addItem(49, ItemBuilder.create(Material.ARROW).name("&aBack")
-                .build(), e -> {
+                .build(), () -> {
             new GroupsMenu(player, main, house).open();
         });
     }

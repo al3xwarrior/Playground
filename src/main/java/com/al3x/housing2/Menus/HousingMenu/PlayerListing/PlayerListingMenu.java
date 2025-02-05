@@ -100,19 +100,19 @@ public class PlayerListingMenu extends Menu {
                 });
             }
         } else {
-            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), (e) -> {
+            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), () -> {
             });
         }
 
         if (currentPage > 1) {
-            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), (e) -> {
+            addItem(45, new ItemBuilder().material(Material.ARROW).name(colorize("&7Previous Page")).build(), () -> {
                 currentPage--;
                 open();
             });
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), (e) -> {
+            addItem(53, new ItemBuilder().material(Material.ARROW).name(colorize("&7Next Page")).build(), () -> {
                 currentPage++;
                 open();
             });
@@ -130,7 +130,7 @@ public class PlayerListingMenu extends Menu {
             }
         });
 
-        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), (e) -> {
+        addItem(49, new ItemBuilder().material(Material.ARROW).name(colorize("&aGo Back")).build(), () -> {
             new HousingMenu(main, player, house).open();
         });
     }

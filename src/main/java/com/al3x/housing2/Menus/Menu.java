@@ -31,6 +31,7 @@ public abstract class Menu {
     private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
     private Map<Integer, Consumer<InventoryClickEvent>> shiftLeftClickActions = new HashMap<>();
+    private Map<Integer, Consumer<InventoryClickEvent>> anyClickActions = new HashMap<>();
     protected Player player;
 
     public Menu(Player player, String title, int size) {
@@ -72,6 +73,7 @@ public abstract class Menu {
             Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
             Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
             Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
+            Consumer<InventoryClickEvent> anyAction = anyClickActions.get(slot);
 
             if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
                 leftAction.accept(event); // Run the left-click action
@@ -79,6 +81,8 @@ public abstract class Menu {
                 rightAction.accept(event); // Run the right-click action
             } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
                 shiftLeftAction.accept(event); // Run the shift-left-click action
+            } else if (anyClickActions.get(slot) != null) {
+                anyAction.accept(event);
             }
         }
     }
@@ -98,7 +102,7 @@ public abstract class Menu {
     // Helper method to add an item and bind actions to its slot
     public void addItem(int slot, ItemStack item, Consumer<InventoryClickEvent> clickAction) {
         inventory.setItem(slot, item);
-        leftClickActions.put(slot, clickAction);
+        anyClickActions.put(slot, clickAction);
     }
 
     public void addItem(int slot, ItemStack item, Runnable leftClickAction) {
@@ -107,7 +111,7 @@ public abstract class Menu {
     }
 
     public void addItem(int slot, ItemStack item) {
-        addItem(slot, item, (e) -> {});
+        addItem(slot, item, () -> {});
     }
 
     public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction) {

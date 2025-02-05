@@ -508,12 +508,12 @@ public class ActionEditMenu extends Menu {
         // Add export button
         if (action != null) {
             ItemBuilder export = ItemBuilder.create(Material.LIME_DYE).name("&aCopy to Clipboard").lClick(ItemBuilder.ActionType.EXPORT_YELLOW);
-            addItem(((editor.getRows() - 1) * 9), export.build(), (e) -> {
+            addItem(((editor.getRows() - 1) * 9), export.build(), () -> {
                 main.getClipboardManager().addAction(player.getUniqueId().toString(), action);
             });
 
             ItemBuilder importItem = ItemBuilder.create(Material.CYAN_DYE).name("&bImport from Clipboard").lClick(ItemBuilder.ActionType.IMPORT_YELLOW);
-            addItem(((editor.getRows() - 1) * 9) + 1, importItem.build(), (e) -> {
+            addItem(((editor.getRows() - 1) * 9) + 1, importItem.build(), () -> {
                 new ActionClipboardMenu(player, main, house, action, this).open();
             });
 

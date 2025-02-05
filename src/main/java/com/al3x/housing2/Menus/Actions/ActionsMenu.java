@@ -14,6 +14,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -225,6 +226,7 @@ public class ActionsMenu extends Menu {
                             setupItems();
                             return;
                         }
+
 
                         if (e.isLeftClick() && action.editorMenu(house, backMenu, player) != null) {
                             ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);

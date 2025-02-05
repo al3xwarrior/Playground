@@ -42,7 +42,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aWeather Selector"))
                 .description("Click to select the weather settings for your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new WeatherSelectorMenu(main, player, house).open();
         });
 
@@ -51,7 +51,7 @@ public class HouseSettingsMenu extends Menu {
                 .description("Click to change the maximum number of players allowed.")
                 .skullTexture("889ee0b7fef957ed9b464756e9e5615468a9c40c6c0b13f451f33b4103891eab")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -59,7 +59,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aSet House Name"))
                 .description("Click to change the name of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eType the message you would like for the &ahouse name&e."));
             openChat(main, house.getName(), (message) -> {
                 house.setName(message);
@@ -70,7 +70,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aSet House Description"))
                 .description("Click to change the description of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eType the message you would like for the &ahouse description&e."));
             openChat(main, house.getDescription(), (message) -> {
                 house.setDescription(message);
@@ -81,7 +81,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aPlot Size"))
                 .description("Click to modify the plot size.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -89,7 +89,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aHouse Tags"))
                 .description("Click to edit the house tags.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -97,7 +97,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aHouse Language"))
                 .description("Click to change the language settings for your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -105,7 +105,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aParkour Settings"))
                 .description("Click to configure the parkour settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -113,7 +113,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aJoin/Leave Messages"))
                 .description("Click to set the join/leave messages for your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -121,7 +121,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aDoor/Fence Auto-Reset"))
                 .description("Click to enable/disable automatic door and fence resetting.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -129,7 +129,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aStatuses"))
                 .description("Click to manage the status settings of your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -137,7 +137,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aPlayer Data"))
                 .description("Click to view or modify player data.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -145,7 +145,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aPvP Settings"))
                 .description("Click to configure PvP settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
@@ -153,7 +153,7 @@ public class HouseSettingsMenu extends Menu {
                 .name(colorize("&aMusic Settings"))
                 .description("Click to configure Music settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             if (house.hasPermission(player, Permissions.JUKEBOX)) {
                 new JukeboxMenu(main, player, house).open();
                 return;
@@ -164,7 +164,7 @@ public class HouseSettingsMenu extends Menu {
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)
                 .name(colorize("&aMain Menu"))
                 .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
-                .build(), (e) -> new HousingMenu(main, player, house).open());
+                .build(), () -> new HousingMenu(main, player, house).open());
 
     }
 }
