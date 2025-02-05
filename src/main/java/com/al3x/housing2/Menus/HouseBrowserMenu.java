@@ -62,21 +62,18 @@ public class HouseBrowserMenu extends Menu {
                     .info("&7Players", "&a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0))
                     .info("&7Cookies", "&6" + house.getCookies())
                     .lClick(ItemBuilder.ActionType.JOIN_YELLOW);
+            if (player.hasPermission("housing2.admin")) icon.extraLore("&8ID: " + house.getHouseID());
 
             addItem(i, icon.build(), () -> {
                 if (housingWorld != null) {
                     housingWorld.sendPlayerToHouse(player);
                 } else {
                     OfflinePlayer target = Main.getInstance().getServer().getOfflinePlayer(UUID.fromString(house.getOwnerID()));
-                    if (target != null) {
-                        HousingWorld world = housesManager.loadHouse(target, house.getHouseID());
-                        if (world != null) {
-                            world.sendPlayerToHouse(player);
-                        } else {
-                            player.sendMessage(colorize("&cWe couldn't load this house!"));
-                        }
+                    HousingWorld world = housesManager.loadHouse(target, house.getHouseID());
+                    if (world != null) {
+                        world.sendPlayerToHouse(player);
                     } else {
-                        player.sendMessage(colorize("&cWe aren't sure what happened here!"));
+                        player.sendMessage(colorize("&cWe couldn't load this house!"));
                     }
                 }
             });
