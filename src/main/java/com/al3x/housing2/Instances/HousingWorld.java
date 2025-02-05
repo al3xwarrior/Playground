@@ -408,7 +408,7 @@ public class HousingWorld {
 
     private void setupWorldBorder() {
         this.houseWorld.getWorldBorder().setCenter(new Location(houseWorld, 0, 61, 0));
-        this.houseWorld.getWorldBorder().setSize(this.size);
+        this.houseWorld.getWorldBorder().setSize(this.size % 2 == 0 ? this.size : this.size + 1);
     }
 
     private void setupDefaultScoreboard() {
