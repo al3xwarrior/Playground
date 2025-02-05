@@ -63,7 +63,7 @@ public class CommandArgumentsEditMenu extends Menu {
                 });
             }
         } else {
-            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), (e) -> {});
+            addItem(22, new ItemBuilder().material(Material.BEDROCK).name(colorize("&cNo Items!")).build(), () -> {});
         }
 
         //Add Argument Super simple because I am lazy :)
@@ -71,7 +71,7 @@ public class CommandArgumentsEditMenu extends Menu {
                 .name(colorize("&aAdd Argument"))
                 .description("Add a new argument to this command.")
                 .lClick(ItemBuilder.ActionType.ADD_YELLOW)
-                .build(), (e) -> {
+                .build(), () -> {
             new EnumMenu<>(main, "&7Select Argument type", Command.ArgType.values(), null, player, house, this, (type) -> {
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
 
@@ -84,7 +84,7 @@ public class CommandArgumentsEditMenu extends Menu {
         addItem(49, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Edit Command")
-                .build(), (e) -> {
+                .build(), () -> {
             new CommandEditMenu(main, player, house, command).open();
         });
     }

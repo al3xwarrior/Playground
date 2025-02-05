@@ -37,7 +37,7 @@ public class ChangeArmorMenu extends Menu {
         addItem(13, helmet == null ? ItemBuilder.create(Material.CHAINMAIL_HELMET)
                 .name(colorize("&aHelmet"))
                 .description("Change the item that is in the Helmet slot")
-                .build() : helmet, (e) -> {
+                .build() : helmet, () -> {
             new ItemSelectMenu(player, this, (item) -> {
                 layout.getArmor().set(3, item);
             }).open();
@@ -48,7 +48,7 @@ public class ChangeArmorMenu extends Menu {
         addItem(22, chestplate == null ? ItemBuilder.create(Material.CHAINMAIL_CHESTPLATE)
                 .name(colorize("&aChestplate"))
                 .description("Change the item that is in the Chestplate slot")
-                .build() : chestplate, (e) -> {
+                .build() : chestplate, () -> {
             new ItemSelectMenu(player, this, (item) -> {
                 layout.getArmor().set(2, item);
             }).open();
@@ -59,7 +59,7 @@ public class ChangeArmorMenu extends Menu {
         addItem(31, leggings == null ? ItemBuilder.create(Material.CHAINMAIL_LEGGINGS)
                 .name(colorize("&aLeggings"))
                 .description("Change the item that is in the Leggings slot")
-                .build() : leggings, (e) -> {
+                .build() : leggings, () -> {
             new ItemSelectMenu(player, this, (item) -> {
                 layout.getArmor().set(1, item);
             }).open();
@@ -70,7 +70,7 @@ public class ChangeArmorMenu extends Menu {
         addItem(40, boots == null ? ItemBuilder.create(Material.CHAINMAIL_BOOTS)
                 .name(colorize("&aBoots"))
                 .description("Change the item that is in the Boots slot")
-                .build() : boots, (e) -> {
+                .build() : boots, () -> {
             new ItemSelectMenu(player, this, (item) -> {
                 layout.getArmor().set(0, item);
             }).open();
@@ -80,7 +80,7 @@ public class ChangeArmorMenu extends Menu {
         addItem(49, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&aGo Back"))
                 .description("To Layouts Menu")
-                .build(), (e) -> {
+                .build(), () -> {
             new LayoutEditMenu(main, player, house, layout).open();
         });
     }

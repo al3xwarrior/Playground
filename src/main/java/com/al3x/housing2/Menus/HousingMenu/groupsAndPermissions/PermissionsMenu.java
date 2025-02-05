@@ -51,27 +51,27 @@ public class PermissionsMenu extends Menu {
                 item.rClick(ItemBuilder.ActionType.CYCLE_BACKWARD);
             }
 
-            addItem(slots[i], item.build(), e -> {
+            addItem(slots[i], item.build(), () -> {
                 permissions.put(perm, perm.cycle(value));
                 setupItems();
             });
         }
 
         if (currentPage > 1) {
-            addItem(45, ItemBuilder.create(Material.ARROW).name("§aPrevious Page").build(), e -> {
+            addItem(45, ItemBuilder.create(Material.ARROW).name("§aPrevious Page").build(), () -> {
                 currentPage--;
                 setupItems();
             });
         }
 
         if (currentPage < paginationList.getPageCount()) {
-            addItem(53, ItemBuilder.create(Material.ARROW).name("§aNext Page").build(), e -> {
+            addItem(53, ItemBuilder.create(Material.ARROW).name("§aNext Page").build(), () -> {
                 currentPage++;
                 setupItems();
             });
         }
 
-        addItem(49, ItemBuilder.create(Material.ARROW).name("§aBack").build(), e -> {
+        addItem(49, ItemBuilder.create(Material.ARROW).name("§aBack").build(), () -> {
             new GroupEditMenu(player, main, house, group).open();
         });
     }

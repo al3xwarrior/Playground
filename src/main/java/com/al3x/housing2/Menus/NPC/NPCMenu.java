@@ -97,7 +97,7 @@ public class NPCMenu extends Menu {
         ItemMeta npcNameMeta = npcName.getItemMeta();
         npcNameMeta.setDisplayName(colorize("&aNPC Name"));
         npcName.setItemMeta(npcNameMeta);
-        addItem(32, npcName, (e) -> {
+        addItem(32, npcName, () -> {
             player.sendMessage(colorize("&eEnter the new name for the NPC:"));
             player.closeInventory();
             openChat(main, housingNPC.getName(), (newName) -> {

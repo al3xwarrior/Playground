@@ -46,7 +46,7 @@ public class EditEnchantmentMenu extends Menu {
                 String levelRoman = NumberUtilsKt.romanThatBitch(level);
                 itemBuilder.name("&a" + StringUtilsKt.formatCapitalize(enchantment.getKey().getKey()) + " " + levelRoman);
                 itemBuilder.lClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-                addItem(slots[i], itemBuilder.build(), e -> {
+                addItem(slots[i], itemBuilder.build(), () -> {
                     item.removeEnchantment(enchantment);
                     player.getInventory().setItemInMainHand(item);
                     setupItems();
@@ -56,7 +56,7 @@ public class EditEnchantmentMenu extends Menu {
             if (page > 1) {
                 addItem(45, ItemBuilder.create(Material.ARROW)
                         .name("&7Previous Page")
-                        .build(), e -> {
+                        .build(), () -> {
                     page--;
                     setupItems();
                     open();
@@ -66,7 +66,7 @@ public class EditEnchantmentMenu extends Menu {
             if (page < paginationList.getPageCount()) {
                 addItem(53, ItemBuilder.create(Material.ARROW)
                         .name("&7Next Page")
-                        .build(), e -> {
+                        .build(), () -> {
                     page++;
                     setupItems();
                     open();
@@ -77,7 +77,7 @@ public class EditEnchantmentMenu extends Menu {
         addItem(50, ItemBuilder.create(Material.ENCHANTING_TABLE)
                 .name("&aAdd Enchantment")
                 .lClick(ADD_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             List<Duple<Enchantment, ItemBuilder>> enchantments = new ArrayList<>();
             for (Enchantment enchantment : Enchantment.values()) {
                 if (enchantment.canEnchantItem(item)) {
@@ -109,7 +109,7 @@ public class EditEnchantmentMenu extends Menu {
 
         addItem(49, ItemBuilder.create(Material.ARROW)
                 .name("&aGo Back")
-                .build(), e -> {
+                .build(), () -> {
             new EditItemMainMenu(player).open();
         });
     }

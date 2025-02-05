@@ -48,7 +48,7 @@ public class EditItemMainMenu extends Menu {
         addItem(28, ItemBuilder.create(Material.NAME_TAG)
                 .name("&aRename Item")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             player.sendMessage(colorize("&eEnter the new name for the item."));
             openChat(Main.getInstance(), item.getItemMeta().getDisplayName(), (newName) -> {
                 ItemMeta meta = item.getItemMeta();
@@ -63,7 +63,7 @@ public class EditItemMainMenu extends Menu {
         addItem(30, ItemBuilder.create(Material.BOOK)
                 .name("&aEdit Lore")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EditLoreMenu(player).open();
         });
 
@@ -71,7 +71,7 @@ public class EditItemMainMenu extends Menu {
         addItem(32, ItemBuilder.create(Material.ENCHANTED_BOOK)
                 .name("&aEdit Enchantments")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EditEnchantmentMenu(player).open();
         });
 
@@ -79,7 +79,7 @@ public class EditItemMainMenu extends Menu {
                 .name("&aEdit Actions")
                 .description("Edit the actions which will be performed when the player uses this item.")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EditActionTypesMenu(player, customItem).open();
         });
 
@@ -87,7 +87,7 @@ public class EditItemMainMenu extends Menu {
                 .name("&aEdit Item Flags")
                 .description("Toggle which flags are shown on the tooltip of the item.")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EditFlagMenu(player).open();
         });
 
@@ -95,7 +95,7 @@ public class EditItemMainMenu extends Menu {
                 .name("&aSet Item Type")
                 .description("Edit the material of the item.")
                 .lClick(EDIT_YELLOW)
-                .build(), e -> {
+                .build(), () -> {
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
                 ItemStack i = item.withType(m);
                 NbtItemBuilder builder = new NbtItemBuilder(i);

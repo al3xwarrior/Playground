@@ -49,6 +49,6 @@ public class ItemSelectMenu extends Menu {
         infoBuilder.material(Material.PAPER);
         infoBuilder.name("&eInfo");
         infoBuilder.description("Middle click any item to set that item to Not Set.");
-        addItem(32, infoBuilder.build(), (e) -> {});
+        addItem(32, infoBuilder.build(), () -> {});
     }
 }

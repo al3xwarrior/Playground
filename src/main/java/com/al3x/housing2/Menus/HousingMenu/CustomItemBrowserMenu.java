@@ -93,7 +93,7 @@ public class CustomItemBrowserMenu extends Menu {
         for (int i = 0; i < itemList.size(); i++) {
             CustomItem item = itemList.get(i);
             ItemStack itemStack = item.getItem();
-            addItem(i, itemStack, e -> {
+            addItem(i, itemStack, () -> {
                 player.getInventory().addItem(itemStack);
             });
         }
