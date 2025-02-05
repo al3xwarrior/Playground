@@ -72,7 +72,7 @@ public class ScoreboardMenu extends Menu {
                         .name("&aAdd Line")
                         .description("&7Add a new line to the scoreboard. The max lines are 15")
                         .build(), () -> {
-                    if (house.getScoreboard().size() >= 15) {
+                    if (house.getScoreboard().size() > 15) {
                         player.sendMessage(colorize("&cYou are at the max lines!"));
                         return;
                     }
