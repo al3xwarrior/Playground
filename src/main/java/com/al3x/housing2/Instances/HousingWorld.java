@@ -296,6 +296,7 @@ public class HousingWorld {
                 houseWorld.setThundering(true);
             }
         }
+        houseWorld.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, this.weatherCycle);
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
         TrashCanListener.initTrashCans(trashCans);

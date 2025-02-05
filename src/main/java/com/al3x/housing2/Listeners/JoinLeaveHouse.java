@@ -1,5 +1,7 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Action.Actions.ChangePlayerAttributeAction;
+import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
@@ -9,16 +11,17 @@ import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
-import com.mongodb.internal.logging.LogMessage;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.kyori.adventure.Adventure;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,9 +29,9 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -51,40 +54,26 @@ public class JoinLeaveHouse implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
 
         player.playerListName(Component.text(player.getName()));
-        player.sendActionBar("");
-        player.sendTitle("", "");
 
-        // Attributes (https://minecraft.wiki/w/Attribute) I hope the website is right!
-        player.getAttribute(Attribute.ARMOR).setBaseValue(0);
-        player.getAttribute(Attribute.ARMOR_TOUGHNESS).setBaseValue(0);
-        player.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(1);
-        player.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0);
-        player.getAttribute(Attribute.ATTACK_SPEED).setBaseValue(4);
-        //error with the one below
-//        player.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(32); // this might not apply to the player but just incase
-        player.getAttribute(Attribute.KNOCKBACK_RESISTANCE).setBaseValue(0);
-        player.getAttribute(Attribute.LUCK).setBaseValue(0);
-        player.getAttribute(Attribute.MAX_ABSORPTION).setBaseValue(4);
-        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
-        player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1);
-        player.getAttribute(Attribute.SCALE).setBaseValue(1);
-        player.getAttribute(Attribute.STEP_HEIGHT).setBaseValue(0.6);
-        player.getAttribute(Attribute.JUMP_STRENGTH).setBaseValue(0.42);
-        player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
-        player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).setBaseValue(3);
-        player.getAttribute(Attribute.BLOCK_BREAK_SPEED).setBaseValue(1);
-        player.getAttribute(Attribute.GRAVITY).setBaseValue(0.08);
-        player.getAttribute(Attribute.SAFE_FALL_DISTANCE).setBaseValue(3);
-        player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER).setBaseValue(1);
-        player.getAttribute(Attribute.BURNING_TIME).setBaseValue(1);
-        player.getAttribute(Attribute.EXPLOSION_KNOCKBACK_RESISTANCE).setBaseValue(0);
-        player.getAttribute(Attribute.MINING_EFFICIENCY).setBaseValue(0);
-        player.getAttribute(Attribute.MOVEMENT_EFFICIENCY).setBaseValue(0);
-        player.getAttribute(Attribute.OXYGEN_BONUS).setBaseValue(0);
-        player.getAttribute(Attribute.SNEAKING_SPEED).setBaseValue(0.3);
-        player.getAttribute(Attribute.SUBMERGED_MINING_SPEED).setBaseValue(0.2);
-        player.getAttribute(Attribute.SWEEPING_DAMAGE_RATIO).setBaseValue(0);
-        player.getAttribute(Attribute.WATER_MOVEMENT_EFFICIENCY).setBaseValue(0);
+        player.sendActionBar(Component.empty());
+        player.sendTitlePart(TitlePart.TITLE, Component.empty());
+        player.sendTitlePart(TitlePart.SUBTITLE, Component.empty());
+        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(0), Duration.ofSeconds(0)));
+
+        // Reset attributes
+        for (AttributeType attribute : AttributeType.values()) {
+            AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
+            if (attributeInstance == null) continue;
+
+            for (AttributeModifier modifier : attributeInstance.getModifiers()) {
+                if (modifier.getKey().equals(ChangePlayerAttributeAction.key)) {
+                    // not updated on client for some reason?
+                    // Bukkit.getLogger().warning("removing modifier " + modifier.getName());
+                    attributeInstance.removeModifier(modifier);
+
+                }
+            }
+        }
     }
 
     private void joinHouse(Player player) {
