@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances.HousingData
 
 import com.al3x.housing2.Enums.EventType
 import com.al3x.housing2.Enums.HousePrivacy
+import com.al3x.housing2.Enums.WeatherTypes
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
@@ -40,6 +41,10 @@ data class HouseData(
     val seed: String,
     var functions: List<FunctionData>? = arrayListOf(),
     var version: Int?,
+    var ingameTime: Long?,
+    var dayLightCycle: Boolean?,
+    var weather: WeatherTypes?,
+    var weatherCycle: Boolean?
 ) {
 
     companion object {
@@ -75,6 +80,10 @@ data class HouseData(
                 world.seed,
                 FunctionData.fromList(world.functions),
                 world.version,
+                world.ingameTime,
+                world.daylightCycle,
+                world.weather,
+                world.weatherCycle
             )
             return houseData
         }
