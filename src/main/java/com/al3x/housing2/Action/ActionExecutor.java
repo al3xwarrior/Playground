@@ -5,7 +5,6 @@ import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
-import com.al3x.housing2.Utils.AsyncTask;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,14 +15,13 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
     double pause = 0;
     ParentActionExecutor parent;
     boolean isPaused = false;
-
-    long currentTime = System.currentTimeMillis();
 
     public ActionExecutor(@Nullable ParentActionExecutor parent) {
         this.parent = parent;
@@ -62,64 +60,58 @@ public class ActionExecutor {
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
         if (house.isAdminMode(player)) return false;
 
-        AtomicBoolean returnVal = new AtomicBoolean(true);
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
-        AtomicBoolean canMoveOn = new AtomicBoolean(true);
-        house.runInThread(new AsyncTask((task) -> {
-            if (!canMoveOn.get() && currentTime + pause * 50 < System.currentTimeMillis()) {
-                canMoveOn.set(true);
-                pause = 0;
-            }
+        AtomicInteger waited = new AtomicInteger();
 
-            if (!canMoveOn.get() || isPaused) {
+        if (!otherExecute(player, house, event)) return false;
+
+        if (queue.isEmpty()) return true;
+
+        scheduler.runTaskTimer(Main.getInstance(), (t) -> {
+            if (waited.get() < pause) {
+                waited.getAndIncrement();
                 return;
             }
+            waited.set(0);
 
-            if (queue.isEmpty()) {
-                task.cancel();
-                return;
+            if (!otherExecute(player, house, event)) {
+                t.cancel();
             }
 
+            if (queue.isEmpty()) t.cancel();
+        }, 0, 1);
+
+        return true;
+    }
+
+    public boolean otherExecute(Player player, HousingWorld house, Cancellable event) {
+        boolean actionReturn = true;
+        while (!queue.isEmpty() && !isPaused) {
             Action action = queue.removeFirst();
 
             if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
                 if (!NumberUtilsKt.isDouble(dur)) {
-                    return;
+                    return true;
                 }
                 double duration = Double.parseDouble(dur);
                 pause += duration;
-                currentTime = System.currentTimeMillis();
-                canMoveOn.set(false);
-                return;
+                return true;
             }
 
-            // If the player is not in the world, treat it also as the exit action (stop)
             if (action instanceof ExitAction || !player.getWorld().equals(house.getWorld())) {
-                returnVal.set(false);
-                task.cancel();
-                return;
+                return false;
             }
 
-            if (action.mustBeSync()) {
-                scheduler.runTask(Main.getInstance(), () -> {
-                    returnVal.set(action.execute(player, house, event, this));
-                });
-            } else {
-                returnVal.set(action.execute(player, house, event, this));
-            }
-
-            if (parent != null && !parent.running && !parent.executors.isEmpty()) {
-                parent.nano = System.nanoTime();
-                parent.execute(player, house, event);
-            }
-        }));
+            actionReturn = action.execute(player, house, event, this);
+        }
 
         if (parent != null && !parent.running && !parent.executors.isEmpty()) {
+            parent.nano = System.nanoTime();
             parent.execute(player, house, event);
         }
 
-        return returnVal.get();
+        return actionReturn;
     }
 }

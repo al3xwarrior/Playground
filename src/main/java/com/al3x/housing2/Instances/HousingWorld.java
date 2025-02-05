@@ -993,7 +993,7 @@ public class HousingWorld {
     }
 
     public Command createCommand(String name) {
-        if (name == null || !name.matches("^[a-zA-Z0-9]*$") || main.getCommandFramework().hasCommand(name) || commands.stream().anyMatch(command -> command.getName().equals(name)))
+        if (name == null || !name.matches("^[a-zA-Z0-9]*$") || commands.stream().anyMatch(command -> command.getName().equals(name)))
             return null;
         Command command = new Command(name);
         commands.add(command);

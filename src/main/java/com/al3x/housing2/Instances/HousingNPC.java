@@ -243,6 +243,17 @@ public class HousingNPC {
                 }
             }
         }.runTaskTimer(main, 0, 20);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (citizensNPC.isSpawned()) {
+                    if (hologram != null) {
+                        hologram.setLocation(citizensNPC.getEntity().getLocation().clone().add(0, 2.5, 0));
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0, 1);
     }
 
     private Player getClosestPlayer() {

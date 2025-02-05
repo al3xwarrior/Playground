@@ -2,7 +2,10 @@ package com.al3x.housing2.Listeners.HouseEvents;
 
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -49,10 +52,14 @@ public class ChatEvent implements Listener {
 
         e.setCancelled(true);
 
+        if (housesManager.getHouse(world) == null) {
+            return;
+        }
+        HousingWorld house = housesManager.getHouse(world);
 
-        String message = PlaceholderAPI.setPlaceholders(player, "%luckperms_prefix%" + player.getName() + "&7: &f");
+        Component message = StringUtilsKt.housingStringFormatter("%group.prefix%" + player.getName() + "&7: &f" + e.getMessage(), house, player);
         for (Player p : world.getPlayers()) {
-            p.sendMessage(colorize(message) + e.getMessage());
+            p.sendMessage(message);
         }
     }
 

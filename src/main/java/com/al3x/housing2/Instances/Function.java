@@ -69,6 +69,19 @@ public class Function {
                 parent.addExecutor(executor);
                 parent.execute(p, house, null);
             }
+        } else {
+            if (players.size() > 1) {
+                for (Player p : players) {
+                    parent = new ParentActionExecutor();
+                    executor = new ActionExecutor(parent);
+                    executor.addActions(actions);
+                    parent.addExecutor(executor);
+                    parent.execute(p, house, null);
+                }
+            } else {
+                executor.addActions(actions);
+                parent.addExecutor(executor);
+            }
         }
     }
 
