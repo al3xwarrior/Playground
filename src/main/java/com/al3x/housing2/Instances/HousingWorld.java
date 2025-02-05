@@ -96,7 +96,6 @@ public class HousingWorld {
     private List<LaunchPad> launchPads;
     private String seed;
     private Random random;
-    private Thread thread;
     private Integer version;
     private ArrayList<Player> adminModeUsers = new ArrayList<>();
 
@@ -108,7 +107,6 @@ public class HousingWorld {
 
     private boolean loaded = false;
     private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
-    private ConcurrentHashMultiset<AsyncTask> runInThread = ConcurrentHashMultiset.create();
     public HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
     private HousingScoreboard scoreboardInstance;
 
@@ -159,30 +157,6 @@ public class HousingWorld {
         onLoad.forEach(consumer -> consumer.accept(this));
     }
 
-    private long currentTime = System.currentTimeMillis();
-    private Thread makeThread() {
-        return new Thread(() -> {
-            while (true) {
-                if (runInThread.isEmpty()) {
-                    continue;
-                }
-                if (Thread.interrupted()) {
-                    return;
-                }
-                for (AsyncTask task : runInThread) {
-                    task.run();
-                    if (task.isCancelled()) {
-                        runInThread.remove(task);
-                    }
-                }
-            }
-        });
-    }
-
-    public void runInThread(AsyncTask consumer) {
-        runInThread.add(consumer);
-    }
-
     private void initialize(Main main, OfflinePlayer owner, String name) {
         this.main = main;
         this.name = name;
@@ -202,8 +176,6 @@ public class HousingWorld {
         this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
-        this.thread = makeThread();
-        this.thread.start();
         try {
             this.loader = main.getLoader();
             this.asp = AdvancedSlimePaperAPI.instance();
@@ -511,7 +483,6 @@ public class HousingWorld {
             player.sendMessage(colorize("&e&lHouse is being unloaded!"));
             kickPlayerFromHouse(player);
         });
-        if (thread != null) thread.interrupt();
         housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
         killAllEntities();
         trashCans.forEach(location -> { //I dont think this is needed cause of the killAllEntities() method
