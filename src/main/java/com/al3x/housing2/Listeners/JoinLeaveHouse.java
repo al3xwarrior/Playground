@@ -59,6 +59,8 @@ public class JoinLeaveHouse implements Listener {
         player.sendTitlePart(TitlePart.SUBTITLE, Component.empty());
         player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(0), Duration.ofSeconds(0)));
 
+        player.activeBossBars().forEach(bossBar -> bossBar.removeViewer(player));
+
         // Reset attributes
         for (AttributeType attribute : AttributeType.values()) {
             AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
