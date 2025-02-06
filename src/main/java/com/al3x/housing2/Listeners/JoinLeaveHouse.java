@@ -21,7 +21,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -65,15 +64,10 @@ public class JoinLeaveHouse implements Listener {
             AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
             if (attributeInstance == null) continue;
 
-            for (AttributeModifier modifier : attributeInstance.getModifiers()) {
-                if (modifier.getKey().equals(ChangePlayerAttributeAction.key)) {
-                    // not updated on client for some reason?
-                    // Bukkit.getLogger().warning("removing modifier " + modifier.getName());
-                    attributeInstance.removeModifier(modifier);
-
-                }
-            }
+            attributeInstance.setBaseValue(attributeInstance.getDefaultValue());
         }
+        player.setWalkSpeed(0.2f);
+        player.setFlySpeed(0.2f);
 
         Main.getInstance().getProtoolsManager().clearSelection(player);
     }

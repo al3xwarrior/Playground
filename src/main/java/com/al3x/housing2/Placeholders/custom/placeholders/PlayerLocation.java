@@ -12,6 +12,7 @@ public class PlayerLocation{
         new Z();
         new Pitch();
         new Yaw();
+        new Speed();
     }
 
     private static class Coords extends Placeholder {
@@ -101,6 +102,19 @@ public class PlayerLocation{
                 return "null";
             }
             return String.valueOf(player.getLocation().getYaw());
+        }
+    }
+
+    private static class Speed extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%player.location.speed%";
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (player == null) return "null";
+            return String.valueOf(player.getVelocity().length());
         }
     }
 }
