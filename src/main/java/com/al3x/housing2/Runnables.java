@@ -4,35 +4,28 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.ExplosionAction;
 import com.al3x.housing2.Action.Actions.ParticleAction;
 import com.al3x.housing2.Action.ParentActionExecutor;
-import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.Hologram;
-import com.al3x.housing2.Instances.HousingNPC;
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.LaunchPad;
+import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.LobbyListener;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.Utils.Duple;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
-import com.al3x.housing2.Instances.HousingScoreboard;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.Gson;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.al3x.housing2.Instances.Hologram.rainbow;
 import static com.al3x.housing2.Instances.Hologram.rainbowIndex;
+import static com.al3x.housing2.Instances.PlayerSpeedManager.playerSpeeds;
 import static com.al3x.housing2.MineSkin.MineskinHandler.sendRequestForSkins;
-import static com.al3x.housing2.Utils.Color.colorize;
 
 public class Runnables {
     //Description, Runnable
@@ -260,6 +253,29 @@ public class Runnables {
                 }
             }
         }.runTaskTimer(main, 0L, 2));
+
+        runnables.put("calculateSpeed", new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    UUID uuid = player.getUniqueId();
+                    Vector currentPosition = player.getLocation().toVector();
+
+                    if (PlayerSpeedManager.playerLastLocations.containsKey(uuid)) {
+                        Vector previousPosition = PlayerSpeedManager.playerLastLocations.get(uuid);
+                        Vector velocity = currentPosition.clone().subtract(previousPosition);
+
+                        double speedPerSecond = velocity.multiply(20).length();
+
+                        PlayerSpeedManager.playerSpeeds.put(uuid, speedPerSecond);
+                    }
+
+                    PlayerSpeedManager.playerLastLocations.put(uuid, currentPosition);
+                }
+            }
+        }.runTaskTimer(main, 0, 1));
+
+
 
         /* Will bring this back after the beta.
         runnables.put("lobbyDisplays", new BukkitRunnable() {

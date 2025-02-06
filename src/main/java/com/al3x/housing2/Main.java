@@ -39,6 +39,7 @@ public final class Main extends JavaPlugin {
     private ClipboardManager clipboardManager;
     private LobbyDisplays lobbyDisplays;
     private HologramManager hologramManager;
+    private PlayerSpeedManager playerSpeedManager;
 
     private String mineSkinKey;
 
@@ -68,6 +69,7 @@ public final class Main extends JavaPlugin {
         this.cookieManager = new CookieManager(this, getDataFolder());
         this.clipboardManager = new ClipboardManager(this, getDataFolder());
         this.lobbyDisplays = new LobbyDisplays(housesManager);
+        this.playerSpeedManager = new PlayerSpeedManager();
 
         loadItemsToCache();
 
@@ -186,6 +188,10 @@ public final class Main extends JavaPlugin {
 
     public ClipboardManager getClipboardManager() {
         return clipboardManager;
+    }
+
+    public PlayerSpeedManager getPlayerSpeedManager() {
+        return playerSpeedManager;
     }
 
     @Override

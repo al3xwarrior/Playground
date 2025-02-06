@@ -1,6 +1,7 @@
 package com.al3x.housing2.Placeholders.custom.placeholders;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.PlayerSpeedManager;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import org.bukkit.entity.Player;
 
@@ -114,7 +115,7 @@ public class PlayerLocation{
         @Override
         public String handlePlaceholder(String input, HousingWorld house, Player player) {
             if (player == null) return "null";
-            return String.valueOf(player.getVelocity().length());
+            return PlayerSpeedManager.playerSpeeds.getOrDefault(player.getUniqueId(), 0.0).toString();
         }
     }
 }
