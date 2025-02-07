@@ -115,7 +115,7 @@ public class HousingMenu extends Menu {
             addItem(0, visitingRules.build(), () -> {
                 //thanks chatgippity lol, I would have made this a lot more complicated
                 house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
-                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
+                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()) + "\n&7Please rejoin the house for the changes to apply!");
                 setupItems();
             });
 

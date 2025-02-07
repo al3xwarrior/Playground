@@ -3,9 +3,8 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import com.al3x.housing2.Utils.Color;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -34,6 +33,23 @@ public class ProtoolsManager {
 
         this.taskQueue = new LinkedList<>();
         this.isProcessing = false;
+    }
+
+    public List<Block> removeIllegalBlocks(Player player, List<Block> blocks) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+
+        List<Location> trashCans = house.getTrashCans();
+        List<LaunchPad> launchPads = house.getLaunchPads();
+
+        for (Block block : blocks) {
+            if (
+                    trashCans.contains(block.getLocation()) ||
+                    launchPads.stream().anyMatch(launchPad -> launchPad.getLocation().equals(block.getLocation()))
+            ) {
+                blocks.remove(block);
+            }
+        }
+        return blocks;
     }
 
     /* I dont like how this is implemented, it seems like it could be done better, ill come back to it -al3x
@@ -94,6 +110,8 @@ public class ProtoolsManager {
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
 
+        blocks = removeIllegalBlocks(player, blocks);
+
         // Save the current state of the blocks to be able to be undone
         List<BlockState> currentState = new ArrayList<>();
         for (Block block : blocks) {
@@ -115,6 +133,8 @@ public class ProtoolsManager {
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
+
+        blocks = removeIllegalBlocks(player, blocks);
 
         // Save the current state of the blocks to be able to be undone
         List<BlockState> currentState = new ArrayList<>();
@@ -144,6 +164,11 @@ public class ProtoolsManager {
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
+        if (radius > 20) {
+            player.sendMessage(Color.colorize("&cThe radius cannot be greater than 20."));
+            return;
+        }
+
         player.sendMessage(Color.colorize("&aCreating sphere..."));
         // Save the current state of the blocks to enable undo functionality
         List<BlockState> currentState = new ArrayList<>();
@@ -155,11 +180,10 @@ public class ProtoolsManager {
                     // Calculate the distance from the center block
                     double distance = Math.sqrt(x * x + y * y + z * z);
 
+                    // Get the current block location
+                    Block block = player.getLocation().clone().add(x, y, z).getBlock();
                     // Check if the current block is within the sphere radius
-                    if (distance <= radius) {
-                        // Get the current block location
-                        Block block = player.getLocation().clone().add(x, y, z).getBlock();
-
+                    if (distance <= radius && !isOutsideBorder(player, block.getLocation())) {
                         // Save the current block state
                         currentState.add(block.getState());
 
@@ -263,6 +287,21 @@ public class ProtoolsManager {
             }
         }
 
+    }
+
+    // Shoutout 2008Choco for the method
+    // (we are stealing hypixel code real)
+    private boolean isOutsideBorder(Player player){
+        WorldBorder border = player.getWorld().getWorldBorder();
+        double radius = border.getSize() / 2;
+        Location location = player.getLocation(), center = border.getCenter();
+        return center.distanceSquared(location) >= (radius * radius);
+    }
+    private boolean isOutsideBorder(Player player, Location loc){
+        WorldBorder border = player.getWorld().getWorldBorder();
+        double radius = border.getSize() / 2;
+        Location center = border.getCenter();
+        return center.distanceSquared(loc) >= (radius * radius);
     }
 
     public Duple<Location, Location> getSelection(Player player) {

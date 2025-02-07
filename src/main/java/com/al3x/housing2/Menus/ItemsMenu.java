@@ -225,6 +225,14 @@ public class ItemsMenu extends Menu {
             player.getInventory().addItem(new ItemStack(Material.DRAGON_EGG));
         });
 
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta barrierMeta = barrier.getItemMeta();
+        barrierMeta.setDisplayName(colorize("&cBarrier"));
+        barrier.setItemMeta(barrierMeta);
+        addItem(25, barrier, () -> {
+            player.getInventory().addItem(new ItemStack(Material.BARRIER));
+        });
+
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();
         backArrowMeta.setDisplayName(colorize("&cGo Back"));

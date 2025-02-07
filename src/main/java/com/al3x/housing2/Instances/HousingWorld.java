@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.Actions.TeleportAction;
 import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
@@ -176,6 +177,7 @@ public class HousingWorld {
         this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
+
         try {
             this.loader = main.getLoader();
             this.asp = AdvancedSlimePaperAPI.instance();
@@ -342,6 +344,10 @@ public class HousingWorld {
         houseWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, dayLightCycle);
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, weatherCycle);
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5);
+
+        // Default Commands
+        createCommand("stuck").setActions(List.of(new TeleportAction(true)));
+        createCommand("spawn").setActions(List.of(new TeleportAction(true)));
     }
 
     private void ensureUniqueHouseUUID() {
@@ -592,6 +598,9 @@ public class HousingWorld {
 
     public void playerLeaves(Player player) {
         radioSongPlayer.removePlayer(player);
+        for (BossBar bossBar : this.bossBars.getOrDefault(player.getUniqueId(), new ArrayList<>())) {
+            bossBar.removeViewer(player);
+        }
     }
 
     public boolean isJukeboxPlaying() {

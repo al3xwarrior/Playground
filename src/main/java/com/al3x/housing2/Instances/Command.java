@@ -37,6 +37,10 @@ public class Command {
         this.actions = actions;
     }
 
+    // Used for the initial stuck and spawn command
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
+    }
     public List<Action> getActions() {
         return actions;
     }

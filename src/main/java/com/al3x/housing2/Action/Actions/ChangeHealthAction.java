@@ -95,6 +95,33 @@ public class ChangeHealthAction extends HTSLImpl {
             return true;
         }
         double result = Double.parseDouble(value);
+
+        switch (mode) {
+            case INCREASE:
+                result += player.getHealth();
+                break;
+            case DECREASE:
+                result = player.getHealth() - result;
+                break;
+            case MULTIPLY:
+                result = player.getHealth() * result;
+                break;
+            case DIVIDE:
+                result = player.getHealth() / result;
+                break;
+            case MOD:
+                result = player.getHealth() % result;
+                break;
+            case FLOOR:
+                result = Math.floor(player.getHealth());
+                break;
+            case ROUND:
+                result = Math.round(player.getHealth());
+                break;
+            case SET:
+                break;
+        }
+
         player.setHealth(result);
         return true;
     }

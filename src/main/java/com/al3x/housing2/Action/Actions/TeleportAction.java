@@ -31,6 +31,12 @@ public class TeleportAction extends HTSLImpl {
         this.location = Locations.INVOKERS_LOCATION;
     }
 
+    public TeleportAction(boolean houseSpawn) {
+        super("Teleport Action");
+        this.customLocation = null;
+        this.location = Locations.HOUSE_SPAWN;
+    }
+
     @Override
     public String toString() {
         return "Teleport Action (Location: " + (location == CUSTOM ? customLocation : location) + ")";

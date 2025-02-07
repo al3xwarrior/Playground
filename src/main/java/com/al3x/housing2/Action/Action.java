@@ -219,7 +219,7 @@ public abstract class Action {
         message = HandlePlaceholders.parsePlaceholders(player, house, message);
         String[] split = message.split(",");
         if (split.length != 3) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> (Array Length did not equal 3)"));
             return null;
         }
 
