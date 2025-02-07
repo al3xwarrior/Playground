@@ -262,7 +262,7 @@ public class HousingWorld {
             List<ActionData> actions = houseData.getEventActions().get(type);
             if (actions != null) {
                 for (ActionData action : actions) {
-                    eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData()));
+                    eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData(), action.getComment()));
                 }
             }
         }

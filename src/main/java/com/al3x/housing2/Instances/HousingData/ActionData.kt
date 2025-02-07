@@ -7,7 +7,8 @@ import com.al3x.housing2.Instances.HousingWorld
 
 data class ActionData(
     val action: String,
-    val data: HashMap<String, Any>
+    val data: HashMap<String, Any>,
+    val comment: String?
 ) {
     companion object {
         fun fromHashMap(actionMap: HashMap<EventType, List<Action>>, house: HousingWorld): HashMap<EventType, List<ActionData>> {
@@ -15,7 +16,7 @@ data class ActionData(
             actionMap.forEach { (eventType, actionList) ->
                 val list = mutableListOf<ActionData>()
                 actionList.forEach {
-                    list.add(ActionData(it.name, it.data()))
+                    list.add(ActionData(it.name, it.data(), it.comment))
                 }
                 map[eventType] = list
             }
@@ -25,7 +26,7 @@ data class ActionData(
         fun fromList(actionList: List<Action>): List<ActionData> {
             val list = mutableListOf<ActionData>()
             actionList.forEach {
-                list.add(ActionData(it.name, it.data()))
+                list.add(ActionData(it.name, it.data(), it.comment))
             }
             return list
         }
@@ -35,20 +36,20 @@ data class ActionData(
                 if (ActionEnum.getActionByName(it.action) == null) {
                     throw IllegalArgumentException("Action ${it.action} does not exist")
                 }
-                list.add(ActionEnum.getActionByName(it.action)!!.getActionInstance(it.data))
+                list.add(ActionEnum.getActionByName(it.action)!!.getActionInstance(it.data, it.comment))
             }
             return list
         }
 
         fun toData(Action: Action): ActionData {
-            return ActionData(Action.name, Action.data())
+            return ActionData(Action.name, Action.data(), Action.comment)
         }
 
         fun fromData(data: ActionData): Action {
             if (ActionEnum.getActionByName(data.action) == null) {
                 throw IllegalArgumentException("Action ${data.action} does not exist")
             }
-            return ActionEnum.getActionByName(data.action)!!.getActionInstance(data.data)
+            return ActionEnum.getActionByName(data.action)!!.getActionInstance(data.data, data.comment)
         }
 
     }

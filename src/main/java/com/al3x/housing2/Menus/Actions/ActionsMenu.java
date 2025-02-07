@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -208,6 +209,9 @@ public class ActionsMenu extends Menu {
                     int slot = allowedSlots[i];
                     ItemBuilder item = new ItemBuilder();
                     item.mClick(ItemBuilder.ActionType.CLONE);
+                    if (!Objects.equals(action.getComment(), "") && action.getComment() != null) {
+                        item.description(action.getComment()).punctuation(false);
+                    }
                     action.createDisplayItem(item, house);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {

@@ -38,6 +38,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public abstract class Action {
     private static final Gson gson = new Gson();
     protected String name;
+    private String comment = "";
 
     public Action(String name) {
         this.name = name;
@@ -79,6 +80,9 @@ public abstract class Action {
     }
 
     public abstract LinkedHashMap<String, Object> data();
+
+    public String getComment() { return this.comment; }
+    public void setComment(String value) { this.comment = value; }
 
     public abstract boolean requiresPlayer();
 
@@ -305,7 +309,7 @@ public abstract class Action {
                 data.put(key, ((Enum<?>) data.get(key)).name());
             }
         }
-        action = actionEnum.getActionInstance(data);
+        action = actionEnum.getActionInstance(data, this.comment);
         return action;
     }
 

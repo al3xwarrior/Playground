@@ -505,6 +505,23 @@ public class ActionEditMenu extends Menu {
             player.closeInventory();
         });
 
+        addItem(editor.getRows() * 9 - 1, ItemBuilder.create(Material.PAPER)
+                .name(colorize("&dSet Comment"))
+                .description("Sets a comment to be visible from the menu")
+                .build(), () -> {
+            player.sendMessage(colorize("&aEnter what you would like the comment to be."));
+            if (action.getComment() == null) {
+                action.setComment("");
+            }
+            openChat(main, action.getComment(), (message) -> {
+                if (message.length() > 100) {
+                    player.sendMessage(colorize("&cMaximum comment length of 100 characters!"));
+                    return;
+                }
+                action.setComment(message);
+            });
+        });
+
         // Add export button
         if (action != null) {
             ItemBuilder export = ItemBuilder.create(Material.LIME_DYE).name("&aCopy to Clipboard").lClick(ItemBuilder.ActionType.EXPORT_YELLOW);

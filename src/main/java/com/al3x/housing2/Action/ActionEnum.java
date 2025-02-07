@@ -70,10 +70,11 @@ public enum ActionEnum {
         return name;
     }
 
-    public Action getActionInstance(HashMap<String, Object> data) {
+    public Action getActionInstance(HashMap<String, Object> data, String comment) {
         try {
             Action action = this.action.getDeclaredConstructor().newInstance();
             action.fromData(data, this.action);
+            action.setComment(comment);
             return action;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
