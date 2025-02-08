@@ -79,6 +79,9 @@ public class ChangePlayerGroupAction extends HTSLImpl {
         if (group == null) {
             return true;
         }
+        if (house.getOwnerUUID() == player.getUniqueId()) {
+            return false;
+        }
         Group group = house.getGroup(this.group);
         if (house.loadOrCreatePlayerData(player).getGroupInstance(house).getPriority() > group.getPriority() && demotionProtection) {
             return true;
