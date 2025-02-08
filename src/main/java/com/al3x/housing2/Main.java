@@ -117,6 +117,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityLimitListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(housesManager), this);
 
 //        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 
