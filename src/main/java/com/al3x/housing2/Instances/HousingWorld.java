@@ -13,7 +13,6 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Utils.AsyncTask;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.Updater;
@@ -99,6 +98,7 @@ public class HousingWorld {
     private Random random;
     private Integer version;
     private ArrayList<Player> adminModeUsers = new ArrayList<>();
+    private boolean joinLeaveMessages;
 
     public HouseData houseData;
 
@@ -240,6 +240,7 @@ public class HousingWorld {
         this.dayLightCycle = houseData.getDayLightCycle() != null ? houseData.getDayLightCycle() : false;
         this.weather = houseData.getWeather() != null ? houseData.getWeather() : WeatherTypes.SUNNY;
         this.weatherCycle = houseData.getWeatherCycle() != null ? houseData.getWeatherCycle() : false;
+        this.joinLeaveMessages = houseData.getJoinLeaveMessages() != null ? houseData.getJoinLeaveMessages() : true;
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -333,6 +334,7 @@ public class HousingWorld {
         this.dayLightCycle = false;
         this.weather = WeatherTypes.SUNNY;
         this.weatherCycle = false;
+        this.joinLeaveMessages = true;
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
@@ -750,6 +752,14 @@ public class HousingWorld {
     public boolean getWeatherCycle() {return weatherCycle;}
 
     public void setWeatherCycle(boolean value) {this.weatherCycle = value;}
+
+    public boolean getJoinLeaveMessages() {
+        return joinLeaveMessages;
+    }
+
+    public void setJoinLeaveMessages(boolean joinLeaveMessages) {
+        this.joinLeaveMessages = joinLeaveMessages;
+    }
 
     public void giveCookies(Player player, int amount) {
         cookieGivers.add(player.getUniqueId());

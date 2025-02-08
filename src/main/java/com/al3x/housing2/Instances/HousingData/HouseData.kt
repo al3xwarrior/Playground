@@ -44,7 +44,8 @@ data class HouseData(
     var ingameTime: Long?,
     var dayLightCycle: Boolean?,
     var weather: WeatherTypes?,
-    var weatherCycle: Boolean?
+    var weatherCycle: Boolean?,
+    var joinLeaveMessages: Boolean?
 ) {
 
     companion object {
@@ -83,7 +84,8 @@ data class HouseData(
                 world.ingameTime,
                 world.daylightCycle,
                 world.weather,
-                world.weatherCycle
+                world.weatherCycle,
+                world.joinLeaveMessages
             )
             return houseData
         }

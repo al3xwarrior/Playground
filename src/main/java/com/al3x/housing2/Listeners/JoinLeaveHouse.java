@@ -130,6 +130,8 @@ public class JoinLeaveHouse implements Listener {
         //give player permission "housing.world.<worlduuid>"
         player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true);
 
+        if (house.getJoinLeaveMessages()) house.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
+
         // Cookies
         // CookieManager.givePhysicalCookie(player);
     }
@@ -160,7 +162,7 @@ public class JoinLeaveHouse implements Listener {
         player.playerListName(Component.text(player.getName()));
         from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
-        from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
+        if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 
         player.addAttachment(Main.getInstance(), "housing.world." + from.getHouseUUID(), false);
         PlayerData data = from.loadOrCreatePlayerData(player);

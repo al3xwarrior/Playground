@@ -111,10 +111,16 @@ public class HouseSettingsMenu extends Menu {
 
         addItem(21, ItemBuilder.create(Material.PAPER)
                 .name(colorize("&aJoin/Leave Messages"))
-                .description("Click to set the join/leave messages for your house.")
+                .description("Click to toggle the join/leave messages for your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
                 .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
+            if (house.getJoinLeaveMessages()) {
+                house.setJoinLeaveMessages(false);
+                player.sendMessage(colorize("&eDisabled &cJoin/Leave Messages"));
+            } else {
+                house.setJoinLeaveMessages(true);
+                player.sendMessage(colorize("&eEnabled &aJoin/Leave Messages"));
+            }
         });
 
         addItem(22, ItemBuilder.create(Material.PAPER)
