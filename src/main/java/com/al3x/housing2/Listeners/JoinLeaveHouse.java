@@ -46,6 +46,7 @@ public class JoinLeaveHouse implements Listener {
     // Actions that modify the player's "profile" need to be reset.
     public static void resetPlayer(Player player) {
         player.setMaximumAir(300); // 300 is the default
+        player.setMaxHealth(20);
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setMaximumNoDamageTicks(20); // 10 i think?
