@@ -93,6 +93,7 @@ public final class Main extends JavaPlugin {
         getCommand("gamemode").setTabCompleter(new Gamemode.TabCompleter());
         getCommand("hub").setExecutor(new Hub());
         getCommand("WTFMap").setExecutor(new WTFMap(housesManager));
+        getCommand("broadcast").setExecutor(new Broadcast());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

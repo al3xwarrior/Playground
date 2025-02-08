@@ -7,6 +7,8 @@ soft-depend: [PlaceholderAPI, ItemsAdder]
 depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, ProtocolSidebar]
 loadbefore: [Citizens]
 commands:
+  broadcast:
+    aliases: ["bc"]
   hub:
     aliases: ["lobby", "l"]
   visit:
