@@ -1,11 +1,16 @@
 package com.al3x.housing2.Enums;
 
+import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Vibration;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.List;
 
 public enum Particles implements EnumMaterial{
     POOF(Material.GUNPOWDER, Particle.POOF),
@@ -22,6 +27,7 @@ public enum Particles implements EnumMaterial{
     LARGE_SMOKE(Material.CAMPFIRE, Particle.LARGE_SMOKE),
     EFFECT(Material.POTION, Particle.EFFECT),
     INSTANT_EFFECT(Material.POTION, Particle.INSTANT_EFFECT),
+    ENTITY_EFFECT(Material.POTION, Particle.ENTITY_EFFECT, ParticleData.COLOR),
     WITCH(Material.POTION, Particle.WITCH),
     DRIPPING_WATER(Material.WATER_BUCKET, Particle.DRIPPING_WATER),
     DRIPPING_LAVA(Material.LAVA_BUCKET, Particle.DRIPPING_LAVA),
@@ -34,6 +40,7 @@ public enum Particles implements EnumMaterial{
     FLAME(Material.BLAZE_POWDER, Particle.FLAME),
     LAVA(Material.LAVA_BUCKET, Particle.LAVA),
     CLOUD(Material.FEATHER, Particle.CLOUD),
+    DUST(Material.REDSTONE, Particle.DUST, ParticleData.DUST),
     ITEM_SNOWBALL(Material.SNOWBALL, Particle.ITEM_SNOWBALL),
     ITEM_SLIME(Material.SLIME_BALL, Particle.ITEM_SLIME),
     HEART(Material.REDSTONE, Particle.HEART),
@@ -73,6 +80,7 @@ public enum Particles implements EnumMaterial{
     LANDING_OBSIDIAN_TEAR(Material.CRYING_OBSIDIAN, Particle.LANDING_OBSIDIAN_TEAR),
     REVERSE_PORTAL(Material.ENDER_PEARL, Particle.REVERSE_PORTAL),
     WHITE_ASH(Material.BONE_MEAL, Particle.WHITE_ASH),
+    DUST_COLOR_TRANSITION(Material.REDSTONE, Particle.DUST_COLOR_TRANSITION, ParticleData.DUST_TRANSITION),
     FALLING_SPORE_BLOSSOM(Material.SPORE_BLOSSOM, Particle.FALLING_SPORE_BLOSSOM),
     SPORE_BLOSSOM_AIR(Material.SPORE_BLOSSOM, Particle.SPORE_BLOSSOM_AIR),
     SMALL_FLAME(Material.BLAZE_POWDER, Particle.SMALL_FLAME),
@@ -111,6 +119,8 @@ public enum Particles implements EnumMaterial{
     Material material;
     Particle particle;
 
+    ParticleData data;
+
     Particles() {
         this.material = null;
         this.particle = null;
@@ -120,6 +130,13 @@ public enum Particles implements EnumMaterial{
         this.material = material;
         this.particle = particle;
     }
+
+    Particles(Material material, Particle particle, ParticleData data) {
+        this.material = material;
+        this.particle = particle;
+
+        this.data = data;
+    }
     @Override
     public Material getMaterial() {
         return material;
@@ -127,5 +144,13 @@ public enum Particles implements EnumMaterial{
 
     public Particle getParticle() {
         return particle;
+    }
+
+    public ParticleData getData() {
+        return data;
+    }
+
+    public static enum ParticleData {
+        COLOR, DUST, DUST_TRANSITION, VIBRATION, FLOAT, INT
     }
 }

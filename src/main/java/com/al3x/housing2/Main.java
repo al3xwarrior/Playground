@@ -71,10 +71,6 @@ public final class Main extends JavaPlugin {
         this.lobbyDisplays = new LobbyDisplays(housesManager);
         this.playerSpeedManager = new PlayerSpeedManager();
 
-        loadItemsToCache();
-
-        loadSongsToFiles();
-
         HologramLib.getManager().ifPresentOrElse(
                 manager -> hologramManager = manager,
                 () -> getLogger().severe("Failed to initialize HologramLib manager.")
@@ -162,13 +158,6 @@ public final class Main extends JavaPlugin {
         getServer().getLogger().info("[Housing2] Enabled");
     }
 
-    private void loadSongsToFiles() {
-        File itemsFile = new File(getDataFolder(), "/libs/songs");
-        if (!itemsFile.exists()) {
-            itemsFile.getParentFile().mkdirs();
-        }
-    }
-
     public HousesManager getHousesManager() {
         return housesManager;
     }
@@ -227,26 +216,5 @@ public final class Main extends JavaPlugin {
 
     public LobbyDisplays getLobbyDisplays() {
         return this.lobbyDisplays;
-    }
-
-    public LinkedHashMap<String, Integer> items = new LinkedHashMap<>();
-    public void loadItemsToCache() {
-        //read the resource "items.yml" and load it into the cache
-        items.clear();
-        File itemsFile = new File(getDataFolder(), "items.yml");
-        if (!itemsFile.exists()) {
-            itemsFile.getParentFile().mkdirs();
-            saveResource("items.yml", true);
-        }
-        YamlConfiguration customConfig = new YamlConfiguration();
-        try {
-            customConfig.load(itemsFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        for (String key : customConfig.getKeys(false)) {
-            items.put(key, customConfig.getInt(key));
-        }
     }
 }

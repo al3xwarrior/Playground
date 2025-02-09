@@ -98,7 +98,9 @@ public class EditItemMainMenu extends Menu {
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
                 ItemStack i = item.withType(m);
                 ItemMeta meta = i.getItemMeta();
-                meta.setItemModel(new NamespacedKey("minecraft", "stick"));
+                if (meta.hasCustomModelData()) {
+                    meta.setItemModel(new NamespacedKey("minecraft", "stick"));
+                }
                 i.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(i);
                 setupItems();

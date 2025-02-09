@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.Actions.Utils.ParticleUtils;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -24,6 +25,7 @@ import reactor.util.function.Tuple3;
 import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.*;
+import static com.al3x.housing2.Enums.Particles.ParticleData.COLOR;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.SELECT_YELLOW;
 
@@ -39,6 +41,7 @@ public class ParticleAction extends HTSLImpl {
     private ParticleType type;
     private Double radius;
     private Double amount;
+    private HashMap<String, Object> customData = new HashMap<>();
     public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
 
     public ParticleAction() {
@@ -76,6 +79,12 @@ public class ParticleAction extends HTSLImpl {
         }
         if (type == ParticleType.CURVE || type == ParticleType.LINE) {
             builder.info("Direction&a", direction.name());
+        }
+        if (customData != null && !customData.isEmpty()) {
+            builder.info("&eCustom Data", "");
+            for (Map.Entry<String, Object> entry : customData.entrySet()) {
+                builder.info(entry.getKey(), entry.getValue().toString());
+            }
         }
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -236,7 +245,11 @@ public class ParticleAction extends HTSLImpl {
                 )
         );
 
-        return new ActionEditor(4, "&eParticle Settings", items);
+        if (particle.getData() != null) {
+            items.addAll(ParticleUtils.customData(particle, customData, house, editMenu, player));
+        }
+
+        return new ActionEditor(5, "&eParticle Settings", items);
     }
 
     public List<Location> getCircle(Location center, double radius, int amount) {
@@ -459,9 +472,12 @@ public class ParticleAction extends HTSLImpl {
         } else {
             particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
         }
+
+        Object data = ParticleUtils.output(particle, customData);
+
         for (Location loc : locations) {
             for (Player p : house.getWorld().getPlayers()) {
-                p.spawnParticle(particle.getParticle(), loc, 1);
+                p.spawnParticle(particle.getParticle(), loc, 1, data);
             }
         }
     }
@@ -485,6 +501,7 @@ public class ParticleAction extends HTSLImpl {
         data.put("amount", amount);
         data.put("direction", direction);
         data.put("customDirection", customDirection);
+        data.put("customData", customData);
         return data;
     }
 

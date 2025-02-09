@@ -132,7 +132,7 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
 
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        attribute = AttributeType.valueOf((String) data.get("attribute"));
+        attribute = AttributeType.valueFrom((String) data.get("attribute"));
         value = (String) data.get("value");
     }
 

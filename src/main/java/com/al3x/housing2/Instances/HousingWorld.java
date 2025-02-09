@@ -373,13 +373,13 @@ public class HousingWorld {
         Group defaultGroup = new Group("default");
         defaultGroup.setPrefix("&7");
         defaultGroup.setDisplayName("&7Default");
-        defaultGroup.setColor("§7");
+        defaultGroup.setColor("&7");
         groups.add(defaultGroup);
 
         Group ownerGroup = new Group("owner");
         ownerGroup.setPrefix("&e[Owner] ");
         ownerGroup.setDisplayName("&eOwner");
-        ownerGroup.setColor("§e");
+        ownerGroup.setColor("&e");
         groups.add(ownerGroup);
 
         if (owner instanceof Player) {

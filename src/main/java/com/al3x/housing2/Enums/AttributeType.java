@@ -50,4 +50,13 @@ public enum AttributeType implements EnumMaterial {
     public Material getMaterial() {
         return material;
     }
+
+    public static AttributeType valueFrom(String name) {
+        for (AttributeType type : values()) {
+            if (type.name().contains(name)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }
