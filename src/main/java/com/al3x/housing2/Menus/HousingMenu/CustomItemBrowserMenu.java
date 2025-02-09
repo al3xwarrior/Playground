@@ -5,9 +5,8 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NexoItemBuilderUtilsKt;
 import com.al3x.housing2.Utils.PaginationList;
-import com.nexomc.nexo.api.NexoItems;
+import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -74,7 +73,7 @@ public class CustomItemBrowserMenu extends Menu {
             });
         }
 
-        if (!Bukkit.getPluginManager().isPluginEnabled("Nexo")) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")) {
             addItem(22,
                     ItemBuilder.create(Material.BEDROCK)
                             .name("&cItemsAdder is not enabled")
@@ -93,7 +92,7 @@ public class CustomItemBrowserMenu extends Menu {
         for (int i = 0; i < itemList.size(); i++) {
             CustomItem item = itemList.get(i);
             ItemStack itemStack = item.getItem();
-            addItem(i, itemStack, () -> {
+            addItem(i, itemStack, e -> {
                 player.getInventory().addItem(itemStack);
             });
         }
@@ -103,8 +102,8 @@ public class CustomItemBrowserMenu extends Menu {
     private PaginationList<CustomItem> getItems() {
         List<CustomItem> itemsArray = new ArrayList<>();
 
-        Plugin nexo = Bukkit.getPluginManager().getPlugin("Nexo");
-        File[] files = new File(nexo.getDataFolder() + "/pack/external_packs/ItemsAdder/assets/neighborhood/textures/items").listFiles(); //This needs to be cached
+        Plugin itemsAdder = Bukkit.getPluginManager().getPlugin("ItemsAdder");
+        File[] files = new File(itemsAdder.getDataFolder() + "/contents/neighborhood/textures/items").listFiles();
         for (int i = 0; i < files.length; i++) {
             if (i == files.length) break;
             if (files[i] == null) break;
@@ -112,9 +111,10 @@ public class CustomItemBrowserMenu extends Menu {
             File file = files[i];
             String name = file.getName().replace(".png", "");
 
-            com.nexomc.nexo.items.ItemBuilder ib = NexoItems.itemFromId(name);
-            if (ib == null) continue;
-            ItemStack item = NexoItemBuilderUtilsKt.makeItem(ib);
+            CustomStack customStack = CustomStack.getInstance(name);
+            if (customStack == null) continue;
+            ItemStack item = customStack.getItemStack();
+
             itemsArray.add(new CustomItem(name, item));
         }
 
@@ -125,9 +125,9 @@ public class CustomItemBrowserMenu extends Menu {
         return new PaginationList<>(itemsArray, 45);
     }
 
-    private static class CustomItem {
-        private final String name;
-        private final ItemStack item;
+    private class CustomItem {
+        private String name;
+        private ItemStack item;
 
         public CustomItem(String name, ItemStack item) {
             this.name = name;

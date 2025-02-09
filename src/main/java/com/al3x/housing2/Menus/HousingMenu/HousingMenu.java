@@ -11,7 +11,7 @@ import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.nexomc.nexo.api.NexoItems;
+import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -66,10 +66,10 @@ public class HousingMenu extends Menu {
             });
         }
 
-        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("Nexo")) {
-            com.nexomc.nexo.items.ItemBuilder builder = NexoItems.itemFromId("ruby_large");
-            if (builder != null) {
-                ItemStack items = builder.build();
+        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")) {
+            CustomStack stack = CustomStack.getInstance("ruby_large");
+            if (stack != null) {
+                ItemStack items = stack.getItemStack();
                 ItemMeta itemsMeta = items.getItemMeta();
                 itemsMeta.setDisplayName(colorize("&cCustom Items"));
                 items.setItemMeta(itemsMeta);
@@ -115,7 +115,7 @@ public class HousingMenu extends Menu {
             addItem(0, visitingRules.build(), () -> {
                 //thanks chatgippity lol, I would have made this a lot more complicated
                 house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
-                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()) + "\n&7Please rejoin the house for the changes to apply!");
+                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
                 setupItems();
             });
 

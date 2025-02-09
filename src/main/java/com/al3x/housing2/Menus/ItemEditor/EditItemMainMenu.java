@@ -10,12 +10,11 @@ import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
-import com.al3x.housing2.Utils.NexoItemBuilderUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
-import com.nexomc.nexo.api.NexoItems;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -98,11 +97,9 @@ public class EditItemMainMenu extends Menu {
                 .build(), () -> {
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
                 ItemStack i = item.withType(m);
-                NbtItemBuilder builder = new NbtItemBuilder(i);
-                if (builder.getString("nexoItem") != null) {
-                    System.out.println("Setting texture");
-                    builder.setString("minecraft", "item_model", "minecraft:paper");
-                }
+                ItemMeta meta = i.getItemMeta();
+                meta.setItemModel(new NamespacedKey("minecraft", "stick"));
+                i.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(i);
                 setupItems();
             }).open();
