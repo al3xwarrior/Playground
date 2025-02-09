@@ -109,6 +109,10 @@ public class ProtoolsManager {
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
+        if (blocks.size() > 2000) {
+            player.sendMessage(Color.colorize("&cThe region is too large!"));
+            return;
+        }
 
         blocks = removeIllegalBlocks(player, blocks);
 
@@ -133,6 +137,10 @@ public class ProtoolsManager {
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
+        if (blocks.size() > 2000) {
+            player.sendMessage(Color.colorize("&cThe region is too large!"));
+            return;
+        }
 
         blocks = removeIllegalBlocks(player, blocks);
 
