@@ -226,7 +226,11 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    Entity entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst();
+                    Duple<Entity, Vector> duple = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (duple == null) {
+                        return "null";
+                    }
+                    Entity entity = duple.getFirst();
                     net.citizensnpcs.api.npc.NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
                     if (citizensNPC != null) {
                         return String.valueOf(citizensNPC.getId());

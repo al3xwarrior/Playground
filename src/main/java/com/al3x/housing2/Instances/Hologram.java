@@ -118,6 +118,7 @@ public class Hologram {
                         .setSeeThroughBlocks(seeThroughBlocks)
                         .setTextOpacity((byte) 255)
                         .setBillboard(billboard)
+                        .setTeleportDuration(0)
                         .setScale(getScaleInternal())
                         .setText(getComponent(player, i));
                 main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
