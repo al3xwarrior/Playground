@@ -226,7 +226,7 @@ public class HousingNPC {
                 if (citizensNPC.isSpawned()) {
                     if (citizensNPC.getEntity().getLocation().getY() < -64) {
                         citizensNPC.despawn();
-                        citizensNPC.spawn(location);
+                        citizensNPC.spawn(house.getSpawn());
                     }
 
                     FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
@@ -248,7 +248,8 @@ public class HousingNPC {
             public void run() {
                 if (citizensNPC.isSpawned()) {
                     if (hologram != null) {
-                        hologram.setLocation(citizensNPC.getEntity().getLocation().clone().add(0, 2.5, 0));
+                        Location loc = citizensNPC.getEntity().getLocation().clone();
+                        hologram.setLocation(loc.set(loc.getX(), hologram.getLocation().getY(), loc.getZ()));
                     }
                 }
             }

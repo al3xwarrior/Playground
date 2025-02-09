@@ -132,7 +132,7 @@ public class ActionExecutor {
             }
 
             if (action instanceof ExitAction) {
-                isComplete = true;
+                exitAllTheWay(this);
                 return EXIT;
             }
 
@@ -224,6 +224,17 @@ public class ActionExecutor {
                 t.cancel();
             }
         }, 0, 1);
+    }
+
+    private void exitAllTheWay(ActionExecutor parent) {
+        if (parent == null) {
+            return;
+        }
+        parent.isComplete = true;
+        parent.children.forEach((executor) -> executor.setComplete(true));
+        if (parent.parent != null) {
+            exitAllTheWay(parent.parent);
+        }
     }
 
     @Override

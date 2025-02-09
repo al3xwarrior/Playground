@@ -40,11 +40,15 @@ public class HousingScoreboard {
 
         sidebar.addLine(Component.text(dtf.format(now)).color(NamedTextColor.GRAY).append(Component.text(" mega1A").color(NamedTextColor.GRAY)));
         sidebar.addBlankLine();
-        for (String line : house.getScoreboard()) {
+        List<String> scoreboard = house.getScoreboard();
+        for (int i = 0; i < scoreboard.size(); i++) {
+            String line = scoreboard.get(i);
+            if (i > 14) {
+                break;
+            }
             sidebar.addUpdatableLine(player -> StringUtilsKt.housingStringFormatter(line, house, player));
         }
         sidebar.updateLinesPeriodically(0, 20);
-
         for (Player player : house.getWorld().getPlayers()) {
             sidebar.addViewer(player);
         }

@@ -73,6 +73,8 @@ public final class Main extends JavaPlugin {
 
         loadItemsToCache();
 
+        loadSongsToFiles();
+
         HologramLib.getManager().ifPresentOrElse(
                 manager -> hologramManager = manager,
                 () -> getLogger().severe("Failed to initialize HologramLib manager.")
@@ -158,6 +160,13 @@ public final class Main extends JavaPlugin {
         }
 
         getServer().getLogger().info("[Housing2] Enabled");
+    }
+
+    private void loadSongsToFiles() {
+        File itemsFile = new File(getDataFolder(), "/libs/songs");
+        if (!itemsFile.exists()) {
+            itemsFile.getParentFile().mkdirs();
+        }
     }
 
     public HousesManager getHousesManager() {

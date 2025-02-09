@@ -24,7 +24,13 @@ public class Distance extends Placeholder {
         }
         String[] split = input.split("/");
         String afterOne = String.join("/", Arrays.copyOfRange(split, 1, split.length));
+        if (!afterOne.contains(" - ")) {
+            return "0";
+        }
         String[] coords = afterOne.split(" - ");
+        if (coords.length < 2) {
+            return "0";
+        }
         String[] coords1 = Placeholder.handlePlaceholders(coords[0], house, player, true).split(",");
         String[] coords2 = Placeholder.handlePlaceholders(coords[1], house, player, true).split(",");
         try {

@@ -139,7 +139,7 @@ public class SendTitleAction extends HTSLImpl {
     public boolean execute(Player player, HousingWorld house) {
         Component title = StringUtilsKt.housingStringFormatter(this.title, house, player);
         Component subtitle = StringUtilsKt.housingStringFormatter(this.subtitle, house, player);
-        player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis((long) fadeIn), Duration.ofMillis((long) stay), Duration.ofMillis((long) fadeOut))));
+        player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis((long) fadeIn * 50), Duration.ofMillis((long) stay * 50), Duration.ofMillis((long) fadeOut * 50))));
         return true;
     }
 

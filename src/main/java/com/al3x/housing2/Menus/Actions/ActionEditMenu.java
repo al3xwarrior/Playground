@@ -489,6 +489,8 @@ public class ActionEditMenu extends Menu {
                     }
                 }
             });
+
+            if (update != null) update.run();
         }
 
         // Add back button

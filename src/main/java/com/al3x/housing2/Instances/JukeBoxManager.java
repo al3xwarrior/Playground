@@ -18,7 +18,7 @@ public class JukeBoxManager {
     static {
         songs = new HashMap<>();
         try {
-            Files.list(Paths.get(Main.getInstance().getDataFolder() + "/songs/")).forEach(path -> {
+            Files.list(Paths.get(Main.getInstance().getDataFolder() + "/libs/songs/")).forEach(path -> {
                 Song song = NBSDecoder.parse(path.toFile());
                 songs.put(path.getFileName().toString(), song);
             });

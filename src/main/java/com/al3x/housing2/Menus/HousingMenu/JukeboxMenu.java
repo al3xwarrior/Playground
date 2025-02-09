@@ -151,7 +151,7 @@ public class JukeboxMenu extends Menu {
     private PaginationList<Song> getSongs() {
         List<Song> songsArray = new ArrayList<>();
 
-        File[] files = new File(main.getDataFolder() + "/songs/").listFiles();
+        File[] files = new File(main.getDataFolder() + "/libs/songs/").listFiles();
         for (int i = 0; i < files.length; i++) {
             if (i == files.length) break;
             if (files[i] == null) break;

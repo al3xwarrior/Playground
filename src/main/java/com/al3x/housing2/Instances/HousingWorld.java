@@ -246,6 +246,8 @@ public class HousingWorld {
             cookieWeek = main.getCookieManager().getWeek();
             cookies = 0;
         }
+
+        this.radioSongPlayer.setPlaying(houseData.getJukeboxPlaying() != null ? houseData.getJukeboxPlaying() : true);
     }
 
     private void setupDataAfterLoad(OfflinePlayer owner) {

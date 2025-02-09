@@ -45,8 +45,11 @@ data class HouseData(
     var dayLightCycle: Boolean?,
     var weather: WeatherTypes?,
     var weatherCycle: Boolean?,
-    var joinLeaveMessages: Boolean?
+    var joinLeaveMessages: Boolean?,
+    var jukeboxPlaying: Boolean?
 ) {
+
+
 
     companion object {
         fun fromHousingWorld(world: HousingWorld): HouseData {
@@ -85,7 +88,8 @@ data class HouseData(
                 world.daylightCycle,
                 world.weather,
                 world.weatherCycle,
-                world.joinLeaveMessages
+                world.joinLeaveMessages,
+                world.isJukeboxPlaying
             )
             return houseData
         }
