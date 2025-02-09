@@ -3,7 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.ParentActionExecutor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -152,11 +152,10 @@ public class ConditionalAction extends Action {
             }
         }
 
-        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
-
-        ActionExecutor executor = new ActionExecutor(parent);
-        executor.addActions((result ? ifActions : elseActions));
-        return executor.execute(player, house, event);
+        ActionExecutor executor = new ActionExecutor("conditional");
+        executor.addActions(result ? ifActions : elseActions);
+        executor.setParent(oldExecutor);
+        return executor.execute(player, house, null) == OutputType.SUCCESS;
     }
 
     public List<Condition> getConditions() {

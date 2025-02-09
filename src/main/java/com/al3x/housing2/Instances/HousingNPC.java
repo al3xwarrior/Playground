@@ -2,7 +2,6 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.HologramData;
 import com.al3x.housing2.Instances.HousingData.LocationData;
@@ -279,10 +278,9 @@ public class HousingNPC {
 
     public void sendExecuteActions(HousingWorld house, Player player) {
         if (actions != null) {
-            ParentActionExecutor parent = new ParentActionExecutor();
-            ActionExecutor executor = new ActionExecutor(parent);
+            ActionExecutor executor = new ActionExecutor("npc");
             executor.addActions(actions);
-            parent.execute(player, house, null);
+            executor.execute(player, house, null);
         }
     }
 

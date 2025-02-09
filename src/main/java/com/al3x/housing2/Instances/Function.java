@@ -2,10 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.ParentActionExecutor;
-import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -58,30 +55,10 @@ public class Function {
             }
         }
 
-        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
-        ActionExecutor executor = new ActionExecutor(parent);
-        List<Action> actions = new ArrayList<>(this.actions);
-        if (parent == null) {
-            for (Player p : players) {
-                executor.addActions(actions);
-                parent = new ParentActionExecutor();
-                executor.setParent(parent);
-                parent.addExecutor(executor);
-                parent.execute(p, house, null);
-            }
-        } else {
-            if (players.size() > 1) {
-                for (Player p : players) {
-                    parent = new ParentActionExecutor();
-                    executor = new ActionExecutor(parent);
-                    executor.addActions(actions);
-                    parent.addExecutor(executor);
-                    parent.execute(p, house, null);
-                }
-            } else {
-                executor.addActions(actions);
-                parent.addExecutor(executor);
-            }
+        for (Player p : players) {
+            ActionExecutor executor = new ActionExecutor("function");
+            executor.addActions(new ArrayList<>(actions));
+            executor.execute(p, house, null);
         }
     }
 

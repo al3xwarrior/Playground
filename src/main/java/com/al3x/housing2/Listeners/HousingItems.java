@@ -1,7 +1,6 @@
 package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -56,7 +55,7 @@ public class HousingItems implements Listener {
         Item customItem = Item.fromItemStack(item);
         if (customItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
-            new ActionExecutor(customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            new ActionExecutor("event", customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
             if (event.isCancelled()) {
                 return;
             }
@@ -66,7 +65,7 @@ public class HousingItems implements Listener {
         Item customMainHandItem = Item.fromItemStack(mainHandItem);
         if (customMainHandItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
-            new ActionExecutor(customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            new ActionExecutor("event", customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
             if (event.isCancelled()) {
                 return;
             }
@@ -180,10 +179,9 @@ public class HousingItems implements Listener {
         if (customItem == null) return;
 
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
-            ParentActionExecutor parent = new ParentActionExecutor();
-            ActionExecutor executor = new ActionExecutor(parent);
+            ActionExecutor executor = new ActionExecutor("item");
             executor.addActions(customItem.getActions().get(clickType));
-            parent.execute(player, house, event);
+            executor.execute(player, house, null);
         }
     }
 

@@ -334,6 +334,10 @@ public class ActionsMenu extends Menu {
         this.nestedLevel = nestedLevel;
     }
 
+    public Menu getBackMenu() {
+        return backMenu;
+    }
+
     public void shiftAction(Action action, int index, boolean forward) {
 
         if (actions == null || actions.size() < 2) return;

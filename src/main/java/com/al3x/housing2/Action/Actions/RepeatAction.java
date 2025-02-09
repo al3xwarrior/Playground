@@ -116,12 +116,11 @@ public class RepeatAction extends HTSLImpl {
             timesInt = 20;
         }
 
-        ParentActionExecutor parent = oldExecutor == null ? null : oldExecutor.getParent();
-
-        ActionExecutor executor = new ActionExecutor(parent);
         for (int i = 0; i < timesInt; i++) {
+            ActionExecutor executor = new ActionExecutor("repeat");
             executor.addActions(subActions);
-            if (parent != null && !executor.execute(player, house, null)) break;
+            executor.setParent(oldExecutor);
+            oldExecutor.addChild(executor);
         }
 
         return true;

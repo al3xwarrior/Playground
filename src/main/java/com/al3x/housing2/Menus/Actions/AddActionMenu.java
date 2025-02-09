@@ -1,9 +1,7 @@
 package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Action.Actions.CancelAction;
-import com.al3x.housing2.Action.Actions.ExitAction;
-import com.al3x.housing2.Action.Actions.PauseAction;
+import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -169,6 +167,7 @@ public class AddActionMenu extends Menu {
     public PaginationList<Action> getActions() {
         List<Action> actionArray = Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(Objects::nonNull).toList();
         List<Action> newActions = new ArrayList<>();
+
         for (Action action : actionArray) {
             if (action == null) continue;
             if (function != null) {
@@ -188,7 +187,19 @@ public class AddActionMenu extends Menu {
 
             if (action.allowedEvents() != null) continue;
 
+            if (action instanceof BreakAction) continue;
+            if (action instanceof ContinueAction) continue;
+
             newActions.add(action);
+
+            if (action instanceof ExitAction) {
+                //Jesus fucking christ I hate my life <3
+                RepeatAction repeatAction = findRepeatMenu(getBackMenu());
+                if (repeatAction != null) {
+                    newActions.add(new BreakAction());
+                    newActions.add(new ContinueAction());
+                }
+            }
         }
 
         if (search != null) {
@@ -204,5 +215,27 @@ public class AddActionMenu extends Menu {
 
     public void setFunction(Function function) {
         this.function = function;
+    }
+
+    private RepeatAction findRepeatMenu(Menu backMenu) {
+        if (backMenu != null) {
+            if (backMenu instanceof ActionEditMenu actionEditMenu) {
+                if (actionEditMenu.getAction() instanceof RepeatAction) {
+                    return (RepeatAction) actionEditMenu.getAction();
+                }
+                return findRepeatMenu(actionEditMenu.getBackMenu());
+            }
+            if (backMenu instanceof AddActionMenu addActionMenu) {
+                return findRepeatMenu(addActionMenu.getBackMenu());
+            }
+            if (backMenu instanceof ActionsMenu actionsMenu) {
+                return findRepeatMenu(actionsMenu.getBackMenu());
+            }
+        }
+        return null;
+    }
+
+    private Menu getBackMenu() {
+        return backMenu;
     }
 }

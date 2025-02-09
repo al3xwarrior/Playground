@@ -60,7 +60,7 @@ public class CustomMenuViewer extends Menu {
             meta.lore(lore);
             item.setItemMeta(meta);
             addItem(i, item, (e) -> {
-                new ActionExecutor(customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);
+                new ActionExecutor("menu", customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);
             });
         }
     }

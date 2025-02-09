@@ -4,7 +4,6 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.TeleportAction;
-import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
@@ -1086,10 +1085,9 @@ public class HousingWorld {
 
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {
-            ParentActionExecutor parent = new ParentActionExecutor();
-            ActionExecutor executor = new ActionExecutor(parent);
+            ActionExecutor executor = new ActionExecutor("event");
             executor.addActions(actions);
-            parent.execute(player, this, event);
+            executor.execute(player, this, event);
             return event != null && event.isCancelled();
         }
         return false;

@@ -3,7 +3,6 @@ package com.al3x.housing2;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.ExplosionAction;
 import com.al3x.housing2.Action.Actions.ParticleAction;
-import com.al3x.housing2.Action.ParentActionExecutor;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.LobbyListener;
 import com.al3x.housing2.MineSkin.SkinData;
@@ -199,17 +198,15 @@ public class Runnables {
                                     player.getLocation().getBlockZ() >= minZ && player.getLocation().getBlockZ() <= maxZ) {
                                 if (!region.getPlayersInRegion().contains(player.getUniqueId())) {
                                     region.getPlayersInRegion().add(player.getUniqueId());
-                                    ParentActionExecutor parent = new ParentActionExecutor();
-                                    ActionExecutor executor = new ActionExecutor(parent);
+                                    ActionExecutor executor = new ActionExecutor("enter");
                                     executor.addActions(region.getEnterActions());
-                                    parent.execute(player, house, null);
+                                    executor.execute(player, house, null);
                                 }
                             } else if (region.getPlayersInRegion().contains(player.getUniqueId())) {
-                                ParentActionExecutor parent = new ParentActionExecutor();
-                                ActionExecutor executor = new ActionExecutor(parent);
-                                executor.addActions(region.getExitActions());
-                                parent.execute(player, house, null);
                                 region.getPlayersInRegion().remove(player.getUniqueId());
+                                ActionExecutor executor = new ActionExecutor("exit");
+                                executor.addActions(region.getExitActions());
+                                executor.execute(player, house, null);
                             }
                         });
                     }
