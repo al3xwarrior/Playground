@@ -117,3 +117,6 @@ buildNumber.properties
 run/
 build
 .gradle/
+
+# don't ignore gradle wrapper
+!gradle/wrapper/gradle-wrapper.jar

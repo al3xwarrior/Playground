@@ -16,7 +16,26 @@ Now the project has a team of a few people who maintain the project as well as t
 - [BusterBrown1218](https://github.com/BusterBrown1218)
 ### Playtesters:
 - [pjma](https://github.com/npjma)
-- PixelBedrock
+- [PixelBedrock](https://github.com/PixelBedrock)
 
 # How to Use on your own:
-## TODO
+### Requirements
+- Java 21 or newer
+- Git
+
+### Compiling from source
+```bash
+git clone https://github.com/al3xwarrior/Playground.git
+cd Playground/
+./gradlew shadowJar
+```
+You can find the output JAR in the `build/libs` directory
+
+### Running on a server
+You must use [AdvancedSlimePaper 1.21.4](https://ci.infernalsuite.com/repository/download/AdvancedSlimePaper_Build/2762:id/output/asp-server.jar) as your server software.
+Move the output JAR to the server's `plugins` directory, along with these dependencies as a minimum:
+- [Citizens](https://ci.citizensnpcs.co/job/citizens2/)
+- [NoteBlockAPI](https://modrinth.com/plugin/noteblockapi)
+- [packetevents](https://modrinth.com/plugin/packetevents)
+- [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases)
+- ProtocolSidebar (copy `libs/ProtocolSidebar.jar`)
