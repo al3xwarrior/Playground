@@ -16,7 +16,7 @@ Now the project has a team of a few people who maintain the project as well as t
 - [BusterBrown1218](https://github.com/BusterBrown1218)
 ### Playtesters:
 - [pjma](https://github.com/npjma)
-- PixelBedrock
+- [PixelBedrock](https://github.com/PixelBedrock)
 
 # How to Use on your own:
 ## TODO
