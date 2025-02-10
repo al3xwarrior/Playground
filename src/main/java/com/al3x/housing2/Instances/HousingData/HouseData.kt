@@ -46,7 +46,9 @@ data class HouseData(
     var weather: WeatherTypes?,
     var weatherCycle: Boolean?,
     var joinLeaveMessages: Boolean?,
-    var jukeboxPlaying: Boolean?
+    var deathMessages: Boolean?,
+    var jukeboxPlaying: Boolean?,
+    var keepInventory: Boolean?
 ) {
 
 
@@ -89,7 +91,9 @@ data class HouseData(
                 world.weather,
                 world.weatherCycle,
                 world.joinLeaveMessages,
-                world.isJukeboxPlaying
+                world.isJukeboxPlaying,
+                world.deathMessages,
+                world.keepInventory
             )
             return houseData
         }

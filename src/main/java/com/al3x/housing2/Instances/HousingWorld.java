@@ -98,6 +98,8 @@ public class HousingWorld {
     private Integer version;
     private ArrayList<Player> adminModeUsers = new ArrayList<>();
     private boolean joinLeaveMessages;
+    private boolean deathMessages;
+    private boolean keepInventory;
 
     public HouseData houseData;
 
@@ -240,6 +242,8 @@ public class HousingWorld {
         this.weather = houseData.getWeather() != null ? houseData.getWeather() : WeatherTypes.SUNNY;
         this.weatherCycle = houseData.getWeatherCycle() != null ? houseData.getWeatherCycle() : false;
         this.joinLeaveMessages = houseData.getJoinLeaveMessages() != null ? houseData.getJoinLeaveMessages() : true;
+        this.deathMessages = houseData.getDeathMessages() != null ? houseData.getDeathMessages() : true;
+        this.keepInventory = houseData.getKeepInventory() != null ? houseData.getKeepInventory() : false;
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -336,6 +340,8 @@ public class HousingWorld {
         this.weather = WeatherTypes.SUNNY;
         this.weatherCycle = false;
         this.joinLeaveMessages = true;
+        this.deathMessages = true;
+        this.keepInventory = false;
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
@@ -1121,5 +1127,21 @@ public class HousingWorld {
 
     public void removeFromAdminMode(Player player) {
         adminModeUsers.remove(player);
+    }
+
+    public boolean getDeathMessages() {
+        return deathMessages;
+    }
+
+    public void setDeathMessages(boolean deathMessages) {
+        this.deathMessages = deathMessages;
+    }
+
+    public boolean getKeepInventory() {
+        return keepInventory;
+    }
+
+    public void setKeepInventory(boolean keepInventory) {
+        this.keepInventory = keepInventory;
     }
 }

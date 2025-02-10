@@ -167,6 +167,34 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cYou do not have permission to modify the jukebox!"));
         });
 
+        addItem(29, ItemBuilder.create(Material.SKELETON_SKULL)
+                .name(colorize("&aDeath Messages"))
+                .description("Click to toggle the death messages for your house.")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            if (house.getDeathMessages()) {
+                house.setDeathMessages(false);
+                player.sendMessage(colorize("&eDisabled &cDeath Messages"));
+            } else {
+                house.setDeathMessages(true);
+                player.sendMessage(colorize("&eEnabled &aDeath Messages"));
+            }
+        });
+
+        addItem(30, ItemBuilder.create(Material.CHEST)
+                .name(colorize("&aKeep Inventory"))
+                .description("Click to toggle keep inventory on your house.")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            if (house.getKeepInventory()) {
+                house.setKeepInventory(false);
+                player.sendMessage(colorize("&eDisabled &cKeep Inventory"));
+            } else {
+                house.setKeepInventory(true);
+                player.sendMessage(colorize("&eEnabled &aKeep Inventory"));
+            }
+        });
+
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)
                 .name(colorize("&aMain Menu"))
                 .lClick(ItemBuilder.ActionType.SELECT_YELLOW)

@@ -46,4 +46,27 @@ public class PlayerDeath implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e) {
+        Player player = e.getEntity();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+
+        e.getDrops().removeIf(item -> item.getItemMeta().getDisplayName().equals("§dHousing Menu §7(Right-Click)"));
+
+        if (house != null) {
+            if (house.getDeathMessages()) {
+                String deathMessage = e.getDeathMessage();
+                e.setDeathMessage(null);
+                house.getWorld().getPlayers().forEach(p -> p.sendMessage(deathMessage));
+            }
+
+            if (house.getKeepInventory()) {
+                e.getDrops().clear();
+            }
+
+            e.setKeepInventory(house.getKeepInventory());
+            e.setKeepLevel(house.getKeepInventory());
+        }
+    }
 }
