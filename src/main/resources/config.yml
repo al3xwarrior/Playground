@@ -1,2 +1,3 @@
 mineskin_key: "4c29f0cf3aac439c9fcde63dd52aa90e"
 api_port: 8080
+executorLimits: 200
