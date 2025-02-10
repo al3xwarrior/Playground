@@ -165,7 +165,10 @@ public class ItemsMenu extends Menu {
             biomeStickMeta.setDisplayName(colorize("&aBiome Stick"));
             biomeStick.setItemMeta(biomeStickMeta);
             addItem(slot++, biomeStick, () -> {
-                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
+                player.getInventory().addItem(ItemBuilder.create(Material.STICK)
+                        .name("&aBiome Stick")
+                        .description("&7Left Click to Configure Biome and Range\n&7Right Click to Activate")
+                        .build());
             });
         }
 

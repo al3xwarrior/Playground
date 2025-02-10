@@ -3,27 +3,23 @@ package com.al3x.housing2.Listeners;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.BiomeStickMenu;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
@@ -31,9 +27,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import static com.al3x.housing2.Menus.BiomeStickMenu.getPlayerBiomeStickBiome;
+import static com.al3x.housing2.Menus.BiomeStickMenu.getPlayerBiomeStickRange;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingItems implements Listener {
+
+    private static HashMap<UUID, Long> biomeStickCooldown = new HashMap<>();
+
+    public static long getBiomeStickCooldown(Player player) {
+        return biomeStickCooldown.getOrDefault(player.getUniqueId(), 0L);
+    }
+
+    public static void setBiomeStickCooldown(Player player) {
+        biomeStickCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+    }
 
     private Main main;
     private HousesManager housesManager;
@@ -91,9 +102,11 @@ public class HousingItems implements Listener {
             // Browser
             if (name.equals("§aHousing Browser §7(Right-Click)")) {
                 new HouseBrowserMenu(player, housesManager).open();
+                return;
             }
             if (name.equals("§aMy Houses §7(Right-Click)")) {
                 new MyHousesMenu(main, player, player).open();
+                return;
             }
             if (name.equals("§aRandom House §7(Right-Click)")) {
                 HousingWorld randomHouse = housesManager.getRandomPublicHouse();
@@ -102,11 +115,19 @@ public class HousingItems implements Listener {
                 } else {
                     player.sendMessage(colorize("&cThere are no public houses available!"));
                 }
+                return;
             }
             return;
         }
 
         if (house == null) return;
+
+        if (e.getAction().isLeftClick()) {
+            if (item.getItemMeta().getDisplayName().equals("§aBiome Stick")) {
+                e.setCancelled(true);
+                new BiomeStickMenu(player).open();
+            }
+        }
 
         // Click block
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -125,29 +146,52 @@ public class HousingItems implements Listener {
                 NbtItemBuilder nbt = new NbtItemBuilder(item);
 
                 Block block = e.getClickedBlock();
-                boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
+                // boolean ownerOfHouse = house != null && house.getOwnerUUID().equals(player.getUniqueId());
 
                 if (name.equals("§aNPC") && itemType.equals(Material.PLAYER_HEAD) && house.hasPermission(player, Permissions.ITEM_NPCS)) {
                     e.setCancelled(true);
                     house.createNPC(player, block.getLocation().add(new Vector(0.5, 1, 0.5)));
+                    return;
                 }
 
                 if (name.equals("§aHologram") && itemType.equals(Material.NAME_TAG) && house.hasPermission(player, Permissions.ITEM_HOLOGRAM)) {
                     e.setCancelled(true);
                     house.createHologram(player, block.getLocation().add(new Vector(0.5, 2, 0.5)));
+                    return;
+                }
+
+                if (name.equals("§aBiome Stick") && itemType.equals(Material.STICK) && house.hasPermission(player, Permissions.ITEM_BIOME_STICK)) {
+                    e.setCancelled(true);
+                    biomeStick(player, block);
+                    return;
                 }
             }
         }
 
         // Click air
         if (e.getItem() != null && e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+            String name = e.getItem().getItemMeta().getDisplayName();
+
             NbtItemBuilder nbt = new NbtItemBuilder(item);
 
             // Cookies
             if (nbt.getBoolean("housing_cookie")) {
                 e.setCancelled(true);
-                if (house == null) return;
                 main.getCookieManager().giveCookie(player, house);
+                return;
+            }
+
+            // Biome Stick
+            if (name.equals("§aBiome Stick")) {
+
+                Block targetBlock = player.getTargetBlockExact(35);
+                if (targetBlock == null) {
+                    player.sendMessage(colorize("&cToo far away!"));
+                    return;
+                }
+
+                e.setCancelled(true);
+                biomeStick(player, targetBlock);
                 return;
             }
 
@@ -198,5 +242,27 @@ public class HousingItems implements Listener {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    private void biomeStick(Player player, Block block) {
+        if (System.currentTimeMillis() - getBiomeStickCooldown(player) < 500) {
+            player.sendMessage(colorize("&cPlease wait before using the Biome Stick again!"));
+            return;
+        }
+
+        Biome biome = getPlayerBiomeStickBiome(player);
+        int radius = getPlayerBiomeStickRange(player);
+        Location location = block.getLocation();
+
+        setBiomeStickCooldown(player);
+        player.sendMessage(colorize("&aBiome set to &e" + biome.name() + "&a! You may need to rejoin your house for it to take affect."));
+        player.playSound(player.getLocation(), Sound.BLOCK_GRASS_PLACE, 1, 1);
+
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                Location loc = location.clone().add(x, 0, z);
+                loc.getBlock().setBiome(biome);
+            }
+        }
     }
 }
