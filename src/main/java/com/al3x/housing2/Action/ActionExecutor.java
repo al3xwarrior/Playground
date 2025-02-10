@@ -132,8 +132,9 @@ public class ActionExecutor {
 
             action = queue.removeFirst();
 
-            if (limits.containsKey(action.name) && limits.get(action.name) >= 1000) {
-                continue;
+            if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 200)) {
+                exitAllTheWay(this);
+                return EXIT;
             }
             limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
 

@@ -219,6 +219,12 @@ public class Housing implements CommandExecutor {
                 CookieManager.givePhysicalCookie(player);
                 return true;
             }
+
+            if (strings[0].equalsIgnoreCase("reload") && player.hasPermission("housing2.admin")) {
+                main.reloadConfig();
+                player.sendMessage(colorize("&aConfig reloaded!"));
+                return true;
+            }
         }
 
         player.sendMessage(colorize("&7&m---------------------------------------"));
