@@ -57,6 +57,7 @@ public class Function {
 
         for (Player p : players) {
             ActionExecutor executor = new ActionExecutor("function");
+            executor.setLimits(oldExecutor.getLimits());
             executor.addActions(new ArrayList<>(actions));
             executor.execute(p, house, null);
         }

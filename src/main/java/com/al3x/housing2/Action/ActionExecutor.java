@@ -15,12 +15,14 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.al3x.housing2.Action.OutputType.*;
 
 public class ActionExecutor {
+    private HashMap<String, Integer> limits = new HashMap<>();
     private String context;
     private List<Action> queue = new ArrayList<>();
     private ActionExecutor parent;
@@ -43,6 +45,10 @@ public class ActionExecutor {
         this.context = context;
     }
 
+    public void setLimits(HashMap<String, Integer> limits) {
+        this.limits = limits;
+    }
+
     public void addChild(ActionExecutor executor) {
         children.add(executor);
     }
@@ -53,6 +59,7 @@ public class ActionExecutor {
 
     public void setParent(ActionExecutor parent) {
         this.parent = parent;
+        this.limits = parent.limits;
     }
 
     public ActionExecutor getParent() {
@@ -112,6 +119,10 @@ public class ActionExecutor {
     }
 
     public OutputType execute(Player player, HousingWorld house, Cancellable event) {
+        if (limits == null) {
+            limits = new HashMap<>();
+        }
+
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         Action action;
         while (!queue.isEmpty()) {
@@ -120,6 +131,11 @@ public class ActionExecutor {
             }
 
             action = queue.removeFirst();
+
+            if (limits.containsKey(action.name) && limits.get(action.name) >= 1000) {
+                continue;
+            }
+            limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
 
             if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
@@ -248,5 +264,9 @@ public class ActionExecutor {
                 ", count=" + count +
                 ", workingIndex=" + workingIndex +
                 '}';
+    }
+
+    public HashMap<String, Integer> getLimits() {
+        return limits;
     }
 }
