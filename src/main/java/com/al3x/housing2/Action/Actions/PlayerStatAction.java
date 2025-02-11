@@ -58,7 +58,7 @@ public class PlayerStatAction extends HTSLImpl {
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
-            sb.append(statInstances.get(i).mode).append(" ").append(statInstances.get(i).value);
+            sb.append(statInstances.get(i).mode).append(" ").append(Color.removeColor(statInstances.get(i).value.toString()));
             if (i != Math.min(3, statInstances.size()) - 1) {
                 sb.append(", ");
             }
@@ -307,5 +307,49 @@ public class PlayerStatAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "stat";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        String[] parts = action.split(" ");
+        if (parts.length < 3) {
+            return nextLines;
+        }
+
+        statName = parts[0];
+        if (statName.startsWith("\"")) {
+            statName = statName.substring(1);
+            parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
+            while (!statName.endsWith("\"")) {
+                statName += " " + parts[1];
+                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            }
+            statName = statName.substring(0, statName.length() - 1);
+        }
+        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+
+        parts = Arrays.copyOfRange(parts, 1, parts.length);
+        ArrayList<StatInstance> statInstances = new ArrayList<>();
+
+        StatInstance instance = new StatInstance(false);
+        while (parts.length > 0) {
+            if (StatOperation.getOperation(parts[0]) != null) {
+                instance.mode = StatOperation.getOperation(parts[0]);
+                parts = Arrays.copyOfRange(parts, 1, parts.length);
+                continue;
+            } else {
+                instance.value = new StatValue(false);
+                parts = instance.value.importValue(parts);
+            }
+
+            if (instance.mode != null && instance.value != null) {
+                statInstances.add(instance);
+                instance = new StatInstance(false);
+            }
+        }
+
+        this.statInstances = statInstances;
+
+        return nextLines;
     }
 }

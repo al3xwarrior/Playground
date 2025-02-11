@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
@@ -150,5 +151,25 @@ public class RandomAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "random";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        ArrayList<String> subactions = new ArrayList<>();
+        if (action.startsWith("{")) {
+            for (int i = 0; i < nextLines.size(); i++) {
+                String line = nextLines.get(i);
+                if (line.startsWith("}")) {
+                    nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
+                    break;
+                }
+                subactions.add(line);
+            }
+        }
+
+        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions)));
+
+        this.subActions = actions;
+        return nextLines;
     }
 }

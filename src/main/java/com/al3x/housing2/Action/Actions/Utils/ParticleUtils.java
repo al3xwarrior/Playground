@@ -40,6 +40,8 @@ public class ParticleUtils {
     }
 
     public static Object output(Particles particle, HashMap<String, Object> customData) {
+        if (customData == null) return null;
+        if (particle.getData() == null) return null;
         switch (particle.getData()) {
             case COLOR -> {
                 String[] split = ((String) customData.getOrDefault("color", "255,255,255")).split(",");
@@ -68,6 +70,26 @@ public class ParticleUtils {
             }
         }
         return null;
+    }
+
+    public static List<String> keys(Particles particle) {
+        if (particle.getData() == null) return null;
+        List<String> keys = new ArrayList<>();
+        switch (particle.getData()) {
+            case COLOR -> {
+                keys.add("color");
+            }
+            case DUST -> {
+                keys.add("color");
+                keys.add("size");
+            }
+            case DUST_TRANSITION -> {
+                keys.add("color");
+                keys.add("color2");
+                keys.add("size");
+            }
+        }
+        return keys;
     }
 
     private static List<ActionEditor.ActionItem> color(String key, Particles particle, HashMap<String, Object> customData, HousingWorld house, Menu editMenu, Player player) {

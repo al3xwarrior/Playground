@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -12,6 +13,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
@@ -76,6 +78,14 @@ public class ChangePlayerGroupAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return false; //does nothing
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (executor != null && executor.findHighestParentWithContext("item") != null) {
+            return true;
+        }
         if (group == null) {
             return true;
         }

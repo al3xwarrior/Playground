@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class HasItemCondition extends Condition {
@@ -248,8 +249,8 @@ public class HasItemCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("item", Serialization.itemStackToBase64(item));
         data.put("whatToCheck", whatToCheck);
         data.put("whereToCheck", whereToCheck);

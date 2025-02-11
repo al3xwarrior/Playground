@@ -1,27 +1,25 @@
 package com.al3x.housing2.Commands;
 
-import com.al3x.housing2.Action.Actions.ChatAction;
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.CookieManager;
-import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Item;
+import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
-import com.al3x.housing2.Utils.ItemBuilder;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.*;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -217,6 +215,23 @@ public class Housing implements CommandExecutor {
 
             if (strings[0].equalsIgnoreCase("givecookie") && player.hasPermission("housing2.admin")) {
                 CookieManager.givePhysicalCookie(player);
+                return true;
+            }
+
+            if (strings[0].equalsIgnoreCase("htsl") && player.hasPermission("housing2.admin")) {
+                File file = new File(Main.getInstance().getDataFolder(), "HTSL/test.htsl");
+
+                //read file
+                String fileContent;
+                try {
+                    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                for (Action action : HTSLHandler.importActions(fileContent)) {
+                    System.out.println(action);
+                }
                 return true;
             }
 

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
@@ -14,10 +15,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ClickTypeCondition extends Condition {
+public class ClickTypeCondition extends CHTSLImpl {
     private ClickType type;
 
     public ClickTypeCondition() {
@@ -85,8 +86,8 @@ public class ClickTypeCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("type", type.name());
         return data;
     }
@@ -94,5 +95,10 @@ public class ClickTypeCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "clickType";
     }
 }

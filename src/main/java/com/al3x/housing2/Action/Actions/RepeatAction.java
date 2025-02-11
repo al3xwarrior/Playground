@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -189,5 +190,29 @@ public class RepeatAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "repeat";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        if (action.contains(" ")) {
+            times = action.split(" ")[0];
+            action = action.replace(times + " ", "");
+        }
+        ArrayList<String> subactions = new ArrayList<>();
+        if (action.startsWith("{")) {
+            for (int i = 0; i < nextLines.size(); i++) {
+                String line = nextLines.get(i);
+                if (line.startsWith("}")) {
+                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
+                    break;
+                }
+                subactions.add(line);
+            }
+        }
+
+        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions)));
+
+        this.subActions = actions;
+        return nextLines;
     }
 }

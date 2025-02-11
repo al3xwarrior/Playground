@@ -1,30 +1,27 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.apache.maven.model.Parent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
-public class ConditionalAction extends Action {
+public class ConditionalAction extends HTSLImpl {
     private static final Gson gson = new Gson();
     private List<Condition> conditions;
     private boolean matchAnyCondition;
@@ -246,5 +243,93 @@ public class ConditionalAction extends Action {
             actions.add(gson.fromJson(jsonObject, ActionData.class));
         }
         return Companion.toList(actions);
+    }
+
+    @Override
+    public String keyword() {
+        return "if";
+    }
+
+    @Override
+    public String export(int indent) {
+        return super.export(indent);
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        String[] parts = action.split(" ");
+        LinkedHashMap<String, Object> actionData = data();
+
+        if (parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("false")) {
+            actionData.put("matchAnyCondition", parts[0].equalsIgnoreCase("true"));
+            parts = Arrays.copyOfRange(parts, 1, parts.length);
+        }
+        if (parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("false")) {
+            actionData.put("not", parts[1].equalsIgnoreCase("true"));
+            parts = Arrays.copyOfRange(parts, 1, parts.length);
+        }
+
+        List<Condition> conditions = new ArrayList<>();
+        List<Action> ifActions = new ArrayList<>();
+        List<Action> elseActions = new ArrayList<>();
+
+        String conditionString = String.join(" ", parts);
+
+        if (!(conditionString.trim().startsWith("(") && conditionString.trim().contains(")") && conditionString.trim().endsWith("{"))) {
+            throw new IllegalArgumentException("Invalid conditional action"); //TODO: change this to a proper exception
+        }
+        conditionString = conditionString.trim().substring(1, conditionString.trim().length() - 1).replace(")", "").trim();
+        String[] conditionParts = conditionString.split(",");
+
+        List<CHTSLImpl> defaultConditions = List.of(Arrays.stream(ConditionEnum.values()).map(ConditionEnum::getConditionInstance).filter(a -> a instanceof CHTSLImpl).map(a -> (CHTSLImpl) a).toArray(CHTSLImpl[]::new));
+
+        for (String conditionPart : conditionParts) {
+            for (CHTSLImpl condition : defaultConditions) {
+                if (conditionPart.startsWith(condition.keyword())) {
+                    CHTSLImpl c = (CHTSLImpl) condition.clone();
+                    c.importCondition(StringUtilsKt.substringAfter(conditionPart, c.keyword() + " "), nextLines);
+                    conditions.add(c);
+                    break;
+                }
+            }
+        }
+
+        actionData.put("conditions", ConditionData.Companion.fromList(conditions));
+
+        ArrayList<String> ifLines = new ArrayList<>();
+        ArrayList<String> elseLines = new ArrayList<>();
+        boolean isElse = false;
+        int ifStart = -1;
+        for (int i = 0; i < nextLines.size(); i++) {
+            String line = nextLines.get(i);
+            if (line.startsWith("} else {")) {
+                ifLines = new ArrayList<>(nextLines.subList(0, i));
+                isElse = true;
+                ifStart = i + 1;
+            }
+
+            if (line.startsWith("}")) {
+                if (isElse) {
+                    elseLines = new ArrayList<>(nextLines.subList(ifStart, i));
+                } else {
+                    ifLines = new ArrayList<>(nextLines.subList(0, i));
+                }
+
+                nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
+                break;
+            }
+        }
+
+        ifActions = HTSLHandler.importActions(String.join("\n", ifLines));
+        if (!elseLines.isEmpty()) {
+            elseActions = HTSLHandler.importActions(String.join("\n", elseLines));
+        }
+
+        actionData.put("ifActions", Companion.fromList(ifActions));
+        actionData.put("elseActions", Companion.fromList(elseActions));
+
+        fromData(actionData, ConditionalAction.class);
+
+        return nextLines;
     }
 }

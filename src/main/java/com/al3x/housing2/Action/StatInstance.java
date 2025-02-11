@@ -21,4 +21,6 @@ public class StatInstance {
         mode = StatOperation.valueOf((String) data.get("mode"));
         value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
     }
+
+
 }

@@ -35,6 +35,14 @@ public enum StatOperation implements EnumMaterial, EnumHTSLAlternative{
         this.args = args;
     }
 
+    public static StatOperation getOperation(String part) {
+        for (StatOperation operation : values()) {
+            if (operation.asString().equalsIgnoreCase(part)) return operation;
+            if (operation.name().equalsIgnoreCase(part)) return operation;
+        }
+        return null;
+    }
+
     public String asString() {
         return asString;
     }

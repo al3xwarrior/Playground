@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -14,10 +15,10 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class HasPermissionCondition extends Condition {
+public class HasPermissionCondition extends CHTSLImpl {
     private Permissions permission = null;
 
     public HasPermissionCondition() {
@@ -83,8 +84,8 @@ public class HasPermissionCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("permission", permission);
         return data;
     }
@@ -92,5 +93,10 @@ public class HasPermissionCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "hasPermission";
     }
 }
