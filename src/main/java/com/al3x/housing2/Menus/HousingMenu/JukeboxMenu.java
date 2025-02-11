@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -60,18 +61,26 @@ public class JukeboxMenu extends Menu {
 
             addItem(avaliableSlots[i], ItemBuilder.create(Material.JUKEBOX)
                     .name("&7" + song.getTitle())
-                    .description("&7Author: &f" + song.getAuthor() + "\n&7Description: &f" + song.getDescription() + "\n&7Length: &f" + song.getLength() + "s\n\n&e&lClick to " + (!house.isJukeboxPlaying() || !house.songInPlaylist(song) ? "&a&lAdd" : "&c&lRemove") + " &e&lthis song to the playlist!")
+                    .description("&7Author: &f" + song.getAuthor() + "\n&7Description: &f" + song.getDescription() + "\n&7Length: &f" + formattedTime(song.getLength()) + "s\n\n&e&lClick to " + (!house.isJukeboxPlaying() || !house.songInPlaylist(song) ? "&a&lAdd" : "&c&lRemove") + " &e&lthis song to the playlist!")
                     .glow(house.isJukeboxPlaying() && house.songInPlaylist(song))
                     .punctuation(false)
                     .build(), () -> {
                 if (house.isJukeboxPlaying() && house.songInPlaylist(song)) {
-                    Bukkit.getLogger().info("Removing song");
                     house.removeSong(song);
                     open();
+                    Bukkit.getLogger().info(house.isJukeboxPlaying() + " " + house.songInPlaylist(song));
+                    Bukkit.getLogger().info("Removed song " + song.getTitle() + " from " + house.getOwner().getName() + "'s playlist.");
+                    for (Song s : house.getSongs()) {
+                        Bukkit.getLogger().info("Song: " + s.getTitle());
+                    }
                 } else {
-                    Bukkit.getLogger().info("Adding song");
                     house.addSong(song);
                     open();
+                    Bukkit.getLogger().info(house.isJukeboxPlaying() + " " + house.songInPlaylist(song));
+                    Bukkit.getLogger().info("Added song " + song.getTitle() + " to " + house.getOwner().getName() + "'s playlist.");
+                    for (Song s : house.getSongs()) {
+                        Bukkit.getLogger().info("Song: " + s.getTitle());
+                    }
                 }
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
             });
@@ -82,7 +91,7 @@ public class JukeboxMenu extends Menu {
                 .build(), () -> new HousingMenu(main, player, house).open()
         );
 
-        addItem(49, ItemBuilder.create(Material.ANVIL)
+        addItem(49, ItemBuilder.create(Material.TNT)
                 .name("&cClear Playlist")
                 .description("&7Click to clear the playlist!")
                 .build(), () -> {
@@ -94,7 +103,7 @@ public class JukeboxMenu extends Menu {
         if (house.isJukeboxPlaying()) {
             addItem(50, ItemBuilder.create(Material.LIME_DYE)
                     .name("&7Currently Playing")
-                    .description("&7Click to stop the music!")
+                    .description("&7Song Playing: \"&e" + house.getCurrentSong().getTitle() + "&7\"\n\n&7Click to stop the music!")
                     .punctuation(false)
                     .build(), () -> {
                 house.stopMusic();
@@ -104,7 +113,7 @@ public class JukeboxMenu extends Menu {
         } else {
             addItem(50, ItemBuilder.create(Material.RED_DYE)
                     .name("&7Currently Stopped")
-                    .description("&7Click to start the music!")
+                    .description("&7Song Playing: \"&e" + house.getCurrentSong().getTitle() + "&7\"\n\nn&7Click to start the music!")
                     .punctuation(false)
                     .build(), () -> {
                 house.startMusic();
@@ -154,10 +163,8 @@ public class JukeboxMenu extends Menu {
         File[] files = new File(main.getDataFolder() + "/songs/").listFiles();
         for (File value : files) {
             if (value == null) break;
-
             File file = value;
             Song song = NBSDecoder.parse(file);
-
             songsArray.add(song);
         }
 
@@ -166,5 +173,12 @@ public class JukeboxMenu extends Menu {
         }
 
         return new PaginationList<>(songsArray, avaliableSlots.length);
+    }
+
+    private String formattedTime(int seconds) {
+        seconds = seconds / 20;
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
     }
 }

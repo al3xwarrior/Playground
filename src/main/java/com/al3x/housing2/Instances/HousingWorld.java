@@ -601,6 +601,10 @@ public class HousingWorld {
         return playlist.getCount();
     }
 
+    public List<Song> getSongs() {
+        return playlist.getSongList();
+    }
+
     public void playerJoins(Player player) {
         radioSongPlayer.addPlayer(player);
     }

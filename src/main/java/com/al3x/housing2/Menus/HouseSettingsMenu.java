@@ -46,16 +46,7 @@ public class HouseSettingsMenu extends Menu {
             new WeatherSelectorMenu(main, player, house).open();
         });
 
-        addItem(12, ItemBuilder.create(Material.PLAYER_HEAD)
-                .name(colorize("&aMax Players"))
-                .description("Click to change the maximum number of players allowed.")
-                .skullTexture("889ee0b7fef957ed9b464756e9e5615468a9c40c6c0b13f451f33b4103891eab")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(13, ItemBuilder.create(Material.OAK_SIGN)
+        addItem(12, ItemBuilder.create(Material.OAK_SIGN)
                 .name(colorize("&aSet House Name"))
                 .description("Click to change the name of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -66,7 +57,7 @@ public class HouseSettingsMenu extends Menu {
             });
         });
 
-        addItem(14, ItemBuilder.create(Material.OAK_SIGN)
+        addItem(13, ItemBuilder.create(Material.OAK_SIGN)
                 .name(colorize("&aSet House Description"))
                 .description("Click to change the description of your house.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -77,39 +68,7 @@ public class HouseSettingsMenu extends Menu {
             });
         });
 
-        addItem(15, ItemBuilder.create(Material.GRASS_BLOCK)
-                .name(colorize("&aPlot Size"))
-                .description("Click to modify the plot size.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(16, ItemBuilder.create(Material.NAME_TAG)
-                .name(colorize("&aHouse Tags"))
-                .description("Click to edit the house tags.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(19, ItemBuilder.create(Material.BOOK)
-                .name(colorize("&aHouse Language"))
-                .description("Click to change the language settings for your house.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(20, ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
-                .name(colorize("&aParkour Settings"))
-                .description("Click to configure the parkour settings.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(21, ItemBuilder.create(Material.PAPER)
+        addItem(14, ItemBuilder.create(Material.PAPER)
                 .name(colorize("&aJoin/Leave Messages"))
                 .description("Click to toggle the join/leave messages for your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
@@ -123,39 +82,7 @@ public class HouseSettingsMenu extends Menu {
             }
         });
 
-        addItem(22, ItemBuilder.create(Material.PAPER)
-                .name(colorize("&aDoor/Fence Auto-Reset"))
-                .description("Click to enable/disable automatic door and fence resetting.")
-                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(23, ItemBuilder.create(Material.PAPER)
-                .name(colorize("&aStatuses"))
-                .description("Click to manage the status settings of your house.")
-                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(24, ItemBuilder.create(Material.FEATHER)
-                .name(colorize("&aPlayer Data"))
-                .description("Click to view or modify player data.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(25, ItemBuilder.create(Material.IRON_SWORD)
-                .name(colorize("&aPvP Settings"))
-                .description("Click to configure PvP settings.")
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .build(), () -> {
-            player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
-        });
-
-        addItem(28, ItemBuilder.create(Material.JUKEBOX)
+        addItem(15, ItemBuilder.create(Material.JUKEBOX)
                 .name(colorize("&aMusic Settings"))
                 .description("Click to configure Music settings.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
@@ -167,7 +94,7 @@ public class HouseSettingsMenu extends Menu {
             player.sendMessage(colorize("&cYou do not have permission to modify the jukebox!"));
         });
 
-        addItem(29, ItemBuilder.create(Material.SKELETON_SKULL)
+        addItem(16, ItemBuilder.create(Material.SKELETON_SKULL)
                 .name(colorize("&aDeath Messages"))
                 .description("Click to toggle the death messages for your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
@@ -181,7 +108,7 @@ public class HouseSettingsMenu extends Menu {
             }
         });
 
-        addItem(30, ItemBuilder.create(Material.CHEST)
+        addItem(19, ItemBuilder.create(Material.CHEST)
                 .name(colorize("&aKeep Inventory"))
                 .description("Click to toggle keep inventory on your house.")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
