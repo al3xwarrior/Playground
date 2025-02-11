@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.StatComparator;
@@ -11,10 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class GamemodeRequirementCondition extends Condition {
+public class GamemodeRequirementCondition extends CHTSLImpl {
     private Gamemodes gamemode;
 
     public GamemodeRequirementCondition() {
@@ -67,8 +68,8 @@ public class GamemodeRequirementCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("gamemode", gamemode);
         return data;
     }
@@ -76,5 +77,10 @@ public class GamemodeRequirementCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "gamemode";
     }
 }

@@ -1,14 +1,15 @@
 package com.al3x.housing2.Condition.Conditions;
 
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public class IsFlyingCondition extends Condition {
+public class IsFlyingCondition extends CHTSLImpl {
 
         public IsFlyingCondition() {
             super("Is Flying");
@@ -42,12 +43,17 @@ public class IsFlyingCondition extends Condition {
         }
 
         @Override
-        public HashMap<String, Object> data() {
-            return new HashMap<>();
+        public LinkedHashMap<String, Object> data() {
+            return new LinkedHashMap<>();
         }
 
         @Override
         public boolean requiresPlayer() {
             return true;
         }
+
+    @Override
+    public String keyword() {
+        return "isFlying";
+    }
 }

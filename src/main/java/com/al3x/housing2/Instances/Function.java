@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +58,7 @@ public class Function {
 
         for (Player p : players) {
             ActionExecutor executor = new ActionExecutor("function");
-            executor.setLimits(oldExecutor.getLimits());
+            executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
             executor.execute(p, house, null);
         }

@@ -13,10 +13,7 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.*;
 import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerWorldParticles;
 import com.comphenix.protocol.wrappers.WrappedParticle;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.util.Vector;
@@ -518,5 +515,76 @@ public class ParticleAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "particle";
+    }
+
+    @Override
+    public String export(int indent) {
+        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? location.name() : customLocation;
+        String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? location2.name() : customLocation2;
+
+        StringBuilder customData = new StringBuilder();
+        for (Map.Entry<String, Object> entry : this.customData.entrySet()) {
+            customData.append(" ").append(entry.getValue());
+        }
+
+        return " ".repeat(indent) + keyword() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2 + customData;
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        String[] parts = action.split(" ");
+        particle = Particles.valueOf(parts[0]);
+        type = ParticleType.valueOf(parts[1]);
+        radius = Double.parseDouble(parts[2]);
+        amount = Double.parseDouble(parts[3]);
+        if (Locations.fromString(parts[4]) != null) {
+            location = Locations.fromString(parts[4]);
+            if (location == PLAYER_LOCATION) {
+                customLocation = null; //TODO: add this in
+            }
+        } else {
+            location = CUSTOM;
+            customLocation = parts[4];
+            if (customLocation.startsWith("\"")) {
+                customLocation = customLocation.substring(1);
+                parts = new ArrayList<>(Arrays.asList(parts).subList(4, parts.length)).toArray(new String[0]);
+                while (!customLocation.endsWith("\"")) {
+                    customLocation += " " + parts[1];
+                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+                }
+                customLocation = customLocation.substring(0, customLocation.length() - 1);
+            }
+            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        }
+        if (Locations.fromString(parts[5]) != null) {
+            location2 = Locations.fromString(parts[5]);
+        } else {
+            if (parts[5].contains(",")) {
+                location2 = CUSTOM;
+                customLocation = parts[5];
+                if (customLocation.startsWith("\"")) {
+                    customLocation = customLocation.substring(1);
+                    parts = new ArrayList<>(Arrays.asList(parts).subList(5, parts.length)).toArray(new String[0]);
+                    while (!customLocation.endsWith("\"")) {
+                        customLocation += " " + parts[1];
+                        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+                    }
+                    customLocation = customLocation.substring(0, customLocation.length() - 1);
+                }
+                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            } else {
+                isLineRange = true;
+                radius = Double.parseDouble(parts[5]);
+            }
+        }
+
+        List<String> keys = ParticleUtils.keys(particle);
+        if (keys != null) {
+            for (int i = 6; i < parts.length; i++) {
+                customData.put(keys.get(i - 6), parts[i]);
+            }
+        }
+
+        return nextLines;
     }
 }

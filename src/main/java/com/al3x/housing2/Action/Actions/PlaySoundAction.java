@@ -45,7 +45,7 @@ public class PlaySoundAction extends HTSLImpl {
 
     @Override
     public String toString() {
-        return "PlaySoundAction (Volume: " + volume + ", Pitch: " + pitch + ", Sound: " + sound.toString() + ")";
+        return "PlaySoundAction (Volume: " + volume + ", Pitch: " + pitch + ", Sound: " + sound.toString() + ", Location: " + (location == CUSTOM ? customLocation : location) + ")";
     }
 
     @Override
@@ -196,5 +196,30 @@ public class PlaySoundAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "sound";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        String[] parts = action.split(" ");
+        sound = Sound.valueOf(parts[0]);
+        volume = Double.parseDouble(parts[1]);
+        pitch = Double.parseDouble(parts[2]);
+        if (Locations.fromString(parts[3]) != null) {
+            location = Locations.fromString(parts[3]);
+        } else {
+            location = CUSTOM;
+            customLocation = parts[3];
+            if (customLocation.startsWith("\"")) {
+                customLocation = customLocation.substring(1);
+                parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
+                while (!customLocation.endsWith("\"")) {
+                    customLocation += " " + parts[1];
+                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+                }
+                customLocation = customLocation.substring(0, customLocation.length() - 1);
+            }
+            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        }
+        return nextLines;
     }
 }

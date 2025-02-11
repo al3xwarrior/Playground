@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
@@ -10,10 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class GroupRequirementCondition extends Condition {
+public class GroupRequirementCondition extends CHTSLImpl {
     private String group = null;
     boolean includeHigherGroups = false;
 
@@ -80,8 +81,8 @@ public class GroupRequirementCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("group", group);
         data.put("includeHigherGroups", includeHigherGroups);
         return data;
@@ -90,5 +91,10 @@ public class GroupRequirementCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "inGroup";
     }
 }

@@ -13,10 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
@@ -146,5 +143,19 @@ public class TeleportAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "teleport";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        if (Locations.fromString(action) != null) {
+            location = Locations.fromString(action);
+            if (location == PLAYER_LOCATION) {
+                customLocation = "0,0,0";
+            }
+        } else {
+            location = CUSTOM;
+            customLocation = action;
+        }
+        return nextLines;
     }
 }

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -13,12 +14,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class HasPotionEffectCondition extends Condition {
+public class HasPotionEffectCondition extends CHTSLImpl {
     private PotionEffectType potionEffect = null;
 
     public HasPotionEffectCondition() {
@@ -83,8 +81,8 @@ public class HasPotionEffectCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("potionEffect", potionEffect.getName());
         return data;
     }
@@ -97,5 +95,20 @@ public class HasPotionEffectCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String export(int indent) {
+        return " ".repeat(indent) + keyword() + " " + potionEffect.getName();
+    }
+
+    @Override
+    public void importCondition(String condition, List<String> nextLines) {
+        potionEffect = PotionEffectType.getByName(condition);
+    }
+
+    @Override
+    public String keyword() {
+        return "hasPotionEffect";
     }
 }

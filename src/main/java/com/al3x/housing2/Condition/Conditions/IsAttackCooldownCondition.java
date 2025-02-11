@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
@@ -14,10 +15,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class IsAttackCooldownCondition extends Condition {
+public class IsAttackCooldownCondition extends CHTSLImpl {
     public IsAttackCooldownCondition() {
         super("Is Attack Cooldown");
     }
@@ -55,12 +56,17 @@ public class IsAttackCooldownCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        return new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        return new LinkedHashMap<>();
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "isAttackCooldown";
     }
 }

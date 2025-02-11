@@ -4,6 +4,12 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
 import com.al3x.housing2.Utils.Color;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.util.Vector3f;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import me.tofaa.entitylib.meta.EntityMeta;
+import me.tofaa.entitylib.meta.display.BlockDisplayMeta;
+import me.tofaa.entitylib.wrapper.WrapperEntity;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -44,7 +50,7 @@ public class ProtoolsManager {
         for (Block block : blocks) {
             if (
                     trashCans.contains(block.getLocation()) ||
-                    launchPads.stream().anyMatch(launchPad -> launchPad.getLocation().equals(block.getLocation()))
+                            launchPads.stream().anyMatch(launchPad -> launchPad.getLocation().equals(block.getLocation()))
             ) {
                 blocks.remove(block);
             }
@@ -273,11 +279,41 @@ public class ProtoolsManager {
                 .build();
     }
 
+    private HashMap<UUID, List<WrapperEntity>> entityList = new HashMap<>();
+    private HashMap<UUID, Duple<Location, Location>> lastSelection = new HashMap<>();
+
+    private void createBlockDisplay(Player player, Material material, Vector3f scale, Location location) {
+        WrapperEntity entity = new WrapperEntity(EntityTypes.BLOCK_DISPLAY);
+        entity.consumeEntityMeta(BlockDisplayMeta.class, meta -> {
+            meta.setBlockId(SpigotConversionUtil.fromBukkitBlockData(material.createBlockData()).getGlobalId());
+            meta.setScale(scale);
+            meta.setGlowing(true);
+            meta.setGlowColorOverride(org.bukkit.Color.GREEN.asRGB());
+        });
+        entity.addViewer(player.getUniqueId());
+        entity.spawn(new com.github.retrooper.packetevents.protocol.world.Location(location.getX(), location.getY(), location.getZ(), 0, 0));
+
+        if (!entityList.containsKey(player.getUniqueId())) {
+            entityList.put(player.getUniqueId(), new ArrayList<>());
+        }
+        entityList.get(player.getUniqueId()).add(entity);
+    }
+
     public void drawParticles(Player player, Location pos1, Location pos2) {
         if (pos1 == null || pos2 == null) {
             return;
         }
-        //Draw the outline of the region
+
+        if (lastSelection.containsKey(player.getUniqueId())) {
+            Duple<Location, Location> last = lastSelection.get(player.getUniqueId());
+            if (last.getFirst().equals(pos1) && last.getSecond().equals(pos2)) {
+                return;
+            }
+            entityList.get(player.getUniqueId()).forEach(WrapperEntity::remove);
+            entityList.remove(player.getUniqueId());
+        }
+        lastSelection.put(player.getUniqueId(), new Duple<>(pos1, pos2));
+
         int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
         int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
         int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
@@ -285,27 +321,37 @@ public class ProtoolsManager {
         int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
-                        player.spawnParticle(Particle.DUST, x + 0.5, y + 0.5, z + 0.5, 0, 0, 0, 0, new Particle.DustOptions(org.bukkit.Color.RED, 2));
-                    }
-                }
-            }
-        }
+        Material material = Material.BLACK_CONCRETE;
 
+        //bottom
+        createBlockDisplay(player, material, new Vector3f(0.05f, 0.05f, maxZ - minZ + 1), new Location(null, minX, minY, minZ));
+        createBlockDisplay(player, material, new Vector3f(maxX - minX + 1, 0.05f, 0.05f), new Location(null, minX, minY, minZ));
+        createBlockDisplay(player, material, new Vector3f(maxX - minX + 1, 0.05f, 0.05f), new Location(null, minX, minY, maxZ + 0.95f));
+        createBlockDisplay(player, material, new Vector3f(0.05f, 0.05f, maxZ - minZ + 1), new Location(null, maxX + 0.95f, minY, minZ));
+
+        //top
+        createBlockDisplay(player, material, new Vector3f(0.05f, 0.05f, maxZ - minZ + 1), new Location(null, minX, maxY + 0.95f, minZ));
+        createBlockDisplay(player, material, new Vector3f(maxX - minX + 1, 0.05f, 0.05f), new Location(null, minX, maxY + 0.95f, minZ));
+        createBlockDisplay(player, material, new Vector3f(maxX - minX + 1, 0.05f, 0.05f), new Location(null, minX, maxY + 0.95f, maxZ + 0.95f));
+        createBlockDisplay(player, material, new Vector3f(0.05f, 0.05f, maxZ - minZ + 1), new Location(null, maxX + 0.95f, maxY + 0.95f, minZ));
+
+        //connectors
+        createBlockDisplay(player, material, new Vector3f(0.05f, maxY - minY + 1, 0.05f), new Location(null, minX, minY, minZ));
+        createBlockDisplay(player, material, new Vector3f(0.05f, maxY - minY + 1, 0.05f), new Location(null, minX, minY, maxZ + 0.95f));
+        createBlockDisplay(player, material, new Vector3f(0.05f, maxY - minY + 1, 0.05f), new Location(null, maxX + 0.95f, minY, minZ));
+        createBlockDisplay(player, material, new Vector3f(0.05f, maxY - minY + 1, 0.05f), new Location(null, maxX + 0.95f, minY, maxZ + 0.95f));
     }
 
     // Shoutout 2008Choco for the method
     // (we are stealing hypixel code real)
-    private boolean isOutsideBorder(Player player){
+    private boolean isOutsideBorder(Player player) {
         WorldBorder border = player.getWorld().getWorldBorder();
         double radius = border.getSize() / 2;
         Location location = player.getLocation(), center = border.getCenter();
         return center.distanceSquared(location) >= (radius * radius);
     }
-    private boolean isOutsideBorder(Player player, Location loc){
+
+    private boolean isOutsideBorder(Player player, Location loc) {
         WorldBorder border = player.getWorld().getWorldBorder();
         double radius = border.getSize() / 2;
         Location center = border.getCenter();

@@ -1,14 +1,16 @@
-package com.al3x.housing2.Action;
+package com.al3x.housing2.Condition;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
 import com.al3x.housing2.Utils.NumberUtilsKt;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
-public abstract class HTSLImpl extends Action {
-    public HTSLImpl(String name) {
+public abstract class CHTSLImpl extends Condition {
+    public CHTSLImpl(String name) {
         super(name);
     }
 
@@ -60,7 +62,7 @@ public abstract class HTSLImpl extends Action {
         return " ".repeat(indent) + keyword() + (!builder.isEmpty() ? " " + builder : "");
     }
 
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public void importCondition(String action, List<String> nextLines) {
         String[] parts = action.split(" ");
         LinkedHashMap<String, Object> actionData = data();
         List<String> keys = List.copyOf(actionData.keySet());
@@ -124,6 +126,5 @@ public abstract class HTSLImpl extends Action {
             } catch (Exception ignored) {
             }
         }
-        return nextLines;
     }
 }

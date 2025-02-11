@@ -107,6 +107,9 @@ public class ActionExecutor {
     int counter = 0;
 
     public ActionExecutor findHighestParentWithContext(String context) {
+        if (this.context.equals(context)) {
+            return this;
+        }
         if (parent == null) {
             return null;
         }

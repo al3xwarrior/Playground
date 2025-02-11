@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
@@ -10,10 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class HungerRequirementCondition extends Condition {
+public class HungerRequirementCondition extends CHTSLImpl {
     private StatComparator comparator;
     private Double compareValue;
 
@@ -77,8 +78,8 @@ public class HungerRequirementCondition extends Condition {
     }
 
     @Override
-    public HashMap<String, Object> data() {
-        HashMap<String, Object> data = new HashMap<>();
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("comparator", comparator.name());
         data.put("compareValue", compareValue);
         return data;
@@ -87,5 +88,10 @@ public class HungerRequirementCondition extends Condition {
     @Override
     public boolean requiresPlayer() {
         return true;
+    }
+
+    @Override
+    public String keyword() {
+        return "hunger";
     }
 }

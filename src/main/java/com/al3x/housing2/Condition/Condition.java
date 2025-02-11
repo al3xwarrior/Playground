@@ -12,6 +12,7 @@ import org.bukkit.event.Cancellable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public abstract class Condition {
 
     public abstract boolean execute(Player player, HousingWorld house);
 
-    public abstract HashMap<String, Object> data();
+    public abstract LinkedHashMap<String, Object> data();
 
     public abstract boolean requiresPlayer();
 

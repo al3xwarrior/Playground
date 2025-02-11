@@ -122,7 +122,7 @@ public class HousingItems implements Listener {
 
         if (house == null) return;
 
-        if (e.getAction().isLeftClick()) {
+        if (e.getAction().isLeftClick() && e.getItem() != null && e.getItem().hasItemMeta()) {
             if (item.getItemMeta().getDisplayName().equals("§aBiome Stick")) {
                 e.setCancelled(true);
                 new BiomeStickMenu(player).open();

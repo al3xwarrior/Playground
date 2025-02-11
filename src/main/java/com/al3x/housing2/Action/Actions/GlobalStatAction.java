@@ -319,4 +319,38 @@ public class GlobalStatAction extends HTSLImpl {
     public String keyword() {
         return "globalstat";
     }
+
+    @Override
+    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+        String[] parts = action.split(" ");
+        if (parts.length < 3) {
+            return nextLines;
+        }
+
+        statName = parts[0].replace("\"", "");
+
+        parts = Arrays.copyOfRange(parts, 1, parts.length);
+        ArrayList<StatInstance> statInstances = new ArrayList<>();
+
+        StatInstance instance = new StatInstance(true);
+        while (parts.length > 0) {
+            if (StatOperation.getOperation(parts[0]) != null) {
+                instance.mode = StatOperation.getOperation(parts[0]);
+                parts = Arrays.copyOfRange(parts, 1, parts.length);
+                continue;
+            } else {
+                instance.value = new StatValue(true);
+                parts = instance.value.importValue(parts);
+            }
+
+            if (instance.mode != null && instance.value != null) {
+                statInstances.add(instance);
+                instance = new StatInstance(true);
+            }
+        }
+
+        this.statInstances = statInstances;
+
+        return nextLines;
+    }
 }
