@@ -1,79 +1,27 @@
-plugins {
-    id 'java'
-    id 'com.gradleup.shadow' version '8.3.3'
-    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
-    id "io.papermc.paperweight.userdev" version "2.0.0-beta.14"
-}
+defaultTasks 'build'
 
-group = 'com.al3x'
-version = '1.0'
+subprojects {
+    apply plugin: 'java'
 
-repositories {
-    mavenCentral()
-    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-    maven { url 'https://oss.sonatype.org/content/groups/public/' }
-    maven { url 'https://repo.onarandombox.com/content/groups/public/' }
-    maven { url 'https://maven.citizensnpcs.co/repo' }
-    maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
-    maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
-    maven { url "https://repo.dmulloy2.net/repository/public/" }
-    maven { url 'https://maven.evokegames.gg/snapshots' }
-    maven { url "https://jitpack.io" }
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
+    group = 'llc.redstone.core'
+    version = '1.0'
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'papermc'
+            url = 'https://repo.papermc.io/repository/maven-public/'
+        }
+        maven { url 'https://jitpack.io' }
+        maven { url = "https://repo.choco.wtf/releases" }
+
     }
-    maven { url = 'https://repo.extendedclip.com/releases/' }
-    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
-    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://catcoder.pl.ua/snapshots' }
-    maven { url "https://repo.nexomc.com/releases" }
-}
 
-dependencies {
-    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-    compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
-        transitive = false
+    dependencies {
+        implementation 'wtf.choco:networking-common:0.0.2'
     }
-    implementation "com.google.code.gson:gson:2.11.0"
-    compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
-    compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
-    implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    implementation 'com.github.max1mde:HologramLib:1.6.4-Test'
-    implementation files('libs/PacketWrapper.jar')
-    compileOnly files('libs/ProtocolSidebar.jar')
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
-    compileOnly 'me.clip:placeholderapi:2.11.6'
-
-    // note block
-    compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.2'
-
-    // items adder
-    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-String outputLocation = 'build/libs'
-//You can put this in your local gradle.properties file
-if (project.hasProperty('outputLocation')) {
-    outputLocation = project.outputLocation
-}
-
-tasks.register('copyJarToLocation', Copy) {
-    from shadowJar
-    into outputLocation
-}
-
-kotlin {
-    jvmToolchain(21)
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
 }
