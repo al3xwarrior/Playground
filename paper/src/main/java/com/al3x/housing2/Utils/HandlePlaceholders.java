@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
     * It is recommended to use the new placeholder system.
     * This class is only used for backwards compatibility.
  */
-@Deprecated
 public class HandlePlaceholders {
+    @Deprecated
     public static String parsePlaceholders(Player player, HousingWorld house, String s) {
         if (true) {
             return Placeholder.handlePlaceholders(s, house, player);

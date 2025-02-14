@@ -264,14 +264,16 @@ public class ActionsMenu extends Menu {
                                 network.sendMessage(export);
                             }
                     );
-
-                    addItem(48, ItemBuilder.create(Material.PINK_DYE)
-                                    .name("&aImport Actions")
-                                    .description("Because you have the mod installed, you can import actions from a file.")
-                                    .lClick(ItemBuilder.ActionType.IMPORT_YELLOW).build(),
-                            () -> network.sendMessage(new ClientboundImport())
-                    );
                 }
+            }
+            PlayerNetwork network = PlayerNetwork.getNetwork(player);
+            if (network.isUsingMod()) {
+                addItem(48, ItemBuilder.create(Material.PINK_DYE)
+                                .name("&aImport Actions")
+                                .description("Because you have the mod installed, you can import actions from a file.")
+                                .lClick(ItemBuilder.ActionType.IMPORT_YELLOW).build(),
+                        () -> network.sendMessage(new ClientboundImport())
+                );
             }
 
             if (currentPage < paginationList.getPageCount()) {
