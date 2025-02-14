@@ -52,6 +52,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: housing-artifacts
-        path: build/libs/
+        path: paper/build/libs/
  
          
