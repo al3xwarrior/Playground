@@ -75,8 +75,6 @@ public class MyHousesMenu extends Menu {
         for (int i = 0; i < houseIDs.size(); i++) {
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
-            System.out.println("house: " + house);
-
             if (house == null) {
                 addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
                         .name("&e&oCreate a House!")
