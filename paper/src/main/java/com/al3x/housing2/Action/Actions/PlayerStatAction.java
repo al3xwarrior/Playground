@@ -310,7 +310,7 @@ public class PlayerStatAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
         if (parts.length < 3) {
             return nextLines;

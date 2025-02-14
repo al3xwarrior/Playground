@@ -11,18 +11,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class HTSLHandler {
-    public static List<Action> importActions(String content) {
+    public static List<Action> importActions(String content, String indent) {
         List<HTSLImpl> defaultActions = List.of(Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(a -> a instanceof HTSLImpl).map(a -> (HTSLImpl) a).toArray(HTSLImpl[]::new));
 
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(content.split("\n")));
 
         List<Action> actions = new ArrayList<>();
         while (!lines.isEmpty()) {
-            String line = lines.removeFirst().trim();
+            String line = lines.removeFirst().replaceFirst(indent, "");
             for (HTSLImpl action : defaultActions) {
                 if (line.startsWith(action.keyword())) {
                     HTSLImpl a = (HTSLImpl) action.clone();
-                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.keyword() + " "), new ArrayList<>(lines));
+                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.keyword() + " "), indent, new ArrayList<>(lines));
                     actions.add(a);
                     break;
                 }

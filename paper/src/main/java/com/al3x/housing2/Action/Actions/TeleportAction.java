@@ -146,7 +146,7 @@ public class TeleportAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         if (Locations.fromString(action) != null) {
             location = Locations.fromString(action);
             if (location == PLAYER_LOCATION) {

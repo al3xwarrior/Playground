@@ -49,9 +49,9 @@ dependencies {
 
     implementation 'com.github.max1mde:HologramLib:1.6.4-Test'
     implementation files('../libs/PacketWrapper.jar')
-    compileOnly files('../libs/ProtocolSidebar.jar')
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
+    implementation 'com.github.ShieldCommunity:SternalBoard:84b5137622'
 
 
 

@@ -14,11 +14,14 @@ subprojects {
         }
         maven { url 'https://jitpack.io' }
         maven { url = "https://repo.choco.wtf/releases" }
-
     }
 
     dependencies {
         implementation 'wtf.choco:networking-common:0.0.2'
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     tasks.withType(JavaCompile).configureEach {

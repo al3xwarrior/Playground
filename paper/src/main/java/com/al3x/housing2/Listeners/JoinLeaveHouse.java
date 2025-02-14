@@ -91,7 +91,7 @@ public class JoinLeaveHouse implements Listener {
             return;
         }
 
-        house.getScoreboardInstance().addPlayer(player);
+
 
         PlayerData data = house.loadOrCreatePlayerData(player);
 
@@ -161,7 +161,6 @@ public class JoinLeaveHouse implements Listener {
         }
         player.displayName(StringUtilsKt.housingStringFormatter(player.getName()));
         player.playerListName(Component.text(player.getName()));
-        from.getScoreboardInstance().removePlayer(player);
         from.setGuests();
         if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 

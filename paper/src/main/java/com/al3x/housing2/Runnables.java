@@ -84,6 +84,10 @@ public class Runnables {
                 for (HousingWorld house : houses) {
                     house.getWorld().getPlayers().forEach(player -> HousingTabList.setTabList(player, house));
                 }
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    HousingScoreboard.updateScoreboard(player);
+                }
             }
         }.runTaskTimer(main, 0, 20L));
 

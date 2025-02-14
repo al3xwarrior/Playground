@@ -531,7 +531,7 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
         particle = Particles.valueOf(parts[0]);
         type = ParticleType.valueOf(parts[1]);

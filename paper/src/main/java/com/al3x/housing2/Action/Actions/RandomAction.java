@@ -154,12 +154,12 @@ public class RandomAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         ArrayList<String> subactions = new ArrayList<>();
-        if (action.startsWith("{")) {
+        if (action.startsWith(indent + "{")) {
             for (int i = 0; i < nextLines.size(); i++) {
                 String line = nextLines.get(i);
-                if (line.startsWith("}")) {
+                if (line.startsWith(indent + "}")) {
                     nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
                     break;
                 }
@@ -167,7 +167,7 @@ public class RandomAction extends HTSLImpl {
             }
         }
 
-        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions)));
+        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
 
         this.subActions = actions;
         return nextLines;

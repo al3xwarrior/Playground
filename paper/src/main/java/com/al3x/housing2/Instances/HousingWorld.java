@@ -76,6 +76,7 @@ public class HousingWorld {
     private WeatherTypes weather;
     private boolean weatherCycle;
     private List<String> scoreboard;
+    private String scoreboardTitle;
     private HousePrivacy privacy;
     private Material icon;
     private ConcurrentHashMultiset<HousingNPC> housingNPCS;
@@ -178,6 +179,7 @@ public class HousingWorld {
         this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
+        this.scoreboardTitle = "<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ";
 
         try {
             this.loader = main.getLoader();
@@ -231,6 +233,7 @@ public class HousingWorld {
         }
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
+        this.scoreboardTitle = houseData.getScoreboardTitle() != null ? houseData.getScoreboardTitle() : "<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ";
         loadEventActions();
         this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
@@ -1147,5 +1150,13 @@ public class HousingWorld {
 
     public void setKeepInventory(boolean keepInventory) {
         this.keepInventory = keepInventory;
+    }
+
+    public String getScoreboardTitle() {
+        return scoreboardTitle;
+    }
+
+    public void setScoreboardTitle(String title) {
+        this.scoreboardTitle = title;
     }
 }

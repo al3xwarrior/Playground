@@ -60,7 +60,7 @@ public abstract class HTSLImpl extends Action {
         return " ".repeat(indent) + keyword() + (!builder.isEmpty() ? " " + builder : "");
     }
 
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
         LinkedHashMap<String, Object> actionData = data();
         List<String> keys = List.copyOf(actionData.keySet());

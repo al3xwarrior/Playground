@@ -247,7 +247,7 @@ public class Housing implements CommandExecutor {
                 }
 
                 String export = "";
-                for (Action action : HTSLHandler.importActions(fileContent)) {
+                for (Action action : HTSLHandler.importActions(fileContent, "")) {
                     if (action instanceof HTSLImpl h) {
                         export += h.export(0) + "\n";
                     }

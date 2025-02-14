@@ -33,7 +33,7 @@ public final class PlayerNetworkListener implements PlaygroundServerboundMessage
     @Override
     public void handleExport(@NotNull ServerboundImport message) {
         try {
-            List<Action> action = HTSLHandler.importActions(message.getHtslContent());
+            List<Action> action = HTSLHandler.importActions(message.getHtslContent(), "");
             Menu menu = MenuManager.getPlayerMenu(player.getPlayer());
             if (menu instanceof ActionsMenu actionsMenu) {
                 actionsMenu.setActions(action);

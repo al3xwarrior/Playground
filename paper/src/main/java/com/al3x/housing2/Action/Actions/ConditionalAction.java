@@ -281,7 +281,7 @@ public class ConditionalAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
         LinkedHashMap<String, Object> actionData = data();
 
@@ -327,13 +327,13 @@ public class ConditionalAction extends HTSLImpl {
         int ifStart = -1;
         for (int i = 0; i < nextLines.size(); i++) {
             String line = nextLines.get(i);
-            if (line.startsWith("} else {")) {
+            if (line.startsWith(indent + "} else {")) {
                 ifLines = new ArrayList<>(nextLines.subList(0, i));
                 isElse = true;
                 ifStart = i + 1;
             }
 
-            if (line.startsWith("}")) {
+            if (line.startsWith(indent + "}")) {
                 if (isElse) {
                     elseLines = new ArrayList<>(nextLines.subList(ifStart, i));
                 } else {
@@ -345,9 +345,9 @@ public class ConditionalAction extends HTSLImpl {
             }
         }
 
-        ifActions = HTSLHandler.importActions(String.join("\n", ifLines));
+        ifActions = HTSLHandler.importActions(String.join("\n", ifLines), indent + " ".repeat(4));
         if (!elseLines.isEmpty()) {
-            elseActions = HTSLHandler.importActions(String.join("\n", elseLines));
+            elseActions = HTSLHandler.importActions(String.join("\n", elseLines), indent + " ".repeat(4));
         }
 
         actionData.put("ifActions", Companion.fromList(ifActions));

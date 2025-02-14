@@ -41,29 +41,25 @@ public class ScoreboardMenu extends Menu {
             int finalI = i;
             boolean hasPlaceholders = line[0].contains("%");
             addItem(avaliableSlots[finalI], ItemBuilder.create(Material.PAPER)
-                    .name("&eLine #" + finalI)
-                    .description("\n&eLine: \n" + colorize(line[0]) + (hasPlaceholders ? "\n\n&eHow this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])) : ""))
-                    .punctuation(false)
-                    .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                    .rClick(ItemBuilder.ActionType.DELETE_YELLOW)
-                    .shiftClick()
-                    .build(), () -> {
+                            .name("&eLine #" + finalI)
+                            .description("\n&eLine: \n" + colorize(line[0]) + (hasPlaceholders ? "\n\n&eHow this line appears for you:\n" + colorize(parsePlaceholders(player, house, line[0])) : ""))
+                            .punctuation(false)
+                            .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                            .rClick(ItemBuilder.ActionType.DELETE_YELLOW)
+                            .shiftClick()
+                            .build(), () -> {
 
                         player.sendMessage(colorize("&ePlease enter the new string for this scoreboard line:"));
                         openChat(main, line[0], (message) -> {
                             scoreboard.set(finalI, message);
-                            house.getScoreboardInstance().createBoard();
                         });
 
                     }, () -> {
                         scoreboard.remove(finalI);
-                        house.getScoreboardInstance().createBoard();
-                        house.setScoreboard(scoreboard);
                         player.sendMessage(colorize("&cLine removed!"));
                         Bukkit.getScheduler().runTask(main, () -> new ScoreboardMenu(main, player, house).open());
                     }, (e) -> {
                         shiftLine(line[0], finalI, e.isRightClick());
-                        house.getScoreboardInstance().createBoard();
                     }
             );
         }
@@ -83,8 +79,18 @@ public class ScoreboardMenu extends Menu {
                     List<String> newScoreboard = new ArrayList<>(house.getScoreboard());
                     newScoreboard.add("&eHello World!");
                     house.setScoreboard(newScoreboard);
-                    house.getScoreboardInstance().createBoard();
                     new ScoreboardMenu(main, player, house).open();
+                }
+        );
+
+        addItem(39, ItemBuilder.create(Material.WRITABLE_BOOK)
+                        .name("&aTitle")
+                        .description("&7Set the title of the scoreboard")
+                        .build(), () -> {
+                    player.sendMessage(colorize("&ePlease enter the new title for this scoreboard:"));
+                    openChat(main, house.getScoreboardTitle(), (message) -> {
+                        house.setScoreboardTitle(message);
+                    });
                 }
         );
 

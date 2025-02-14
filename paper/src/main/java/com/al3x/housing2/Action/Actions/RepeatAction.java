@@ -193,7 +193,7 @@ public class RepeatAction extends HTSLImpl {
     }
 
     @Override
-    public ArrayList<String> importAction(String action, ArrayList<String> nextLines) {
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         if (action.contains(" ")) {
             times = action.split(" ")[0];
             action = action.replace(times + " ", "");
@@ -201,8 +201,8 @@ public class RepeatAction extends HTSLImpl {
         ArrayList<String> subactions = new ArrayList<>();
         if (action.startsWith("{")) {
             for (int i = 0; i < nextLines.size(); i++) {
-                String line = nextLines.get(i).trim();
-                if (line.startsWith("}")) {
+                String line = nextLines.get(i);
+                if (line.startsWith(indent + "}")) {
                     nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
                     break;
                 }
@@ -210,7 +210,7 @@ public class RepeatAction extends HTSLImpl {
             }
         }
 
-        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions)));
+        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
 
         this.subActions = actions;
         return nextLines;

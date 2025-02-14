@@ -26,6 +26,7 @@ data class HouseData(
     var eventActions: HashMap<EventType, List<ActionData>>,
     var spawnLocation: LocationData?,
     var scoreboard: List<String>,
+    var scoreboardTitle: String?,
     var houseNPCs: List<NPCData>,
     var globalStats : List<StatData>,
     var commands: List<CommandData>? = arrayListOf(),
@@ -52,8 +53,6 @@ data class HouseData(
     var keepInventory: Boolean?
 ) {
 
-
-
     companion object {
         fun fromHousingWorld(world: HousingWorld): HouseData {
             val houseData = HouseData(
@@ -71,6 +70,7 @@ data class HouseData(
                 ActionData.fromHashMap(world.eventActions, world),
                 LocationData.fromLocation(world.spawn),
                 world.scoreboard,
+                world.scoreboardTitle,
                 NPCData.fromList(world.npCs),
                 fromList(world.statManager.globalStats),
                 CommandData.fromList(world.commands),
