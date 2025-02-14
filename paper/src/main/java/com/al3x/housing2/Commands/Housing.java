@@ -10,30 +10,16 @@ import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
-import com.al3x.housing2.Utils.PluginMessageByteBuffer;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
-import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerCustomPayload;
-import com.comphenix.packetwrapper.wrappers.play.serverbound.WrapperPlayClientCustomPayload;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.MinecraftKey;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.command.Command;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,8 +46,8 @@ public class Housing implements CommandExecutor {
 
         if (strings.length > 0) {
             if (strings[0].equalsIgnoreCase("create")) {
-                if (housesManager.playerHasHouse(player)) {
-                    player.sendMessage(colorize("&cYou already have a house!"));
+                if (housesManager.getHouseCount(player) >= 3) {
+                    player.sendMessage(colorize("&cYou have the maximum amount of houses!"));
                     return true;
                 }
 
@@ -69,18 +55,6 @@ public class Housing implements CommandExecutor {
                 HousingWorld house = housesManager.createHouse(player, HouseSize.LARGE);
                 player.sendMessage(colorize("&aYour house has been created!"));
                 house.sendPlayerToHouse(player);
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("delete")) {
-                if (!housesManager.playerHasHouse(player)) {
-                    player.sendMessage(colorize("&cYou don't have a house!"));
-                    return true;
-                }
-
-                player.sendMessage(colorize("&cDeleting..."));
-                housesManager.deleteHouse(player);
-                player.sendMessage(colorize("&cHouse Deleted!"));
                 return true;
             }
 
@@ -268,7 +242,6 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7&m---------------------------------------"));
         player.sendMessage(colorize("&6&lHousing Commands:"));
         player.sendMessage(colorize("&7- &f/housing create &7&o- start the creation process"));
-        player.sendMessage(colorize("&7- &f/housing delete &7&o- delete your housing"));
         player.sendMessage(colorize("&7- &f/housing home &7&o- open the my houses menu"));
         player.sendMessage(colorize("&7- &f/housing name <name> &7&o- rename your housing"));
         player.sendMessage(colorize("&7- &f/housing goto &7&o- teleport to your housing"));

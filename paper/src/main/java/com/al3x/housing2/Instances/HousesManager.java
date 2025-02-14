@@ -115,6 +115,24 @@ public class HousesManager {
         return null;
     }
 
+    public int getHouseCount(Player owner) {
+        int count = 0;
+        if (playerHouses.containsKey(owner.getUniqueId())) {
+            count += playerHouses.get(owner.getUniqueId()).size();
+        }
+        return count;
+    }
+
+    public boolean playerHasHouse(Player player) {
+        for (HousingWorld house : getLoadedHouses()) {
+            if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
+        }
+        if (playerHouses.containsKey(player.getUniqueId())) {
+            return !playerHouses.get(player.getUniqueId()).isEmpty();
+        }
+        return false;
+    }
+
     public boolean playerHasHouse(OfflinePlayer player) {
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
@@ -125,22 +143,26 @@ public class HousesManager {
         return false;
     }
 
-    public HousingWorld getLoadedHouse(Player owner) {
+    public List<HousingWorld> getLoadedHouses(Player owner) {
+        List<HousingWorld> houses = new ArrayList<>();
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
-                return house;
+                houses.add(house);
+                if (houses.size() == 3) return houses;
             }
         }
-        return null;
+        return houses;
     }
 
-    public HousingWorld getLoadedHouse(OfflinePlayer owner) {
+    public List<HousingWorld> getLoadedHouses(OfflinePlayer owner) {
+        List<HousingWorld> houses = new ArrayList<>();
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
-                return house;
+                houses.add(house);
+                if (houses.size() == 3) return houses;
             }
         }
-        return null;
+        return houses;
     }
 
     public HousingWorld getHouse(UUID houseUUID) {
@@ -174,28 +196,10 @@ public class HousesManager {
         return null;
     }
 
-    //Really shouldnt use this anymore
-    //Replaced by hasPermissionInHouse
-    @Deprecated
-    public boolean playerIsInOwnHouse(Player player) {
-        HousingWorld house = getHouse(player.getWorld());
-        return house != null && house.getOwnerUUID().equals(player.getUniqueId());
-    }
-
     public boolean hasPermissionInHouse(Player player, Permissions permission) {
         HousingWorld house = getHouse(player.getWorld());
         if (house == null) return false;
         return house.hasPermission(player, permission);
-    }
-
-    public boolean playerHasHouse(Player player) {
-        for (HousingWorld house : getLoadedHouses()) {
-            if (house.getOwnerUUID().equals(player.getUniqueId())) return true;
-        }
-        if (playerHouses.containsKey(player.getUniqueId())) {
-            return !playerHouses.get(player.getUniqueId()).isEmpty();
-        }
-        return false;
     }
 
     public boolean playerHasHouse(String playerName) {
