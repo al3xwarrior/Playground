@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.Objects;
 
 public final class Main extends JavaPlugin {
-    private static Main INSTANCE; // whats the point of this? can we just pass "this"? - al3x
+    private static Main INSTANCE;
     private SlimeLoader loader;
     private HousesManager housesManager;
     private HousingCommandFramework commandFramework;

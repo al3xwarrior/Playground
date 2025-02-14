@@ -14,6 +14,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -38,7 +39,7 @@ public class HologramInteractListener implements Listener {
 
         if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
         if (housesManager.getHouse(player.getWorld()) == null) return;
-        if (!e.getAction().isRightClick()) return;
+        if (!(e.getAction() == Action.RIGHT_CLICK_BLOCK) && !(e.getAction() == Action.RIGHT_CLICK_AIR)) return;
 
         List<Hologram> holograms = housesManager.getHouse(player.getWorld()).getHolograms();
 

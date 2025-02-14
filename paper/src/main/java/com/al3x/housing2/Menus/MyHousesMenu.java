@@ -59,8 +59,7 @@ public class MyHousesMenu extends Menu {
         } else if (!housesManager.playerHasHouse(target)) {
             addItem(13, ItemBuilder.create(Material.BARRIER)
                     .name("&c&oThis player does not have a house!")
-                    .build(), () -> {
-            });
+                    .build());
             return;
         }
 
@@ -69,12 +68,27 @@ public class MyHousesMenu extends Menu {
             player.sendMessage(colorize("&cThis player does not have a house!"));
             return;
         }
-        int[] slots = getSlots(houseIDs.size());
+
+//        int[] slots = getSlots(houseIDs.size());
+        int[] slots = {11, 13, 15};
 
         for (int i = 0; i < houseIDs.size(); i++) {
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
             if (house == null) {
+                addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
+                        .name("&e&oCreate a House!")
+                        .build(), () -> {
+                    if (houseIDs.size() >= 3) {
+                        player.sendMessage(colorize("&cYou have reached the maximum amount of houses!"));
+                        return;
+                    }
+                    player.sendMessage(colorize("&eCreating your house..."));
+                    player.closeInventory();
+                    HousingWorld newHouse = housesManager.createHouse(player, HouseSize.LARGE);
+                    player.sendMessage(colorize("&aYour house has been created!"));
+                    newHouse.sendPlayerToHouse(player);
+                });
                 continue;
             }
 
