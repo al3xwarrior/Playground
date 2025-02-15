@@ -30,11 +30,18 @@ fun String.removeStringFormatting(): String {
     return Color.removeColor(LegacyComponentSerializer.legacySection().serialize(this.housingStringFormatter()))
 }
 
-fun String.removeStringFormatting(house: HousingWorld, player: Player): String {
+fun String.removeStringFormatting(house: HousingWorld?, player: Player): String {
+    if (house == null) {
+        return Color.removeColor(LegacyComponentSerializer.legacySection().serialize(this.housingStringFormatter()))
+    }
     return Color.removeColor(LegacyComponentSerializer.legacySection().serialize(this.housingStringFormatter(house, player)))
 }
 
-fun String.housingStringFormatter(house: HousingWorld, player: Player): Component {
+fun String.housingStringFormatter(house: HousingWorld?, player: Player): Component {
+    if (house == null) {
+        val mm = MiniMessage.miniMessage()
+        return mm.deserialize(this.oldToNew())
+    }
     val mm = MiniMessage.miniMessage()
     return mm.deserialize(HandlePlaceholders.parsePlaceholders(player, house, this).oldToNew().removeBlacklisted(house))
 }
