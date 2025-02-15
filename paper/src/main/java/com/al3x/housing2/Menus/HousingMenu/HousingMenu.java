@@ -56,6 +56,16 @@ public class HousingMenu extends Menu {
             });
         }
 
+        if (house.hasPermission(player, BUILD)) {
+            ItemStack skulls = main.getHeadDatabaseAPI().getItemHead("95806");
+            ItemMeta skullsMeta = skulls.getItemMeta();
+            skullsMeta.setDisplayName(colorize("&aHeads"));
+            skulls.setItemMeta(skullsMeta);
+            addItem(20, skulls, () -> {
+                new HeadsMenu(main, player, house).open();
+            });
+        }
+
         if (house.hasPermission(player, ITEMS)) {
             ItemStack items = new ItemStack(Material.EMERALD);
             ItemMeta itemsMeta = items.getItemMeta();

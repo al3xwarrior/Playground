@@ -51,6 +51,7 @@ public class CustomMenuViewer extends Menu {
             }
             ItemStack item = customMenu.getItems().get(i).getFirst().clone();
             ItemMeta meta = item.getItemMeta();
+            if (meta == null) continue;
             meta.displayName(StringUtilsKt.housingStringFormatter(meta.getDisplayName(), house, player));
             ArrayList<Component> lore = new ArrayList<>();
             List<String> oldLore = new ArrayList<>(meta.getLore() == null ? new ArrayList<>() : meta.getLore());

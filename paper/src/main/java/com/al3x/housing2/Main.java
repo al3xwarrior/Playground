@@ -21,13 +21,17 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
+import me.arcaniax.hdb.api.DatabaseLoadEvent;
+import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Objects;
 
-public final class Main extends JavaPlugin {
+public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
     private SlimeLoader loader;
     private HousesManager housesManager;
@@ -40,9 +44,9 @@ public final class Main extends JavaPlugin {
     private HologramManager hologramManager;
     private PlayerSpeedManager playerSpeedManager;
     private NetworkManager networkManager;
+    private HeadDatabaseAPI headDatabaseAPI;
 
     private String mineSkinKey;
-
 
     @Override
     public void onLoad() {
@@ -96,6 +100,7 @@ public final class Main extends JavaPlugin {
         getCommand("hub").setExecutor(new Hub());
         getCommand("WTFMap").setExecutor(new WTFMap(housesManager));
         getCommand("broadcast").setExecutor(new Broadcast());
+        getCommand("staffalerts").setExecutor(new StaffAlerts());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
@@ -143,8 +148,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new OpenSomething(housesManager), this);
-
-
+        Bukkit.getPluginManager().registerEvents(this, this);
 
         EntityInteraction.registerInteraction(housesManager);
 
@@ -162,6 +166,11 @@ public final class Main extends JavaPlugin {
         }
 
         getServer().getLogger().info("[Housing2] Enabled");
+    }
+
+    @EventHandler
+    public void onHeadDatabaseLoad(DatabaseLoadEvent e) {
+        headDatabaseAPI = new HeadDatabaseAPI();
     }
 
     public HousesManager getHousesManager() {
@@ -226,5 +235,9 @@ public final class Main extends JavaPlugin {
 
     public LobbyDisplays getLobbyDisplays() {
         return this.lobbyDisplays;
+    }
+
+    public HeadDatabaseAPI getHeadDatabaseAPI() {
+        return headDatabaseAPI;
     }
 }

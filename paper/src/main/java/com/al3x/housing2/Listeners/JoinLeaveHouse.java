@@ -52,6 +52,7 @@ public class JoinLeaveHouse implements Listener {
         player.setMaximumNoDamageTicks(20); // 10 i think?
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
+        player.getActivePotionEffects().clear();
 
         player.playerListName(Component.text(player.getName()));
 

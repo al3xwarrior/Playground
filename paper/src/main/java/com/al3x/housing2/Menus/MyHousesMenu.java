@@ -102,7 +102,8 @@ public class MyHousesMenu extends Menu {
             ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon()))
                     .name(colorize(house.getHouseName()))
                     .description(colorize("&7" + house.getDescription() +
-                            "\n\n&7Created: &a" + formattedDate +
+                            "\n\n&7Owner: &a" + target.getName() +
+                            "\n&7Created: &a" + formattedDate +
                             "\n\n&7Players: &a" + (world[0] != null ? world[0].getGuests() : 0) +
                             "\n&7Cookies: &6" + house.getCookies() +
                             "\n\n&7Privacy: " + HousePrivacy.valueOf(house.getPrivacy()).asString() +

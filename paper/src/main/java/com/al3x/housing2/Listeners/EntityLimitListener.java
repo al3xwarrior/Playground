@@ -4,6 +4,9 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,10 +14,17 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import static com.al3x.housing2.Commands.StaffAlerts.isStaffAlerts;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class EntityLimitListener implements Listener {
+
+    HashMap<UUID, Boolean> staffAlerts = new HashMap<>();
 
     private final int limit = 150;
 
@@ -22,7 +32,7 @@ public class EntityLimitListener implements Listener {
         if (world.getEntities().size() > limit + 5) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 HousingWorld house = Main.getInstance().getHousesManager().getHouse(world);
-                if (player.hasPermission("housing2.admin")) {
+                if (player.hasPermission("housing2.admin") && isStaffAlerts(player)) {
                     player.sendMessage(colorize("&cEntity limit reached in " + house.getName() + " &7(" + house.getOwnerName() + ")"));
                 }
             }
@@ -81,5 +91,4 @@ public class EntityLimitListener implements Listener {
             alertStaff(world);
         }
     }
-
 }
