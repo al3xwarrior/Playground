@@ -1,8 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '8.3.3'
-
 }
 
 version = project.mod_version
@@ -32,8 +30,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     api project(':common')
-    shadow project(':common')
+    include project(':common')
     modApi("wtf.choco:networking-fabric:0.1.1")
+    include("wtf.choco:networking-fabric:0.1.1")
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
