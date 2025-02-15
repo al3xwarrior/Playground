@@ -4,7 +4,7 @@ main: com.al3x.housing2.Main
 api-version: '1.21'
 authors: [ Al3x ]
 soft-depend: [PlaceholderAPI, ItemsAdder]
-depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, ProtocolSidebar]
+depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents]
 loadbefore: [Citizens]
 commands:
   broadcast:

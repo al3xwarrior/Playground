@@ -208,35 +208,6 @@ public class Housing implements CommandExecutor {
                 CookieManager.givePhysicalCookie(player);
                 return true;
             }
-
-            if (strings[0].equalsIgnoreCase("htsl") && player.hasPermission("housing2.admin")) {
-                File file = new File(Main.getInstance().getDataFolder(), "HTSL/test.htsl");
-
-                //read file
-                String fileContent;
-                try {
-                    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                String export = "";
-                for (Action action : HTSLHandler.importActions(fileContent, "")) {
-                    if (action instanceof HTSLImpl h) {
-                        export += h.export(0) + "\n";
-                    }
-                }
-
-                ClientboundExport packet = new ClientboundExport(export);
-                PlayerNetwork.getNetwork(player).sendMessage(packet);
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("reload") && player.hasPermission("housing2.admin")) {
-                main.reloadConfig();
-                player.sendMessage(colorize("&aConfig reloaded!"));
-                return true;
-            }
         }
 
         player.sendMessage(colorize("&7&m---------------------------------------"));

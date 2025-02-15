@@ -399,4 +399,8 @@ public class ActionsMenu extends Menu {
 
         setupItems();
     }
+
+    public List<Action> getActions() {
+        return actions;
+    }
 }

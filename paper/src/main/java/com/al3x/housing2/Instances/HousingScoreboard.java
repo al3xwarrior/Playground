@@ -33,12 +33,12 @@ public class HousingScoreboard {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
             LocalDateTime now = LocalDateTime.now();
             board.updateLines(
-                    Component.text("&7" + dtf.format(now) + " mega1A"),
+                    Component.text("§7" + dtf.format(now) + " mega1A"),
                     Component.text(""),
-                    Component.text("&fWelcome to the playground!"),
+                    Component.text("§fWelcome to the playground!"),
                     Component.empty(),
-                    Component.text("&fYou are in the"),
-                    Component.text("&flobby!")
+                    Component.text("§fYou are in the"),
+                    Component.text("§flobby!")
             );
         }
     }

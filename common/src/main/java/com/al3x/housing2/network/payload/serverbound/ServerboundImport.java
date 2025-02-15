@@ -60,7 +60,7 @@ public final class ServerboundImport implements Message<PlaygroundServerboundMes
 
     @Override
     public void handle(@NotNull PlaygroundServerboundMessageListener listener) {
-        listener.handleExport(this);
+        listener.handleImport(this);
     }
 
 }

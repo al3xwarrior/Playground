@@ -19,7 +19,7 @@ public interface PlaygroundServerboundMessageListener extends ServerboundMessage
      *
      * @param message the message
      */
-    public void handleExport(@NotNull ServerboundImport message);
+    public void handleImport(@NotNull ServerboundImport message);
 
     public void handleHandshake(@NotNull ServerboundHandshake message);
 }
