@@ -27,15 +27,19 @@ Now the project has a team of a few people who maintain the project as well as t
 ```bash
 git clone https://github.com/al3xwarrior/Playground.git
 cd Playground/
-./gradlew shadowJar
+
+# to build the plugin:
+./gradlew :paper:shadowJar
+
+# to build the client mod:
+./gradlew :fabric:remapJar
 ```
-You can find the output JAR in the `build/libs` directory
+You can find the output plugin JAR in the `paper/build/libs` directory and the output mod JAR in the `fabric/build/libs` directory.
 
 ### Running on a server
 You must use [AdvancedSlimePaper 1.21.4](https://ci.infernalsuite.com/repository/download/AdvancedSlimePaper_Build/2762:id/output/asp-server.jar) as your server software.
-Move the output JAR to the server's `plugins` directory, along with these dependencies as a minimum:
+Move the output plugin JAR to the server's `plugins` directory, along with these dependencies as a minimum:
 - [Citizens](https://ci.citizensnpcs.co/job/citizens2/)
 - [NoteBlockAPI](https://modrinth.com/plugin/noteblockapi)
 - [packetevents](https://modrinth.com/plugin/packetevents)
 - [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases)
-- ProtocolSidebar (copy `libs/ProtocolSidebar.jar`)
