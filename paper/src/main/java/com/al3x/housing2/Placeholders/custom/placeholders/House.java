@@ -12,6 +12,7 @@ public class House {
         new Cookies();
         new Guests();
         new CookiesPlayer();
+        new Time();
         new StatGlobal();
     }
 
@@ -103,6 +104,21 @@ public class House {
                 statName = Placeholder.handlePlaceholders("%" + statName + "%", house, player);
             }
             return house.getStatManager().getGlobalStatByName(statName).formatValue();
+        }
+    }
+
+    private static class Time extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%house.time%";
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (house == null) {
+                return "null";
+            }
+            return String.valueOf(house.getWorld().getTime());
         }
     }
 }
