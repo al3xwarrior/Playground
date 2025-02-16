@@ -194,6 +194,9 @@ public class RepeatAction extends HTSLImpl {
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        if (indent.length() > 4*3) {
+            throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
+        }
         if (action.contains(" ")) {
             times = action.split(" ")[0];
             action = action.replace(times + " ", "");

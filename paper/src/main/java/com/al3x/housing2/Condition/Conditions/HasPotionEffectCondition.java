@@ -21,6 +21,7 @@ public class HasPotionEffectCondition extends CHTSLImpl {
 
     public HasPotionEffectCondition() {
         super("Has Potion Effect");
+        potionEffect = PotionEffectType.GLOWING;
     }
 
     @Override

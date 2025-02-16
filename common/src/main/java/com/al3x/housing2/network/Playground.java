@@ -5,6 +5,7 @@ import com.al3x.housing2.network.payload.PlaygroundServerboundMessageListener;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundHandshake;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
+import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import com.al3x.housing2.network.payload.serverbound.ServerboundHandshake;
 import com.al3x.housing2.network.payload.serverbound.ServerboundImport;
 import wtf.choco.network.MessageProtocol;
@@ -26,6 +27,7 @@ public final class Playground {
                             .registerMessage(ClientboundHandshake.class, ClientboundHandshake::new)
                             .registerMessage(ClientboundExport.class, ClientboundExport::new)
                             .registerMessage(ClientboundImport.class, ClientboundImport::new)
+                            .registerMessage(ClientboundSyntax.class, ClientboundSyntax::new)
     );
 
     private Playground() { } // This will prevent anyone from constructing this class

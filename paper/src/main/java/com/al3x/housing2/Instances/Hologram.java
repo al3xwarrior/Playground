@@ -11,13 +11,12 @@ import com.maximde.hologramlib.hologram.RenderMode;
 import com.maximde.hologramlib.hologram.TextHologram;
 import com.maximde.hologramlib.utils.Vector3F;
 import net.kyori.adventure.text.Component;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +40,7 @@ public class Hologram {
     private HousingWorld house;
     private Location location;
     private ConcurrentHashMap<Player, List<TextHologram>> entitys = new ConcurrentHashMap<>();
+    private Interaction interaction;
 
 
     public static List<Color> rainbow = com.al3x.housing2.Utils.Color.rainbow();
@@ -107,6 +107,11 @@ public class Hologram {
             entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
         }
 
+        interaction = (Interaction) player.getWorld().spawnEntity(location, EntityType.INTERACTION);
+        interaction.setInteractionHeight(0.5f);
+        interaction.setInteractionWidth(0.5f);
+        interaction.setInvisible(true);
+        interaction.setInvulnerable(true);
 
         new FoliaLib(Main.getInstance()).getScheduler().runAsync((t) -> {
             List<TextHologram> holograms = new ArrayList<>();
@@ -265,6 +270,7 @@ public class Hologram {
         entitys.forEach((player, hologram) -> {
             hologram.forEach(holo -> holo.removeViewer(player));
         });
+        interaction.remove();
     }
 
     public boolean isDestroyed() {
@@ -318,5 +324,9 @@ public class Hologram {
     public void setBackgroundColor(@NotNull int color) {
         this.backgroundColor = color;
         updateInternal(shadow, seeThroughBlocks, alignment, billboard, color, scale);
+    }
+
+    public Interaction getInteraction() {
+        return interaction;
     }
 }

@@ -518,6 +518,11 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
+    public String syntax() {
+        return "particle <particle> <type> <radius> <amount> <location> <location2> [customData]";
+    }
+
+    @Override
     public String export(int indent) {
         String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? location.name() : customLocation;
         String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? location2.name() : customLocation2;

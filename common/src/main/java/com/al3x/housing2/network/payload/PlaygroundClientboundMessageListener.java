@@ -3,6 +3,7 @@ package com.al3x.housing2.network.payload;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundHandshake;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
+import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import org.jetbrains.annotations.NotNull;
 
 import wtf.choco.network.listener.ClientboundMessageListener;
@@ -24,4 +25,6 @@ public interface PlaygroundClientboundMessageListener extends ClientboundMessage
     public void handleHandshake(@NotNull ClientboundHandshake message);
 
     public void handleImport(ClientboundImport clientboundImport);
+
+    public void handleSyntax(ClientboundSyntax clientboundSyntax);
 }

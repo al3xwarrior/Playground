@@ -12,6 +12,7 @@ import com.al3x.housing2.network.payload.PlaygroundServerboundMessageListener;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundHandshake;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
+import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import com.al3x.housing2.network.payload.serverbound.ServerboundImport;
 import com.al3x.playground.fabric.FabricPlayground;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -64,7 +65,7 @@ public final class FabricServerState implements FabricMessageReceiver, Playgroun
 
     @Override
     public void handleExport(@NotNull ClientboundExport message) {
-        File exportFile = new File(FabricLoader.getInstance().getConfigDirectory(), "playground_export.htsl");
+        File exportFile = new File(FabricLoader.getInstance().getConfigDirectory(), "playground_export.ptsl");
         try {
             FileUtils.writeStringToFile(exportFile, message.getHtslContent(), "UTF-8");
 
@@ -88,7 +89,7 @@ public final class FabricServerState implements FabricMessageReceiver, Playgroun
 
     @Override
     public void handleImport(ClientboundImport clientboundImport) {
-        File importFile = new File(FabricLoader.getInstance().getConfigDirectory(), "playground_export.htsl");
+        File importFile = new File(FabricLoader.getInstance().getConfigDirectory(), "playground_export.ptsl");
 
         if (!importFile.exists()) {
             MinecraftClient.getInstance().player.sendMessage(
@@ -100,6 +101,30 @@ public final class FabricServerState implements FabricMessageReceiver, Playgroun
         try {
             String htslContent = FileUtils.readFileToString(importFile, "UTF-8");
             sendMessage(new ServerboundImport(1, htslContent));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void handleSyntax(ClientboundSyntax clientboundSyntax) {
+        String actionsSyntax = clientboundSyntax.getActions();
+        String conditionsSyntax = clientboundSyntax.getConditions();
+
+        String output = "Actions Syntax:\n" + actionsSyntax + "\n\nConditions Syntax:\n" + conditionsSyntax;
+
+        File syntaxFile = new File(FabricLoader.getInstance().getConfigDirectory(), "playground_syntax.txt");
+        try {
+            FileUtils.writeStringToFile(syntaxFile, output, "UTF-8");
+
+            MinecraftClient.getInstance().player.sendMessage(
+                    Text.literal("§aSyntax file exported to §6" + syntaxFile.getAbsolutePath())
+                            .setStyle(
+                                    Style.EMPTY
+                                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, syntaxFile.getAbsolutePath()))
+                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open file")))
+                            ), false
+            );
         } catch (IOException e) {
             e.printStackTrace();
         }

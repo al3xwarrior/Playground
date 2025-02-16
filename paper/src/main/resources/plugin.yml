@@ -37,4 +37,10 @@ commands:
     aliases: ["/replace"]
   undo:
     aliases: ["/undo"]
+  copy:
+    aliases: [ "/copy" ]
+  paste:
+    aliases: [ "/paste" ]
+  removeselection:
+    aliases: [ "clearselection" ]
   WTFMap:

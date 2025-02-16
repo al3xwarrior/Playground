@@ -35,6 +35,7 @@ public class ProtoolsManager {
         this.cooldowns = new HashMap<>();
         this.selections = new HashMap<>();
         this.undoStacks = new HashMap<>();
+        this.copiedRegions = new HashMap<>();
         this.housesManager = housesManager;
 
         this.taskQueue = new LinkedList<>();
@@ -108,6 +109,17 @@ public class ProtoolsManager {
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
+    public void copyRegion(Player player) {
+        if (this.selections.containsKey(player.getUniqueId())) {
+            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+            Cuboid cuboid = new Cuboid(selection.getFirst(), selection.getSecond());
+            copiedRegions.put(player.getUniqueId(), cuboid);
+            player.sendMessage(Color.colorize("&aRegion copied!"));
+        } else {
+            player.sendMessage(Color.colorize("&cYou must have a selection to do this."));
+        }
+    }
+
     public void setRegionTo(Player player, BlockList blockList) {
         this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
@@ -174,6 +186,41 @@ public class ProtoolsManager {
         Cuboid cuboid = new Cuboid(pos1, pos2);
         copiedRegions.put(player.getUniqueId(), cuboid);
         player.sendMessage(Color.colorize("&aRegion copied to clipboard!"));
+    }
+
+    public void pasteRegion(Player player) {
+        player.sendMessage(Color.colorize("&aPasting region..."));
+        if (copiedRegions.containsKey(player.getUniqueId())) {
+            Cuboid cuboid = copiedRegions.get(player.getUniqueId());
+            List<Block> blocks = cuboid.getBlocks();
+            if (blocks.size() > 2000) {
+                player.sendMessage(Color.colorize("&cThe region is too large!"));
+                return;
+            }
+
+            blocks = removeIllegalBlocks(player, blocks);
+
+            // Save the current state of the blocks to be able to be undone
+            List<BlockState> currentState = new ArrayList<>();
+
+            for (Block block : blocks) {
+                int relX = block.getX() - cuboid.getLowerX();
+                int relY = block.getY() - cuboid.getLowerY();
+                int relZ = block.getZ() - cuboid.getLowerZ();
+
+                BlockState state = block.getState();
+                currentState.add(state);
+
+                Location newLoc = player.getLocation().clone().add(relX, relY, relZ);
+                Block newBlock = newLoc.getBlock();
+                newBlock.setType(block.getType());
+                newBlock.setBlockData(block.getBlockData());
+            }
+            addUndoStack(player.getUniqueId(), currentState);
+            player.sendMessage(Color.colorize("&aRegion pasted successfully!"));
+        } else {
+            player.sendMessage(Color.colorize("&cYou must copy a region before pasting."));
+        }
     }
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
@@ -363,6 +410,11 @@ public class ProtoolsManager {
     }
 
     public void clearSelection(Player player) {
+        if (this.selections.containsKey(player.getUniqueId())) {
+            lastSelection.remove(player.getUniqueId());
+            entityList.get(player.getUniqueId()).forEach(WrapperEntity::remove);
+            entityList.remove(player.getUniqueId());
+        }
         this.selections.remove(player.getUniqueId());
     }
 

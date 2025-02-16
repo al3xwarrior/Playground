@@ -289,24 +289,19 @@ public class ItemBuilder {
             }
         }
         //Lore formatting
-        List<String> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation, textWidth);
+        List<Component> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation, textWidth);
 
         //Action menu label
         if (changeOrderLore) {
-            lore.add(colorize("&7Use shift and left/right click to change order."));
+            lore.add(Component.text("§7Use shift and left/right click to change order."));
         }
 
         //Extra lore
         if (extraLore != null) {
-            lore.addAll(extraLore);
+            lore.addAll(extraLore.stream().map(StringUtilsKt::housingStringFormatter).toList());
         }
 
-        ArrayList<Component> newLore = new ArrayList<>();
-        for (String line : lore) {
-            newLore.add(StringUtilsKt.housingStringFormatter(line));
-        }
-
-        return newLore;
+        return new ArrayList<>(lore);
     }
 
     public static ItemBuilder create(Material material) {

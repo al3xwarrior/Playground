@@ -11,12 +11,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -31,6 +33,22 @@ public class HologramInteractListener implements Listener {
     public HologramInteractListener(Main main, HousesManager housesManager) {
         this.main = main;
         this.housesManager = housesManager;
+    }
+
+    @EventHandler
+    public void handleInteraction(PlayerInteractEntityEvent e) {
+        Player player = e.getPlayer();
+        if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
+        if (housesManager.getHouse(player.getWorld()) == null) return;
+
+        if (e.getRightClicked() instanceof Interaction interaction) {
+            for (Hologram hologram : housesManager.getHouse(player.getWorld()).getHolograms()) {
+                if (hologram.getInteraction().getUniqueId().equals(interaction.getUniqueId())) {
+                    new HologramEditorMenu(main, player, hologram).open();
+                    return;
+                }
+            }
+        }
     }
 
     @EventHandler

@@ -251,6 +251,11 @@ public class ConditionalAction extends HTSLImpl {
     }
 
     @Override
+    public String syntax() {
+        return "if (<conditions>) {\\n<ifActions>\\n} else {\\n<elseActions>\\n}";
+    }
+
+    @Override
     public String export(int indent) {
         StringBuilder builder = new StringBuilder();
         for (Condition condition : conditions) {
@@ -282,6 +287,10 @@ public class ConditionalAction extends HTSLImpl {
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        if (indent.length() > 4*5) {
+            throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
+        }
+
         String[] parts = action.split(" ");
         LinkedHashMap<String, Object> actionData = data();
 
@@ -331,6 +340,7 @@ public class ConditionalAction extends HTSLImpl {
                 ifLines = new ArrayList<>(nextLines.subList(0, i));
                 isElse = true;
                 ifStart = i + 1;
+                continue;
             }
 
             if (line.startsWith(indent + "}")) {

@@ -185,6 +185,35 @@ public class ExplosionAction extends HTSLImpl {
     }
 
     @Override
+    public String syntax() {
+        return keyword() + " <location> <power>";
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        String[] args = action.split(" ");
+        if (args.length < 2) return nextLines;
+
+        if (Locations.fromString(args[0]) != null) {
+            location = Locations.fromString(args[0]);
+            if (location == PLAYER_LOCATION) {
+                customLocation = "0,0,0";
+            }
+        } else {
+            location = CUSTOM;
+            customLocation = args[0];
+        }
+
+        try {
+            power = Double.parseDouble(args[1]);
+        } catch (NumberFormatException e) {
+            return nextLines;
+        }
+
+        return nextLines;
+    }
+
+    @Override
     public String keyword() {
         return "explosion";
     }

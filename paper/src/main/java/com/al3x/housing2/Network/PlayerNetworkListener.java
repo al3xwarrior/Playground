@@ -42,10 +42,13 @@ public final class PlayerNetworkListener implements PlaygroundServerboundMessage
                 player.getPlayer().sendMessage(colorize("&aSuccessfully imported actions!"));
             } else {
                 player.getPlayer().sendMessage(colorize("&cFailed to import actions!"));
+                player.getPlayer().sendMessage(colorize("&8 - You must have an actions menu open to import actions!"));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             Main.getInstance().getLogger().severe("Failed to import actions: " + e.getMessage());
             player.getPlayer().sendMessage(colorize("&cFailed to import actions!"));
+            player.getPlayer().sendMessage(colorize("&8 - " + e.getMessage()));
         }
     }
 

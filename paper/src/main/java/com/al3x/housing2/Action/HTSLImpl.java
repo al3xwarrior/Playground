@@ -69,6 +69,10 @@ public abstract class HTSLImpl extends Action {
         int keyI = 0;
         while (i < parts.length) {
             String part = parts[i];
+            if (part.isEmpty()) {
+                i++;
+                continue;
+            }
             if (part.startsWith("\"")) {
                 keyI++;
                 current.append(part);

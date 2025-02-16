@@ -135,7 +135,7 @@ public class HeadsMenu extends Menu {
                 .name(colorize("&cGo Back"))
                 .description("Go back to the house menu")
                 .build(), () -> {
-            new MyHousesMenu(main, player, player).open();
+            new HousingMenu(main, player, house).open();
         });
 
     }

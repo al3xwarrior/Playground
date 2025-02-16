@@ -22,7 +22,7 @@ public class HTSLHandler {
             for (HTSLImpl action : defaultActions) {
                 if (line.startsWith(action.keyword())) {
                     HTSLImpl a = (HTSLImpl) action.clone();
-                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.keyword() + " "), indent, new ArrayList<>(lines));
+                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.keyword() + (line.contains(" ") ? " " : "")), indent, new ArrayList<>(lines));
                     actions.add(a);
                     break;
                 }

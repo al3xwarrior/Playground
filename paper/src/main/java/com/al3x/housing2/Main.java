@@ -13,10 +13,8 @@ import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
-import com.al3x.housing2.network.Playground;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.google.common.graph.Network;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
@@ -104,13 +102,16 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
-        this.getCommand("set").setExecutor(new Set(protoolsManager));
+        this.getCommand("set").setExecutor(new Copy(protoolsManager));
         this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
         this.getCommand("replace").setExecutor(new Replace(protoolsManager));
         this.getCommand("replace").setTabCompleter(new BlockList.DuoTabCompleter());
         this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
         this.getCommand("sphere").setTabCompleter(new BlockList.TabCompleter());
         this.getCommand("undo").setExecutor(new Undo(protoolsManager));
+        this.getCommand("copy").setExecutor(new Copy(protoolsManager));
+        this.getCommand("paste").setExecutor(new Paste(protoolsManager));
+        this.getCommand("removeselection").setExecutor(new RemoveSelection(protoolsManager));
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);

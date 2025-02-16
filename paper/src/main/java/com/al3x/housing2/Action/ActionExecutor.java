@@ -133,6 +133,10 @@ public class ActionExecutor {
                 break;
             }
 
+            if (isComplete) {
+                return SUCCESS;
+            }
+
             action = queue.removeFirst();
 
             if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 200)) {

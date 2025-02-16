@@ -59,12 +59,15 @@ public class LaunchPad {
     public void setLocation(Location location) {
         this.location = LocationData.Companion.fromLocation(location);
     }
+
     public void setPushDirection(PushDirection pushDirection) {
         this.pushDirection = pushDirection;
     }
+
     public void setVerticalVelocity(double verticalVelocity) {
         this.verticalVelocity = verticalVelocity;
     }
+
     public void setHorizontalVelocity(double horizontalVelocity) {
         this.horizontalVelocity = horizontalVelocity;
     }
@@ -72,12 +75,15 @@ public class LaunchPad {
     public Location getLocation() {
         return location.toLocation();
     }
+
     public PushDirection getPushDirection() {
         return pushDirection;
     }
+
     public double getVerticalVelocity() {
         return verticalVelocity;
     }
+
     public double getHorizontalVelocity() {
         return horizontalVelocity;
     }
@@ -101,7 +107,8 @@ public class LaunchPad {
         public void setupItems() {
             addItem(11, ItemBuilder.create(Material.COMPASS)
                             .name("&aPush Direction")
-                            .description("&7Set the direct the player is to\n&7be pushed in!\n\n&7Current: §f" + pushDirection.toString())
+                            .description("&7Set the direct the player is to be pushed in!")
+                            .info("&7Current: §f", launchPad.getPushDirection().name())
                             .punctuation(false)
                             .lClick(ItemBuilder.ActionType.CYCLE_FORWARD)
                             .rClick(ItemBuilder.ActionType.CYCLE_BACKWARD)

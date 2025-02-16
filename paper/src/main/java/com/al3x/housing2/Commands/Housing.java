@@ -1,7 +1,10 @@
 package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
@@ -11,6 +14,7 @@ import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
+import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -204,6 +209,26 @@ public class Housing implements CommandExecutor {
                 return true;
             }
 
+            if (strings[0].equalsIgnoreCase("ptsl")) {
+                if (PlayerNetwork.getNetwork(player).isUsingMod()) {
+                    String actionsSyntax = "";
+                    for (HTSLImpl action : Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(a -> a instanceof HTSLImpl).map(a -> (HTSLImpl) a).toList()) {
+                        actionsSyntax += action.syntax() + "\n";
+                    }
+
+                    String conditionsSyntax = "";
+                    for (CHTSLImpl condition : Arrays.stream(ConditionEnum.values()).map(ConditionEnum::getConditionInstance).filter(c -> c instanceof CHTSLImpl).map(c -> (CHTSLImpl) c).toList()) {
+                        conditionsSyntax += condition.syntax() + "\n";
+                    }
+
+                    ClientboundSyntax syntax = new ClientboundSyntax(actionsSyntax, conditionsSyntax);
+                    PlayerNetwork.getNetwork(player).sendMessage(syntax);
+                } else {
+                    player.sendMessage(colorize("&cYou must be using the mod to use this command!"));
+                }
+                return true;
+            }
+
             if (strings[0].equalsIgnoreCase("givecookie") && player.hasPermission("housing2.admin")) {
                 CookieManager.givePhysicalCookie(player);
                 return true;
@@ -230,7 +255,7 @@ public class Housing implements CommandExecutor {
         @Override
         public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
             if (args.length == 1) {
-                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "save").stream().filter(i -> i.startsWith(args[0])).toList();
+                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl").stream().filter(i -> i.startsWith(args[0])).toList();
             }
 
             if (args.length == 2) {

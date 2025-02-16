@@ -154,14 +154,13 @@ public class HousingNPC {
     }
 
     private void configureEquipment(List<String> dataEquipment) {
-        Equipment equipment = citizensNPC.getOrAddTrait(Equipment.class);
         if (dataEquipment != null) {
             for (int i = 0; i < dataEquipment.size(); i++) {
                 String base64 = dataEquipment.get(i);
                 if (base64 != null) {
                     try {
                         ItemStack item = Serialization.itemStackFromBase64(base64);
-                        setEquipmentSlot(equipment, i, item);
+                        setEquipmentSlot(i, item);
                     } catch (IOException e) {
                         main.getLogger().warning("Failed to load equipment for NPC: " + name);
                     }
@@ -170,16 +169,19 @@ public class HousingNPC {
         }
     }
 
-    private void setEquipmentSlot(Equipment equipment, int slot, ItemStack item) {
-        switch (slot) {
-            case 0 -> helmet = item;
-            case 1 -> chestplate = item;
-            case 2 -> leggings = item;
-            case 3 -> boots = item;
-            case 4 -> hand = item;
-            case 5 -> offHand = item;
+    private void setEquipmentSlot(int slot, ItemStack item) {
+        String name = switch (slot) {
+            case 0 -> "Helmet";
+            case 1 -> "Chestplate";
+            case 2 -> "Leggings";
+            case 3 -> "Boots";
+            case 4 -> "Main Hand";
+            case 5 -> "Off Hand";
+            default -> null;
+        };
+        if (name != null) {
+            setEquipment(name, item);
         }
-        equipment.set(Equipment.EquipmentSlot.values()[slot], item);
     }
 
     private void configureNavigation(NPCData data) {

@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -88,6 +89,9 @@ public class TeleportAction extends HTSLImpl {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         switch (location) {
+            case SEND_TO_LOBBY -> {
+                player.teleport(new Location(Bukkit.getWorld("world"), -6.5, 68, 5.5));
+            }
             case INVOKERS_LOCATION ->
                     player.teleport(player.getLocation());
             case HOUSE_SPAWN ->
@@ -143,6 +147,11 @@ public class TeleportAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "teleport";
+    }
+
+    @Override
+    public String syntax() {
+        return "teleport <location>";
     }
 
     @Override
