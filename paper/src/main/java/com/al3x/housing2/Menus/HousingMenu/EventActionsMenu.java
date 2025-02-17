@@ -48,7 +48,7 @@ public class EventActionsMenu extends Menu {
             addEventActionItem(29, Material.DROPPER, "&aPlayer Drop Item", "&7Executes when a player drops an item.", EventType.PLAYER_DROP_ITEM);
             addEventActionItem(30, Material.HOPPER, "&aPlayer Pick Up Item", "&7Executes when a player picks up an item.", EventType.PLAYER_PICKUP_ITEM);
             addEventActionItem(31, Material.BOOK, "&aPlayer Change Held Item", "&7Executes when a player changes their held item.", EventType.PLAYER_CHANGE_HELD_ITEM);
-            addEventActionItem(32, Material.HAY_BLOCK, "&aPlayer Toggle Twerk", "&7Executes when a player toggles sneak.", EventType.PLAYER_TOGGLE_SNEAK);
+            addEventActionItem(32, Material.HAY_BLOCK, "&aPlayer Toggle Sneak", "&7Executes when a player toggles sneak.", EventType.PLAYER_TOGGLE_SNEAK);
             addEventActionItem(33, Material.FEATHER, "&aPlayer Toggle Flight", "&7Executes when a player toggles flight.", EventType.PLAYER_TOGGLE_FLIGHT);
             addEventActionItem(34, Material.PLAYER_HEAD, "&aPlayer Chat Message", "&7Executes when a player sends a chat message.", EventType.PLAYER_CHAT);
 

@@ -9,6 +9,7 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -59,6 +60,7 @@ public class HouseBrowserMenu extends Menu {
             ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"))
                     .name("&a" + house.getHouseName())
                     .description(colorize(house.getDescription()))
+                    .info("&7Owner", "&e" + house.getOwnerName())
                     .info("&7Players", "&a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0))
                     .info("&7Cookies", "&6" + house.getCookies())
                     .lClick(ItemBuilder.ActionType.JOIN_YELLOW);
