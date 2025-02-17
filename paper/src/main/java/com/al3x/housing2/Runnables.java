@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.ExplosionAction;
 import com.al3x.housing2.Action.Actions.ParticleAction;
 import com.al3x.housing2.Instances.*;
+import com.al3x.housing2.Listeners.HouseEvents.PlayerDeath;
 import com.al3x.housing2.Listeners.LobbyListener;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.Utils.Duple;
@@ -39,7 +40,14 @@ public class Runnables {
                 Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
                 for (HousingWorld house : houses) {
                     if (house.getWorld().getPlayers().isEmpty()) {
-                        main.getHousesManager().saveHouseAndUnload(house);
+                        boolean holdUpWaitAMinute = false;
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (player.getWorld().equals(house.getWorld())) {
+                                holdUpWaitAMinute = true;
+                            }
+                        }
+
+                        if (!holdUpWaitAMinute) main.getHousesManager().saveHouseAndUnload(house);
                     }
                 }
             }

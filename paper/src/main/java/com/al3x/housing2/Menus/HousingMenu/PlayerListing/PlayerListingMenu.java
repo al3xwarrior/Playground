@@ -67,7 +67,7 @@ public class PlayerListingMenu extends Menu {
                 if (skullData == null) return;
                 item.skullTexture(skullData.get(listedPlayer.getUniqueId().toString()));
                 item.name(colorize("&f" + listedPlayer.getName() + ((!online || player.canSee(listedPlayer.getPlayer())) ? "" : " &7(hidden)")));
-
+                boolean higherPriority = playerData.getGroupInstance(house).getPriority() <= listedPlayerData.getGroupInstance(house).getPriority() || listedPlayer.getPlayer() == player;
                 item.info("Online", (online) ? "&aYes" : "&cNo");
                 if (online)
                     item.info("Visible to you", player.canSee(listedPlayer.getPlayer()) ? "&aYes" : "&cNo");
@@ -88,6 +88,10 @@ public class PlayerListingMenu extends Menu {
 
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {
+                        if (higherPriority) {
+                            player.sendMessage(colorize("&cYou can't edit this player, either they have a higher priority or it's yourself!"));
+                            return;
+                        }
                         new EditPlayerMenu(main, player, house, listedPlayer).open();
                     } else if (e.getClick().isRightClick() && online) {
                         if (player.canSee(listedPlayer.getPlayer())) {

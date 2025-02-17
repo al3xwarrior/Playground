@@ -31,8 +31,6 @@ public class ActionExecutor {
     boolean isPaused = false;
     boolean isComplete = false;
 
-    int count = 0;
-
     int workingIndex = 0;
 
     public ActionExecutor(String context) {
@@ -41,7 +39,6 @@ public class ActionExecutor {
 
     public ActionExecutor(String context, List<Action> action) {
         queue.addAll(action);
-        count = action.size();
         this.context = context;
     }
 
@@ -88,7 +85,6 @@ public class ActionExecutor {
 
     public void addActions(List<Action> actions) {
         queue.addAll(actions);
-        count += actions.size();
     }
 
     public List<Action> getQueue() {
@@ -103,8 +99,6 @@ public class ActionExecutor {
         }
         return true;
     }
-
-    int counter = 0;
 
     public ActionExecutor findHighestParentWithContext(String context) {
         if (this.context.equals(context)) {
@@ -182,11 +176,9 @@ public class ActionExecutor {
 
             if (pause == 0) {
                 action.execute(player, house, event, this);
-                counter++;
 
-                if (counter >= count - 1) {
+                if (queue.isEmpty()) {
                     isComplete = true;
-                    counter = 0;
                 }
 
                 executeChildren(player, house, event); //Look for children to execute. >:)
@@ -202,11 +194,9 @@ public class ActionExecutor {
             scheduler.runTaskLater(Main.getInstance(), () -> {
                 if (isComplete || isPaused) return;
                 finalAction.execute(player, house, event, this);
-                counter++;
 
-                if (counter >= count - 1) {
+                if (queue.isEmpty()) {
                     isComplete = true;
-                    counter = 0;
                 }
 
                 executeChildren(player, house, event);
@@ -269,7 +259,6 @@ public class ActionExecutor {
                 ", pause=" + pause +
                 ", isPaused=" + isPaused +
                 ", isComplete=" + isComplete +
-                ", count=" + count +
                 ", workingIndex=" + workingIndex +
                 '}';
     }

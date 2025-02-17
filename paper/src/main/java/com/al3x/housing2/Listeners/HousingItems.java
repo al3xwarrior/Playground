@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Instances.GlobalItemManager;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Item;
@@ -9,6 +10,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.BiomeStickMenu;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
+import com.al3x.housing2.Utils.GlobalItem;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
 import org.bukkit.*;
@@ -91,6 +93,11 @@ public class HousingItems implements Listener {
         ItemStack item = e.getItem();
 
         executeCustomItem(player, e.getItem(), e.getAction(), e);
+
+        GlobalItem gI = GlobalItemManager.getItem(item);
+        if (gI != null) {
+            gI.run(e);
+        }
 
         // In Lobby
         if (item != null && player.getWorld().equals(Bukkit.getWorld("world"))) {

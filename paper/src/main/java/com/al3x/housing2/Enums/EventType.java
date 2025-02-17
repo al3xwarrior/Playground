@@ -26,5 +26,6 @@ public enum EventType {
     FUNCTION,
     PLAYER_CHAT,
     INVENTORY_CLICK,
-    GIVE_COOKIE
+    GIVE_COOKIE,
+    ENTITY_BUCKET,
 }

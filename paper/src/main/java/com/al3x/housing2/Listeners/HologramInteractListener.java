@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,9 +42,9 @@ public class HologramInteractListener implements Listener {
         if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
         if (housesManager.getHouse(player.getWorld()) == null) return;
 
-        if (e.getRightClicked() instanceof Interaction interaction) {
+        if (e.getRightClicked().getType() == EntityType.INTERACTION) {
             for (Hologram hologram : housesManager.getHouse(player.getWorld()).getHolograms()) {
-                if (hologram.getInteraction().getUniqueId().equals(interaction.getUniqueId())) {
+                if (hologram.getInteraction().getLocation().distance(e.getRightClicked().getLocation()) <= 0.5) {
                     new HologramEditorMenu(main, player, hologram).open();
                     return;
                 }

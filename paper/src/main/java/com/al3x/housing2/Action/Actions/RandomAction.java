@@ -91,8 +91,10 @@ public class RandomAction extends HTSLImpl {
             return true;
         }
 
-        Action action = subActions.get((int) (house.getRandom().nextDouble() * subActions.size()));
-        return action.execute(player, house, null);
+        ActionExecutor executor1 = new ActionExecutor("random", new ArrayList<>(Collections.singletonList(subActions.get((int) (house.getRandom().nextDouble() * subActions.size())))));
+        executor1.setParent(executor);
+        executor.addChild(executor1);
+        return true;
     }
 
     public List<Action> getSubActions() {

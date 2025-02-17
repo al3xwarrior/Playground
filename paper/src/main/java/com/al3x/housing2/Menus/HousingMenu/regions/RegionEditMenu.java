@@ -71,7 +71,7 @@ public class RegionEditMenu extends Menu {
                 .description("Add actions to be executed when entering this region.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), () -> {
-            new ActionsMenu(main, player, house, region.getEnterActions(), this, null).open();
+            new ActionsMenu(main, player, house, region.getEnterActions(), this, "RegionEntry").open();
         });
 
         //Exit Actions
@@ -80,7 +80,7 @@ public class RegionEditMenu extends Menu {
                 .description("Add actions to be executed when exiting this region.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), () -> {
-            new ActionsMenu(main, player, house, region.getExitActions(), this, null).open();
+            new ActionsMenu(main, player, house, region.getExitActions(), this, "RegionExit").open();
         });
 
 

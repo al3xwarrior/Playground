@@ -72,12 +72,16 @@ public class TeleportAction extends HTSLImpl {
                         ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
                         (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
                                 (coords, location) -> {
-                                    customLocation = coords;
-                                    this.location = CUSTOM;
-                                    if (location == PLAYER_LOCATION) {
-                                        Location loc = player.getLocation();
-                                        this.customLocation = loc.getX() + " " + loc.getY() + " " + loc.getZ();
+                                    if (location == CUSTOM) {
+                                        customLocation = coords;
+                                    } else {
+                                        customLocation = null;
                                     }
+                                    this.location = location;
+                                    if (location == PLAYER_LOCATION) {
+                                        customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
+                                    }
+                                    backMenu.open();
                                 }
                         )
                 )
@@ -140,7 +144,7 @@ public class TeleportAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name();
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
         return " ".repeat(indent) + keyword() + " " + loc;
     }
 

@@ -107,6 +107,10 @@ public class Hologram {
             entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
         }
 
+        if (interaction != null) {
+            interaction.remove();
+        }
+
         interaction = (Interaction) player.getWorld().spawnEntity(location, EntityType.INTERACTION);
         interaction.setInteractionHeight(0.5f);
         interaction.setInteractionWidth(0.5f);
@@ -270,7 +274,7 @@ public class Hologram {
         entitys.forEach((player, hologram) -> {
             hologram.forEach(holo -> holo.removeViewer(player));
         });
-        interaction.remove();
+        if (interaction != null) interaction.remove();
     }
 
     public boolean isDestroyed() {

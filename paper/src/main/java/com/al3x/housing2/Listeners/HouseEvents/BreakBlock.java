@@ -23,7 +23,9 @@ public class BreakBlock implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         HousingWorld house = housesManager.getHouse(e.getPlayer().getWorld());
         if (house == null) return;
-        if (!house.hasPermission(e.getPlayer(), Permissions.BUILD) || !(house.getOwner().isOnline() && house.hasPermission(e.getPlayer(), Permissions.BUILD))) {
+        //F && (T || T) = F
+        // !(T & F) & !(T & T) = F
+        if (!(house.hasPermission(e.getPlayer(), Permissions.BUILD) && house.getOwner().isOnline()) && !(house.hasPermission(e.getPlayer(), Permissions.BUILD) && house.hasPermission(e.getPlayer(), Permissions.OFFLINE_BUILD))) {
             e.setCancelled(true);
         }
 

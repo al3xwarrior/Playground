@@ -88,7 +88,7 @@ public class EditActionTypesMenu extends Menu {
         Main main = Main.getInstance();
         HousingWorld housingWorld = main.getHousesManager().getHouse(player.getWorld());
         ArrayList<Action> actions = item.getActions().get(clickType);
-        ActionsMenu menu = new ActionsMenu(main, player, housingWorld, actions, this, null);
+        ActionsMenu menu = new ActionsMenu(main, player, housingWorld, actions, this, item.getBase().displayName().toString());
         if (clickType == ClickType.SWAP_OFFHAND) {
             menu.setEvent(EventType.PLAYER_SWAP_TO_OFFHAND);
         } else if (clickType == ClickType.DROP) {

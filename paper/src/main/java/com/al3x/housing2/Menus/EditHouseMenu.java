@@ -63,7 +63,9 @@ public class EditHouseMenu extends Menu{
                 .description("Delete this house")
                 .build(), () -> {
                     player.closeInventory();
-                    main.getHousesManager().deleteHouse(house.getHouseUUID());
+                    new ConfirmMenu(player, this, "&cYou want to delete your house?", () -> {
+                        main.getHousesManager().deleteHouse(house.getHouseUUID());
+                    }).open();
                 }
         );
 

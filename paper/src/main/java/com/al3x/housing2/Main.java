@@ -102,7 +102,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
-        this.getCommand("set").setExecutor(new Copy(protoolsManager));
+        this.getCommand("set").setExecutor(new Set(protoolsManager));
         this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
         this.getCommand("replace").setExecutor(new Replace(protoolsManager));
         this.getCommand("replace").setTabCompleter(new BlockList.DuoTabCompleter());
@@ -123,6 +123,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
         Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityLimitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(housesManager), this);
@@ -149,6 +150,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new OpenSomething(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new FishBucket(housesManager), this);
         Bukkit.getPluginManager().registerEvents(this, this);
 
         EntityInteraction.registerInteraction(housesManager);

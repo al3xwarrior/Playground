@@ -31,6 +31,8 @@ public class PlayerRespawn implements Listener {
         if (house == null) return;
         e.setRespawnLocation(house.getSpawn());
 
+        PlayerDeath.keepHouseLoaded.remove(player.getUniqueId()); //Once they have respawned, we know they are either still in the house or have left on their own.
+
         Bukkit.getScheduler().runTaskLater(main, () -> {
             player.teleport(house.getSpawn());
         }, 1L);

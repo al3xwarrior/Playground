@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Instances.GlobalItemManager;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -120,7 +121,7 @@ public class ItemsMenu extends Menu {
             actionButtonMeta.setDisplayName(colorize("&aAction Button"));
             actionButton.setItemMeta(actionButtonMeta);
             addItem(slot++, actionButton, () -> {
-                player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
+                player.getInventory().addItem(GlobalItemManager.getItem("action_button").build());
             });
         }
 

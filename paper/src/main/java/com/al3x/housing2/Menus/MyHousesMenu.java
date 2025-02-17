@@ -51,7 +51,7 @@ public class MyHousesMenu extends Menu {
 
                 player.sendMessage(colorize("&eCreating your house..."));
                 player.closeInventory();
-                HousingWorld newHouse = housesManager.createHouse(player, HouseSize.LARGE);
+                HousingWorld newHouse = housesManager.createHouse(player, HouseSize.XLARGE);
                 player.sendMessage(colorize("&aYour house has been created!"));
                 newHouse.sendPlayerToHouse(player);
             });
@@ -85,7 +85,7 @@ public class MyHousesMenu extends Menu {
                     }
                     player.sendMessage(colorize("&eCreating your house..."));
                     player.closeInventory();
-                    HousingWorld newHouse = housesManager.createHouse(player, HouseSize.LARGE);
+                    HousingWorld newHouse = housesManager.createHouse(player, HouseSize.XLARGE);
                     player.sendMessage(colorize("&aYour house has been created!"));
                     newHouse.sendPlayerToHouse(player);
                 });

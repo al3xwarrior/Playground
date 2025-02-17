@@ -13,6 +13,7 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.*;
 import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerWorldParticles;
 import com.comphenix.protocol.wrappers.WrappedParticle;
+import com.google.gson.internal.LinkedTreeMap;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -503,6 +504,23 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        particle = Particles.valueOf((String) data.get("particle"));
+        type = ParticleType.valueOf((String) data.get("type"));
+        location = Locations.valueOf((String) data.get("location"));
+        customLocation = (String) data.get("customLocation");
+        location2 = Locations.valueOf((String) data.get("location2"));
+        customLocation2 = (String) data.get("customLocation2");
+        isLineRange = (boolean) data.get("isLineRange");
+        radius = (Double) data.get("radius");
+        amount = (Double) data.get("amount");
+        direction = PushDirection.valueOf((String) data.get("direction"));
+        customDirection = (String) data.get("customDirection");
+        LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
+        customData = new HashMap<>(map);
+    }
+
+    @Override
     public int limit() {
         return 10;
     }
@@ -524,8 +542,8 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? location.name() : customLocation;
-        String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? location2.name() : customLocation2;
+        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? customLocation : location.name();
+        String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? customLocation2 : location2.name();
 
         StringBuilder customData = new StringBuilder();
         for (Map.Entry<String, Object> entry : this.customData.entrySet()) {
@@ -544,9 +562,6 @@ public class ParticleAction extends HTSLImpl {
         amount = Double.parseDouble(parts[3]);
         if (Locations.fromString(parts[4]) != null) {
             location = Locations.fromString(parts[4]);
-            if (location == PLAYER_LOCATION) {
-                customLocation = null; //TODO: add this in
-            }
         } else {
             location = CUSTOM;
             customLocation = parts[4];

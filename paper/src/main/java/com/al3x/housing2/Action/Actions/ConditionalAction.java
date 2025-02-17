@@ -152,7 +152,7 @@ public class ConditionalAction extends HTSLImpl {
         ActionExecutor executor = new ActionExecutor("conditional");
         executor.addActions(result ? ifActions : elseActions);
         executor.setParent(oldExecutor);
-        return executor.execute(player, house, null) == OutputType.SUCCESS;
+        return executor.execute(player, house, event) == OutputType.SUCCESS;
     }
 
     public List<Condition> getConditions() {

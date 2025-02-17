@@ -215,7 +215,18 @@ public class HologramEditorMenu extends Menu {
                         return;
                     }
                     try {
-                        hologram.setBackgroundColor(Color.fromRGB(Integer.parseInt(message.replace("#", ""), 24)).asARGB());
+                        if (message.charAt(0) == '#') {
+                            message = message.substring(1);
+                        }
+
+                        long longValue = Long.parseLong(message, 16);
+
+                        int alpha = (int) (longValue >> 24 & 0xFF);
+                        int red = (int) (longValue >> 16 & 0xFF);
+                        int green = (int) (longValue >> 8 & 0xFF);
+                        int blue = (int) (longValue & 0xFF);
+
+                        hologram.setBackgroundColor(Color.fromARGB(alpha, red, green, blue).asARGB());
                         Bukkit.getScheduler().runTask(main, () -> new HologramDisplaySettingsMenu(main, player, hologram).open());
                     } catch (NumberFormatException e) {
                         player.sendMessage("§cInvalid number!");

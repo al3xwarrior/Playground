@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,7 @@ public class Hub implements CommandExecutor, TabExecutor {
 
         World hub = Bukkit.getWorld("world");
         if (hub == null) return true;
-        player.teleport(new Location(hub, -6.5, 68, 5.5));
+        player.teleport(new Location(hub, -6.5, 68, 5.5), PlayerTeleportEvent.TeleportCause.PLUGIN);
         return true;
     }
 

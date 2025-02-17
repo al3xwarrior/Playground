@@ -25,6 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
+import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlaySoundAction extends HTSLImpl {
@@ -126,8 +127,13 @@ public class PlaySoundAction extends HTSLImpl {
                         ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
                         (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
                                 (coords, location) -> {
-                                    customLocation = coords;
-                                    this.location = CUSTOM;
+                                    if (location == CUSTOM) {
+                                        customLocation = coords;
+                                    } else {
+                                        customLocation = null;
+                                    }
+                                    this.location = location;
+                                    backMenu.open();
                                 }
                         )
                 )
@@ -184,7 +190,7 @@ public class PlaySoundAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? location.name() : customLocation;
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
         return " ".repeat(indent) + keyword() + " " + sound.name() + " " + volume + " " + pitch + " " + loc;
     }
 

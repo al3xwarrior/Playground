@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Listeners.JoinLeaveHouse;
 import com.al3x.housing2.Utils.AbstractCancellable;
+import com.al3x.housing2.Utils.Duple;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -15,11 +16,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 
 public class PlayerDeath implements Listener {
 
     private HousesManager housesManager;
+
+    public static HashMap<UUID, Duple<UUID, Integer>> keepHouseLoaded = new HashMap<>();
 
     public PlayerDeath(HousesManager housesManager) {
         this.housesManager = housesManager;
@@ -53,6 +59,8 @@ public class PlayerDeath implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
 
         e.getDrops().removeIf(item -> item.getItemMeta().getDisplayName().equals("§dHousing Menu §7(Right-Click)"));
+
+        keepHouseLoaded.put(player.getUniqueId(), new Duple<>(house.getHouseUUID(), 0)); //We put them in a map so we know to keep the house loaded
 
         if (house != null) {
             if (house.getDeathMessages()) {

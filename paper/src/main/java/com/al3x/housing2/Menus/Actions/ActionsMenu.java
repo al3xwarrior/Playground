@@ -7,12 +7,14 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.AddConditionMenu;
 import com.al3x.housing2.Menus.HousingMenu.EventActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
@@ -21,17 +23,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ActionsMenu extends Menu {
+    private static HashMap<Duple<UUID, String>, ActionsMenu> menus = new HashMap<>();
+
     private Main main;
     private Player player;
     private HousingWorld house;
@@ -43,9 +46,12 @@ public class ActionsMenu extends Menu {
     private Menu backMenu;
     private Runnable update;
     private int nestedLevel = 0;
+    //If the player accidentally deletes an action, we can cache it here
+    private Action cachedAction;
+    private Condition cachedCondition;
+    private String varName = null;
     //1 is the new 0
     private int currentPage = 1;
-    private final int itemsPerPage = 45;
 
     // NPC
     public ActionsMenu(Main main, Player player, HousingWorld house, HousingNPC housingNPC) {
@@ -91,6 +97,7 @@ public class ActionsMenu extends Menu {
         this.house = house;
         this.actions = actions;
         this.backMenu = backMenu;
+        this.varName = varName;
 
         if (actions == null) {
             this.actions = house.getEventActions(event);
@@ -109,11 +116,13 @@ public class ActionsMenu extends Menu {
 
     private void removeAction(Action action) {
         actions.remove(action);
+        cachedAction = action;
         setupItems();
     }
 
     public void removeCondition(Condition condition) {
         conditions.remove(condition);
+        cachedCondition = condition;
         setupItems();
     }
 
@@ -132,6 +141,36 @@ public class ActionsMenu extends Menu {
             }
             return;
         }
+
+        String context = "";
+        if (event != null) {
+            context = event.name();
+        } else if (function != null) {
+            context = function.getName();
+        } else if (housingNPC != null) {
+            context = housingNPC.getName();
+        } else if (backMenu != null) {
+            context = backMenu.toString(); //class memory address, however, this may not be the best way to identify a menu
+        }
+        if (this.varName != null) {
+            context = context + this.varName;
+        }
+
+        for (Duple<UUID, String> key : menus.keySet()) {
+            if (key.getFirst().equals(player.getUniqueId()) && key.getSecond().equals(context)) {
+                if (menus.get(key) == this) {
+                    super.open();
+                } else {
+                    this.cachedAction = menus.get(key).cachedAction;
+                    this.cachedCondition = menus.get(key).cachedCondition;
+                    super.open();
+                }
+                return;
+            }
+        }
+
+        menus.put(new Duple<>(player.getUniqueId(), context), this);
+
         super.open();
     }
 
@@ -182,6 +221,21 @@ public class ActionsMenu extends Menu {
                         }
                     });
                 }
+            }
+
+            if (cachedCondition != null) {
+                addItem(51,
+                        ItemBuilder.create(Material.CAULDRON)
+                                .name("&aRestore Condition")
+                                .description("Restore the condition you last removed along with its settings.\n\nAction: " + cachedCondition.getName())
+                                .lClick(ItemBuilder.ActionType.RESTORE)
+                                .build(),
+                        () -> {
+                            this.conditions.add(cachedCondition);
+                            cachedCondition = null;
+                            setupItems();
+                        }
+                );
             }
 
             ItemStack addCondition = new ItemStack(Material.PAPER);
@@ -245,6 +299,21 @@ public class ActionsMenu extends Menu {
                             removeAction(action);
                         }
                     });
+                }
+
+                if (cachedAction != null) {
+                    addItem(51,
+                            ItemBuilder.create(Material.CAULDRON)
+                                    .name("&aRestore Action")
+                                    .description("Restore the action you last removed along with its settings.\n\nAction: " + cachedAction.getName())
+                                    .lClick(ItemBuilder.ActionType.RESTORE)
+                                    .build(),
+                            () -> {
+                                this.actions.add(cachedAction);
+                                cachedAction = null;
+                                setupItems();
+                            }
+                    );
                 }
 
                 PlayerNetwork network = PlayerNetwork.getNetwork(player);

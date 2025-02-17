@@ -47,7 +47,7 @@ public class CommandsMenu extends Menu {
                 item.lClick(ItemBuilder.ActionType.EDIT_ACTIONS);
                 item.rClick(ItemBuilder.ActionType.EDIT_COMMAND);
                 addItem(slots[i], item.build(), () -> {
-                    new ActionsMenu(main, player, house, command.getActions(), this, null).open();
+                    new ActionsMenu(main, player, house, command.getActions(), this, "CommandsActions").open();
                 },  () -> {
                     new CommandEditMenu(main, player, house, command).open();
                 });
@@ -87,7 +87,7 @@ public class CommandsMenu extends Menu {
                         return;
                     }
                     Bukkit.getScheduler().runTaskLater(main, () -> {
-                        new ActionsMenu(main, player, house, command.getActions(), this, null).open();
+                        new ActionsMenu(main, player, house, command.getActions(), this, "CommandsActions").open();
                     }, 1L);
                 });
             });

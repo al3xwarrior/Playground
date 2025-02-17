@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
@@ -25,14 +26,14 @@ public class ShowBossbarAction extends HTSLImpl {
     private String title;
     private BossBar.Color barColor;
     private BossBar.Overlay barStyle;
-    private double progress;
+    private String progress;
 
     public ShowBossbarAction() {
         super("Show Bossbar Action");
         this.title = "&eHello World!";
         this.barColor = BossBar.Color.WHITE;
         this.barStyle = BossBar.Overlay.PROGRESS;
-        this.progress = 1.0;
+        this.progress = "1.0";
     }
 
     @Override
@@ -93,10 +94,11 @@ public class ShowBossbarAction extends HTSLImpl {
                 new ActionEditor.ActionItem("progress",
                         ItemBuilder.create(Material.WRITTEN_BOOK)
                                 .name("&eProgress")
+                                .description("Must be a number between 0.0 and 1.0.")
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + progress)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 0, 1
+                        ActionEditor.ActionItem.ActionType.STRING
                 )
         );
 
@@ -105,13 +107,17 @@ public class ShowBossbarAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), NumberUtilsKt.toFloat(progress), barColor, barStyle);
-        bossBar.addViewer(player);
-        if (!house.bossBars.containsKey(player.getUniqueId())) {
-            house.bossBars.put(player.getUniqueId(), new ArrayList<>());
-            house.bossBars.get(player.getUniqueId()).add(bossBar);
-        } else {
-            house.bossBars.get(player.getUniqueId()).add(bossBar);
+        try {
+            BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), Float.parseFloat(Placeholder.handlePlaceholders(progress, house, player)), barColor, barStyle);
+            bossBar.addViewer(player);
+            if (!house.bossBars.containsKey(player.getUniqueId())) {
+                house.bossBars.put(player.getUniqueId(), new ArrayList<>());
+                house.bossBars.get(player.getUniqueId()).add(bossBar);
+            } else {
+                house.bossBars.get(player.getUniqueId()).add(bossBar);
+            }
+        } catch (Exception e) {
+            return false;
         }
         return true;
     }
@@ -138,7 +144,7 @@ public class ShowBossbarAction extends HTSLImpl {
            barColor = BossBar.Color.WHITE;
            barStyle = BossBar.Overlay.PROGRESS;
         }
-        progress = (double) data.get("progress");
+        progress = data.get("progress").toString();
     }
 
     @Override

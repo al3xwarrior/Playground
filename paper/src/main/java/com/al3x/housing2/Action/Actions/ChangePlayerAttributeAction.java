@@ -143,6 +143,6 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "changePlayerSize";
+        return "attribute";
     }
 }

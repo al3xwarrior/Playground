@@ -15,6 +15,12 @@ public class ConfirmMenu extends Menu{
         this.onConfirm = onConfirm;
     }
 
+    public ConfirmMenu(Player player, Menu back, String title, Runnable onConfirm) {
+        super(player, title, 3 * 9);
+        this.back = back;
+        this.onConfirm = onConfirm;
+    }
+
     @Override
     public void setupItems() {
         addItem(11, ItemBuilder.create(Material.GREEN_TERRACOTTA)

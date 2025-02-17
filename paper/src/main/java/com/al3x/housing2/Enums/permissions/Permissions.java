@@ -24,12 +24,13 @@ public enum Permissions implements PermissionInterface{
     OFFLINE_BUILD(true), //Another thing where it can depend on something here
     FLUID, //requires build
     PRO_TOOLS(true), //requires build
+    ENTITY_BUCKET(true), //requires build
     USE_CHESTS(true),
     USE_ENDER_CHESTS(true),
     USE_SHULKERS(true),
     ITEM_EDITOR(true),
     GAMEMODE(true, Gamemodes.class), //Gamemode enum
-    COMMAND_GAMEMODE(false),
+    COMMAND_GAMEMODE(true),
     COMMAND_EDITSTATS(false),
     CHANGE_PLAYER_GROUP,
     CHANGE_PLAYER_TEAM(true),

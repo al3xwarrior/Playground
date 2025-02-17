@@ -12,6 +12,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.Updater;
@@ -94,6 +95,7 @@ public class HousingWorld {
     private String defaultGroup = "default";
     private List<Location> trashCans;
     private List<LaunchPad> launchPads;
+    private HashMap<LocationData, List<ActionData>> actionButtons;
     private String seed;
     private Random random;
     private Integer version;
@@ -174,6 +176,7 @@ public class HousingWorld {
         this.holograms = new ArrayList<>();
         this.trashCans = new ArrayList<>();
         this.launchPads = new ArrayList<>();
+        this.actionButtons = new HashMap<>();
         this.customMenus = new ArrayList<>();
         this.groups = new ArrayList<>();
         this.teams = new ArrayList<>();
@@ -239,6 +242,7 @@ public class HousingWorld {
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
+        if (this.size == 75) this.size = 150;
         this.version = houseData.getVersion();
         this.ingameTime = houseData.getIngameTime() != null ? houseData.getIngameTime() : 6000L;
         this.dayLightCycle = houseData.getDayLightCycle() != null ? houseData.getDayLightCycle() : false;
@@ -263,7 +267,9 @@ public class HousingWorld {
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
         this.launchPads = houseData.getLaunchPads() != null ? houseData.getLaunchPads() : new ArrayList<>(); //Used a new method for this :)
-
+        for (String key : houseData.getActionButtons() != null ? houseData.getActionButtons().keySet() : new ArrayList<String>()) {
+            actionButtons.put(LocationData.fromString(key), houseData.getActionButtons().get(key));
+        }
         scoreboardInstance = new HousingScoreboard(this);
     }
 
@@ -372,7 +378,7 @@ public class HousingWorld {
         return switch (size) {
             case MEDIUM -> 50;
             case LARGE -> 75;
-            case XLARGE -> 100;
+            case XLARGE -> 150;
             case MASSIVE -> 255;
             default -> 30;
         };
@@ -984,6 +990,44 @@ public class HousingWorld {
 
     public List<Hologram> getHolograms() {
         return holograms;
+    }
+
+    public HashMap<String, List<ActionData>> getActionButtons() {
+        HashMap<String, List<ActionData>> data = new HashMap<>();
+        actionButtons.forEach((key, value) -> data.put(key.getWorld() + ", " + key.getX() + ", " + key.getY() + ", " + key.getZ(), value));
+        return data;
+    }
+
+    public void addActionButton(Location location) {
+        actionButtons.put(LocationData.Companion.fromLocation(location), new ArrayList<>());
+    }
+
+    public List<Action> getActionButton(Location location) {
+        for (LocationData loc : actionButtons.keySet()) {
+            if (loc.toLocation().distance(location) < 1) {
+                return ActionData.Companion.toList(actionButtons.get(loc));
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public void setActionButton(Location location, List<Action> actions) {
+        for (LocationData loc : actionButtons.keySet()) {
+            if (loc.toLocation().distance(location) < 1) {
+                actionButtons.put(loc, ActionData.Companion.fromList(actions));
+                return;
+            }
+        }
+    }
+
+    public boolean removeActionButton(Location location) {
+        for (LocationData loc : actionButtons.keySet()) {
+            if (loc.toLocation().distance(location) < 1) {
+                actionButtons.remove(loc);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeHologram(Hologram hologram) {

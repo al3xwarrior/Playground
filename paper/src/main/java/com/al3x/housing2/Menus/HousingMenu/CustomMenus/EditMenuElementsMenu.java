@@ -78,7 +78,7 @@ public class EditMenuElementsMenu extends Menu {
         } else if (items.get(index) != null) {
             if (e.isRightClick()) {
                 e.setCancelled(true);
-                ActionsMenu menu = new ActionsMenu(main, player, house, items.get(index).getSecond(), this, null);
+                ActionsMenu menu = new ActionsMenu(main, player, house, items.get(index).getSecond(), this, "CustomMenuActions");
                 menu.setEvent(EventType.INVENTORY_CLICK);
                 menu.open();
             } else {

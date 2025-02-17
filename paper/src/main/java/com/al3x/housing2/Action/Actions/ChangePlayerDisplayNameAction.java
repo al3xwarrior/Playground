@@ -29,7 +29,7 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "changePlayerDisplayName";
+        return "displayName";
     }
 
     @Override
@@ -74,6 +74,10 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         if (house.getWorld().getPlayers().contains(player)) {
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+            if (miniMessage.stripTags(miniMessage.serialize(StringUtilsKt.housingStringFormatter(name, house, player))).length() > 64) {
+                return true;
+            }
             player.playerListName(StringUtilsKt.housingStringFormatter(name, house, player));
             player.displayName(StringUtilsKt.housingStringFormatter(name, house, player));
         }

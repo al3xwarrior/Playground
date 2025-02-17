@@ -57,7 +57,7 @@ public class Housing implements CommandExecutor {
                 }
 
                 player.sendMessage(colorize("&eCreating your house..."));
-                HousingWorld house = housesManager.createHouse(player, HouseSize.LARGE);
+                HousingWorld house = housesManager.createHouse(player, HouseSize.XLARGE);
                 player.sendMessage(colorize("&aYour house has been created!"));
                 house.sendPlayerToHouse(player);
                 return true;

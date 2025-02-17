@@ -23,6 +23,19 @@ data class LocationData(
             }
             return list
         }
+
+        @JvmStatic
+        fun fromString(key: String): LocationData {
+            val split = key.split(", ")
+            if (split.size != 4) {
+                return LocationData(split[0], 0.0, 0.0, 0.0, 0f, 0f)
+            }
+            try {
+                return LocationData(split[0], split[1].toDouble(), split[2].toDouble(), split[3].toDouble(), 0f, 0f)
+            } catch (e: Exception) {
+                return LocationData(split[0], 0.0, 0.0, 0.0, 0f, 0f)
+            }
+        }
     }
 
     fun toLocation(): Location {
