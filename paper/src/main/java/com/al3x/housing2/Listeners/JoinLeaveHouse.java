@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -38,6 +39,9 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class JoinLeaveHouse implements Listener {
 
     private HousesManager housesManager;
+
+    HashMap<UUID, PermissionAttachment> perms = new HashMap<>();
+
 
     public JoinLeaveHouse(HousesManager housesManager) {
         this.housesManager = housesManager;
@@ -129,8 +133,14 @@ public class JoinLeaveHouse implements Listener {
             }
         }
 
+        PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance()));
+
+
         //give player permission "housing.world.<worlduuid>"
-        player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true);
+        attachment.setPermission("housing.world." + house.getHouseUUID(), true);
+        perms.put(player.getUniqueId(), attachment);
+
+        System.out.println(player.getName() + " has permission " + "housing.world." + house.getHouseUUID() + "? " + player.hasPermission("housing.world." + house.getHouseUUID()));
 
         if (house.getJoinLeaveMessages()) house.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
 
@@ -165,7 +175,7 @@ public class JoinLeaveHouse implements Listener {
         from.setGuests();
         if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 
-        player.addAttachment(Main.getInstance(), "housing.world." + from.getHouseUUID(), false);
+        perms.get(player.getUniqueId()).unsetPermission("housing.world." + from.getHouseUUID());
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));

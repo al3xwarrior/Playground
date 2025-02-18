@@ -34,6 +34,8 @@ public class Command {
         this.args = args;
         this.priorityRequired = priorityRequired;
         this.actions = actions;
+
+
     }
 
     // Used for the initial stuck and spawn command

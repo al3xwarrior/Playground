@@ -25,16 +25,16 @@ public class SetVelocityAction extends HTSLImpl {
     private PushDirection direction;
     private VelocityOperation operation;
     private String customDirection;
-    private double amount;
+    private String amount;
 
     public SetVelocityAction() {
         super("Set Velocity Action");
         this.direction = PushDirection.FORWARD;
         this.operation = VelocityOperation.SET;
-        this.amount = 1.5;
+        this.amount = "1.5";
     }
 
-    public SetVelocityAction(Double amount, PushDirection direction, VelocityOperation operation) {
+    public SetVelocityAction(String amount, PushDirection direction, VelocityOperation operation) {
         super("Set Velocity Action");
         this.direction = direction;
         this.amount = amount;
@@ -124,6 +124,17 @@ public class SetVelocityAction extends HTSLImpl {
         Vector playerVelocity = player.getVelocity();
         Vector velocityAdjustment = new Vector();
 
+        double amount = 1.5;
+        try {
+            amount = Double.parseDouble(Placeholder.handlePlaceholders(this.amount, house, player));
+        } catch (NumberFormatException e) {
+            return true;
+        }
+
+        if (amount == 0) return true;
+        if (amount > 100) amount = 100;
+        if (amount < -100) amount = -100;
+
         switch (direction) {
             case FORWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(amount));
             case BACKWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(-amount));
@@ -183,7 +194,7 @@ public class SetVelocityAction extends HTSLImpl {
         return 10;
     }
 
-    public double getAmount() {
+    public String getAmount() {
         return amount;
     }
 
@@ -192,8 +203,8 @@ public class SetVelocityAction extends HTSLImpl {
     }
 
     //Won't do anything since it doesn't use this function
-    public void setAmount(double amount) {
-        this.amount = Math.max(amount, 100.0); // cant go over 100
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 
     public void setDirection(PushDirection direction) {
