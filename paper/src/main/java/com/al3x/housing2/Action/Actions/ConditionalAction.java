@@ -260,7 +260,7 @@ public class ConditionalAction extends HTSLImpl {
         StringBuilder builder = new StringBuilder();
         for (Condition condition : conditions) {
             if (condition instanceof CHTSLImpl c) {
-                builder.append(c.export(indent)).append(", ");
+                builder.append(c.export()).append(", ");
             }
         }
         String conditionString = builder.toString();

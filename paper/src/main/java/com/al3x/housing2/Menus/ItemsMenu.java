@@ -181,6 +181,15 @@ public class ItemsMenu extends Menu {
             player.sendMessage(colorize("&cThis feature has not been implemented yet!"));
         });
 
+        ItemStack debugStick = ItemBuilder.create(Material.DEBUG_STICK)
+                .name("&aDebug Stick")
+                .build();
+        addItem(14, debugStick, () -> {
+            player.getInventory().addItem(ItemBuilder.create(Material.DEBUG_STICK)
+                    .name("&aDebug Stick")
+                    .build());
+        });
+
         ItemStack xSocialMediaHead = getCustomSkull("91b7a0c210e6cdf5a35fd8197e6e24a038315bbe3bdcd1bcc3630bf26f59ec5c");
         ItemMeta xSocialMediaHeadMeta = xSocialMediaHead.getItemMeta();
         xSocialMediaHeadMeta.setDisplayName(colorize("&bX"));

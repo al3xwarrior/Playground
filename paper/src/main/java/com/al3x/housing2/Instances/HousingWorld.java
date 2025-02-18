@@ -271,6 +271,8 @@ public class HousingWorld {
             actionButtons.put(LocationData.fromString(key), houseData.getActionButtons().get(key));
         }
         scoreboardInstance = new HousingScoreboard(this);
+
+        killAllEntities();
     }
 
     private void loadEventActions() {
