@@ -294,12 +294,12 @@ public class ConditionalAction extends HTSLImpl {
         String[] parts = action.split(" ");
         LinkedHashMap<String, Object> actionData = data();
 
-        if (parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("false")) {
-            actionData.put("matchAnyCondition", parts[0].equalsIgnoreCase("true"));
+        if ((parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("false")) || parts[0].equalsIgnoreCase("and") || parts[0].equalsIgnoreCase("or")) {
+            actionData.put("matchAnyCondition", parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("or"));
             parts = Arrays.copyOfRange(parts, 1, parts.length);
         }
         if (parts[0].equalsIgnoreCase("true") || parts[0].equalsIgnoreCase("false")) {
-            actionData.put("not", parts[1].equalsIgnoreCase("true"));
+            actionData.put("not", parts[0].equalsIgnoreCase("true"));
             parts = Arrays.copyOfRange(parts, 1, parts.length);
         }
 

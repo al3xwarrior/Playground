@@ -11,5 +11,14 @@ public enum PushDirection {
     SOUTH,
     EAST,
     WEST,
-    CUSTOM
+    CUSTOM;
+
+    public static PushDirection fromString(String string) {
+        for (PushDirection direction : values()) {
+            if (direction.name().equalsIgnoreCase(string)) {
+                return direction;
+            }
+        }
+        return null;
+    }
 }

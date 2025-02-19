@@ -227,10 +227,37 @@ public class SetVelocityAction extends HTSLImpl {
     }
 
     @Override
+    public String syntax() {
+        return "propel <operation> <direction> <amount>";
+    }
+
+    @Override
     public String export(int indent) {
         String dir = direction == PushDirection.CUSTOM ? customDirection : direction.name();
         String operation = this.operation.name();
         return " ".repeat(indent) + keyword() + " " + operation + " " + dir + " " + amount;
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        String[] split = action.split(" ");
+        if (split.length < 3) {
+            return nextLines;
+        }
+
+        VelocityOperation operation = VelocityOperation.fromString(split[0]);
+        String direction = split[1];
+        String amount = split[2];
+
+        if (PushDirection.fromString(direction) == null) {
+            customDirection = direction;
+            this.direction = PushDirection.CUSTOM;
+        } else {
+            this.direction = PushDirection.fromString(direction);
+        }
+        this.operation = operation;
+        this.amount = amount;
+        return nextLines;
     }
 
     @Override

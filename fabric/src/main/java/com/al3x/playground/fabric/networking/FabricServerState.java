@@ -9,10 +9,7 @@ import java.util.List;
 import com.al3x.housing2.network.Playground;
 import com.al3x.housing2.network.payload.PlaygroundClientboundMessageListener;
 import com.al3x.housing2.network.payload.PlaygroundServerboundMessageListener;
-import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
-import com.al3x.housing2.network.payload.clientbound.ClientboundHandshake;
-import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
-import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
+import com.al3x.housing2.network.payload.clientbound.*;
 import com.al3x.housing2.network.payload.serverbound.ServerboundImport;
 import com.al3x.playground.fabric.FabricPlayground;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -127,6 +124,19 @@ public final class FabricServerState implements FabricMessageReceiver, Playgroun
             );
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void handleWebsocket(ClientboundWebsocket clientboundWebsocket) {
+        String url = "localhost:" + clientboundWebsocket.getPort();
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("§aOpening websocket at §6" + url), false);
+        try {
+            new AutoImportWebsocket().start(url, this);
+            MinecraftClient.getInstance().player.sendMessage(Text.literal("§aWebsocket opened successfully"), false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            MinecraftClient.getInstance().player.sendMessage(Text.literal("§cFailed to open websocket: " + e.getMessage()), false);
         }
     }
 }

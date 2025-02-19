@@ -16,9 +16,11 @@ import com.al3x.housing2.Menus.NPC.NPCMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
+import com.al3x.housing2.network.payload.clientbound.ClientboundWebsocket;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -343,6 +345,26 @@ public class ActionsMenu extends Menu {
                                 .lClick(ItemBuilder.ActionType.IMPORT_YELLOW).build(),
                         () -> network.sendMessage(new ClientboundImport())
                 );
+
+                if (network.getProtocolVersion() >= 2) {
+                    addItem(46, ItemBuilder.create(Material.LIGHT_BLUE_DYE)
+                                    .name("&aImport Actions from Websocket")
+                                    .description("Because you have the mod installed, you can import actions automatically from a websocket created by the PTSL+ VSCode Extension.")
+                                    .lClick(ItemBuilder.ActionType.ADD_YELLOW).build(),
+                            () -> openChat(main, "7000", (message) -> {
+                                if (NumberUtilsKt.isInt(message)) {
+                                    if (network.getActionsMenu(Integer.parseInt(message)) != null) {
+                                        player.sendMessage(colorize("&cAn actions menu with that port is already open!"));
+                                        return;
+                                    }
+                                    network.sendMessage(new ClientboundWebsocket(Integer.parseInt(message)));
+                                    network.setActionsMenu(Integer.parseInt(message), this);
+                                } else {
+                                    player.sendMessage(colorize("&cInvalid port!"));
+                                }
+                            })
+                    );
+                }
             }
 
             if (currentPage < paginationList.getPageCount()) {

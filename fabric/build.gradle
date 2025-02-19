@@ -33,6 +33,7 @@ dependencies {
     include project(':common')
     modApi("wtf.choco:networking-fabric:0.1.1")
     include("wtf.choco:networking-fabric:0.1.1")
+    api include('com.neovisionaries:nv-websocket-client:2.14')
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 

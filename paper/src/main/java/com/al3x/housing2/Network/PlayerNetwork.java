@@ -1,6 +1,7 @@
 package com.al3x.housing2.Network;
 
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.network.Playground;
 import com.al3x.housing2.network.payload.PlaygroundClientboundMessageListener;
 import com.al3x.housing2.network.payload.PlaygroundServerboundMessageListener;
@@ -19,6 +20,10 @@ public class PlayerNetwork implements MessageReceiver {
 
     private final Player player;
     private final PlayerNetworkListener networkListener;
+    private int protocolVersion = 1;
+
+    //port, ActionsMenu
+    private HashMap<Integer, ActionsMenu> actionsMenus = new HashMap<>();
 
     private boolean isUsingMod = false;
 
@@ -37,6 +42,10 @@ public class PlayerNetwork implements MessageReceiver {
         return isUsingMod;
     }
 
+    public int getProtocolVersion() {
+        return protocolVersion;
+    }
+
     @NotNull
     public UUID getPlayerUUID() {
         return player.getUniqueId();
@@ -44,6 +53,26 @@ public class PlayerNetwork implements MessageReceiver {
 
     public void setUsingMod(boolean usingMod) {
         isUsingMod = usingMod;
+    }
+
+    public void setProtocolVersion(int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public void setActionsMenu(int port, ActionsMenu menu) {
+        actionsMenus.put(port, menu);
+    }
+
+    public ActionsMenu getActionsMenu(int port) {
+        return actionsMenus.get(port);
+    }
+
+    public void removeActionsMenu(int port) {
+        actionsMenus.remove(port);
+    }
+
+    public void clearActionsMenus() {
+        actionsMenus.clear();
     }
 
     @ApiStatus.Internal

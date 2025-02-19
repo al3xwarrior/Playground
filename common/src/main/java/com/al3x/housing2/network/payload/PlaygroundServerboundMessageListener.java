@@ -3,6 +3,7 @@ package com.al3x.housing2.network.payload;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.serverbound.ServerboundHandshake;
 import com.al3x.housing2.network.payload.serverbound.ServerboundImport;
+import com.al3x.housing2.network.payload.serverbound.ServerboundWebsocket;
 import org.jetbrains.annotations.NotNull;
 
 import wtf.choco.network.listener.ServerboundMessageListener;
@@ -22,4 +23,6 @@ public interface PlaygroundServerboundMessageListener extends ServerboundMessage
     public void handleImport(@NotNull ServerboundImport message);
 
     public void handleHandshake(@NotNull ServerboundHandshake message);
+
+    public void handleWebsocket(ServerboundWebsocket serverboundWebsocket);
 }

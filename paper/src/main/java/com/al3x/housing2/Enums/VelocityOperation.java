@@ -46,4 +46,13 @@ public enum VelocityOperation implements EnumMaterial, EnumHTSLAlternative {
     public String getAlternative() {
         return asString;
     }
+
+    public static VelocityOperation fromString(String string) {
+        for (VelocityOperation operation : values()) {
+            if (operation.asString().equalsIgnoreCase(string) || operation.name().equalsIgnoreCase(string)) {
+                return operation;
+            }
+        }
+        return null;
+    }
 }

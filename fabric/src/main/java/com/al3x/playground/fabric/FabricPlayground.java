@@ -27,7 +27,7 @@ public class FabricPlayground implements ClientModInitializer {
         LOGGER.info("Registered Playground client channel");
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            ServerboundHandshake handshake = new ServerboundHandshake(1);
+            ServerboundHandshake handshake = new ServerboundHandshake(2);
             LISTENER.sendMessage(handshake);
         });
 

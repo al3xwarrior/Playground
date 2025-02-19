@@ -3,7 +3,6 @@ package com.al3x.housing2.network.payload.clientbound;
 import com.al3x.housing2.network.payload.PlaygroundClientboundMessageListener;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
-
 import wtf.choco.network.Message;
 import wtf.choco.network.MessageByteBuffer;
 
@@ -11,43 +10,43 @@ import wtf.choco.network.MessageByteBuffer;
  * A client bound {@link Message} with no data.
  * <p>
  */
-public final class ClientboundHandshake implements Message<PlaygroundClientboundMessageListener> {
-    /*
+public final class ClientboundWebsocket implements Message<PlaygroundClientboundMessageListener> {    /*
      * At the moment, this message serves no purpose other than to inform the client that
      * the server has acknowledged its presence. In the future, this message may be used to return
      * to the client crucial information.
      */
-    int version;
+
+    private int port;
 
     /**
-     * Construct a new {@link ClientboundHandshake}.
+     * Construct a new {@link ClientboundWebsocket}.
      */
-    public ClientboundHandshake() {
-        this.version = 1;
-    }
-
-    public ClientboundHandshake(int version) {
-        this.version = version;
+    public ClientboundWebsocket(int port) {
+        this.port = port;
     }
 
     /**
-     * Construct a new {@link ClientboundHandshake} with input.
+     * Construct a new {@link ClientboundWebsocket} with input.
      *
      * @param buffer the input buffer
      */
     @Internal
-    public ClientboundHandshake(@NotNull MessageByteBuffer buffer) {
-        this.version = buffer.readVarInt();
+    public ClientboundWebsocket(@NotNull MessageByteBuffer buffer) {
+        this.port = buffer.readVarInt();
     }
 
     @Override
     public void write(@NotNull MessageByteBuffer buffer) {
-        buffer.writeVarInt(version);
+        buffer.writeVarInt(port);
     }
 
     @Override
     public void handle(@NotNull PlaygroundClientboundMessageListener listener) {
-        listener.handleHandshake(this);
+        listener.handleWebsocket(this);
+    }
+
+    public int getPort() {
+        return port;
     }
 
 }
