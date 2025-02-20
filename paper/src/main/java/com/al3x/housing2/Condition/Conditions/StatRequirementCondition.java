@@ -12,6 +12,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,5 +129,36 @@ public class StatRequirementCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "stat";
+    }
+
+    @Override
+    public String export(int indent) {
+        String compareValue = this.compareValue;
+        if (compareValue.contains(" ")) {
+            compareValue = "\"" + compareValue + "\"";
+        }
+        return "stat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
+    }
+
+    @Override
+    public void importCondition(String action, List<String> nextLines) {
+        String[] parts = action.split(" ");
+        if (parts.length < 4) return;
+        this.stat = parts[0];
+        this.comparator = StatComparator.getComparator(parts[1]);
+        compareValue = parts[2];
+        if (compareValue.startsWith("\"")) {
+            compareValue = compareValue.substring(1);
+            parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
+            while (!compareValue.endsWith("\"")) {
+                compareValue += " " + parts[1];
+                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            }
+            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        }
+        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        if (parts.length > 0) {
+            ignoreCase = Boolean.parseBoolean(parts[0]);
+        }
     }
 }

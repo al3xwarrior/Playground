@@ -387,6 +387,7 @@ public class ActionsMenu extends Menu {
             addItem(50, addAction, () -> {
                 AddActionMenu menu = new AddActionMenu(main, player, house, this.actions, this, nestedLevel);
                 menu.setEvent(event);
+                menu.setNpc(housingNPC);
                 menu.setFunction(function);
                 menu.open();
             });

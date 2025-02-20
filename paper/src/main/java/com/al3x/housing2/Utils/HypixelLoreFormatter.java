@@ -2,10 +2,12 @@ package com.al3x.housing2.Utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -114,7 +116,6 @@ public class HypixelLoreFormatter {
                     case String s -> lines.add(format("§f" + key.getFirst() + ": " + s));
                     case Integer i -> lines.add(format("§f" + key.getFirst() + ": " + i));
                     case Double v -> lines.add(format("§f" + key.getFirst() + ": " + v));
-                    case Component c -> lines.add(format("§f" + key.getFirst() + ": ").append(c));
                     case null -> lines.add(format("§f" + key.getFirst()));
                     default -> lines.add(format("§f" + key.getFirst() + ": " + key.getSecond().toString()));
                 }

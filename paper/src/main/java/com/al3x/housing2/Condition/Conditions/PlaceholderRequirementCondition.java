@@ -12,6 +12,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -144,5 +145,47 @@ public class PlaceholderRequirementCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "placeholder";
+    }
+
+    @Override
+    public String export() {
+        String compareValue = this.compareValue;
+        if (compareValue.contains(" ")) {
+            compareValue = "\"" + compareValue + "\"";
+        }
+        return keyword() + " " + placeholder + " " + comparator.name() + " " + compareValue + " " + ignoreCase + " " + ignoreColor;
+    }
+
+    @Override
+    public void importCondition(String action, List<String> nextLines) {
+        String[] parts = action.split(" ");
+        if (parts.length < 4) return;
+        if (compareValue.startsWith("\"")) {
+            compareValue = compareValue.substring(1);
+            parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
+            while (!compareValue.endsWith("\"")) {
+                compareValue += " " + parts[0];
+                parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
+            }
+            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        }
+        this.comparator = StatComparator.getComparator(parts[0]);
+        compareValue = parts[1];
+        if (compareValue.startsWith("\"")) {
+            compareValue = compareValue.substring(1);
+            parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
+            while (!compareValue.endsWith("\"")) {
+                compareValue += " " + parts[1];
+                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            }
+            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        }
+        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        if (parts.length > 0) {
+            ignoreCase = Boolean.parseBoolean(parts[0]);
+        }
+        if (parts.length > 1) {
+            ignoreColor = Boolean.parseBoolean(parts[1]);
+        }
     }
 }

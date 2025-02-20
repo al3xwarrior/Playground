@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
@@ -35,6 +36,7 @@ public class AddActionMenu extends Menu {
     private HousingWorld house;
     private Function function;
     private EventType event;
+    private HousingNPC npc;
     private List<Action> actions;
     private int nestedLevel = 0;
 
@@ -54,6 +56,10 @@ public class AddActionMenu extends Menu {
 
     public void setEvent(EventType event) {
         this.event = event;
+    }
+
+    public void setNpc(HousingNPC npc) {
+        this.npc = npc;
     }
 
     @Override
@@ -199,6 +205,10 @@ public class AddActionMenu extends Menu {
                     newActions.add(new BreakAction());
                     newActions.add(new ContinueAction());
                 }
+            }
+
+            if (action instanceof ConditionalAction && npc != null) {
+                newActions.add(new CancelAction());
             }
         }
 

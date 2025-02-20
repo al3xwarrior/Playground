@@ -29,4 +29,12 @@ public enum StatComparator implements EnumMaterial, EnumHTSLAlternative {
     public String getAlternative() {
         return alternative;
     }
+
+    public static StatComparator getComparator(String part) {
+        for (StatComparator comparator : values()) {
+            if (comparator.alternative.equalsIgnoreCase(part)) return comparator;
+            if (comparator.name().equalsIgnoreCase(part)) return comparator;
+        }
+        return null;
+    }
 }

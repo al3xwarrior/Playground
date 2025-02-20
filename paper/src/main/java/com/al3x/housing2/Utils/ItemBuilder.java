@@ -2,6 +2,7 @@ package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Main;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -145,7 +146,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder info(String key, Component value) {
-        this.info.add(new Duple<>(key, value));
+        this.info.add(new Duple<>(key, MiniMessage.miniMessage().serialize(value)));
         return this;
     }
 

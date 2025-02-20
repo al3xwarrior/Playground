@@ -9,11 +9,11 @@ import java.util.Arrays;
 import static org.bukkit.Material.*;
 
 public enum StatOperation implements EnumMaterial, EnumHTSLAlternative{
-    INCREASE(GREEN_STAINED_GLASS, "+", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
-    DECREASE(RED_STAINED_GLASS, "-", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    INCREASE(GREEN_STAINED_GLASS, "+", "inc", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    DECREASE(RED_STAINED_GLASS, "-", "dec", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     SET(YELLOW_STAINED_GLASS, "=", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
-    MULTIPLY(ORANGE_STAINED_GLASS, "*", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
-    DIVIDE(BLUE_STAINED_GLASS, "/", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    MULTIPLY(ORANGE_STAINED_GLASS, "*", "mult", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
+    DIVIDE(BLUE_STAINED_GLASS, "/", "div", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     MOD(MAGENTA_STAINED_GLASS, "%", new ArrayList<>(Arrays.asList("Number 1", "MODE", "Number 2"))),
     FLOOR(WHITE_STAINED_GLASS, "floor", new ArrayList<>(Arrays.asList("MODE", "Number"))),
     ROUND(BROWN_STAINED_GLASS, "round", new ArrayList<>(Arrays.asList("MODE", "Number"))),
@@ -27,9 +27,16 @@ public enum StatOperation implements EnumMaterial, EnumHTSLAlternative{
 
     private final Material material;
     private final String asString;
+    private String alternative = null;
     private final ArrayList<String> args;
 
     StatOperation(Material material, String asString, ArrayList<String> args) {
+        this.material = material;
+        this.asString = asString;
+        this.args = args;
+    }
+
+    StatOperation(Material material, String asString, String alternative, ArrayList<String> args) {
         this.material = material;
         this.asString = asString;
         this.args = args;
@@ -39,6 +46,7 @@ public enum StatOperation implements EnumMaterial, EnumHTSLAlternative{
         for (StatOperation operation : values()) {
             if (operation.asString().equalsIgnoreCase(part)) return operation;
             if (operation.name().equalsIgnoreCase(part)) return operation;
+            if (operation.alternative != null && operation.alternative.equalsIgnoreCase(part)) return operation;
         }
         return null;
     }

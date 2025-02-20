@@ -58,7 +58,7 @@ public class DamageTypeCondition extends CHTSLImpl {
                         ItemBuilder.create(Material.WOODEN_SWORD)
                                 .name("&eDamage Type")
                                 .info("&7Current Value", "")
-                                .info(null, "&a" + damageType.getTranslation())
+                                .info(null, damageType.getTranslation())
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.ENUM, DamageTypes.values(), null
                 )

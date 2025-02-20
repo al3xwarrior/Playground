@@ -1,19 +1,20 @@
 package com.al3x.housing2.Enums;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.damage.DamageType;
 
 public enum DamageTypes implements EnumMaterial {
-    IN_FIRE(Material.FIRE, DamageType.IN_FIRE),
+    IN_FIRE(Material.FIRE_CHARGE, DamageType.IN_FIRE),
     CAMPFIRE(Material.CAMPFIRE, DamageType.CAMPFIRE),
     LIGHTNING_BOLT(Material.LIGHTNING_ROD, DamageType.LIGHTNING_BOLT),
-    ON_FIRE(Material.FIRE, DamageType.ON_FIRE),
-    LAVA(Material.LAVA, DamageType.LAVA),
+    ON_FIRE(Material.FIRE_CHARGE, DamageType.ON_FIRE),
+    LAVA(Material.LAVA_BUCKET, DamageType.LAVA),
     HOT_FLOOR(Material.MAGMA_BLOCK, DamageType.HOT_FLOOR),
-    IN_WALL(Material.WALL_TORCH, DamageType.IN_WALL),
+    IN_WALL(Material.TORCH, DamageType.IN_WALL),
     CRAMMING(Material.ARMOR_STAND, DamageType.CRAMMING),
-    DROWN(Material.WATER, DamageType.DROWN),
+    DROWN(Material.WATER_BUCKET, DamageType.DROWN),
     STARVE(Material.ROTTEN_FLESH, DamageType.STARVE),
     CACTUS(Material.CACTUS, DamageType.CACTUS),
     FALL(Material.LADDER, DamageType.FALL),
@@ -25,7 +26,7 @@ public enum DamageTypes implements EnumMaterial {
     WITHER(Material.WITHER_ROSE, DamageType.WITHER),
     DRAGON_BREATH(Material.DRAGON_BREATH, DamageType.DRAGON_BREATH),
     DRY_OUT(Material.SAND, DamageType.DRY_OUT),
-    SWEET_BERRY_BUSH(Material.SWEET_BERRY_BUSH, DamageType.SWEET_BERRY_BUSH),
+    SWEET_BERRY_BUSH(Material.SWEET_BERRIES, DamageType.SWEET_BERRY_BUSH),
     FREEZE(Material.ICE, DamageType.FREEZE),
     STALAGMITE(Material.STONE, DamageType.STALAGMITE),
     FALLING_BLOCK(Material.SAND, DamageType.FALLING_BLOCK),
@@ -74,7 +75,7 @@ public enum DamageTypes implements EnumMaterial {
     }
 
     public Component getTranslation() {
-        return Component.translatable(damageType.getTranslationKey());
+        return Component.translatable(damageType.getTranslationKey()).color(NamedTextColor.GREEN);
     }
 
     public static DamageTypes fromDamageType(DamageType damageType) {
