@@ -30,7 +30,7 @@ public class Sphere implements CommandExecutor {
             return true;
         }
 
-        if (protoolsManager.canUseProtools(player, false)) {
+        if (protoolsManager.canUseProtools(player, true)) {
             BlockList blockList = BlockList.fromString(player, strings[1]);
             protoolsManager.createSphere(player, Integer.parseInt(strings[0]), blockList);
             player.sendMessage(Color.colorize("&aGenerating sphere..."));

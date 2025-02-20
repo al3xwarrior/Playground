@@ -101,41 +101,44 @@ public class Hologram {
 
     //Call anytime you add or remove a line
     public void spawnHologramEntities(Player player) {
-        if (destroyed) return;
+        // Apparently this needs to be done on the main thread what?
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            if (destroyed) return;
 
-        if (entitys.containsKey(player)) {
-            entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
-        }
-
-        if (interaction != null) {
-            interaction.remove();
-        }
-
-        interaction = (Interaction) player.getWorld().spawnEntity(location, EntityType.INTERACTION);
-        interaction.setInteractionHeight(0.5f);
-        interaction.setInteractionWidth(0.5f);
-        interaction.setInvisible(true);
-        interaction.setInvulnerable(true);
-
-        new FoliaLib(Main.getInstance()).getScheduler().runAsync((t) -> {
-            List<TextHologram> holograms = new ArrayList<>();
-
-            for (int i = 0; i < text.size(); i++) {
-                TextHologram hologram = new TextHologram(UUID.randomUUID().toString(), RenderMode.VIEWER_LIST)
-                        .setAlignment(alignment)
-                        .setShadow(shadow)
-                        .setSeeThroughBlocks(seeThroughBlocks)
-                        .setTextOpacity((byte) 255)
-                        .setBillboard(billboard)
-                        .setTeleportDuration(0)
-                        .setScale(getScaleInternal())
-                        .setText(getComponent(player, i));
-                main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
-                hologram.addViewer(player);
-                holograms.add(hologram);
+            if (entitys.containsKey(player)) {
+                entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
             }
 
-            entitys.put(player, holograms);
+            if (interaction != null) {
+                interaction.remove();
+            }
+
+            interaction = (Interaction) player.getWorld().spawnEntity(location, EntityType.INTERACTION);
+            interaction.setInteractionHeight(0.5f);
+            interaction.setInteractionWidth(0.5f);
+            interaction.setInvisible(true);
+            interaction.setInvulnerable(true);
+
+            new FoliaLib(Main.getInstance()).getScheduler().runAsync((t) -> {
+                List<TextHologram> holograms = new ArrayList<>();
+
+                for (int i = 0; i < text.size(); i++) {
+                    TextHologram hologram = new TextHologram(UUID.randomUUID().toString(), RenderMode.VIEWER_LIST)
+                            .setAlignment(alignment)
+                            .setShadow(shadow)
+                            .setSeeThroughBlocks(seeThroughBlocks)
+                            .setTextOpacity((byte) 255)
+                            .setBillboard(billboard)
+                            .setTeleportDuration(0)
+                            .setScale(getScaleInternal())
+                            .setText(getComponent(player, i));
+                    main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
+                    hologram.addViewer(player);
+                    holograms.add(hologram);
+                }
+
+                entitys.put(player, holograms);
+            });
         });
     }
 

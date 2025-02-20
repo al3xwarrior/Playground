@@ -155,7 +155,7 @@ public class ApplyPotionEffectAction extends HTSLImpl {
         if (!data.containsKey("potion")) return;
         potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
         if (!data.containsKey("duration")) return;
-        duration = Integer.parseInt(data.get("duration").toString());
+        duration = (int) Double.parseDouble(data.get("duration").toString());
         if (!data.containsKey("level")) return;
         level = Integer.parseInt(data.get("level").toString());
         if (!data.containsKey("hideParticles")) {

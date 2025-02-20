@@ -283,11 +283,9 @@ public class ParticleAction extends HTSLImpl {
         double startZ = center.clone().subtract(0, 0, radius).getZ();
         double endX = center.clone().add(radius, 0, 0).getX();
         double endZ = center.clone().add(0, 0, radius).getZ();
-        for (double x = startX; x < endX; x++) {
-            for (double z = startZ; z < endZ; z++) {
-                if (x != startX || z != startZ) {
-                    locations.add(new Location(world, x, center.getY(), z));
-                }
+        for (double x = startX; x <= endX; x++) {
+            for (double z = startZ; z <= endZ; z++) {
+                locations.add(new Location(world, x, center.getY(), z));
             }
         }
         return locations;

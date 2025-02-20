@@ -393,14 +393,14 @@ public class ProtoolsManager {
     // (we are stealing hypixel code real)
     private boolean isOutsideBorder(Player player) {
         WorldBorder border = player.getWorld().getWorldBorder();
-        double radius = border.getSize() / 2;
+        double radius = border.getSize();
         Location location = player.getLocation(), center = border.getCenter();
         return center.distanceSquared(location) >= (radius * radius);
     }
 
     private boolean isOutsideBorder(Player player, Location loc) {
         WorldBorder border = player.getWorld().getWorldBorder();
-        double radius = border.getSize() / 2;
+        double radius = border.getSize();
         Location center = border.getCenter();
         return center.distanceSquared(loc) >= (radius * radius);
     }

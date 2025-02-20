@@ -55,6 +55,7 @@ public enum ActionEnum {
     CHANGE_PLAYER_ATTRIBUTE("Change Player Attribute Action", ChangePlayerAttributeAction.class),
     CHANGE_TIME("Change Time Action", ChangeTimeAction.class),
     ATTACK_ENTITY("Attack Entity Action", AttackEntityAction.class),
+    DROP_ITEM("Drop Item Action", DropItemAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;

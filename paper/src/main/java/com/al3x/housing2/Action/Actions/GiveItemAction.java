@@ -99,7 +99,7 @@ public class GiveItemAction extends Action {
                         ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
-        return new ActionEditor(4, "&eFunction Action Settings", items);
+        return new ActionEditor(4, "&eGive Item Action Settings", items);
     }
 
     private String slotIndexToName(int index) {
