@@ -16,6 +16,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -181,6 +182,24 @@ public class LaunchProjectileAction extends HTSLImpl {
         data.put("amount", amount);
         data.put("direction", direction);
         return data;
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        String[] split = action.split(" ");
+        if (split.length < 3) {
+            return nextLines;
+        }
+
+        try {
+            projectile = Projectile.getProjectile(split[0]);
+            amount = Double.parseDouble(split[1]);
+            direction = PushDirection.fromString(split[2]);
+        } catch (IllegalArgumentException e) {
+            return nextLines;
+        }
+
+        return nextLines;
     }
 
     @Override

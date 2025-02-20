@@ -36,4 +36,14 @@ public enum Projectile implements EnumMaterial {
     public Material getMaterial() {
         return this.material;
     }
+
+    //from String
+    public static Projectile getProjectile(String projectile) {
+        for (Projectile p : values()) {
+            if (p.name().equalsIgnoreCase(projectile)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }

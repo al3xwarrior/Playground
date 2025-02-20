@@ -102,6 +102,10 @@ public abstract class HTSLImpl extends Action {
         }
 
         for (String key : actionData.keySet()) {
+            if (actionData.get(key) == null) {
+                System.out.println("Key " + key + " is null");
+                continue;
+            }
             String value = actionData.get(key).toString();
 
             if (NumberUtilsKt.isInt(value)) {

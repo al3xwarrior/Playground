@@ -5,7 +5,7 @@ import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.ConditionEnum;
-import com.al3x.housing2.Enums.HouseSize;
+import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Main;
@@ -219,6 +219,36 @@ public class Housing implements CommandExecutor {
                     String conditionsSyntax = "";
                     for (CHTSLImpl condition : Arrays.stream(ConditionEnum.values()).map(ConditionEnum::getConditionInstance).filter(c -> c instanceof CHTSLImpl).map(c -> (CHTSLImpl) c).toList()) {
                         conditionsSyntax += condition.syntax() + "\n";
+                    }
+
+                    conditionsSyntax += "\n\nPermissions:\n";
+                    for (Permissions permissions : Permissions.values()) {
+                        conditionsSyntax += permissions + ",";
+                    }
+
+                    conditionsSyntax += "\n\nDamage Types:\n";
+                    for (DamageTypes damageTypes : DamageTypes.values()) {
+                        conditionsSyntax += damageTypes + ",";
+                    }
+
+                    conditionsSyntax += "\n\nProjectiles:\n";
+                    for (Projectile projectile : Projectile.values()) {
+                        conditionsSyntax += projectile + ",";
+                    }
+
+                    conditionsSyntax += "\n\nParticles:\n";
+                    for (Particles particle : Particles.values()) {
+                        conditionsSyntax += particle + ",";
+                    }
+
+                    conditionsSyntax += "\n\nSounds:\n";
+                    for (org.bukkit.Sound sound : org.bukkit.Sound.values()) {
+                        conditionsSyntax += sound + ",";
+                    }
+
+                    conditionsSyntax += "\n\nAttributes:\n";
+                    for (AttributeType attribute : AttributeType.values()) {
+                        conditionsSyntax += attribute + ",";
                     }
 
                     ClientboundSyntax syntax = new ClientboundSyntax(actionsSyntax, conditionsSyntax);
