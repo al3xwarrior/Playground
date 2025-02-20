@@ -16,8 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import static com.al3x.housing2.Enums.Locations.CUSTOM;
-import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
+import static com.al3x.housing2.Enums.Locations.*;
 
 public class TeleportAction extends HTSLImpl {
     private String customLocation;
@@ -93,9 +92,6 @@ public class TeleportAction extends HTSLImpl {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         switch (location) {
-            case SEND_TO_LOBBY -> {
-                player.teleport(new Location(Bukkit.getWorld("world"), -6.5, 68, 5.5));
-            }
             case INVOKERS_LOCATION ->
                     player.teleport(player.getLocation());
             case HOUSE_SPAWN ->
@@ -139,7 +135,11 @@ public class TeleportAction extends HTSLImpl {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         customLocation = (String) data.get("customLocation");
-        location = Locations.valueOf((String) data.get("location"));
+        try {
+            location = Locations.valueOf((String) data.get("location"));
+        } catch (IllegalArgumentException e) {
+            location = INVOKERS_LOCATION;
+        }
     }
 
     @Override

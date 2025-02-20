@@ -18,6 +18,7 @@ import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExe
 
 public class AttackEvent implements Listener {
     public static HashMap<UUID, Entity> lastAttacked = new HashMap<>();
+    public static HashMap<UUID, EntityDamageByEntityEvent> lastDamage = new HashMap<>();
 
     private HousesManager housesManager;
 
@@ -29,6 +30,7 @@ public class AttackEvent implements Listener {
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) {return;}
         lastAttacked.put(player.getUniqueId(), e.getEntity());
+        lastDamage.put(player.getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
         if (e.getEntity() instanceof Player) {
             sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity(), e);
@@ -40,6 +42,7 @@ public class AttackEvent implements Listener {
         if (!(e.getDamager() instanceof Projectile projectile)) {return;}
         if (!(projectile.getShooter() instanceof Player player)) {return;}
         lastAttacked.put(player.getUniqueId(), e.getEntity());
+        lastDamage.put(player.getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_ATTACK, player, e);
         if (e.getEntity() instanceof Player) {
             sendEventExecution(housesManager, EventType.PLAYER_DAMAGE, (Player) e.getEntity(), e);

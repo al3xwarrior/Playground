@@ -114,6 +114,7 @@ public class HypixelLoreFormatter {
                     case String s -> lines.add(format("§f" + key.getFirst() + ": " + s));
                     case Integer i -> lines.add(format("§f" + key.getFirst() + ": " + i));
                     case Double v -> lines.add(format("§f" + key.getFirst() + ": " + v));
+                    case Component c -> lines.add(format("§f" + key.getFirst() + ": ").append(c));
                     case null -> lines.add(format("§f" + key.getFirst()));
                     default -> lines.add(format("§f" + key.getFirst() + ": " + key.getSecond().toString()));
                 }

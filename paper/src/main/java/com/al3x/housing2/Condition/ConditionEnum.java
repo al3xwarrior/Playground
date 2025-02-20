@@ -24,6 +24,9 @@ public enum ConditionEnum {
     PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
     IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
     CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
+    DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
+    DAMAGE_AMOUNT("Damage Amount", DamageAmountCondition.class),
+    INTERACTION_TYPE("Interaction Type", InteractionTypeCondition.class),
     ;
     
     private String name;

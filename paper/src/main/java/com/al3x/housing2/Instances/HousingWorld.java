@@ -168,6 +168,9 @@ public class HousingWorld {
         this.ownerUUID = owner.getUniqueId();
         this.housingNPCS = ConcurrentHashMultiset.create();
         this.eventActions = new HashMap<>();
+        for (EventType type : EventType.values()) {
+            eventActions.put(type, new ArrayList<>());
+        }
         this.functions = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.regions = new ArrayList<>();
@@ -316,6 +319,7 @@ public class HousingWorld {
             }
         }
         houseWorld.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        houseWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false); // No natural mob spawning
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, this.weatherCycle);
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
         TrashCanListener.initTrashCans(trashCans);
@@ -454,8 +458,6 @@ public class HousingWorld {
         properties.setValue(SlimeProperties.ENVIRONMENT, "normal");
         properties.setValue(SlimeProperties.WORLD_TYPE, "default");
         properties.setValue(SlimeProperties.DEFAULT_BIOME, "minecraft:plains");
-        properties.setValue(SlimeProperties.ALLOW_ANIMALS, false);
-        properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
         properties.setValue(SlimeProperties.DRAGON_BATTLE, false);
         return properties;
     }

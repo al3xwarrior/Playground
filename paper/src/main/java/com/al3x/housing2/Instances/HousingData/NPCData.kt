@@ -16,7 +16,10 @@ data class NPCData(
     val waypoints: List<LocationData>? = listOf(),
     val hologramData: HologramData? = null,
     val speed: Float? = 1.0f,
-    var canBePlayer: Boolean = false
+    var canBeDamaged: Boolean = false,
+    var respawnTime: Int = 20,
+    var maxHealth: Double = 20.0,
+    var minecraftAI: Boolean = false
 ) {
 
     companion object {
@@ -38,7 +41,10 @@ data class NPCData(
                         LocationData.fromLocationList(it.waypoints),
                         if (it.hologram != null) HologramData.fromData(it.hologram!!) else null,
                         it.speed.toFloat(),
-                        it.isCanBePlayer
+                        it.isCanBeDamaged,
+                        it.respawnTime,
+                        it.maxHealth,
+                        it.minecraftAI
                     )
                 )
             }

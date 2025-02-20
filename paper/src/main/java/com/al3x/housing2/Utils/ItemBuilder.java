@@ -144,6 +144,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder info(String key, Component value) {
+        this.info.add(new Duple<>(key, value));
+        return this;
+    }
+
     /**
      * Adds information with a key and an integer value to the item builder.
      * <p>

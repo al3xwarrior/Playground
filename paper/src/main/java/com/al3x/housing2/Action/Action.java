@@ -177,13 +177,13 @@ public abstract class Action {
 
     protected boolean getCoordinate(InventoryClickEvent event, Object obj, String current, HousingWorld house, Menu editMenu, BiConsumer<String, Locations> consumer) {
         if (obj instanceof Locations location && location == Locations.CUSTOM) {
-            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z)"));
+            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z) or (x,y,z,yaw,pitch)"));
             editMenu.openChat(Main.getInstance(), (current == null ? "" : current), (message) -> {
                 String oldMessage = message;
                 message = HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, message);
                 String[] split = message.split(",");
-                if (split.length != 3) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+                if (split.length != 3 && split.length != 5) {
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
                     return;
                 }
 
@@ -202,7 +202,7 @@ public abstract class Action {
                     }
                     consumer.accept(oldMessage, Locations.CUSTOM);
                 } catch (NumberFormatException e) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
+                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
                     return;
                 }
             });
@@ -215,27 +215,41 @@ public abstract class Action {
     }
 
     protected Location getLocationFromString(Player player, HousingWorld house, String message) {
-        String oldMessage = message;
+        return getLocationFromString(player, player.getLocation(), house, message);
+    }
+
+    protected Location getLocationFromString(Player player, Location baseLocation, HousingWorld house, String message) {
         message = HandlePlaceholders.parsePlaceholders(player, house, message);
         String[] split = message.split(",");
-        if (split.length != 3) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> (Array Length did not equal 3)"));
+        if (split.length != 3 && split.length != 5) {
+            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
             return null;
         }
 
-        Location loc = player.getLocation();
         try {
             String x = split[0];
             String y = split[1];
             String z = split[2];
 
+            String yaw = "0";
+            String pitch = "0";
+
+            if (split.length == 5) {
+                yaw = split[3];
+                pitch = split[4];
+            }
+
             if (x.equalsIgnoreCase("null") || x.isEmpty()) return null;
             if (y.equalsIgnoreCase("null") || y.isEmpty()) return null;
             if (z.equalsIgnoreCase("null") || z.isEmpty()) return null;
+            if (yaw.equalsIgnoreCase("null") || yaw.isEmpty()) return null;
+            if (pitch.equalsIgnoreCase("null") || pitch.isEmpty()) return null;
 
-            double x1 = (x.startsWith("~")) ? loc.getX() : Double.parseDouble(x);
-            double y1 = (y.startsWith("~")) ? loc.getY() : Double.parseDouble(y);
-            double z1 = (z.startsWith("~")) ? loc.getZ() : Double.parseDouble(z);
+            double x1 = (x.startsWith("~")) ? baseLocation.getX() : Double.parseDouble(x);
+            double y1 = (y.startsWith("~")) ? baseLocation.getY() : Double.parseDouble(y);
+            double z1 = (z.startsWith("~")) ? baseLocation.getZ() : Double.parseDouble(z);
+            double yaw1 = (yaw.startsWith("~")) ? baseLocation.getYaw() : Double.parseDouble(yaw);
+            double pitch1 = (pitch.startsWith("~")) ? baseLocation.getPitch() : Double.parseDouble(pitch);
             if (x.startsWith("~") && x.length() > 1) {
                 x1 += Double.parseDouble(x.substring(1));
             }
@@ -245,39 +259,13 @@ public abstract class Action {
             if (z.startsWith("~") && z.length() > 1) {
                 z1 += Double.parseDouble(z.substring(1));
             }
-            return new Location(player.getWorld(), x1, y1, z1, loc.getYaw(), loc.getPitch());
-        } catch (NumberFormatException e) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
-            return null;
-        }
-    }
-
-    protected Location getLocationFromString(Player player, Location baseLocation, HousingWorld house, String message) {
-        String[] split = message.split(",");
-        if (split.length < 3 || split.length > 5) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
-            return null;
-        }
-
-        Location loc = baseLocation.clone();
-        try {
-            String x = HandlePlaceholders.parsePlaceholders(player, house, split[0]);
-            String y = HandlePlaceholders.parsePlaceholders(player, house, split[1]);
-            String z = HandlePlaceholders.parsePlaceholders(player, house, split[2]);
-
-            double x1 = (x.startsWith("~")) ? loc.getX() : Double.parseDouble(x);
-            double y1 = (y.startsWith("~")) ? loc.getY() : Double.parseDouble(y);
-            double z1 = (z.startsWith("~")) ? loc.getZ() : Double.parseDouble(z);
-            if (x.startsWith("~") && x.length() > 1) {
-                x1 += Double.parseDouble(x.substring(1));
+            if (yaw.startsWith("~") && yaw.length() > 1) {
+                yaw1 += Double.parseDouble(yaw.substring(1));
             }
-            if (y.startsWith("~") && y.length() > 1) {
-                y1 += Double.parseDouble(y.substring(1));
+            if (pitch.startsWith("~") && pitch.length() > 1) {
+                pitch1 += Double.parseDouble(pitch.substring(1));
             }
-            if (z.startsWith("~") && z.length() > 1) {
-                z1 += Double.parseDouble(z.substring(1));
-            }
-            return new Location(player.getWorld(), x1, y1, z1, loc.getYaw(), loc.getPitch());
+            return new Location(player.getWorld(), x1, y1, z1, (float) yaw1, (float) pitch1);
         } catch (NumberFormatException e) {
             player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
             return null;

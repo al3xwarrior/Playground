@@ -47,7 +47,7 @@ public class NPCMenu extends Menu {
         editHologramMeta.setDisplayName(colorize("&aEdit Hologram"));
         editHologram.setItemMeta(editHologramMeta);
         addItem(10, editHologram, () -> {
-             new HologramEditorMenu(main, player, housingNPC.getHologram(), this).open();
+            new HologramEditorMenu(main, player, housingNPC.getHologram(), this).open();
         });
 
         ItemStack clickActions = new ItemStack(Material.PAPER);
@@ -138,6 +138,13 @@ public class NPCMenu extends Menu {
                 .lClick(ItemBuilder.ActionType.SAVE_LOCATION);
         addItem(48, npcInfo.build(), () -> {
             housingNPC.setLocation(housingNPC.getLocation());
+        });
+
+        ItemBuilder entitySettings = ItemBuilder.create(Material.BOOK)
+                .name("&aEntity Settings")
+                .description("Edit the entity settings of this NPC");
+        addItem(50, entitySettings.build(), () -> {
+            new EntitySettingsMenu(main, player, housingNPC).open();
         });
 
         ItemStack close = new ItemStack(Material.BARRIER);

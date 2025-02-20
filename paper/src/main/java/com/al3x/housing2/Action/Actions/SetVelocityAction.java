@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.PushDirection;
@@ -15,10 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class SetVelocityAction extends HTSLImpl {
 
@@ -112,7 +110,7 @@ public class SetVelocityAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + amount)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.0, 100.0
+                        ActionEditor.ActionItem.ActionType.STRING
                 )
         );
 
@@ -133,7 +131,7 @@ public class SetVelocityAction extends HTSLImpl {
 
         if (amount == 0) return true;
         if (amount > 100) amount = 100;
-        if (amount < -100) amount = -100;
+        if (amount < 0) amount = 0;
 
         switch (direction) {
             case FORWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(amount));
@@ -222,13 +220,21 @@ public class SetVelocityAction extends HTSLImpl {
     }
 
     @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        this.amount = data.get("amount").toString();
+        this.customDirection = (String) data.get("customDirection");
+        this.direction = PushDirection.valueOf(data.get("direction").toString());
+        this.operation = VelocityOperation.valueOf(data.get("operation").toString());
+    }
+
+    @Override
     public boolean requiresPlayer() {
         return true;
     }
 
     @Override
     public String syntax() {
-        return "propel <operation> <direction> <amount>";
+        return "velocity <operation> <direction> <amount>";
     }
 
     @Override
@@ -262,6 +268,6 @@ public class SetVelocityAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "propel";
+        return "velocity";
     }
 }

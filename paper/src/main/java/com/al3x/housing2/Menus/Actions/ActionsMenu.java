@@ -247,6 +247,7 @@ public class ActionsMenu extends Menu {
             addItem(50, addCondition, () -> {
                 AddConditionMenu menu = new AddConditionMenu(main, player, house, this.conditions, this);
                 menu.setEvent(event);
+                menu.setNPC(housingNPC);
                 menu.setFunction(function);
                 menu.open();
             });

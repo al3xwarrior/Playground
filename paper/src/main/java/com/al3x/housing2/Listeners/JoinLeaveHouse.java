@@ -1,6 +1,5 @@
 package com.al3x.housing2.Listeners;
 
-import com.al3x.housing2.Action.Actions.ChangePlayerAttributeAction;
 import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
@@ -90,7 +89,7 @@ public class JoinLeaveHouse implements Listener {
         if (CitizensAPI.getNPCRegistry().isNPC(player)) {
             NPC cNPC = CitizensAPI.getNPCRegistry().getNPC(player);
             HousingNPC npc = house.getNPC(cNPC.getId());
-            if (npc != null && npc.isCanBePlayer()) {
+            if (npc != null && npc.isCanBeDamaged()) {
 
             }
             return;

@@ -49,9 +49,10 @@ public class EditPlayerMenu extends Menu {
             new PlayerListingMenu(main, player, house).open();
         });
 
-        if (playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() || targetPlayer.getPlayer() == player) return; // less group priority, cant edit
+        if (playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() && player != targetPlayer) return; // less group priority, cant edit
+        boolean isSamePlayer = player.getUniqueId().equals(targetPlayer.getUniqueId());
 
-        if (online && house.hasPermission(player, Permissions.KICK)) {
+        if (online && house.hasPermission(player, Permissions.KICK) && !isSamePlayer) {
             addItem(slots[i], new ItemBuilder().material(Material.IRON_BARS).name(colorize("&cKick Player")).lClick(ItemBuilder.ActionType.KICK).build(), (e) -> {
                 if (!e.isLeftClick()) return;
                 if (targetPlayer.getPlayer().equals(player)) {
@@ -63,7 +64,7 @@ public class EditPlayerMenu extends Menu {
             i++;
         }
 
-        if (house.hasPermission(player, MUTE)) {
+        if (house.hasPermission(player, MUTE) && !isSamePlayer) {
             addItem(slots[i], new ItemBuilder().material(Material.CHAIN).name(colorize((targetPlayerData.getMuted()) ? "&aUnmute Player" : "&cMute Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
                 if (targetPlayer.getPlayer().equals(player)) {
@@ -76,7 +77,7 @@ public class EditPlayerMenu extends Menu {
             i++;
         }
 
-        if (house.hasPermission(player, BAN)) {
+        if (house.hasPermission(player, BAN) && !isSamePlayer) {
             addItem(slots[i], new ItemBuilder().material(Material.BARRIER).name(colorize((targetPlayerData.getBanned()) ? "&aUnban Player" : "&cBan Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
                 if (targetPlayer.getPlayer().equals(player)) {
@@ -118,7 +119,7 @@ public class EditPlayerMenu extends Menu {
 
                 for (int j = 0; j < house.getGroups().size(); j ++) { // check groups until one is found with lower priority than the player, or do nothing
                     if (groupIndex < 0) groupIndex += house.getGroups().size();
-                    if (house.getGroups().get(groupIndex % house.getGroups().size()).getPriority() < playerData.getGroupInstance(house).getPriority()) {
+                    if (house.getGroups().get(groupIndex % house.getGroups().size()).getPriority() < playerData.getGroupInstance(house).getPriority() || player.getUniqueId().equals(targetPlayer.getUniqueId())) {
                         targetPlayerData.setGroup(house.getGroups().get(groupIndex % house.getGroups().size()).getName());
                         break;
                     }

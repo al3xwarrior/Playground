@@ -14,17 +14,22 @@ import com.google.gson.Gson;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
+import net.citizensnpcs.trait.AttributeTrait;
 import net.citizensnpcs.trait.FollowTrait;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
+import net.citizensnpcs.trait.versioned.DisplayTrait;
+import net.citizensnpcs.trait.versioned.TextDisplayTrait;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
 import net.citizensnpcs.trait.waypoint.Waypoint;
 import net.citizensnpcs.trait.waypoint.Waypoints;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,6 +58,7 @@ public class HousingNPC {
 
     public static List<SkinData> loadedSkins = new ArrayList<>();
 
+    private boolean spawned = false;
     private NPC citizensNPC;
     private HousingWorld house;
     private Main main;
@@ -67,7 +73,10 @@ public class HousingNPC {
     private EntityType entityType;
     private String skinUUID;
 
-    private boolean canBePlayer = false;
+    private boolean canBeDamaged;
+    private int respawnTime = 20;
+    private double maxHealth = 20;
+    private boolean minecraftAI;
 
     // Equipment
     private ItemStack hand;
@@ -104,7 +113,10 @@ public class HousingNPC {
         this.hologram = data.getHologramData() != null ? HologramData.Companion.toData(data.getHologramData()) : new Hologram(
                 main, null, house, location.clone().add(0, 2.5, 0)
         );
-        this.canBePlayer = data.getCanBePlayer();
+        this.canBeDamaged = data.getCanBeDamaged();
+        this.maxHealth = data.getMaxHealth();
+        this.minecraftAI = data.getMinecraftAI();
+        this.respawnTime = data.getRespawnTime();
         this.hologram.setHouse(house);
 
         if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
@@ -114,10 +126,12 @@ public class HousingNPC {
         configureLookCloseTrait();
         configureEquipment(data.getEquipment());
         configureNavigation(data);
-
+        configureEntitySettings();
         setSkin(data.getNpcSkin());
+        citizensNPC.setProtected(!isCanBeDamaged());
         citizensNPC.spawn(location);
         startFollowTask();
+
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
@@ -133,16 +147,21 @@ public class HousingNPC {
         this.actions = new ArrayList<>();
         this.waypoints = new ArrayList<>();
 
+        this.canBeDamaged = false;
+        this.minecraftAI = false;
+
         this.hologram = new Hologram(main, player, house, location.clone().add(0, 2.5, 0));
         this.hologram.removeLine(1);
         this.hologram.removeLine(0);
 
         citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name);
         configureLookCloseTrait();
+        configureEntitySettings();
         citizensNPC.spawn(location);
         citizensNPC.faceLocation(player.getLocation());
         this.npcID = citizensNPC.getId();
         this.npcUUID = citizensNPC.getUniqueId();
+
 
         startFollowTask();
     }
@@ -192,6 +211,12 @@ public class HousingNPC {
         updateNavigationState();
     }
 
+    public void configureEntitySettings() {
+        citizensNPC.getOrAddTrait(AttributeTrait.class).setAttributeValue(Attribute.MAX_HEALTH, maxHealth);
+        citizensNPC.setUseMinecraftAI(minecraftAI);
+        citizensNPC.setProtected(!canBeDamaged);
+    }
+
     private void configureWaypoints(List<LocationData> dataWaypoints) {
         Waypoints waypoints = citizensNPC.getOrAddTrait(Waypoints.class);
         waypoints.setWaypointProvider("linear");
@@ -228,7 +253,7 @@ public class HousingNPC {
                 if (citizensNPC.isSpawned()) {
                     if (citizensNPC.getEntity().getLocation().getY() < -64) {
                         citizensNPC.despawn();
-                        citizensNPC.spawn(house.getSpawn());
+                        citizensNPC.spawn(location);
                     }
 
                     FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
@@ -244,6 +269,24 @@ public class HousingNPC {
                 }
             }
         }.runTaskTimer(main, 0, 20);
+
+        new BukkitRunnable() {
+            int ticks = 0;
+            @Override
+            public void run() {
+                if (citizensNPC.isSpawned()) {
+                    if (!spawned) spawned = true;
+                } else {
+                    if (spawned) {
+                        ticks++;
+                        if (ticks >= respawnTime) {
+                            citizensNPC.spawn(location);
+                            ticks = 0;
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(main, 0, 1);
 
         new BukkitRunnable() {
             @Override
@@ -279,16 +322,16 @@ public class HousingNPC {
         citizensNPC.setBukkitEntityType(entityType);
     }
 
-    public void sendExecuteActions(HousingWorld house, Player player) {
+    public void sendExecuteActions(HousingWorld house, Player player, Cancellable event) {
         if (actions != null) {
             ActionExecutor executor = new ActionExecutor("npc");
             executor.addActions(actions);
-            executor.execute(player, house, null);
+            executor.execute(player, house, event);
         }
     }
 
-    public boolean isCanBePlayer() {
-        return canBePlayer;
+    public boolean isCanBeDamaged() {
+        return canBeDamaged;
     }
 
     public NPC getCitizensNPC() {
@@ -331,8 +374,27 @@ public class HousingNPC {
         return citizensNPC.isSpawned() ? citizensNPC.getEntity().getLocation() : location;
     }
 
-    public void setCanBePlayer(boolean canBePlayer) {
-        this.canBePlayer = canBePlayer;
+    public void setCanBeDamaged(boolean canBeDamaged) {
+        this.canBeDamaged = canBeDamaged;
+        this.citizensNPC.setProtected(!canBeDamaged);
+        this.citizensNPC.despawn();
+        this.citizensNPC.spawn(location);
+    }
+
+    public void setMaxHealth(double health) {
+        this.maxHealth = health;
+    }
+
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMinecraftAI(boolean ai) {
+        this.minecraftAI = ai;
+    }
+
+    public boolean getMinecraftAI() {
+        return minecraftAI;
     }
 
     public void setLocation(Location location) {
@@ -432,10 +494,9 @@ public class HousingNPC {
         if (waypoints.getCurrentProvider() instanceof LinearWaypointProvider provider) {
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             if (!path.isEmpty()) {
-                Location loc = path.getLast().getLocation();
                 this.waypoints = new ArrayList<>(path.stream().map(Waypoint::getLocation).toList());
-                return loc;
             }
+            return path.remove(path.size() - 1).getLocation();
         }
         return null;
     }
@@ -481,4 +542,11 @@ public class HousingNPC {
         });
     }
 
+    public int getRespawnTime() {
+        return respawnTime;
+    }
+
+    public void setRespawnTime(int respawnTime) {
+        this.respawnTime = respawnTime;
+    }
 }

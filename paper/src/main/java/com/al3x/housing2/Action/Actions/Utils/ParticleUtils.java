@@ -55,7 +55,7 @@ public class ParticleUtils {
                 int r = Integer.parseInt(split[0]);
                 int g = Integer.parseInt(split[1]);
                 int b = Integer.parseInt(split[2]);
-                return new Particle.DustOptions(Color.fromRGB(r, g, b), NumberUtilsKt.toFloat((double) customData.getOrDefault("size", 1.0)));
+                return new Particle.DustOptions(Color.fromRGB(r, g, b), Float.parseFloat(customData.getOrDefault("size", "1.0").toString()));
             }
             case DUST_TRANSITION -> {
                 String[] split = ((String) customData.getOrDefault("color1", "255,255,255")).split(",");
@@ -66,7 +66,7 @@ public class ParticleUtils {
                 int r2 = Integer.parseInt(split2[0]);
                 int g2 = Integer.parseInt(split2[1]);
                 int b2 = Integer.parseInt(split2[2]);
-                return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), NumberUtilsKt.toFloat((double) customData.getOrDefault("size", 1.0)));
+                return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), Float.parseFloat(customData.getOrDefault("size", "1.0").toString()));
             }
         }
         return null;

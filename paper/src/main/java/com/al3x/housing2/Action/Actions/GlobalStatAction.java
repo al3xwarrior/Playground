@@ -148,6 +148,7 @@ public class GlobalStatAction extends HTSLImpl {
 
                         List<Duple<StatOperation, ItemBuilder>> modes = new ArrayList<>();
                         for (StatOperation mode : StatOperation.values()) {
+                            if (mode.expressionOnly()) continue;
                             modes.add(new Duple<>(mode, ItemBuilder.create(mode.getMaterial()).name("&a" + mode)));
                         }
                         new PaginationMenu<>(Main.getInstance(), "&eSelect a mode", modes, backMenu.getOwner(), house, backMenu, (mode) -> {

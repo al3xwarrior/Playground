@@ -4,6 +4,7 @@ import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
@@ -34,6 +35,7 @@ public class AddConditionMenu extends Menu {
     private HousingWorld house;
     private Function function;
     private EventType event;
+    private HousingNPC npc;
     private List<Condition> conditions;
     private String search = "";
     
@@ -53,6 +55,10 @@ public class AddConditionMenu extends Menu {
 
     public void setEvent(EventType event) {
         this.event = event;
+    }
+
+    public void setNPC(HousingNPC npc) {
+        this.npc = npc;
     }
 
     @Override
@@ -158,6 +164,12 @@ public class AddConditionMenu extends Menu {
 
             if (event != null) {
                 if (condition.allowedEvents() != null && !condition.allowedEvents().contains(event)) continue;
+                newConditions.add(condition);
+                continue;
+            }
+
+            if (npc != null) {
+                if (condition.allowedEvents() != null && !condition.allowedEvents().contains(EventType.PLAYER_DAMAGE)) continue;
                 newConditions.add(condition);
                 continue;
             }

@@ -20,6 +20,7 @@ public class MathPlaceholders {
         new Power();
         new SQRT();
         new ABS();
+        new Floor();
     }
 
     private static class Round extends Placeholder {
@@ -350,6 +351,32 @@ public class MathPlaceholders {
             try {
                 double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
                 return String.valueOf(Math.abs(num));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class Floor extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.floor/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.floor(num));
             } catch (Exception e) {
                 return "0";
             }

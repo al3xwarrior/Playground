@@ -176,20 +176,6 @@ public class ParticleAction extends HTSLImpl {
             );
             item1[0] = i;
             items.add(i);
-
-            items.add(new ActionEditor.ActionItem("direction",
-                    ItemBuilder.create(Material.COMPASS)
-                            .name("&eDirection")
-                            .info("&7Current Value", "")
-                            .info(null, "&a" + direction)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
-                    (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
-                        customDirection = str;
-                        direction = dir;
-                        editMenu.open();
-                    }))
-            );
         }
         if ((type != ParticleType.CURVE && type != ParticleType.LINE) || isLineRange) {
             ItemBuilder itemBuilder = ItemBuilder.create(Material.SLIME_BALL)
@@ -228,6 +214,20 @@ public class ParticleAction extends HTSLImpl {
                                 return true;
                             }
                     )
+            );
+
+            items.add(new ActionEditor.ActionItem("direction",
+                    ItemBuilder.create(Material.COMPASS)
+                            .name("&eDirection")
+                            .info("&7Current Value", "")
+                            .info(null, "&a" + direction)
+                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                    ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
+                    (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
+                        customDirection = str;
+                        direction = dir;
+                        editMenu.open();
+                    }))
             );
         }
 
@@ -516,8 +516,10 @@ public class ParticleAction extends HTSLImpl {
         amount = (Double) data.get("amount");
         direction = PushDirection.valueOf((String) data.get("direction"));
         customDirection = (String) data.get("customDirection");
-        LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
-        customData = new HashMap<>(map);
+        if (data.get("customData") == null) {
+            LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
+            customData = new HashMap<>(map);
+        }
     }
 
     @Override
@@ -545,6 +547,13 @@ public class ParticleAction extends HTSLImpl {
         String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? customLocation : location.name();
         String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? customLocation2 : location2.name();
 
+        if (loc.contains("%")) {
+            loc = "\"" + loc + "\"";
+        }
+        if (loc2.contains("%")) {
+            loc2 = "\"" + loc2 + "\"";
+        }
+
         StringBuilder customData = new StringBuilder();
         for (Map.Entry<String, Object> entry : this.customData.entrySet()) {
             customData.append(" ").append(entry.getValue());
@@ -560,14 +569,16 @@ public class ParticleAction extends HTSLImpl {
         type = ParticleType.valueOf(parts[1]);
         radius = Double.parseDouble(parts[2]);
         amount = Double.parseDouble(parts[3]);
-        if (Locations.fromString(parts[4]) != null) {
-            location = Locations.fromString(parts[4]);
+        int nextIndex = 4;
+        if (Locations.fromString(parts[nextIndex]) != null) {
+            location = Locations.fromString(parts[nextIndex]);
+            nextIndex++;
         } else {
             location = CUSTOM;
-            customLocation = parts[4];
+            customLocation = parts[nextIndex];
             if (customLocation.startsWith("\"")) {
                 customLocation = customLocation.substring(1);
-                parts = new ArrayList<>(Arrays.asList(parts).subList(4, parts.length)).toArray(new String[0]);
+                parts = new ArrayList<>(Arrays.asList(parts).subList(nextIndex, parts.length)).toArray(new String[0]);
                 while (!customLocation.endsWith("\"")) {
                     customLocation += " " + parts[1];
                     parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
@@ -575,33 +586,35 @@ public class ParticleAction extends HTSLImpl {
                 customLocation = customLocation.substring(0, customLocation.length() - 1);
             }
             parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            nextIndex = 0;
         }
-        if (Locations.fromString(parts[5]) != null) {
-            location2 = Locations.fromString(parts[5]);
+        if (Locations.fromString(parts[nextIndex]) != null) {
+            location2 = Locations.fromString(parts[nextIndex]);
         } else {
-            if (parts[5].contains(",")) {
-                location2 = CUSTOM;
-                customLocation = parts[5];
-                if (customLocation.startsWith("\"")) {
-                    customLocation = customLocation.substring(1);
-                    parts = new ArrayList<>(Arrays.asList(parts).subList(5, parts.length)).toArray(new String[0]);
-                    while (!customLocation.endsWith("\"")) {
-                        customLocation += " " + parts[1];
-                        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-                    }
-                    customLocation = customLocation.substring(0, customLocation.length() - 1);
+            location2 = CUSTOM;
+            customLocation2 = parts[nextIndex];
+            if (customLocation2.startsWith("\"")) {
+                customLocation2 = customLocation2.substring(1);
+                parts = new ArrayList<>(Arrays.asList(parts).subList(nextIndex, parts.length)).toArray(new String[0]);
+                while (!customLocation2.endsWith("\"")) {
+                    customLocation2 += " " + parts[1];
+                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
                 }
-                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            } else {
-                isLineRange = true;
-                radius = Double.parseDouble(parts[5]);
+                customLocation2 = customLocation2.substring(0, customLocation2.length() - 1);
+
+                isLineRange = !customLocation2.contains(",");
             }
+            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            nextIndex = 0;
         }
 
         List<String> keys = ParticleUtils.keys(particle);
         if (keys != null) {
-            for (int i = 6; i < parts.length; i++) {
-                customData.put(keys.get(i - 6), parts[i]);
+            for (int i = 0; i < keys.size(); i++) {
+                if (nextIndex >= parts.length) {
+                    break;
+                }
+                customData.put(keys.get(i), parts[nextIndex++]);
             }
         }
 
