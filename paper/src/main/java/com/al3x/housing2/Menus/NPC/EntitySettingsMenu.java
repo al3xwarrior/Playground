@@ -1,15 +1,18 @@
 package com.al3x.housing2.Menus.NPC;
 
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.trait.AttributeTrait;
+import net.citizensnpcs.trait.ScaledMaxHealthTrait;
 import net.citizensnpcs.trait.waypoint.WanderWaypointProvider;
 import net.citizensnpcs.trait.waypoint.Waypoints;
 import org.bukkit.Bukkit;
@@ -58,22 +61,18 @@ public class EntitySettingsMenu extends Menu {
             setupItems();
         });
 
-        AttributeTrait attributeTrait = housingNPC.getCitizensNPC().getOrAddTrait(AttributeTrait.class);
+        ScaledMaxHealthTrait maxHealthTrait = housingNPC.getCitizensNPC().getOrAddTrait(ScaledMaxHealthTrait.class);
         addItem(11, ItemBuilder.create(Material.GOLDEN_APPLE)
                         .name("&eChange Max Health")
                         .description("Change the max health of the NPC")
-                        .info(null, attributeTrait.getAttributeValue(Attribute.MAX_HEALTH))
-                        .info(null, "")
-                        .info(null, "&cI dont know why this isn't working.")
+                        .info(null, maxHealthTrait.getMaxHealth() == null ? "null" : maxHealthTrait.getMaxHealth() + "")
                         .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                         .build(), () -> {
                     player.sendMessage(colorize("&eEnter the new max health value:"));
-                    openChat(main, attributeTrait.getAttributeValue(Attribute.MAX_HEALTH) + "", (value) -> {
+                    openChat(main, maxHealthTrait.getMaxHealth() + "", (value) -> {
                         try {
-                            attributeTrait.setAttributeValue(Attribute.MAX_HEALTH, Double.parseDouble(value));
-                            if (housingNPC.getCitizensNPC().getEntity() instanceof LivingEntity entity) {
-                                entity.setMaxHealth(entity.getHealth());
-                            }
+                            housingNPC.setMaxHealth(Double.parseDouble(value));
+                            maxHealthTrait.setMaxHealth(Double.parseDouble(value));
                             Bukkit.getScheduler().runTask(main, this::open);
                         } catch (NumberFormatException e) {
                             player.sendMessage(colorize("&cInvalid number!"));
@@ -105,8 +104,26 @@ public class EntitySettingsMenu extends Menu {
                 .info(null, housingNPC.getCitizensNPC().useMinecraftAI() ? "&aTrue" : "&cFalse")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
                 .build(), () -> {
+            housingNPC.setMinecraftAI(!housingNPC.getCitizensNPC().useMinecraftAI());
             housingNPC.getCitizensNPC().setUseMinecraftAI(!housingNPC.getCitizensNPC().useMinecraftAI());
             setupItems();
+        });
+
+        addItem(14, ItemBuilder.create(Material.ZOMBIE_SPAWN_EGG)
+                .name("&eIs Baby")
+                .description("Toggle if the NPC is a baby")
+                .info(null, housingNPC.isBaby() ? "&aTrue" : "&cFalse")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            housingNPC.setBaby(!housingNPC.isBaby());
+            setupItems();
+        });
+
+        addItem(15, ItemBuilder.create(Material.PAPER)
+                .name("&eEntity Events")
+                .description("View and edit the entity events")
+                .build(), () -> {
+            new EntityEventsMenu(main, player, housingNPC).open();
         });
 
         //back
@@ -117,5 +134,44 @@ public class EntitySettingsMenu extends Menu {
         addItem(31, backBuilder.build(), () -> {
             new NPCMenu(main, player, housingNPC).open();
         });
+    }
+
+    private class EntityEventsMenu extends Menu {
+        public EntityEventsMenu(Main main, Player player, HousingNPC housingNPC) {
+            super(player, colorize("&7Entity Events"), 4 * 9);
+        }
+
+        @Override
+        public void setupItems() {
+            addEventActionItem(10, Material.SKELETON_SKULL, "&aNPC Death", "&7Executes when the NPC dies.", EventType.NPC_DEATH);
+            addEventActionItem(11, Material.FIRE_CHARGE, "&aNPC Damage", "&7Executes when the NPC takes damage.", EventType.NPC_DAMAGE);
+        }
+
+        private void addEventActionItem(int slot, Material material, String name, String description, EventType eventType) {
+            addItem(slot, new ItemBuilder()
+                            .material(material)
+                            .name(name)
+                            .description(description)
+                            .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                            .build(),
+                    () -> {
+                        ActionsMenu menu = new ActionsMenu(main, player, house, eventType);
+                        menu.setBackMenu(this);
+                        menu.setActions(housingNPC.getActions(eventType));
+                        menu.open();
+                    });
+
+            addItem(31, new ItemBuilder().material(Material.ARROW).name("&cBack").build(), () -> new EntitySettingsMenu(main, player, housingNPC).open());
+        }
+
+        private void addNotReadyItem(int slot, Material material, String name, String description) {
+            addItem(slot, new ItemBuilder()
+                            .material(material)
+                            .name(name)
+                            .description(description)
+                            .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                            .build(),
+                    () -> player.sendMessage(colorize("&cNot ready yet.")));
+        }
     }
 }

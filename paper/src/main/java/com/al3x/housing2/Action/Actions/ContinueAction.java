@@ -1,14 +1,18 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.LinkedHashMap;
 
-public class ContinueAction extends HTSLImpl {
+public class ContinueAction extends HTSLImpl implements NPCAction {
 
     public ContinueAction() {
         super("Continue Action");
@@ -58,5 +62,10 @@ public class ContinueAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "continue";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        //Do nothing
     }
 }

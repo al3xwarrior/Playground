@@ -49,7 +49,7 @@ public class GlobalStatAction extends HTSLImpl {
         super("Global Stat Action");
         this.statName = "Kills";
 
-        this.statInstances.add(new StatInstance(true));
+        this.statInstances.add(new StatInstance("global"));
     }
 
     @Override
@@ -214,7 +214,7 @@ public class GlobalStatAction extends HTSLImpl {
                 backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
                 return false;
             }
-            statInstances.add(new StatInstance(true));
+            statInstances.add(new StatInstance("global"));
             backMenu.open();
             return true;
         }
@@ -295,7 +295,7 @@ public class GlobalStatAction extends HTSLImpl {
             this.statInstances = dataToList(gson.toJsonTree(data.get("statInstances")).getAsJsonArray(), StatInstance.class);
         } else {
             statInstances = new ArrayList<>();
-            StatInstance statInstance = new StatInstance(true);
+            StatInstance statInstance = new StatInstance("global");
             mode = StatOperation.valueOf((String) data.get("mode"));
             value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
 
@@ -333,20 +333,20 @@ public class GlobalStatAction extends HTSLImpl {
         parts = Arrays.copyOfRange(parts, 1, parts.length);
         ArrayList<StatInstance> statInstances = new ArrayList<>();
 
-        StatInstance instance = new StatInstance(true);
+        StatInstance instance = new StatInstance("global");
         while (parts.length > 0) {
             if (StatOperation.getOperation(parts[0]) != null) {
                 instance.mode = StatOperation.getOperation(parts[0]);
                 parts = Arrays.copyOfRange(parts, 1, parts.length);
                 continue;
             } else {
-                instance.value = new StatValue(true);
+                instance.value = new StatValue("global");
                 parts = instance.value.importValue(parts);
             }
 
             if (instance.mode != null && instance.value != null) {
                 statInstances.add(instance);
-                instance = new StatInstance(true);
+                instance = new StatInstance("global");
             }
         }
 

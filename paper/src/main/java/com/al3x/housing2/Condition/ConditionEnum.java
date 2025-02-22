@@ -9,6 +9,7 @@ import java.util.HashMap;
 public enum ConditionEnum {
     REQUIRED_GROUP("Required Group", GroupRequirementCondition.class),
     STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
+    NPC_STAT_REQUIREMENT("NPC Stat Requirement", NPCStatRequirementCondition.class),
     GLOBALSTAT_REQUIREMENT("Global Stat Requirement", GlobalStatRequirementCondition.class),
     HAS_PERMISSION("Has Permission", HasPermissionCondition.class),
     WITHIN_REGION("Within Region", WithinRegionCondition.class),
@@ -17,6 +18,7 @@ public enum ConditionEnum {
     IS_SNEAKING("Is Sneaking", IsSneakingCondition.class),
     IS_FLYING("Is Flying", IsFlyingCondition.class),
     IS_GLIDING("Is Gliding", IsGlidingCondition.class),
+    IS_NPC_HIDDEN("Is NPC Hidden", IsNPCHiddenCondition.class),
     HEALTH_REQUIREMENT("Health Requirement", HealthRequirementCondition.class),
     MAXHEALTH_REQUIREMENT("Max Health Requirement", MaxHealthRequirementCondition.class),
     HUNGER_REQUIREMENT("Hunger Requirement", HungerRequirementCondition.class),

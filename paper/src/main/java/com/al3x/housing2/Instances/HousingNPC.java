@@ -2,10 +2,12 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.HologramData;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
+import com.al3x.housing2.Instances.HousingData.StatData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.MineSkin.BiggerSkinData;
 import com.al3x.housing2.MineSkin.SkinData;
@@ -14,10 +16,7 @@ import com.google.gson.Gson;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
-import net.citizensnpcs.trait.AttributeTrait;
-import net.citizensnpcs.trait.FollowTrait;
-import net.citizensnpcs.trait.LookClose;
-import net.citizensnpcs.trait.SkinTrait;
+import net.citizensnpcs.trait.*;
 import net.citizensnpcs.trait.versioned.DisplayTrait;
 import net.citizensnpcs.trait.versioned.TextDisplayTrait;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
@@ -28,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -47,6 +47,7 @@ import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
 public class HousingNPC {
 
     private static final Gson gson = new Gson();
+    public boolean deleted;
 
     public static ItemStack getNPCItem() {
         ItemStack npc = getCustomSkull("a055eb0f86dcece53be47214871b3153ac9be329fb8b4211536931fcb45a7952");
@@ -77,6 +78,7 @@ public class HousingNPC {
     private int respawnTime = 20;
     private double maxHealth = 20;
     private boolean minecraftAI;
+    private boolean isBaby;
 
     // Equipment
     private ItemStack hand;
@@ -96,9 +98,12 @@ public class HousingNPC {
     private Hologram hologram;
 
     private List<Action> actions;
+    private HashMap<EventType, List<Action>> eventActions = new HashMap<>();
+
+    private List<Stat> stats = new ArrayList<>();
 
     private static final String[] NPC_NAMES = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
-
+    private static final EventType[] NPC_EVENTS = {EventType.NPC_DEATH, EventType.NPC_DAMAGE};
     public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
         this.main = main;
         this.house = house;
@@ -110,6 +115,23 @@ public class HousingNPC {
         this.entityType = EntityType.valueOf(data.getNpcType());
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
+        this.stats = StatData.Companion.toList(data.getStats() == null ? new ArrayList<>() : data.getStats());
+
+        this.eventActions = new HashMap<>();
+        if (data.getEventActions() == null) {
+            for (EventType type : NPC_EVENTS) {
+                this.eventActions.put(type, new ArrayList<>());
+            }
+        } else {
+            for (EventType type : NPC_EVENTS) {
+                if (data.getEventActions().get(type.name()) == null) {
+                    this.eventActions.put(type, new ArrayList<>());
+                    continue;
+                }
+                this.eventActions.put(type, Companion.toList(data.getEventActions().get(type.name())));
+            }
+        }
+
         this.hologram = data.getHologramData() != null ? HologramData.Companion.toData(data.getHologramData()) : new Hologram(
                 main, null, house, location.clone().add(0, 2.5, 0)
         );
@@ -117,6 +139,7 @@ public class HousingNPC {
         this.maxHealth = data.getMaxHealth();
         this.minecraftAI = data.getMinecraftAI();
         this.respawnTime = data.getRespawnTime();
+        this.isBaby = data.isBaby();
         this.hologram.setHouse(house);
 
         if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
@@ -145,10 +168,20 @@ public class HousingNPC {
         this.speed = 1.0;
         this.navigationType = NavigationType.STATIONARY;
         this.actions = new ArrayList<>();
+
+        this.eventActions = new HashMap<>();
+        for (EventType type : NPC_EVENTS) {
+            this.eventActions.put(type, new ArrayList<>());
+        }
+        this.stats = new ArrayList<>();
+
         this.waypoints = new ArrayList<>();
 
         this.canBeDamaged = false;
         this.minecraftAI = false;
+        this.maxHealth = 20;
+        this.respawnTime = 20;
+        this.isBaby = false;
 
         this.hologram = new Hologram(main, player, house, location.clone().add(0, 2.5, 0));
         this.hologram.removeLine(1);
@@ -212,9 +245,10 @@ public class HousingNPC {
     }
 
     public void configureEntitySettings() {
-        citizensNPC.getOrAddTrait(AttributeTrait.class).setAttributeValue(Attribute.MAX_HEALTH, maxHealth);
+        citizensNPC.getOrAddTrait(ScaledMaxHealthTrait.class).setMaxHealth(maxHealth);
         citizensNPC.setUseMinecraftAI(minecraftAI);
         citizensNPC.setProtected(!canBeDamaged);
+        citizensNPC.getOrAddTrait(Age.class).setAge(isBaby ? -1 : 0);
     }
 
     private void configureWaypoints(List<LocationData> dataWaypoints) {
@@ -250,6 +284,12 @@ public class HousingNPC {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (deleted) {
+                    citizensNPC.despawn();
+                    citizensNPC.destroy();
+                    cancel();
+                    return;
+                }
                 if (citizensNPC.isSpawned()) {
                     if (citizensNPC.getEntity().getLocation().getY() < -64) {
                         citizensNPC.despawn();
@@ -274,8 +314,20 @@ public class HousingNPC {
             int ticks = 0;
             @Override
             public void run() {
+                if (deleted) {
+                    citizensNPC.despawn();
+                    citizensNPC.destroy();
+                    cancel();
+                    return;
+                }
                 if (citizensNPC.isSpawned()) {
-                    if (!spawned) spawned = true;
+                    if (!spawned) {
+                        spawned = true;
+                        if (citizensNPC.getEntity() instanceof LivingEntity le) {
+                            le.setHealth(maxHealth);
+                        }
+                        citizensNPC.setUseMinecraftAI(minecraftAI);
+                    }
                 } else {
                     if (spawned) {
                         ticks++;
@@ -291,6 +343,12 @@ public class HousingNPC {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (deleted) {
+                    citizensNPC.despawn();
+                    citizensNPC.destroy();
+                    cancel();
+                    return;
+                }
                 if (citizensNPC.isSpawned()) {
                     if (hologram != null) {
                         Location loc = citizensNPC.getEntity().getLocation().clone();
@@ -338,6 +396,10 @@ public class HousingNPC {
         return citizensNPC;
     }
 
+    public HashMap<EventType, List<Action>> getEventActions() {
+        return eventActions;
+    }
+
     public int getNpcID() {
         return npcID;
     }
@@ -348,6 +410,13 @@ public class HousingNPC {
 
     public List<Action> getActions() {
         return actions;
+    }
+
+    public List<Action> getActions(EventType type) {
+        if (!eventActions.containsKey(type)) {
+            eventActions.put(type, new ArrayList<>());
+        }
+        return eventActions.get(type);
     }
 
     public HousingWorld getHouse() {
@@ -379,6 +448,19 @@ public class HousingNPC {
         this.citizensNPC.setProtected(!canBeDamaged);
         this.citizensNPC.despawn();
         this.citizensNPC.spawn(location);
+    }
+
+    public boolean executeEventActions(HousingWorld house, EventType eventType, Player player, Cancellable event) {
+        if (house.isAdminMode(player)) return false;
+
+        List<Action> actions = eventActions.get(eventType);
+        if (actions != null) {
+            ActionExecutor executor = new ActionExecutor("event");
+            executor.addActions(actions);
+            executor.execute(player, house, event);
+            return event != null && event.isCancelled();
+        }
+        return false;
     }
 
     public void setMaxHealth(double health) {
@@ -548,5 +630,18 @@ public class HousingNPC {
 
     public void setRespawnTime(int respawnTime) {
         this.respawnTime = respawnTime;
+    }
+
+    public List<Stat> getStats() {
+        return stats;
+    }
+
+    public boolean isBaby() {
+        return isBaby;
+    }
+
+    public void setBaby(boolean baby) {
+        isBaby = baby;
+        citizensNPC.getOrAddTrait(Age.class).setAge(baby ? -1 : 0);
     }
 }

@@ -66,6 +66,12 @@ public class JoinLeaveHouse implements Listener {
 
         player.activeBossBars().forEach(bossBar -> bossBar.removeViewer(player));
 
+        player.clearActivePotionEffects();
+
+        // Clear inventory and enderchest
+        player.getInventory().clear();
+        player.getEnderChest().clear();
+
         // Reset attributes
         for (AttributeType attribute : AttributeType.values()) {
             AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
@@ -139,7 +145,15 @@ public class JoinLeaveHouse implements Listener {
         attachment.setPermission("housing.world." + house.getHouseUUID(), true);
         perms.put(player.getUniqueId(), attachment);
 
-        System.out.println(player.getName() + " has permission " + "housing.world." + house.getHouseUUID() + "? " + player.hasPermission("housing.world." + house.getHouseUUID()));
+
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+            if (!player.hasPermission("housing.world." + house.getHouseUUID())) {
+                PermissionAttachment a2 = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance()));
+                a2.setPermission("housing.world." + house.getHouseUUID(), true);
+                perms.put(player.getUniqueId(), attachment);
+            }
+            System.out.println(player.getName() + " has permission " + "housing.world." + house.getHouseUUID() + "? " + player.hasPermission("housing.world." + house.getHouseUUID()));
+        }, 1L);
 
         if (house.getJoinLeaveMessages()) house.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
 

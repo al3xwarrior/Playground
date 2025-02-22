@@ -1,16 +1,18 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
-import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.ScaledMaxHealthTrait;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChangeMaxHealthAction extends HTSLImpl {
+public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
 
     private double health;
     private StatOperation mode;
@@ -140,6 +142,32 @@ public class ChangeMaxHealthAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "maxHealth";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (npc != null) {
+            double currentMax = npc.getOrAddTrait(ScaledMaxHealthTrait.class).getMaxHealth();
+
+            switch (mode) {
+                case INCREASE:
+                    currentMax += health;
+                    break;
+                case DECREASE:
+                    currentMax -= health;
+                    break;
+                case SET:
+                    currentMax = health;
+                    break;
+            }
+
+            // Ensure CurrentMax is a value between 1 and 2000
+            currentMax = Math.min(2000, Math.max(1, currentMax));
+            npc.getOrAddTrait(ScaledMaxHealthTrait.class).setMaxHealth(currentMax);
+            if (healOnChange && npc.getEntity() instanceof LivingEntity le) {
+                le.setHealth(currentMax);
+            }
+        }
     }
 
 //    @Override

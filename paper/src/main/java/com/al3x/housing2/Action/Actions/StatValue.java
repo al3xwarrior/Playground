@@ -21,31 +21,37 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class StatValue extends Action {
-    private boolean isGlobal;
+    private String statType;
     private boolean isExpression;
     private String literalValue;
     private StatValue value;
     private List<StatInstance> statInstances = new ArrayList<>();
 
-    public StatValue(boolean isGlobal) {
+    public StatValue(String statType) {
         super("StatValue");
         this.literalValue = "1.0";
         this.value = null;
         this.isExpression = false;
-        this.isGlobal = isGlobal;
+        this.statType = statType;
+    }
+
+    public StatValue(String statType, boolean isExpression, String literalValue, StatValue value, List<StatInstance> statInstances) {
+        super("StatValue");
+        this.statType = statType == null ? "stat" : statType;
+        this.isExpression = isExpression;
+        this.literalValue = literalValue;
+        this.value = value;
+        this.statInstances = statInstances;
     }
 
     public StatValue(boolean isGlobal, boolean isExpression, String literalValue, StatValue value, List<StatInstance> statInstances) {
         super("StatValue");
-        this.isGlobal = isGlobal;
+        this.statType = isGlobal ? "global" : "player";
         this.isExpression = isExpression;
         this.literalValue = literalValue;
         this.value = value;
@@ -57,7 +63,7 @@ public class StatValue extends Action {
     public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
         //If they are somehow seeing it then it's an error
         if (editMenu == null)
-            return new ActionEditor(6, "&e" + (isGlobal ? "Global" : "Player") + " Stat > Value", new ActionEditor.ActionItem(
+            return new ActionEditor(6, "&e" + StringUtilsKt.formatCapitalize(statType) + " Stat > Value", new ActionEditor.ActionItem(
                     ItemBuilder.create(Material.BARRIER)
                             .name("&cError")
                             .description("There was an error creating this menu, please contact an admin if this issue persists."),
@@ -67,8 +73,8 @@ public class StatValue extends Action {
         if (isExpression) {
             literalValue = null;
             if (statInstances.isEmpty()) { //contains the mode and second value
-                value = new StatValue(isGlobal);
-                statInstances.add(new StatInstance(isGlobal));
+                value = new StatValue(statType);
+                statInstances.add(new StatInstance(statType));
             }
 
             StatValue previousValue = value;
@@ -228,7 +234,7 @@ public class StatValue extends Action {
                 editMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
                 return false;
             }
-            statInstances.add(new StatInstance(false));
+            statInstances.add(new StatInstance(statType));
             editMenu.open();
             return true;
         }
@@ -330,6 +336,16 @@ public class StatValue extends Action {
         } else return literalValue;
     }
 
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        super.fromData(data, actionClass);
+        if (data.get("isGlobal") != null) { //Convert from old format
+            statType = (boolean) data.get("isGlobal") ? "global" : "player";
+        } else {
+            statType = data.get("statType").toString();
+        }
+    }
+
     public void createDisplayItem(ItemBuilder builder) {
     } // never in display
 
@@ -355,8 +371,8 @@ public class StatValue extends Action {
         if (isExpression) {
             literalValue = null;
             if (statInstances.isEmpty()) {
-                value = new StatValue(isGlobal);
-                statInstances.add(new StatInstance(isGlobal));
+                value = new StatValue(statType);
+                statInstances.add(new StatInstance(statType));
             }
         } else {
             statInstances.clear();
@@ -381,13 +397,12 @@ public class StatValue extends Action {
         return statInstances;
     }
 
-    public boolean isGlobal() {
-        return isGlobal;
+    public String getStatType() {
+        return statType;
     }
 
-
     public String getTitle(ActionEditMenu currentMenu) {
-        StringBuilder title = new StringBuilder("&e" + (isGlobal ? "Global" : "Player") + " Stat > Value");
+        StringBuilder title = new StringBuilder("&e" + StringUtilsKt.formatCapitalize(statType) + " Stat > Value");
         int count = 1;
         while (currentMenu.getBackMenu() != null && currentMenu.getBackMenu() instanceof ActionEditMenu back && back.getAction() instanceof StatValue) {
             title.append(" > Value");
@@ -395,7 +410,7 @@ public class StatValue extends Action {
             currentMenu = back;
         }
         if (count > 2) {
-            title = new StringBuilder("&e" + (isGlobal ? "Global" : "Player") + " Stat > Value > " + (count - 1) + " Values");
+            title = new StringBuilder("&e" + StringUtilsKt.formatCapitalize(statType) + " Stat > Value > " + (count - 1) + " Values");
         }
         return title.toString();
     }
@@ -409,11 +424,11 @@ public class StatValue extends Action {
             parts[0] = parts[0].substring(1);
 
             List<StatInstance> statInstances = new ArrayList<>();
-            StatInstance statInstance = new StatInstance(isGlobal);
+            StatInstance statInstance = new StatInstance(statType);
             statInstance.mode = null;
             statInstance.value = null;
 
-            value = new StatValue(isGlobal);
+            value = new StatValue(statType);
             parts = value.importValue(parts);
 
             while (parts.length > 0) {
@@ -426,14 +441,14 @@ public class StatValue extends Action {
                     if (part.endsWith(")")) {
                         parts[0] = part.substring(0, part.length() - 1);
                     }
-                    StatValue value = new StatValue(isGlobal);
+                    StatValue value = new StatValue(statType);
                     parts = value.importValue(parts);
                     statInstance.value = value;
                 }
 
                 if (statInstance.mode != null && statInstance.value != null) {
                     statInstances.add(statInstance);
-                    statInstance = new StatInstance(isGlobal);
+                    statInstance = new StatInstance(statType);
                 }
             }
 

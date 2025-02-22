@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -13,7 +14,10 @@ import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -21,7 +25,7 @@ import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
-public class ConditionalAction extends HTSLImpl {
+public class ConditionalAction extends HTSLImpl implements NPCAction{
     private static final Gson gson = new Gson();
     private List<Condition> conditions;
     private boolean matchAnyCondition;
@@ -126,24 +130,36 @@ public class ConditionalAction extends HTSLImpl {
         return false; //does nothing
     }
 
-    @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+    public boolean execute(Entity entity, Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
         boolean result = false;
         if (conditions.isEmpty()) {
             result = true;
         } else {
             for (Condition condition : conditions) {
-                if (condition.requiresPlayer() && player == null) {
+                if (condition.requiresPlayer() && !(entity instanceof Player)) {
                     result = false;
                     continue;
                 }
-                if (condition.execute(player, house, event) != not) {
-                    result = true;
-                    if (matchAnyCondition) break;
-                } else {
-                    if (!matchAnyCondition) {
-                        result = false;
-                        break;
+                if (entity == player) {
+                    if (condition.execute(player, house, event) != not) {
+                        result = true;
+                        if (matchAnyCondition) break;
+                    } else {
+                        if (!matchAnyCondition) {
+                            result = false;
+                            break;
+                        }
+                    }
+                } else if (condition instanceof NPCCondition npcCondition) {
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                    if (npcCondition.npcExecute(player, npc, house, event, oldExecutor) != not) {
+                        result = true;
+                        if (matchAnyCondition) break;
+                    } else {
+                        if (!matchAnyCondition) {
+                            result = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -152,7 +168,17 @@ public class ConditionalAction extends HTSLImpl {
         ActionExecutor executor = new ActionExecutor("conditional");
         executor.addActions(result ? ifActions : elseActions);
         executor.setParent(oldExecutor);
-        return executor.execute(player, house, event) == OutputType.SUCCESS;
+        return executor.execute(entity, player, house, event) == OutputType.SUCCESS;
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+        return execute(player, player, house, event, oldExecutor);
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        execute(npc.getEntity(), player, house, event, executor);
     }
 
     public List<Condition> getConditions() {

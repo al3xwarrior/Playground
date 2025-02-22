@@ -1,11 +1,10 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -16,14 +15,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.*;
 
-public class AttackEntityAction extends HTSLImpl {
+public class AttackEntityAction extends HTSLImpl implements NPCAction {
     private AttackEntityEnum mode;
     private String range;
     private List<Condition> conditions;
@@ -109,6 +110,11 @@ public class AttackEntityAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
+        return false; // Not used
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {
@@ -139,22 +145,86 @@ public class AttackEntityAction extends HTSLImpl {
                         if (conditions.stream().allMatch(condition -> condition.execute(target, house, null))) {
                             target.damage(damageValue);
                         }
+                    } else if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                        NPC target = CitizensAPI.getNPCRegistry().getNPC(entity);
+                        if (conditions.stream().filter(condition -> condition instanceof NPCCondition).allMatch(condition -> ((NPCCondition) condition).npcExecute(player, target, house, null, executor))) {
+                            if (entity instanceof LivingEntity le) {
+                                le.damage(damageValue);
+                            }
+                        }
                     }
-                    //TODO: add support for other entities
                 }
                 return true;
         }
 
         for (Entity entity : entities) {
-            if (entity.getLocation().distance(player.getLocation()) > rangeValue) {
-                continue;
-            }
             if (entity instanceof LivingEntity le) {
                 le.damage(damageValue);
             }
         }
 
         return true;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
+        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
+        if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {
+            return;
+        }
+        double rangeValue = Double.parseDouble(range);
+        double damageValue = Double.parseDouble(value);
+        List<Entity> entities = new ArrayList<>(npc.getEntity().getNearbyEntities(rangeValue, rangeValue, rangeValue));
+        switch (mode) {
+            case NEAREST:
+                entities.sort(Comparator.comparing((Entity entity) -> entity.getLocation().distance(npc.getEntity().getLocation())));
+
+                if (entities.isEmpty()) {
+                    return;
+                }
+
+                Entity e = entities.getFirst();
+                if (e instanceof LivingEntity le) {
+                    le.damage(damageValue);
+                }
+
+                return;
+            case PLAYER:
+                entities.removeIf(entity -> !(entity instanceof Player) || CitizensAPI.getNPCRegistry().isNPC(entity));
+                break;
+            case NPC:
+                entities.removeIf(entity -> !CitizensAPI.getNPCRegistry().isNPC(entity));
+                break;
+            case MOB:
+                entities.removeIf(entity -> entity instanceof Player || CitizensAPI.getNPCRegistry().isNPC(entity));
+                break;
+            case ALL:
+                break;
+            case CONDITION:
+                for (Entity entity : entities) {
+                    if (entity instanceof Player) {
+                        Player target = (Player) entity;
+                        if (conditions.stream().allMatch(condition -> condition.execute(target, house, null))) {
+                            target.damage(damageValue);
+                        }
+                    } else if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                        NPC target = CitizensAPI.getNPCRegistry().getNPC(entity);
+                        if (conditions.stream().filter(condition -> condition instanceof NPCCondition).allMatch(condition -> ((NPCCondition) condition).npcExecute(player, target, house, null, executor))) {
+                            if (entity instanceof LivingEntity le) {
+                                le.damage(damageValue);
+                            }
+                        }
+                    }
+                }
+                return;
+        }
+
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity le) {
+                le.damage(damageValue);
+            }
+        }
     }
 
     public AttackEntityEnum getMode() {

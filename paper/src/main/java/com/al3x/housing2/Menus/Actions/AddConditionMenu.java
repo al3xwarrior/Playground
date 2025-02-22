@@ -1,14 +1,18 @@
-package com.al3x.housing2.Menus;
+package com.al3x.housing2.Menus.Actions;
 
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.Actions.*;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
@@ -37,6 +41,7 @@ public class AddConditionMenu extends Menu {
     private EventType event;
     private HousingNPC npc;
     private List<Condition> conditions;
+    private List<Action> parentActions = new ArrayList<>();
     private String search = "";
     
     public AddConditionMenu(Main main, Player player, HousingWorld house, List<Condition> conditions, Menu backMenu) {
@@ -46,7 +51,10 @@ public class AddConditionMenu extends Menu {
         this.house = house;
         this.conditions = conditions;
         this.backMenu = backMenu;
-        setupItems();
+    }
+
+    public void setParentActions(List<Action> parentActions) {
+        this.parentActions = parentActions;
     }
 
     public void setFunction(Function function) {
@@ -71,6 +79,7 @@ public class AddConditionMenu extends Menu {
 
     @Override
     public void setupItems() {
+        System.out.println(parentActions);
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
         PaginationList<Condition> paginationList = getConditions();
@@ -146,7 +155,9 @@ public class AddConditionMenu extends Menu {
                 backMenu.open();
                 return;
             }
-            new ActionsMenu(main, player, house, conditions, null, true).open();
+            ActionsMenu menu = new ActionsMenu(main, player, house, conditions, null, true);
+            menu.setParentActions(parentActions);
+            menu.open();
         });
     }
 
@@ -155,6 +166,15 @@ public class AddConditionMenu extends Menu {
         List<Condition> newConditions = new ArrayList<>();
         for (Condition condition : conditionArray) {
             if (condition == null) continue;
+
+            if (findRunAsNPCMenu() == null && condition instanceof NPCCondition npcA && npcA.hide()) continue;
+
+            if (findRunAsNPCMenu() != null) {
+                if (!(condition instanceof NPCCondition)) continue;
+                newConditions.add(condition);
+                continue;
+            }
+
             if (function != null) {
                 if (function.isGlobal() && condition.requiresPlayer()) continue;
                 if (condition.allowedEvents() != null && !condition.allowedEvents().contains(null)) continue;
@@ -184,5 +204,14 @@ public class AddConditionMenu extends Menu {
         }
 
         return new PaginationList<>(newConditions, 21);
+    }
+
+    private RunAsNPCAction findRunAsNPCMenu() {
+        for (Action parentAction : parentActions) {
+            if (parentAction instanceof RunAsNPCAction) {
+                return (RunAsNPCAction) parentAction;
+            }
+        }
+        return null;
     }
 }

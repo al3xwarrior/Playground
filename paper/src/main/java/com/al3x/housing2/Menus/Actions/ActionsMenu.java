@@ -1,15 +1,14 @@
 package com.al3x.housing2.Menus.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Actions.RunAsNPCAction;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.AddConditionMenu;
 import com.al3x.housing2.Menus.HousingMenu.EventActionsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.NPC.NPCMenu;
@@ -21,16 +20,13 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundWebsocket;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -53,6 +49,7 @@ public class ActionsMenu extends Menu {
     private Condition cachedCondition;
     private String varName = null;
     //1 is the new 0
+    private List<Action> parentActions = new ArrayList<>();
     private int currentPage = 1;
 
     // NPC
@@ -126,6 +123,18 @@ public class ActionsMenu extends Menu {
         conditions.remove(condition);
         cachedCondition = condition;
         setupItems();
+    }
+
+    public void addParentAction(Action action) {
+        parentActions.add(action);
+    }
+
+    public List<Action> getParentActions() {
+        return parentActions;
+    }
+
+    public void setParentActions(List<Action> parentActions) {
+        this.parentActions = parentActions;
     }
 
     @Override
@@ -202,6 +211,7 @@ public class ActionsMenu extends Menu {
                     ItemBuilder item = new ItemBuilder();
                     item.mClick(ItemBuilder.ActionType.CLONE);
                     condition.createDisplayItem(item);
+                    replacePlayerWithNPC(item);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
@@ -217,7 +227,11 @@ public class ActionsMenu extends Menu {
                         }
 
                         if (e.isLeftClick() && condition.editorMenu(house, player, backMenu) != null) {
-                            new ActionEditMenu(condition, main, player, house, this).open();
+                            ActionEditMenu menu = new ActionEditMenu(condition, main, player, house, this);
+                            menu.setEvent(event);
+                            menu.setHousingNPC(housingNPC);
+                            menu.setParentActions(parentActions);
+                            menu.open();
                         } else if (e.isRightClick()) {
                             removeCondition(condition);
                         }
@@ -249,6 +263,7 @@ public class ActionsMenu extends Menu {
                 menu.setEvent(event);
                 menu.setNPC(housingNPC);
                 menu.setFunction(function);
+                menu.setParentActions(parentActions);
                 menu.open();
             });
         } else { // Actions
@@ -273,6 +288,7 @@ public class ActionsMenu extends Menu {
                         item.description(action.getComment()).punctuation(false);
                     }
                     action.createDisplayItem(item, house);
+                    replacePlayerWithNPC(item);
                     int finalI = i;
                     addItem(slot, item.build(), (e) -> {
                         if (e.isShiftClick()) {
@@ -297,6 +313,7 @@ public class ActionsMenu extends Menu {
                             menu.setEvent(event);
                             menu.setHousingNPC(housingNPC);
                             menu.setUpdate(update);
+                            menu.setParentActions(parentActions);
                             menu.open();
                         } else {
                             removeAction(action);
@@ -389,6 +406,7 @@ public class ActionsMenu extends Menu {
                 menu.setEvent(event);
                 menu.setNpc(housingNPC);
                 menu.setFunction(function);
+                menu.setParentActions(parentActions);
                 menu.open();
             });
         }
@@ -460,6 +478,12 @@ public class ActionsMenu extends Menu {
 
     public Menu getBackMenu() {
         return backMenu;
+    }
+
+    private void replacePlayerWithNPC(ItemBuilder itemBuilder) {
+        if (parentActions.stream().anyMatch(action -> action instanceof RunAsNPCAction)) {
+            itemBuilder.description(itemBuilder.getDescription().replaceAll("(pP)layer", "NPC"));
+        }
     }
 
     public void shiftAction(Action action, int index, boolean forward) {

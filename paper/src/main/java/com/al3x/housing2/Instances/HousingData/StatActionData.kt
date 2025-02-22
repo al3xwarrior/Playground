@@ -12,7 +12,7 @@ class StatActionData {
                 statValue.statInstances,
                 statValue.value?.let { fromStatValue(it) },
                 statValue.isExpression,
-                statValue.isGlobal
+                statValue.statType
             )
         }
     }
@@ -23,11 +23,21 @@ data class MoreStatData(
     val statInstances: List<StatInstance>?,
     val value: MoreStatData?,
     val isExpression: Boolean,
-    val isGlobal: Boolean = false
+    val statType: String? = "player",
+    val isGlobal: Boolean? = false,
 ) {
     fun toStatValue(): StatValue {
+        if (isGlobal != null) { //Convert from old format
+            return StatValue(
+                isGlobal,
+                isExpression,
+                literal,
+                value?.toStatValue(),
+                statInstances
+            )
+        }
         return StatValue(
-            isGlobal,
+            statType,
             isExpression,
             literal,
             value?.toStatValue(),

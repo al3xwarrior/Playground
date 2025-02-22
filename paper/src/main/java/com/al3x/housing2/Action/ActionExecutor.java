@@ -8,8 +8,11 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import net.minecraft.util.parsing.packrat.Atom;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -116,6 +119,14 @@ public class ActionExecutor {
     }
 
     public OutputType execute(Player player, HousingWorld house, Cancellable event) {
+        return execute(player, player, house, event);
+    }
+
+    public OutputType execute(NPC npc, Player player, HousingWorld house, Cancellable event) {
+        return execute(npc.getEntity(), player, house, event);
+    }
+
+    public OutputType execute(Entity entity, Player player, HousingWorld house, Cancellable event) {
         if (limits == null) {
             limits = new HashMap<>();
         }
@@ -175,13 +186,22 @@ public class ActionExecutor {
             }
 
             if (pause == 0) {
-                action.execute(player, house, event, this);
+                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+                    return ERROR;
+                }
+
+                if (player == entity) {
+                    action.execute(player, house, event, this);
+                } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                    npcAction.npcExecute(player, npc, house, event, this);
+                }
 
                 if (queue.isEmpty()) {
                     isComplete = true;
                 }
 
-                executeChildren(player, house, event); //Look for children to execute. >:)
+                executeChildren(entity, player, house, event); //Look for children to execute. >:)
                 continue;
             }
 
@@ -192,14 +212,20 @@ public class ActionExecutor {
             Action finalAction = action;
 
             scheduler.runTaskLater(Main.getInstance(), () -> {
-                if (isComplete || isPaused) return;
-                finalAction.execute(player, house, event, this);
-
-                if (queue.isEmpty()) {
-                    isComplete = true;
+                if (isComplete || isPaused) {
+                    return;
+                }
+                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+                    return;
+                }
+                if (player == entity) {
+                    finalAction.execute(player, house, event, this);
+                } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                    npcAction.npcExecute(player, npc, house, event, this);
                 }
 
-                executeChildren(player, house, event);
+                executeChildren(entity, player, house, event);
             }, (long) pause);
         }
 
@@ -215,7 +241,7 @@ public class ActionExecutor {
         return queue.isEmpty() ? SUCCESS : RUNNING;
     }
 
-    private void executeChildren(Player player, HousingWorld house, Cancellable event) {
+    private void executeChildren(Entity entity, Player player, HousingWorld house, Cancellable event) {
         if (isAllComplete() || children.isEmpty()) {
             return;
         }
@@ -226,15 +252,15 @@ public class ActionExecutor {
         AtomicReference<ActionExecutor> executor = new AtomicReference<>(children.get(workingIndex));
         if (executor.get().isComplete()) {
             workingIndex++;
-            executeChildren(player, house, event);
+            executeChildren(entity, player, house, event);
             return;
         }
-        AtomicReference<OutputType> output = new AtomicReference<>(executor.get().execute(player, house, event));
+        AtomicReference<OutputType> output = new AtomicReference<>(executor.get().execute(entity, player, house, event));
         workingIndex++;
 
         Bukkit.getScheduler().runTaskTimer(Main.getInstance(), (t) -> {
             if (executor.get().isComplete() && (output.get() != EXIT)) { //Move on to the next child
-                executeChildren(player, house, event);
+                executeChildren(entity, player, house, event);
                 t.cancel();
             }
         }, 0, 1);

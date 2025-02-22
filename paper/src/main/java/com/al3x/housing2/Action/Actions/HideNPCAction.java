@@ -1,53 +1,49 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.trait.PlayerFilter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 
-import static com.al3x.housing2.Enums.EventType.*;
+public class HideNPCAction extends HTSLImpl implements NPCAction {
 
-public class ExitAction extends HTSLImpl implements NPCAction {
-
-    public ExitAction() {
-        super("Exit Action");
+    public HideNPCAction() {
+        super("Hide NPC Action");
     }
 
     @Override
     public String toString() {
-        return "ExitAction";
+        return "HideNPCAction";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BEDROCK);
-        builder.name("&eExit");
+        builder.material(Material.GRAY_DYE);
+        builder.name("&eHide NPC");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BEDROCK);
-        builder.name("&aExit");
-        builder.description("Stops executing any remaining actions.");
+        builder.material(Material.GRAY_DYE);
+        builder.name("&aHide NPC");
+        builder.description("Hides the NPC from the player who triggered the action.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        return false;
+        return true;
     }
 
     @Override
@@ -56,22 +52,26 @@ public class ExitAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public int limit() {
-        return 1;
-    }
-
-    @Override
     public boolean requiresPlayer() {
-        return false;
+        return true;
     }
 
     @Override
     public String keyword() {
-        return "exit";
+        return "hideNPC";
     }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        //Do nothing
+        PlayerFilter filter = npc.getTraitNullable(PlayerFilter.class);
+        if (filter != null && !filter.affectsPlayer(player.getUniqueId())) {
+            filter.addPlayer(player.getUniqueId());
+        }
+        if (npc.getEntity() != null) player.hideEntity(Main.getInstance(), npc.getEntity());
+    }
+
+    @Override
+    public boolean hide() {
+        return true;
     }
 }

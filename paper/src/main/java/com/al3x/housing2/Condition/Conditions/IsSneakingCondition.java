@@ -11,46 +11,46 @@ import java.util.LinkedHashMap;
 
 public class IsSneakingCondition extends CHTSLImpl {
 
-        public IsSneakingCondition() {
-            super("Is Sneaking");
-        }
+    public IsSneakingCondition() {
+        super("Is Sneaking");
+    }
 
-        @Override
-        public String toString() {
-            return "IsSneakingCondition";
-        }
+    @Override
+    public String toString() {
+        return "IsSneakingCondition";
+    }
 
-        @Override
-        public void createDisplayItem(ItemBuilder builder) {
-            builder.material(Material.HAY_BLOCK);
-            builder.name("&eIs Sneaking");
-            builder.description("Check if the player is sneaking.");
-            builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-            builder.shiftClick();
-        }
+    @Override
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(Material.HAY_BLOCK);
+        builder.name("&eIs Sneaking");
+        builder.description("Check if the player is sneaking.");
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
 
-        @Override
-        public void createAddDisplayItem(ItemBuilder builder) {
-            builder.material(Material.HAY_BLOCK);
-            builder.name("&eIs Sneaking");
-            builder.description("Check if the player is sneaking.");
-            builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-        }
+    @Override
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(Material.HAY_BLOCK);
+        builder.name("&eIs Sneaking");
+        builder.description("Check if the player is sneaking.");
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
 
-        @Override
-        public boolean execute(Player player, HousingWorld house) {
-            return player.isSneaking();
-        }
+    @Override
+    public boolean execute(Player player, HousingWorld house) {
+        return player.isSneaking();
+    }
 
-        @Override
-        public LinkedHashMap<String, Object> data() {
-            return new LinkedHashMap<>();
-        }
+    @Override
+    public LinkedHashMap<String, Object> data() {
+        return new LinkedHashMap<>();
+    }
 
-        @Override
-        public boolean requiresPlayer() {
-            return true;
-        }
+    @Override
+    public boolean requiresPlayer() {
+        return true;
+    }
 
     @Override
     public String keyword() {

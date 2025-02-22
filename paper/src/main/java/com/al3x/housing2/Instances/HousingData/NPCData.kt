@@ -19,19 +19,21 @@ data class NPCData(
     var canBeDamaged: Boolean = false,
     var respawnTime: Int = 20,
     var maxHealth: Double = 20.0,
-    var minecraftAI: Boolean = false
+    var minecraftAI: Boolean = false,
+    var isBaby: Boolean = false,
+    var eventActions: Map<String, List<ActionData>>? = hashMapOf(),
+    var stats: List<StatData>? = listOf()
 ) {
-
     companion object {
         fun fromList(npcList: List<HousingNPC>): List<NPCData> {
             val list = mutableListOf<NPCData>()
             npcList.forEach {
                 list.add(
                     NPCData(
-                        it.npcID, 
+                        it.npcID,
                         it.npcUUID.toString(),
-                        it.name, 
-                        it.entityType.name, 
+                        it.name,
+                        it.entityType.name,
                         LocationData.fromLocation(it.location),
                         it.skinUUID,
                         ActionData.fromList(it.actions),
@@ -44,7 +46,9 @@ data class NPCData(
                         it.isCanBeDamaged,
                         it.respawnTime,
                         it.maxHealth,
-                        it.minecraftAI
+                        it.minecraftAI,
+                        it.isBaby,
+                        it.eventActions.map { entry -> entry.key.name to ActionData.fromList(entry.value) }.toMap()
                     )
                 )
             }

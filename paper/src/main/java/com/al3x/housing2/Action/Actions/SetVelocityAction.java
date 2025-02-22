@@ -1,8 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.VelocityOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -12,13 +10,17 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SetVelocityAction extends HTSLImpl {
+public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
     private PushDirection direction;
     private VelocityOperation operation;
@@ -118,24 +120,31 @@ public class SetVelocityAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        Vector playerVelocity = player.getVelocity();
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (npc.getEntity() instanceof LivingEntity le) {
+            npc.getEntity().setVelocity(execute(npc.getEntity().getVelocity(), le.getEyeLocation(), player, house));
+            return;
+        }
+        npc.getEntity().setVelocity(execute(npc.getEntity().getVelocity(), npc.getEntity().getLocation(), player, house));
+    }
+
+    public Vector execute(Vector playerVelocity, Location eyeLocation, Player player, HousingWorld house) {
         Vector velocityAdjustment = new Vector();
 
         double amount = 1.5;
         try {
             amount = Double.parseDouble(Placeholder.handlePlaceholders(this.amount, house, player));
         } catch (NumberFormatException e) {
-            return true;
+            return null;
         }
 
-        if (amount == 0) return true;
+        if (amount == 0) return null;
         if (amount > 100) amount = 100;
         if (amount < 0) amount = 0;
 
         switch (direction) {
-            case FORWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(amount));
-            case BACKWARD -> velocityAdjustment.add(player.getEyeLocation().getDirection().multiply(-amount));
+            case FORWARD -> velocityAdjustment.add(eyeLocation.getDirection().multiply(amount));
+            case BACKWARD -> velocityAdjustment.add(eyeLocation.getDirection().multiply(-amount));
             case UP -> velocityAdjustment.add(new Vector(0, 1, 0).multiply(amount));
             case DOWN -> velocityAdjustment.add(new Vector(0, -1, 0).multiply(amount));
             case NORTH -> velocityAdjustment.add(new Vector(0, 0, -1).multiply(amount));
@@ -143,22 +152,22 @@ public class SetVelocityAction extends HTSLImpl {
             case EAST -> velocityAdjustment.add(new Vector(1, 0, 0).multiply(amount));
             case WEST -> velocityAdjustment.add(new Vector(-1, 0, 0).multiply(amount));
             case LEFT -> {
-                Vector direction = player.getEyeLocation().getDirection();
+                Vector direction = eyeLocation.getDirection();
                 // Rotate the direction 90 degrees counterclockwise (left)
                 Vector left = new Vector(-direction.getZ(), 0, direction.getX()).normalize().multiply(amount);
                 velocityAdjustment.add(left);
             }
             case RIGHT -> {
-                Vector direction = player.getEyeLocation().getDirection();
+                Vector direction = eyeLocation.getDirection();
                 // Rotate the direction 90 degrees clockwise (right)
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
                 velocityAdjustment.add(right);
             }
             case CUSTOM -> {
-                if (customDirection == null) return true;
+                if (customDirection == null) return null;
 
                 String[] split = customDirection.split(",");
-                if (split.length != 2) return true;
+                if (split.length != 2) return null;
 
                 try {
                     double pitch = Math.toRadians(Float.parseFloat(Placeholder.handlePlaceholders(split[0], house, player)));
@@ -170,7 +179,7 @@ public class SetVelocityAction extends HTSLImpl {
                             .setZ(Math.cos(pitch) * Math.cos(yaw))
                             .multiply(amount));
                 } catch (NumberFormatException e) {
-                    return true;
+                    return null;
                 }
             }
         }
@@ -183,6 +192,12 @@ public class SetVelocityAction extends HTSLImpl {
             case VelocityOperation.MULTIPLY -> playerVelocity.multiply(velocityAdjustment);
             case VelocityOperation.DIVIDE -> playerVelocity.divide(velocityAdjustment);
         }
+        return playerVelocity;
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house) {
+        Vector playerVelocity = execute(player.getVelocity(), player.getEyeLocation(), player, house);
         player.setVelocity(playerVelocity);
         return true;
     }

@@ -514,7 +514,7 @@ public class ParticleAction extends HTSLImpl {
         amount = (Double) data.get("amount");
         direction = PushDirection.valueOf((String) data.get("direction"));
         customDirection = (String) data.get("customDirection");
-        if (data.get("customData") == null) {
+        if (data.get("customData") != null) {
             LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
             customData = new HashMap<>(map);
         }

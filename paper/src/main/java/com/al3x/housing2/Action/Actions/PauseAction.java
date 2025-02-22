@@ -1,15 +1,15 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PauseAction extends HTSLImpl {
+public class PauseAction extends HTSLImpl implements NPCAction {
     String duration = "5.0"; // in ticks
 
     public PauseAction() {
@@ -70,16 +70,6 @@ public class PauseAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        String dur = Placeholder.handlePlaceholders(duration, house, player);
-        if (!NumberUtilsKt.isDouble(dur)) {
-            return false;
-        }
-        double duration = Double.parseDouble(dur);
-        try {
-            Thread.sleep((long) duration * 50); // ~50ms per tick
-        } catch (InterruptedException e) {
-            Bukkit.getLogger().warning("PauseAction was interrupted.");
-        }
         return true;
     }
 
@@ -109,5 +99,10 @@ public class PauseAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "pause";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+
     }
 }

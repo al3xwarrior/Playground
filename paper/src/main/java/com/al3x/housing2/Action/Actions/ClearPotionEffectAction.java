@@ -1,9 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
-import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
@@ -12,9 +10,12 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ClearPotionEffectAction extends HTSLImpl {
+public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
 
     private PotionEffectType potionEffectType;
     private boolean clearAll;
@@ -115,6 +116,20 @@ public class ClearPotionEffectAction extends HTSLImpl {
             player.removePotionEffect(potionEffectType);
         }
         return true;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (!(npc.getEntity() instanceof LivingEntity le)) return;
+        if (clearAll) {
+            le.getActivePotionEffects().forEach(potionEffect -> {
+                if (potionEffect.getType() != potionEffectType) {
+                    le.removePotionEffect(potionEffect.getType());
+                }
+            });
+        } else {
+            le.removePotionEffect(potionEffectType);
+        }
     }
 
     @Override

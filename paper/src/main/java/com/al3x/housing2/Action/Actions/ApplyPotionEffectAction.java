@@ -1,9 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
-import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -14,11 +12,14 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.ItemBuilder.ActionType;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import kotlin.NumbersKt;
+import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -30,7 +31,7 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.colorizeLegacyText;
 
-public class ApplyPotionEffectAction extends HTSLImpl {
+public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
 
     private PotionEffectType potionEffectType;
     private int level;
@@ -136,6 +137,12 @@ public class ApplyPotionEffectAction extends HTSLImpl {
     }
 
     @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (!(npc.getEntity() instanceof LivingEntity le)) return;
+        le.addPotionEffect(new PotionEffect(potionEffectType, duration, level - 1, true, !hideParticles));
+    }
+
+    @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("potion", potionEffectType.getName());
@@ -153,11 +160,15 @@ public class ApplyPotionEffectAction extends HTSLImpl {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         if (!data.containsKey("potion")) return;
-        potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
+        potionEffectType = PotionEffectType.getByName(data.get("potion").toString());
         if (!data.containsKey("duration")) return;
-        duration = (int) Double.parseDouble(data.get("duration").toString());
+        duration = NumberUtilsKt.toInt(Double.parseDouble(data.get("duration").toString()));
         if (!data.containsKey("level")) return;
-        level = Integer.parseInt(data.get("level").toString());
+        if (NumberUtilsKt.isDouble(data.get("level").toString())) {
+            level = NumberUtilsKt.toInt(Double.parseDouble(data.get("level").toString()));
+        } else {
+            level = Integer.parseInt(data.get("level").toString());
+        }
         if (!data.containsKey("hideParticles")) {
             hideParticles = false;
             return;

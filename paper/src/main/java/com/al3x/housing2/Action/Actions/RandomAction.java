@@ -1,15 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -21,7 +19,7 @@ import java.util.*;
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class RandomAction extends HTSLImpl {
+public class RandomAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
     private List<Action> subActions;
 
@@ -95,6 +93,11 @@ public class RandomAction extends HTSLImpl {
         executor1.setParent(executor);
         executor.addChild(executor1);
         return true;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        execute(player, house, event, executor);
     }
 
     public List<Action> getSubActions() {

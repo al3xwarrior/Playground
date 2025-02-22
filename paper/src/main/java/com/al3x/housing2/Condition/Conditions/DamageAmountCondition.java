@@ -1,12 +1,15 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -19,7 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class DamageAmountCondition extends CHTSLImpl {
+public class DamageAmountCondition extends CHTSLImpl implements NPCCondition {
     private StatComparator comparator;
     private Double compareValue;
 
@@ -114,5 +117,13 @@ public class DamageAmountCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "damageAmount";
+    }
+
+    @Override
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (event instanceof EntityDamageByEntityEvent e) {
+            return Comparator.compare(comparator, e.getDamage(), compareValue);
+        }
+        return false;
     }
 }

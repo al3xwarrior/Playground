@@ -1,53 +1,48 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 
-import static com.al3x.housing2.Enums.EventType.*;
+public class KillNPCAction extends HTSLImpl implements NPCAction {
 
-public class ExitAction extends HTSLImpl implements NPCAction {
-
-    public ExitAction() {
-        super("Exit Action");
+    public KillNPCAction() {
+        super("Kill NPC Action");
     }
 
     @Override
     public String toString() {
-        return "ExitAction";
+        return "KillNPCAction";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BEDROCK);
-        builder.name("&eExit");
+        builder.material(Material.IRON_BARS);
+        builder.name("&eKill NPC");
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BEDROCK);
-        builder.name("&aExit");
-        builder.description("Stops executing any remaining actions.");
+        builder.material(Material.IRON_BARS);
+        builder.name("&aKill NPC");
+        builder.description("Kills the NPC");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        return false;
+        return true;
     }
 
     @Override
@@ -56,22 +51,24 @@ public class ExitAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public int limit() {
-        return 1;
-    }
-
-    @Override
     public boolean requiresPlayer() {
-        return false;
+        return true;
     }
 
     @Override
     public String keyword() {
-        return "exit";
+        return "killNPC";
     }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        //Do nothing
+        if (npc.getEntity() instanceof LivingEntity le) {
+            le.setHealth(0.1);
+        }
+    }
+
+    @Override
+    public boolean hide() {
+        return true;
     }
 }

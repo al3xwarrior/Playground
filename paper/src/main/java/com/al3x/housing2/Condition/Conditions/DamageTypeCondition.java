@@ -1,13 +1,16 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.DamageTypes;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -17,7 +20,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class DamageTypeCondition extends CHTSLImpl {
+public class DamageTypeCondition extends CHTSLImpl implements NPCCondition {
     private DamageTypes damageType;
 
     public DamageTypeCondition() {
@@ -99,5 +102,13 @@ public class DamageTypeCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "damageType";
+    }
+
+    @Override
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (event instanceof EntityDamageEvent e) {
+            return e.getDamageSource().getDamageType() == damageType.getDamageType();
+        }
+        return false;
     }
 }

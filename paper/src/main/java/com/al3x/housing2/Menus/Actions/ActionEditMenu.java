@@ -44,6 +44,8 @@ public class ActionEditMenu extends Menu {
     private Runnable update;
     private Menu backMenu;
 
+    private List<Action> parentActions = new ArrayList<>();
+
     public Menu getBackMenu() {
         return backMenu;
     }
@@ -88,6 +90,14 @@ public class ActionEditMenu extends Menu {
         this.player = player;
         this.house = house;
         this.backMenu = backMenu;
+    }
+
+    public List<Action> getParentActions() {
+        return parentActions;
+    }
+
+    public void setParentActions(List<Action> parentActions) {
+        this.parentActions = parentActions;
     }
 
     @Override
@@ -255,6 +265,8 @@ public class ActionEditMenu extends Menu {
                             actionMenu.setEvent(event);
                             actionMenu.setHousingNPC(housingNPC);
                             actionMenu.setUpdate(update);
+                            actionMenu.setParentActions(parentActions);
+                            actionMenu.addParentAction(action);
                             actionMenu.setNestedLevel(getBackMenusNestedLevel() + 1);
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -277,6 +289,8 @@ public class ActionEditMenu extends Menu {
                                 actionMenu.setHousingNPC(housingNPC);
                             }
                             actionMenu.setNestedLevel(getBackMenusNestedLevel() + 1);
+                            actionMenu.setParentActions(parentActions);
+                            actionMenu.addParentAction(action);
                             actionMenu.open();
                         } catch (NoSuchFieldException | IllegalAccessException ex) {
                             Bukkit.getLogger().warning("Failed to get field " + item.getVarName() + " in " + action.getName());

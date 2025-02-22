@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingNPC;
@@ -39,7 +40,7 @@ import java.util.*;
 
 import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
 
-public class NpcPathAction extends Action {
+public class NpcPathAction extends Action implements NPCAction {
     int npcId;
     NavigationType mode;
     Double speed = null;
@@ -132,7 +133,7 @@ public class NpcPathAction extends Action {
 
         ItemBuilder itemBuilder = ItemBuilder.create(Material.PLAYER_HEAD)
                 .name("&aNPC")
-                .description("Select a NPC to change the navigation of")
+                .description("Select a NPC to change the navigation of\n\nIf you are running this within a run as npc action, the npc will be the npc that the action is running as")
                 .info("&7Current Value", "")
                 .info(null, (npc == null ? "&cNone" : "&6" + npc.getName()));
 
@@ -268,12 +269,11 @@ public class NpcPathAction extends Action {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable cancellable, ActionExecutor actionExecutor) {
-        HousingNPC npc = house.getNPC(npcId);
-        if (npc == null) {
-            return true;
-        }
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        return execute(house.getNPC(npcId), player, house, event, executor);
+    }
 
+    public boolean execute(HousingNPC npc, Player player, HousingWorld house, Cancellable cancellable, ActionExecutor actionExecutor) {
         npc.setNavigationType(mode);
         if (mode == NavigationType.WANDER) {
             npc.setSpeed(speed);
@@ -344,6 +344,11 @@ public class NpcPathAction extends Action {
             }
         }
         return true;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        execute(house.getNPC(npc.getId()), player, house, event, executor);
     }
 
     @Override

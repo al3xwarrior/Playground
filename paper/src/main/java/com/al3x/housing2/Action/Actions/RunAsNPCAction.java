@@ -1,9 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HTSLHandler;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.google.gson.Gson;
@@ -11,46 +15,50 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
-public class RepeatAction extends HTSLImpl implements NPCAction{
+public class RunAsNPCAction extends HTSLImpl {
     private static final Gson gson = new Gson();
+    private String npcId;
     private List<Action> subActions;
-    private String times;
 
-    public RepeatAction(ArrayList<Action> subactions, String times) {
-        super("Repeat Action");
-        this.subActions = subactions;
-        this.times = times;
+    public RunAsNPCAction(NPC npc) {
+        super("Run As NPC Action");
+        this.npcId = String.valueOf(npc.getId());
+        this.subActions = new ArrayList<>();
     }
 
-    public RepeatAction() {
-        super("Repeat Action");
+    public RunAsNPCAction(ArrayList<Action> subactions) {
+        super("Run As NPC Action");
+        this.subActions = subactions;
+    }
+
+    public RunAsNPCAction() {
+        super("Run As NPC Action");
         this.subActions = new ArrayList<>();
-        this.times = "1";
     }
 
     @Override
     public String toString() {
-        return "RepeatAction (SubActions: " + subActions.stream().map(Action::toString).reduce((a, b) -> a + ", " + b).orElse("") + "times: " + times + ")";
+        return "RunAsNPCAction{" +
+                "npcId=" + npcId +
+                ", subActions=" + subActions +
+                '}';
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REPEATER);
-        builder.name("&eRepeat Action");
+        builder.material(Material.PLAYER_HEAD);
+        builder.name("&eRun As NPC Action");
+        builder.description("Change the settings for this action");
         builder.info("&eSettings", "");
+        builder.info("NPC ID", npcId);
         builder.info("Actions", subActions.size());
-        builder.info("Times", times);
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -58,15 +66,22 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REPEATER);
-        builder.name("&aRepeat Action");
-        builder.description("Execute actions in the list multiple times");
+        builder.material(Material.PLAYER_HEAD);
+        builder.name("&aRun As NPC Action");
+        builder.description("Executes the action as an NPC");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house) {
         List<ActionEditor.ActionItem> items = List.of(
+                new ActionEditor.ActionItem("npcId",
+                        ItemBuilder.create(Material.PLAYER_HEAD)
+                                .name("&aNPC ID")
+                                .info("&7Current Value", "&e" + npcId)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.STRING
+                ),
                 new ActionEditor.ActionItem("subActions",
                         ItemBuilder.create(Material.WRITTEN_BOOK)
                                 .name("&aActions")
@@ -74,16 +89,6 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
                                 .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.ACTION
-                ),
-                new ActionEditor.ActionItem("times",
-                        ItemBuilder.create(Material.CLOCK)
-                                .name("&aTimes")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + times)
-                                .info(null, "")
-                                .info(null, "&fMax: &c20 Times")
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
                 )
         );
         return new ActionEditor(4, "&eChat Action Settings", items);
@@ -91,53 +96,36 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
 
     @Override
     public int nestLimit() {
-        return 4;
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
-    }
-
-
-    @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
-        if (subActions.isEmpty()) {
-            return true;
-        }
-
-        String times = HandlePlaceholders.parsePlaceholders(player, house, this.times);
-
-        if (!NumberUtilsKt.isInt(times)) {
-            return true;
-        }
-
-        int timesInt = Integer.parseInt(times);
-        if (timesInt < 1) {
-            return true;
-        }
-        if (timesInt > 20) {
-            timesInt = 20;
-        }
-
-        for (int i = 0; i < timesInt; i++) {
-            ActionExecutor executor = new ActionExecutor("repeat");
-            executor.addActions(subActions);
-            executor.setParent(oldExecutor);
-            oldExecutor.addChild(executor);
-        }
-
-        return true;
-    }
-
-    @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        execute(player, house, event, executor);
+        return 3;
     }
 
     @Override
     public int limit() {
         return 1;
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house) {
+        return false; // Not used
+    }
+
+    @Override
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (subActions.isEmpty()) {
+            return true;
+        }
+        String parsed = Placeholder.handlePlaceholders(npcId, house, player);
+        if (NumberUtilsKt.isInt(parsed)) {
+            npcId = parsed;
+        } else {
+            return true;
+        }
+
+        HousingNPC npc = house.getNPC(Integer.parseInt(npcId));
+
+        ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
+        executor1.execute(npc.getCitizensNPC(), player, house, event);
+        return true;
     }
 
     public List<Action> getSubActions() {
@@ -152,7 +140,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("subActions", Companion.fromList(subActions));
-        data.put("times", times);
+        data.put("npcId", npcId);
         return data;
     }
 
@@ -176,7 +164,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
         }
 
         this.subActions = Companion.toList(actions);
-        this.times = data.get("times").toString();
+        this.npcId = String.valueOf(data.get("npcId"));
     }
 
     @Override
@@ -187,34 +175,30 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
             builder.append(impl.export(indent + 4)).append("\n");
         }
         if (builder.isEmpty()) return " ".repeat(indent) + keyword();
-        return " ".repeat(indent) + keyword() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
+        return " ".repeat(indent) + keyword() + "\"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
     }
 
     @Override
     public String syntax() {
-        return keyword() + " <times> {\\n<actions>\\n}";
+        return "runAsNPC <npcID> {\\n<actions>\\n}";
     }
 
     @Override
     public String keyword() {
-        return "repeat";
+        return "runAsNPC";
     }
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (indent.length() > 4*3) {
-            throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
-        }
-        if (action.contains(" ")) {
-            times = action.split(" ")[0];
-            action = action.replace(times + " ", "");
-        }
         ArrayList<String> subactions = new ArrayList<>();
+        String[] parts = action.split(" ");
+
+
         if (action.startsWith("{")) {
             for (int i = 0; i < nextLines.size(); i++) {
                 String line = nextLines.get(i);
                 if (line.startsWith(indent + "}")) {
-                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
+                    nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
                     break;
                 }
                 subactions.add(line);

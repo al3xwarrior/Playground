@@ -131,6 +131,7 @@ public final class Main extends JavaPlugin implements Listener {
 //        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 
         // House Events
+        Bukkit.getPluginManager().registerEvents(new NPCEvents(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new LeaveHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JoinHouse(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new DamageEvent(housesManager), this);

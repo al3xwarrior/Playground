@@ -1,22 +1,28 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.Gamemodes;
+import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-public class HasPotionEffectCondition extends CHTSLImpl {
+public class HasPotionEffectCondition extends CHTSLImpl implements NPCCondition {
     private PotionEffectType potionEffect = null;
 
     public HasPotionEffectCondition() {
@@ -111,5 +117,14 @@ public class HasPotionEffectCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "hasPotionEffect";
+    }
+
+    @Override
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (npc.getEntity() instanceof LivingEntity le) {
+            return le.hasPotionEffect(potionEffect);
+        } else {
+            return false;
+        }
     }
 }

@@ -12,9 +12,9 @@ public class StatInstance {
     public StatOperation mode;
     public StatValue value;
 
-    public StatInstance(boolean global) {
+    public StatInstance(String statType) {
         this.mode = StatOperation.INCREASE;
-        this.value = new StatValue(global);
+        this.value = new StatValue(statType);
     }
 
     public void fromData(LinkedHashMap<String, Object> data, Class<? extends StatInstance> actionClass) {

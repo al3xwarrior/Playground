@@ -28,4 +28,8 @@ public enum EventType {
     INVENTORY_CLICK,
     GIVE_COOKIE,
     ENTITY_BUCKET,
+
+    NPC_DEATH,
+    NPC_DAMAGE,
+
 }

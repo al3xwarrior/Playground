@@ -972,6 +972,7 @@ public class HousingWorld {
             if (citizensNPC != null) {
                 citizensNPC.destroy();
                 CitizensAPI.getNPCRegistry().deregister(citizensNPC);
+                npc.deleted = true;
                 housingNPCS.remove(npc);
             }
             npc.getHologram().remove();

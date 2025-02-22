@@ -1,21 +1,27 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class HealthRequirementCondition extends CHTSLImpl {
+public class HealthRequirementCondition extends CHTSLImpl implements NPCCondition {
     private StatComparator comparator;
     private Double compareValue;
 
@@ -94,5 +100,14 @@ public class HealthRequirementCondition extends CHTSLImpl {
     @Override
     public String keyword() {
         return "health";
+    }
+
+    @Override
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (npc.getEntity() instanceof LivingEntity le) {
+            return Comparator.compare(comparator, le.getHealth(), compareValue);
+        } else {
+            return false;
+        }
     }
 }

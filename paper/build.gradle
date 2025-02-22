@@ -39,7 +39,10 @@ dependencies {
         exclude group: 'org.spigotmc', module: 'spigot-api'
     }
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-    compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
+    compileOnly('net.citizensnpcs:citizensapi:2.0.37-SNAPSHOT') {
+        transitive = false
+    }
+    compileOnly('net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT') {
         transitive = false
     }
     implementation "com.google.code.gson:gson:2.11.0"

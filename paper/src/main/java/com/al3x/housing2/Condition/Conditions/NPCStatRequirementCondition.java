@@ -3,7 +3,6 @@ package com.al3x.housing2.Condition.Conditions;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
-import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
@@ -16,18 +15,19 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCondition {
+public class NPCStatRequirementCondition extends CHTSLImpl implements NPCCondition {
     private String stat;
     private StatComparator comparator;
     private String compareValue;
     private boolean ignoreCase;
 
-    public GlobalStatRequirementCondition() {
-        super("Global Stat Requirement");
+    public NPCStatRequirementCondition() {
+        super("NPC Stat Requirement");
         this.stat = "Kills";
         this.comparator = StatComparator.EQUALS;
         this.compareValue = "1.0";
@@ -36,15 +36,14 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
 
     @Override
     public String toString() {
-        return "GlobalStatRequirementCondition";
+        return "NPCStatRequirementCondition";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&eGlobal Stat Requirement");
-        builder.description("Requires a global stat to match the provided condition.");
+        builder.material(Material.ZOMBIE_SPAWN_EGG);
+        builder.name("&eNPC Stat Requirement");
+        builder.description("Requires a stat to match the provided condition.");
         builder.info("Stat", stat);
         builder.info("Comparator", comparator.name());
         builder.info("Value", compareValue);
@@ -56,10 +55,9 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&eGlobal Stat Requirement");
-        builder.description("Requires a global stat to match the provided condition.");
+        builder.material(Material.ZOMBIE_SPAWN_EGG);
+        builder.name("&eNPC Stat Requirement");
+        builder.description("Requires a stat to match the provided condition.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
@@ -99,15 +97,20 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
                         ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
-        return new ActionEditor(4, "Global Stat Requirement", items);
+        return new ActionEditor(4, "Stat Requirement", items);
     }
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getGlobalStatByName(this.stat);
+        return false;
+    }
+
+    @Override
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        String statString = HandlePlaceholders.parsePlaceholders(player, house, this.stat);
+        Stat stat = house.getNPC(npc.getId()).getStats().stream().filter(s -> s.getStatName().equalsIgnoreCase(statString)).findFirst().orElse(null);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
         String statValue = stat.getValue();
-
         if (ignoreCase) {
             statValue = statValue.toLowerCase();
             compareValue = compareValue.toLowerCase();
@@ -128,16 +131,47 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
 
     @Override
     public boolean requiresPlayer() {
-        return false;
+        return true;
     }
 
     @Override
     public String keyword() {
-        return "globalstat";
+        return "stat";
     }
 
     @Override
-    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        return execute(player, house);
+    public String export(int indent) {
+        String compareValue = this.compareValue;
+        if (compareValue.contains(" ")) {
+            compareValue = "\"" + compareValue + "\"";
+        }
+        return "stat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
+    }
+
+    @Override
+    public void importCondition(String action, List<String> nextLines) {
+        String[] parts = action.split(" ");
+        if (parts.length < 4) return;
+        this.stat = parts[0];
+        this.comparator = StatComparator.getComparator(parts[1]);
+        compareValue = parts[2];
+        if (compareValue.startsWith("\"")) {
+            compareValue = compareValue.substring(1);
+            parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
+            while (!compareValue.endsWith("\"")) {
+                compareValue += " " + parts[1];
+                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            }
+            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        }
+        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        if (parts.length > 0) {
+            ignoreCase = Boolean.parseBoolean(parts[0]);
+        }
+    }
+
+    @Override
+    public boolean hide() {
+        return true;
     }
 }

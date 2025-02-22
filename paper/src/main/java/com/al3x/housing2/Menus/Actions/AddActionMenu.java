@@ -38,6 +38,8 @@ public class AddActionMenu extends Menu {
     private EventType event;
     private HousingNPC npc;
     private List<Action> actions;
+
+    private List<Action> parentActions = new ArrayList<>();
     private int nestedLevel = 0;
 
     private String search = "";
@@ -62,6 +64,14 @@ public class AddActionMenu extends Menu {
         this.npc = npc;
     }
 
+    public List<Action> getParentActions() {
+        return parentActions;
+    }
+
+    public void setParentActions(List<Action> parentActions) {
+        this.parentActions = parentActions;
+    }
+
     @Override
     public void open() {
         this.inventory = Bukkit.createInventory(null, 54, "§aAdd Action (" + page + "/" + getActions().getPageCount() + ")");
@@ -84,6 +94,7 @@ public class AddActionMenu extends Menu {
                 Action action = actionsList.get(i);
                 ItemBuilder item = new ItemBuilder();
                 action.createAddDisplayItem(item);
+
                 addItem(slots[i] - 1, item.build(), () -> {
                     if (ActionEditMenu.isLimitReached(actions, action)) {
                         player.sendMessage(colorize("&cYou have reached the limit for this action!"));
@@ -166,6 +177,7 @@ public class AddActionMenu extends Menu {
             ActionsMenu menu = new ActionsMenu(main, player, house, actions, null, null);
             menu.setEvent(event);
             menu.setFunction(function);
+            menu.setParentActions(parentActions);
             menu.open();
         });
     }
@@ -176,6 +188,26 @@ public class AddActionMenu extends Menu {
 
         for (Action action : actionArray) {
             if (action == null) continue;
+
+            if (findRunAsNPCMenu() == null && action instanceof NPCAction npcA && npcA.hide()) continue;
+
+            if (findRunAsNPCMenu() != null) {
+                if (!(action instanceof NPCAction)) continue;
+                if (action.getName().equals("Break Action") || action.getName().equals("Continue Action")) continue;
+                if (action instanceof ExitAction) {
+                    //Jesus fucking christ I hate my life <3
+                    RepeatAction repeatAction = findRepeatMenu();
+                    if (repeatAction != null) {
+                        System.out.println("Repeat action found");
+                        newActions.add(new BreakAction());
+                        newActions.add(new ContinueAction());
+                    }
+                }
+
+                newActions.add(action);
+                continue;
+            }
+
             if (function != null) {
                 if (function.isGlobal() && action.requiresPlayer()) continue;
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) continue;
@@ -190,18 +222,21 @@ public class AddActionMenu extends Menu {
                 newActions.add(action);
                 continue;
             }
-
             if (action.allowedEvents() != null) continue;
 
-            if (action instanceof BreakAction) continue;
-            if (action instanceof ContinueAction) continue;
+            if (action.getName().equals("Break Action") || action.getName().equals("Continue Action")) continue;
+
+            if (action instanceof RunAsNPCAction) { //update the default if the npc is not null
+                if (npc != null) action = new RunAsNPCAction(npc.getCitizensNPC());
+            }
 
             newActions.add(action);
 
             if (action instanceof ExitAction) {
                 //Jesus fucking christ I hate my life <3
-                RepeatAction repeatAction = findRepeatMenu(getBackMenu());
+                RepeatAction repeatAction = findRepeatMenu();
                 if (repeatAction != null) {
+                    System.out.println("Repeat action found");
                     newActions.add(new BreakAction());
                     newActions.add(new ContinueAction());
                 }
@@ -227,19 +262,19 @@ public class AddActionMenu extends Menu {
         this.function = function;
     }
 
-    private RepeatAction findRepeatMenu(Menu backMenu) {
-        if (backMenu != null) {
-            if (backMenu instanceof ActionEditMenu actionEditMenu) {
-                if (actionEditMenu.getAction() instanceof RepeatAction) {
-                    return (RepeatAction) actionEditMenu.getAction();
-                }
-                return findRepeatMenu(actionEditMenu.getBackMenu());
+    private RepeatAction findRepeatMenu() {
+        for (Action parentAction : parentActions) {
+            if (parentAction instanceof RepeatAction) {
+                return (RepeatAction) parentAction;
             }
-            if (backMenu instanceof AddActionMenu addActionMenu) {
-                return findRepeatMenu(addActionMenu.getBackMenu());
-            }
-            if (backMenu instanceof ActionsMenu actionsMenu) {
-                return findRepeatMenu(actionsMenu.getBackMenu());
+        }
+        return null;
+    }
+
+    private RunAsNPCAction findRunAsNPCMenu() {
+        for (Action parentAction : parentActions) {
+            if (parentAction instanceof RunAsNPCAction) {
+                return (RunAsNPCAction) parentAction;
             }
         }
         return null;

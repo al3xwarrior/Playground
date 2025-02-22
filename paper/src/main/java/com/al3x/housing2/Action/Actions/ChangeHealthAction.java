@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingData.StatActionData;
@@ -15,9 +12,12 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ChangeHealthAction extends HTSLImpl {
+public class ChangeHealthAction extends HTSLImpl implements NPCAction {
     private StatOperation mode;
     private String value;
 
@@ -126,6 +126,8 @@ public class ChangeHealthAction extends HTSLImpl {
         return true;
     }
 
+
+
     public StatOperation getMode() {
         return mode;
     }
@@ -165,5 +167,45 @@ public class ChangeHealthAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "changeHealth";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
+        if (!NumberUtilsKt.isDouble(value)) {
+            return;
+        }
+        double result = Double.parseDouble(value);
+
+        if (!(npc.getEntity() instanceof LivingEntity le)) {
+            return;
+        }
+        switch (mode) {
+            case INCREASE:
+                result += le.getHealth();
+                break;
+            case DECREASE:
+                result = le.getHealth() - result;
+                break;
+            case MULTIPLY:
+                result = le.getHealth() * result;
+                break;
+            case DIVIDE:
+                result = le.getHealth() / result;
+                break;
+            case MOD:
+                result = le.getHealth() % result;
+                break;
+            case FLOOR:
+                result = Math.floor(le.getHealth());
+                break;
+            case ROUND:
+                result = Math.round(le.getHealth());
+                break;
+            case SET:
+                break;
+        }
+
+        le.setHealth(result);
     }
 }

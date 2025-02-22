@@ -1,14 +1,18 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.LinkedHashMap;
 
-public class BreakAction extends HTSLImpl {
+public class BreakAction extends HTSLImpl implements NPCAction {
 
     public BreakAction() {
         super("Break Action");
@@ -58,5 +62,10 @@ public class BreakAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "break";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        // Do nothing
     }
 }

@@ -1,11 +1,16 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -14,7 +19,7 @@ import java.util.LinkedHashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class FullHealAction extends HTSLImpl {
+public class FullHealAction extends HTSLImpl implements NPCAction {
 
     public FullHealAction() {
         super("Full Heal Action");
@@ -45,6 +50,12 @@ public class FullHealAction extends HTSLImpl {
     public boolean execute(Player player, HousingWorld house) {
         player.setHealth(player.getMaxHealth());
         return true;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (!(npc.getEntity() instanceof LivingEntity le)) return;
+        le.setHealth(le.getMaxHealth());
     }
 
     @Override

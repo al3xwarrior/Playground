@@ -43,6 +43,8 @@ public abstract class Placeholder {
 
         new Distance();
         new RemoveFormatting();
+
+        new Npc();
     }
 
     public List<String> getAliases() {

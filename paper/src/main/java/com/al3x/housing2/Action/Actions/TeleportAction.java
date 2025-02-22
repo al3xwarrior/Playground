@@ -1,24 +1,25 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.*;
 
-public class TeleportAction extends HTSLImpl {
+public class TeleportAction extends HTSLImpl implements NPCAction {
     private String customLocation;
     private Locations location;
 
@@ -170,5 +171,34 @@ public class TeleportAction extends HTSLImpl {
             customLocation = action;
         }
         return nextLines;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        switch (location) {
+            case INVOKERS_LOCATION ->
+                    npc.teleport(player.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            case HOUSE_SPAWN ->
+                    npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            case CUSTOM, PLAYER_LOCATION -> {
+                Location loc = getLocationFromString(player, house, customLocation);
+                if (loc == null) {
+                    return;
+                }
+
+                if (loc.getX() > 255) {
+                    loc.setX(255);
+                }
+                if (loc.getZ() > 255) {
+                    loc.setY(255);
+                }
+                if (loc.getY() > 255) {
+                    loc.setY(255);
+                }
+
+                npc.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
+
+        }
     }
 }

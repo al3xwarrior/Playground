@@ -8,6 +8,7 @@ public enum AttackEntityEnum implements EnumMaterial{
     PLAYER(Material.PLAYER_HEAD),
     NPC(Material.WOLF_SPAWN_EGG),
     MOB(Material.ZOMBIE_HEAD),
+    THEMSELF(Material.PLAYER_HEAD),
     ALL(Material.BARRIER);
 
     private final Material material;

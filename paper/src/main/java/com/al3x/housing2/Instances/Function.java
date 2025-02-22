@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Main;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Function {
         this.global = global;
     }
 
-    public void execute(Main main, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
+    public void execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
         if (!loaded) return;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
@@ -60,7 +61,7 @@ public class Function {
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
-            executor.execute(p, house, null);
+            executor.execute(entity, p, house, null);
         }
     }
 

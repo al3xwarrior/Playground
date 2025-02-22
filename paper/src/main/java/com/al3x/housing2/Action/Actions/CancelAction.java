@@ -1,10 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -18,7 +21,7 @@ import java.util.List;
 import static com.al3x.housing2.Enums.EventType.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class CancelAction extends HTSLImpl {
+public class CancelAction extends HTSLImpl implements NPCAction {
 
     public CancelAction() {
         super("Cancel Action");
@@ -77,5 +80,10 @@ public class CancelAction extends HTSLImpl {
     @Override
     public String keyword() {
         return "cancelEvent";
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        event.setCancelled(true);
     }
 }

@@ -24,11 +24,13 @@ import static com.al3x.housing2.Utils.Color.removeColor;
 
 public class CustomMenuViewer extends Menu {
     CustomMenu customMenu;
+    HousingWorld house;
 
     BukkitTask task;
     public CustomMenuViewer(Player player, CustomMenu customMenu) {
         super(player, customMenu.getTitle(), 9 * customMenu.getRows());
         this.customMenu = customMenu;
+        this.house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
     }
 
     @Override
@@ -41,9 +43,11 @@ public class CustomMenuViewer extends Menu {
     @Override
     public void setupItems() {
         clearItems();
-        Main main = Main.getInstance();
-        HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
-
+        if (!player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+            task.cancel();
+            player.closeInventory();
+            return;
+        }
         for (int i = 0; i < 9 * customMenu.getRows(); i++) {
             int finalI = i;
             if (customMenu.getItems().get(i) == null) {

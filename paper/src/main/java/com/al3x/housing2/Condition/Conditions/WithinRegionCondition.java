@@ -61,7 +61,7 @@ public class WithinRegionCondition extends CHTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        return house.getRegions().stream().anyMatch(region -> region.getPlayersInRegion().contains(player.getUniqueId()));
+        return house.getRegions().stream().filter(region -> region.getPlayersInRegion().contains(player.getUniqueId())).anyMatch(region -> region.getName().equalsIgnoreCase(this.region));
     }
 
     @Override

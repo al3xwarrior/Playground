@@ -11,6 +11,7 @@ public enum ActionEnum {
     CHANGE_PLAYER_GROUP("Change Player Group", ChangePlayerGroupAction.class),
     CHANGE_PLAYER_TEAM("Change Player Team", ChangePlayerTeamAction.class),
     KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
+    KILL_NPC("Kill NPC Action", KillNPCAction.class),
     FULL_HEAL("Full Heal Action", FullHealAction.class),
     SET_VELOCITY("Set Velocity Action", SetVelocityAction.class),
     SEND_TITLE("Send Title Action", SendTitleAction.class),
@@ -23,6 +24,7 @@ public enum ActionEnum {
     APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
     CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
     PLAYER_STAT("Player Stat Action", PlayerStatAction.class),
+    NPC_STAT("NPC Stat Action", NPCStatAction.class),
     GLOBAL_STAT("Global Stat Action", GlobalStatAction.class),
     TELEPORT("Teleport Action", TeleportAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
@@ -53,9 +55,13 @@ public enum ActionEnum {
     START_HOUSE_MUSIC("Start House Music Action", StartHouseMusicAction.class),
     STOP_HOUSE_MUSIC("Stop House Music Action", StopHouseMusicAction.class),
     CHANGE_PLAYER_ATTRIBUTE("Change Player Attribute Action", ChangePlayerAttributeAction.class),
+    CHANGE_NPC_ATTRIBUTE("Change NPC Attribute Action", ChangeNPCAttributeAction.class),
     CHANGE_TIME("Change Time Action", ChangeTimeAction.class),
     ATTACK_ENTITY("Attack Entity Action", AttackEntityAction.class),
     DROP_ITEM("Drop Item Action", DropItemAction.class),
+    RUN_AS_NPC("Run As NPC Action", RunAsNPCAction.class),
+    HIDE_NPC("Hide NPC Action", HideNPCAction.class),
+    SHOW_NPC("Show NPC Action", ShowNPCAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;

@@ -67,6 +67,8 @@ public class PlayerDeath implements Listener {
                 String deathMessage = e.getDeathMessage();
                 e.setDeathMessage(null);
                 house.getWorld().getPlayers().forEach(p -> p.sendMessage(deathMessage));
+            } else {
+                e.setDeathMessage(null);
             }
 
             if (house.getKeepInventory()) {

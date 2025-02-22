@@ -46,7 +46,11 @@ public class ClipboardManager {
     public List<Action> fromClipboard(String uuid) {
         List<Action> actions = new ArrayList<>();
         for (String serialized : addOrLoad(uuid)) {
-            actions.add(StringToBase64.actionFromBase64(serialized));
+            try {
+                actions.add(StringToBase64.actionFromBase64(serialized));
+            } catch (Exception e) {
+                //skip it because of the error, normally just because its a action that was removed or name got changed
+            }
         }
         return actions;
     }
@@ -67,7 +71,11 @@ public class ClipboardManager {
     public List<String> toClipboard(List<Action> actions) {
         List<String> clipboard = new ArrayList<>();
         for (Action action : actions) {
-            clipboard.add(StringToBase64.actionToBase64(action));
+            try {
+                clipboard.add(StringToBase64.actionToBase64(action));
+            } catch (Exception e) {
+                //skip it because of the error, normally just because its a action that was removed or name got changed
+            }
         }
         return clipboard;
     }

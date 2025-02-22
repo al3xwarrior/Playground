@@ -1,18 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
-import com.al3x.housing2.Instances.HousingData.StatActionData;
+import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Color;
@@ -20,22 +15,18 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import org.bson.json.JsonReader;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class PlayerStatAction extends HTSLImpl {
+public class NPCStatAction extends HTSLImpl implements NPCAction {
 
     private static final Gson gson = new Gson();
     private String statName;
@@ -45,11 +36,11 @@ public class PlayerStatAction extends HTSLImpl {
     private StatOperation mode;
     private StatValue value;
 
-    public PlayerStatAction() {
-        super("Player Stat Action");
+    public NPCStatAction() {
+        super("NPC Stat Action");
         this.statName = "Kills";
 
-        this.statInstances.add(new StatInstance("player"));
+        this.statInstances.add(new StatInstance("npc"));
     }
 
     @Override
@@ -72,8 +63,8 @@ public class PlayerStatAction extends HTSLImpl {
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&eChange Player Stat");
+        builder.material(Material.ZOMBIE_SPAWN_EGG);
+        builder.name("&eChange NPC Stat");
         builder.info("&eSettings", "");
         builder.info("Stat", "&a" + statName);
         if (statInstances.size() > 3) {
@@ -94,8 +85,8 @@ public class PlayerStatAction extends HTSLImpl {
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&aChange Player Stat");
+        builder.material(Material.ZOMBIE_SPAWN_EGG);
+        builder.name("&aChange NPC Stat");
         builder.description("Modify a stat of the player who triggered the action.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
@@ -207,7 +198,7 @@ public class PlayerStatAction extends HTSLImpl {
                 backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
                 return false;
             }
-            statInstances.add(new StatInstance("player"));
+            statInstances.add(new StatInstance("npc"));
             backMenu.open();
             return true;
         }
@@ -218,27 +209,6 @@ public class PlayerStatAction extends HTSLImpl {
 
     @Override
     public boolean execute(Player player, HousingWorld house) {
-        if (player == null) return true;
-        String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
-        Stat stat = house.getStatManager().getPlayerStatByName(player, name);
-
-        for (StatInstance instance : statInstances) {
-            if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
-                player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
-            }
-        }
-
-        if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
-            if (house.getStatManager().hasStat(player, name)) {
-                house.getStatManager().getPlayerStats(player).remove(stat);
-            }
-            return true;
-        }
-
-        if (!house.getStatManager().hasStat(player, name)) {
-            house.getStatManager().addPlayerStat(player, stat);
-        }
-
         return true;
     }
 
@@ -283,7 +253,7 @@ public class PlayerStatAction extends HTSLImpl {
             this.statInstances = dataToList(gson.toJsonTree(data.get("statInstances")).getAsJsonArray(), StatInstance.class);
         } else {
             statInstances = new ArrayList<>();
-            StatInstance statInstance = new StatInstance("player");
+            StatInstance statInstance = new StatInstance("npc");
             mode = StatOperation.valueOf((String) data.get("mode"));
             value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
 
@@ -306,7 +276,7 @@ public class PlayerStatAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "stat";
+        return "npcstat";
     }
 
     @Override
@@ -331,25 +301,55 @@ public class PlayerStatAction extends HTSLImpl {
         parts = Arrays.copyOfRange(parts, 1, parts.length);
         ArrayList<StatInstance> statInstances = new ArrayList<>();
 
-        StatInstance instance = new StatInstance("player");
+        StatInstance instance = new StatInstance("npc");
         while (parts.length > 0) {
             if (StatOperation.getOperation(parts[0]) != null) {
                 instance.mode = StatOperation.getOperation(parts[0]);
                 parts = Arrays.copyOfRange(parts, 1, parts.length);
                 continue;
             } else {
-                instance.value = new StatValue("player");
+                instance.value = new StatValue("npc");
                 parts = instance.value.importValue(parts);
             }
 
             if (instance.mode != null && instance.value != null) {
                 statInstances.add(instance);
-                instance = new StatInstance("player");
+                instance = new StatInstance("npc");
             }
         }
 
         this.statInstances = statInstances;
 
         return nextLines;
+    }
+
+    @Override
+    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        if (player == null) return;
+        String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
+        HousingNPC housingNPC = house.getNPC(npc.getId());
+        Stat stat = housingNPC.getStats().stream().filter(s -> s.getStatName().equals(name)).findFirst().orElse(new Stat(name, "0"));
+
+        for (StatInstance instance : statInstances) {
+            if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
+                player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
+            }
+        }
+
+        if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
+            if (housingNPC.getStats().stream().anyMatch(s -> s.getStatName().equals(stat.getStatName()))) {
+                housingNPC.getStats().remove(stat);
+            }
+            return;
+        }
+
+        if (housingNPC.getStats().stream().noneMatch(s -> s.getStatName().equals(stat.getStatName()))) {
+            housingNPC.getStats().add(stat);
+        }
+    }
+
+    @Override
+    public boolean hide() {
+        return true;
     }
 }
