@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class Reply implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
@@ -49,8 +51,8 @@ public class Reply implements CommandExecutor {
         String fromMessage = "§dFrom " + prefix + commandSender.getName() + "§f: " + message;
         String toMessage = "§dTo " + toPrefix + target.getName() + "§f: " + message;
 
-        target.sendMessage(fromMessage);
-        commandSender.sendMessage(toMessage);
+        target.sendMessage(colorize(fromMessage));
+        commandSender.sendMessage(colorize(toMessage));
         return true;
     }
 }

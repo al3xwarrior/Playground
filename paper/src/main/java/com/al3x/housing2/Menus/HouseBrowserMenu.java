@@ -72,7 +72,7 @@ public class HouseBrowserMenu extends Menu {
             }
 
 
-            ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"))
+            ItemBuilder icon = ItemBuilder.create(item.getType())
                     .name("&a" + house.getHouseName())
                     .description(colorize(house.getDescription()))
                     .info("&7Owner", "&e" + house.getOwnerName())
@@ -145,23 +145,13 @@ public class HouseBrowserMenu extends Menu {
 
     private PaginationList<HouseData> getHouses() {
         List<HouseData> housesArray = new ArrayList<>(HouseBrowserMenu.getSortedHouses());
+        housesArray = housesArray.reversed();
 
         housesArray = housesArray.stream().filter(houseData -> Objects.equals(houseData.getPrivacy(), "PUBLIC")).toList();
 
         if (search != null) {
             housesArray = housesArray.stream().filter(houseData -> StringUtilsKt.removeStringFormatting(houseData.getHouseName().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
         }
-
-        housesArray.sort((house1, house2) -> {
-            if (house1 == null || house2 == null) return (house1 == null) ? -1 : 1;
-            HousingWorld housingWorld = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house1.getHouseID()));
-            HousingWorld housingWorld2 = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house2.getHouseID()));
-
-            if (housingWorld != null && housingWorld2 != null) {
-                return Integer.compare(housingWorld.getWorld().getPlayers().size(), housingWorld2.getWorld().getPlayers().size());
-            } //else check cookies
-            return Integer.compare(house1.getCookies(), house2.getCookies());
-        });
 
         return new PaginationList<>(housesArray, avaliableSlots.length);
     }

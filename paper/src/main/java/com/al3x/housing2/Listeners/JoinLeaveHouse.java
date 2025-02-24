@@ -140,22 +140,9 @@ public class JoinLeaveHouse implements Listener {
             }
         }
 
-        PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance()));
+        PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true));
 
-
-        //give player permission "housing.world.<worlduuid>"
-        attachment.setPermission("housing.world." + house.getHouseUUID(), true);
         perms.put(player.getUniqueId(), attachment);
-
-
-        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-            if (!player.hasPermission("housing.world." + house.getHouseUUID())) {
-                PermissionAttachment a2 = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance()));
-                a2.setPermission("housing.world." + house.getHouseUUID(), true);
-                perms.put(player.getUniqueId(), attachment);
-            }
-            System.out.println(player.getName() + " has permission " + "housing.world." + house.getHouseUUID() + "? " + player.hasPermission("housing.world." + house.getHouseUUID()));
-        }, 1L);
 
         if (house.getJoinLeaveMessages()) house.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
 
@@ -190,7 +177,8 @@ public class JoinLeaveHouse implements Listener {
         from.setGuests();
         if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 
-        perms.get(player.getUniqueId()).unsetPermission("housing.world." + from.getHouseUUID());
+        player.removeAttachment(perms.get(player.getUniqueId()));
+        perms.remove(player.getUniqueId());
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));

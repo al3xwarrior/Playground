@@ -92,12 +92,10 @@ public class EditEnchantmentMenu extends Menu {
                 .build(), () -> {
             List<Duple<Enchantment, ItemBuilder>> enchantments = new ArrayList<>();
             for (Enchantment enchantment : Enchantment.values()) {
-                if (enchantment.canEnchantItem(item)) {
-                    ItemBuilder itemBuilder = ItemBuilder.create(Material.ENCHANTED_BOOK);
-                    itemBuilder.name("&a" + StringUtilsKt.formatCapitalize(enchantment.getKey().getKey()));
-                    itemBuilder.lClick(ItemBuilder.ActionType.SELECT_LEVEL);
-                    enchantments.add(new Duple<>(enchantment, itemBuilder));
-                }
+                ItemBuilder itemBuilder = ItemBuilder.create(Material.ENCHANTED_BOOK);
+                itemBuilder.name("&a" + StringUtilsKt.formatCapitalize(enchantment.getKey().getKey()));
+                itemBuilder.lClick(ItemBuilder.ActionType.SELECT_LEVEL);
+                enchantments.add(new Duple<>(enchantment, itemBuilder));
             }
             //Personally I hate that I coded this lol, but I made all of these fancy things, so I might aswell use them :)
             new PaginationMenu<Enchantment>(

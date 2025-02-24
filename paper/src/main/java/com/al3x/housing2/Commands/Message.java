@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class Message implements CommandExecutor {
     public static HashMap<UUID, UUID> lastMessage = new HashMap<>();
 
@@ -42,8 +44,8 @@ public class Message implements CommandExecutor {
         String fromMessage = "§dFrom " + fromPrefix + commandSender.getName() + "§f: " + message;
         String toMessage = "§dTo " + toPrefix + target.getName() + "§f: " + message;
 
-        target.sendMessage(fromMessage);
-        commandSender.sendMessage(toMessage);
+        target.sendMessage(colorize(fromMessage));
+        commandSender.sendMessage(colorize(toMessage));
 
         return true;
     }
