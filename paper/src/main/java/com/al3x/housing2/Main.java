@@ -173,7 +173,7 @@ public final class Main extends JavaPlugin implements Listener {
             new CookiesPlaceholder(this).register();
         }
 
-        getServer().getLogger().info("[Housing2] Enabled");
+        getServer().getLogger().info("[Housing2] Enabled just fine!");
     }
 
     @EventHandler
