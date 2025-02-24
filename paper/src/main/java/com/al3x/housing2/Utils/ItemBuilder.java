@@ -410,5 +410,13 @@ public class ItemBuilder {
         public String toString() {
             return action;
         }
+
+        public ChatColor getColor() {
+            return color;
+        }
+
+        public String getAction() {
+            return action;
+        }
     }
 }

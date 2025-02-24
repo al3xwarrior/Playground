@@ -7,6 +7,7 @@ import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromHashMap
 import com.al3x.housing2.Instances.HousingData.StatData.Companion.fromList
 import com.al3x.housing2.Instances.HousingWorld
 import com.al3x.housing2.Instances.LaunchPad
+import com.al3x.housing2.Utils.Serialization
 import com.xxmicloxx.NoteBlockAPI.model.Playlist
 import org.bukkit.Material
 
@@ -66,7 +67,7 @@ data class HouseData(
                 world.cookies,
                 world.cookieWeek,
                 world.privacy.name,
-                world.icon.name,
+                Serialization.itemStackToBase64(world.icon),
                 world.timeCreated,
                 ActionData.fromHashMap(world.eventActions, world),
                 LocationData.fromLocation(world.spawn),

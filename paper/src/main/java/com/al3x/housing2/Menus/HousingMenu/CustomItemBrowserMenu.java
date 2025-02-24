@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,11 +105,13 @@ public class CustomItemBrowserMenu extends Menu {
 
         Plugin itemsAdder = Bukkit.getPluginManager().getPlugin("ItemsAdder");
         File[] files = new File(itemsAdder.getDataFolder() + "/contents/neighborhood/textures/items").listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (i == files.length) break;
-            if (files[i] == null) break;
+        if (files == null) return new PaginationList<>(itemsArray, 45);
+        List<File> filesList = new ArrayList<>(List.of(files));
+        filesList.sort(Comparator.comparing(File::getName));
+        for (int i = 0; i < filesList.size(); i++) {
+            if (filesList.get(i) == null) break;
 
-            File file = files[i];
+            File file = filesList.get(i);
             String name = file.getName().replace(".png", "");
 
             CustomStack customStack = CustomStack.getInstance(name);

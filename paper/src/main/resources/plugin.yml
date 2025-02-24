@@ -44,3 +44,9 @@ commands:
   removeselection:
     aliases: [ "clearselection" ]
   WTFMap:
+  message:
+    aliases: [ "msg", "w" ]
+  reply:
+    aliases: [ "r" ]
+  globalchat:
+    aliases: [ "gc" ]

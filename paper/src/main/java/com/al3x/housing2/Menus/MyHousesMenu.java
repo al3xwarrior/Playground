@@ -6,17 +6,27 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.HypixelLoreFormatter;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
+import static com.al3x.housing2.Utils.ItemBuilder.order;
 
 public class MyHousesMenu extends Menu {
 
@@ -99,19 +109,48 @@ public class MyHousesMenu extends Menu {
             Date date = new Date(houseCreationDate);
             String formattedDate = formatter.format(date);
 
-            ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon()))
-                    .name(colorize(house.getHouseName()))
-                    .description(colorize("&7" + house.getDescription() +
-                            "\n\n&7Created: &a" + formattedDate +
-                            "\n\n&7Players: &a" + (world[0] != null ? world[0].getGuests() : 0) +
-                            "\n&7Cookies: &6" + house.getCookies() +
-                            "\n\n&7Privacy: " + HousePrivacy.valueOf(house.getPrivacy()).asString() +
-                            "\n\n&eClick to Join!" + ((player.hasPermission("housing2.admin")) ? "\n&cShift-click to Join! &4[ADMIN]" : "") + //WHY ARENT YOU USING THE LCLICK AND RCLICK ACTIONS?????
-                            (house.getOwnerID().equals(player.getUniqueId().toString()) ? colorize("\n&eRight Click to Manage!") : "")))
-                    .punctuation(false);
-            if (player.hasPermission("housing2.admin")) icon.extraLore("&8" + house.getHouseID());
+            String hIcon = house.getIcon() == null ? "OAK_DOOR" : house.getIcon();
+            ItemStack item;
+            if (Material.getMaterial(hIcon) != null) {
+                item = new ItemStack(Material.getMaterial(hIcon));
+            } else {
+                try {
+                    item = Serialization.itemStackFromBase64(hIcon);
+                } catch (IOException e) {
+                    item = new ItemStack(Material.OAK_DOOR);
+                }
+            }
 
-            addItem(slots[i], icon.build(), () -> {
+
+
+            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), new ArrayList<>(), new ArrayList<>(), false, 28));
+
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Created: §a" + formattedDate));
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Players: §a" + (world[0] != null ? world[0].getWorld().getPlayers().size() : 0)));
+            lore.add(Component.text("§7Cookies: §6" + house.getCookies()));
+
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Privacy: §a" + HousePrivacy.valueOf(house.getPrivacy()).toString()));
+            lore.add(Component.empty());
+            lore.add(Component.text("§eClick to join!"));
+            if (player.hasPermission("housing.admin")) {
+                lore.add(Component.text("§Shift-click to Join! &4[ADMIN]"));
+            }
+            if (house.getOwnerID().equals(player.getUniqueId().toString())) {
+                lore.add(Component.text("§eRight-click to edit!"));
+            }
+            if (player.hasPermission("housing.admin")) {
+                lore.add(Component.text("§8" + house.getHouseID()));
+            }
+
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(StringUtilsKt.housingStringFormatter("§a" + house.getHouseName()));
+            meta.lore(lore);
+            item.setItemMeta(meta);
+
+            addItem(slots[i], item, () -> {
                 if (HousePrivacy.valueOf(house.getPrivacy()) != HousePrivacy.PUBLIC) {
                     if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                         player.sendMessage(colorize("&cThis house is private!"));

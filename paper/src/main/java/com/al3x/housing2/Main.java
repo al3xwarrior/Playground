@@ -99,6 +99,10 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("WTFMap").setExecutor(new WTFMap(housesManager));
         getCommand("broadcast").setExecutor(new Broadcast());
         getCommand("staffalerts").setExecutor(new StaffAlerts());
+        getCommand("message").setExecutor(new Message());
+        getCommand("reply").setExecutor(new Reply());
+        getCommand("globalchat").setExecutor(new GlobalChat());
+        getCommand("globalchat").setTabCompleter(new GlobalChat());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

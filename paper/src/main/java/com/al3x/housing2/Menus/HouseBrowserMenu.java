@@ -4,24 +4,26 @@ import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.PaginationList;
-import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.*;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
+import static com.al3x.housing2.Utils.ItemBuilder.order;
 
 public class HouseBrowserMenu extends Menu {
 
@@ -57,6 +59,19 @@ public class HouseBrowserMenu extends Menu {
             HouseData house = houseList.get(i);
             HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(house.getHouseID()));
 
+            String hIcon = house.getIcon() == null ? "OAK_DOOR" : house.getIcon();
+            ItemStack item;
+            if (Material.getMaterial(hIcon) != null) {
+                item = new ItemStack(Material.getMaterial(hIcon));
+            } else {
+                try {
+                    item = Serialization.itemStackFromBase64(hIcon);
+                } catch (IOException e) {
+                    item = new ItemStack(Material.OAK_DOOR);
+                }
+            }
+
+
             ItemBuilder icon = ItemBuilder.create(Material.valueOf(house.getIcon() != null ? house.getIcon() : "OAK_DOOR"))
                     .name("&a" + house.getHouseName())
                     .description(colorize(house.getDescription()))
@@ -64,9 +79,31 @@ public class HouseBrowserMenu extends Menu {
                     .info("&7Players", "&a" + (housingWorld != null ? housingWorld.getWorld().getPlayers().size() : 0))
                     .info("&7Cookies", "&6" + house.getCookies())
                     .lClick(ItemBuilder.ActionType.JOIN_YELLOW);
+
             if (player.hasPermission("housing2.admin")) icon.extraLore("&8" + house.getHouseID());
 
-            addItem(i, icon.build(), () -> {
+            HashMap<ClickType, ItemBuilder.ActionType> actions = icon.getActions();
+            List<String> labels = new ArrayList<>();
+            //Action labels
+            //<color>Click to <action>!
+            if (actions.containsKey(ClickType.LEFT) && actions.size() == 1) {
+                labels.add(colorize( actions.get(ClickType.LEFT).getColor() + "Click to " + actions.get(ClickType.LEFT).toString() + "!"));
+            } else {
+                for (ClickType clickType : order) {
+                    if (actions.containsKey(clickType)) {
+                        labels.add(colorize(actions.get(clickType).getColor() + StringUtilsKt.formatCapitalize(clickType.name().toLowerCase()) + " Click to " + actions.get(clickType).toString() + "!"));
+                    }
+                }
+            }
+
+            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), icon.getInfo(), labels, false, 28));
+
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(StringUtilsKt.housingStringFormatter("§a" + house.getHouseName()));
+            meta.lore(lore);
+            item.setItemMeta(meta);
+
+            addItem(i, item, () -> {
                 if (housingWorld != null) {
                     housingWorld.sendPlayerToHouse(player);
                 } else {
@@ -114,6 +151,17 @@ public class HouseBrowserMenu extends Menu {
         if (search != null) {
             housesArray = housesArray.stream().filter(houseData -> StringUtilsKt.removeStringFormatting(houseData.getHouseName().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
         }
+
+        housesArray.sort((house1, house2) -> {
+            if (house1 == null || house2 == null) return (house1 == null) ? -1 : 1;
+            HousingWorld housingWorld = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house1.getHouseID()));
+            HousingWorld housingWorld2 = Main.getInstance().getHousesManager().getHouse(UUID.fromString(house2.getHouseID()));
+
+            if (housingWorld != null && housingWorld2 != null) {
+                return Integer.compare(housingWorld.getWorld().getPlayers().size(), housingWorld2.getWorld().getPlayers().size());
+            } //else check cookies
+            return Integer.compare(house1.getCookies(), house2.getCookies());
+        });
 
         return new PaginationList<>(housesArray, avaliableSlots.length);
     }

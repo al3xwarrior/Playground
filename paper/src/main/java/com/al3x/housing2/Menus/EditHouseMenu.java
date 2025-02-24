@@ -6,6 +6,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -32,19 +33,34 @@ public class EditHouseMenu extends Menu{
     public void setupItems() {
 
         // Change Icon Item
-        addItem(11, ItemBuilder.create(house.getIcon())
-                .name(colorize("&eChange Icon"))
-                .description("Change the icon used when displaying this house")
-                .build(), () -> {
-                    EnumMenu<Material> enumMenu = new EnumMenu<>(main, "&aSelect Icon", Material.values(), Material.GRASS_BLOCK, player, house, this, (material) -> {
-                        if (material == null) {
-                            player.sendMessage(colorize("&cSomething went wrong..."));
-                            return;
-                        }
-                        house.setIcon(material);
-                        open();
-                    });
-                    enumMenu.open();
+        ItemStack item = house.getIcon();
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(colorize("&eChange Icon"));
+        meta.setLore(Arrays.asList("§7Change the icon used when displaying this house", "", "§eLeft Click to change Material", "§eMiddle Click to select item"));
+        item.setItemMeta(meta);
+        addItem(11, item, (e) -> {
+                    if (e.isLeftClick()) {
+                        EnumMenu<Material> enumMenu = new EnumMenu<>(main, "&aSelect Icon", Material.values(), Material.GRASS_BLOCK, player, house, this, (material) -> {
+                            if (material == null) {
+                                player.sendMessage(colorize("&cSomething went wrong..."));
+                                return;
+                            }
+                            house.setIcon(material);
+                            open();
+                        });
+                        enumMenu.open();
+                    }
+
+                    if (e.getClick() == ClickType.MIDDLE) {
+                        new ItemSelectMenu(player, this, (itemStack) -> {
+                            if (itemStack == null) {
+                                player.sendMessage(colorize("&cSomething went wrong..."));
+                                return;
+                            }
+                            house.setIcon(itemStack);
+                            open();
+                        }).open();
+                    }
                 }
         );
 

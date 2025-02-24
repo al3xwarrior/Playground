@@ -1,5 +1,6 @@
 package com.al3x.housing2.Listeners.HouseEvents;
 
+import com.al3x.housing2.Commands.GlobalChat;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -34,6 +35,17 @@ public class ChatEvent implements Listener {
         Player player = e.getPlayer();
         World world = player.getWorld();
         // Lobby Chat
+
+        if (GlobalChat.globalChat.getOrDefault(player.getUniqueId(), false)) {
+            e.setCancelled(true);
+            String message = PlaceholderAPI.setPlaceholders(player, "&6[Global] %luckperms_prefix%" + player.getName() + "&7: &f");
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (GlobalChat.isToggled.getOrDefault(p.getUniqueId(), false)) continue;
+                p.sendMessage(colorize(message) + e.getMessage());
+            }
+            return;
+        }
+
         if (world.getName().equals("world")) {
             e.setCancelled(true);
             String message = PlaceholderAPI.setPlaceholders(player, "%luckperms_prefix%" + player.getName() + "&7: &f");

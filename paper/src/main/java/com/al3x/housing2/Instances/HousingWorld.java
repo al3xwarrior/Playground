@@ -38,6 +38,7 @@ import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -79,7 +80,7 @@ public class HousingWorld {
     private List<String> scoreboard;
     private String scoreboardTitle;
     private HousePrivacy privacy;
-    private Material icon;
+    private ItemStack iconItem;
     private ConcurrentHashMultiset<HousingNPC> housingNPCS;
     private List<Hologram> holograms;
     private HashMap<EventType, List<Action>> eventActions;
@@ -226,7 +227,6 @@ public class HousingWorld {
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
-        this.icon = houseData.getIcon() != null ? Material.valueOf(houseData.getIcon()) : Material.OAK_DOOR;
         this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
         this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
         this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
@@ -246,6 +246,7 @@ public class HousingWorld {
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
         if (this.size == 75) this.size = 150;
+        if (this.size == 150) this.size = 160;
         this.version = houseData.getVersion();
         this.ingameTime = houseData.getIngameTime() != null ? houseData.getIngameTime() : 6000L;
         this.dayLightCycle = houseData.getDayLightCycle() != null ? houseData.getDayLightCycle() : false;
@@ -274,6 +275,16 @@ public class HousingWorld {
             actionButtons.put(LocationData.fromString(key), houseData.getActionButtons().get(key));
         }
         scoreboardInstance = new HousingScoreboard(this);
+        String icon = houseData.getIcon() != null ? houseData.getIcon() : "OAK_DOOR";
+        if (Material.getMaterial(icon) != null) {
+            this.iconItem = new ItemStack(Material.getMaterial(icon));
+        } else {
+            try {
+                this.iconItem = Serialization.itemStackFromBase64(icon);
+            } catch (IOException e) {
+                this.iconItem = new ItemStack(Material.OAK_DOOR);
+            }
+        }
 
         killAllEntities();
     }
@@ -346,7 +357,7 @@ public class HousingWorld {
         this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
         this.privacy = HousePrivacy.PRIVATE;
-        this.icon = Material.OAK_DOOR;
+        this.iconItem = new ItemStack(Material.OAK_DOOR);
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
         this.size = determineHouseSize(size);
@@ -900,16 +911,16 @@ public class HousingWorld {
         return functions.stream().filter(function -> function.getName().equals(name)).findFirst().orElse(null);
     }
 
-    public Material getIcon() {
-        return icon;
+    public ItemStack getIcon() {
+        return iconItem;
     }
 
     public void setIcon(Material icon) {
-        this.icon = icon;
+        this.iconItem = new ItemStack(icon);
     }
 
-    public void setMaterial(Material material) {
-        this.icon = material;
+    public void setIcon(ItemStack icon) {
+        this.iconItem = icon;
     }
 
     public OfflinePlayer getOwner() {

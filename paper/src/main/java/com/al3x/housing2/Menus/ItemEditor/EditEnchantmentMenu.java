@@ -5,6 +5,10 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.*;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.keys.EnchantmentKeys;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
@@ -13,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.ADD_YELLOW;
@@ -37,7 +42,14 @@ public class EditEnchantmentMenu extends Menu {
                     .name("&cNo Enchants!")
                     .build());
         } else {
-            PaginationList<Enchantment> paginationList = new PaginationList<>(item.getEnchantments().keySet(), slots.length);
+            final Registry<Enchantment> enchantmentRegistry = RegistryAccess
+                    .registryAccess()
+                    .getRegistry(RegistryKey.ENCHANTMENT);
+            List<Enchantment> enchantmentList = new ArrayList<>();
+            for (Enchantment enchantment : enchantmentRegistry) {
+                enchantmentList.add(enchantment);
+            }
+            PaginationList<Enchantment> paginationList = new PaginationList<>(enchantmentList, slots.length);
             List<Enchantment> enchantments = paginationList.getPage(page);
             for (int i = 0; i < enchantments.size(); i++) {
                 Enchantment enchantment = enchantments.get(i);

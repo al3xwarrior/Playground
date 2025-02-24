@@ -98,7 +98,7 @@ public class DamageAmountCondition extends CHTSLImpl implements NPCCondition {
 
     @Override
     public List<EventType> allowedEvents() {
-        return Arrays.asList(EventType.PLAYER_DAMAGE, EventType.PLAYER_ATTACK);
+        return Arrays.asList(EventType.PLAYER_DAMAGE, EventType.PLAYER_ATTACK, EventType.NPC_DAMAGE);
     }
 
     @Override
