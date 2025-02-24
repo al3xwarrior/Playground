@@ -124,6 +124,18 @@ public class SystemsMenu extends Menu {
             slot++;
         }
 
+        if (house.hasPermission(player, Permissions.ITEM_NPCS)) {
+            ItemStack npcs = new ItemStack(Material.PLAYER_HEAD);
+            ItemMeta npcsMeta = npcs.getItemMeta();
+
+            npcsMeta.setDisplayName(colorize("&aNPCs"));
+            npcs.setItemMeta(npcsMeta);
+            addItem(slots[slot], npcs, () -> {
+                new NPCsMenu(main, player, house).open();
+            });
+            slot++;
+        }
+
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta backArrowMeta = backArrow.getItemMeta();
         backArrowMeta.setDisplayName(colorize("&cGo Back"));

@@ -25,7 +25,7 @@ import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 
 public class DropItemAction extends Action {
-    ItemStack item;
+    private ItemStack item;
     private String customLocation;
     private Locations location;
     private boolean dropNaturally;

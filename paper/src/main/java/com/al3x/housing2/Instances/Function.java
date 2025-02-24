@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -61,7 +62,8 @@ public class Function {
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
-            executor.execute(entity, p, house, null);
+            executor.execute(p, p, house, null);
+//            executor.execute(entity, p, house, null);
         }
     }
 
