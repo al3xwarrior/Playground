@@ -708,6 +708,7 @@ public class HousingWorld {
     }
 
     public void kickPlayerFromHouse(Player player) {
+        player.sendMessage(colorize("&cYou have been kicked from this house!"));
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
 
