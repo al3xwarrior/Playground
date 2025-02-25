@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Color;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
@@ -159,28 +160,16 @@ public class PlaceholderRequirementCondition extends CHTSLImpl {
     @Override
     public void importCondition(String action, List<String> nextLines) {
         String[] parts = action.split(" ");
-        if (parts.length < 4) return;
-        if (compareValue.startsWith("\"")) {
-            compareValue = compareValue.substring(1);
-            parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
-            while (!compareValue.endsWith("\"")) {
-                compareValue += " " + parts[0];
-                parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
-            }
-            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        Duple<String[], String> placeholderArg = handleArg(parts, 0);
+        this.placeholder = placeholderArg.getSecond();
+        parts = placeholderArg.getFirst();
+        if (parts.length == 0) {
+            return;
         }
         this.comparator = StatComparator.getComparator(parts[0]);
-        compareValue = parts[1];
-        if (compareValue.startsWith("\"")) {
-            compareValue = compareValue.substring(1);
-            parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
-            while (!compareValue.endsWith("\"")) {
-                compareValue += " " + parts[1];
-                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            }
-            compareValue = compareValue.substring(0, compareValue.length() - 1);
-        }
-        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        Duple<String[], String> compareValueArg = handleArg(parts, 1);
+        compareValue = compareValueArg.getSecond();
+        parts = compareValueArg.getFirst();
         if (parts.length > 0) {
             ignoreCase = Boolean.parseBoolean(parts[0]);
         }

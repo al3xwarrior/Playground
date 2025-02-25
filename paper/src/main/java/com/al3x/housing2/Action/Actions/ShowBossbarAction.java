@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -122,6 +123,10 @@ public class ShowBossbarAction extends HTSLImpl {
         return true;
     }
 
+    @Override
+    public List<EventType> disallowedEvents() {
+        return Arrays.asList(EventType.PLAYER_QUIT);
+    }
 
     @Override
     public LinkedHashMap<String, Object> data() {

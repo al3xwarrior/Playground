@@ -2,9 +2,11 @@ package com.al3x.housing2.Condition;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,5 +130,25 @@ public abstract class CHTSLImpl extends Condition {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    public Duple<String[], String> handleArg(String[] args, int index) {
+        if (args.length <= index) return null;
+        String arg = args[index];
+        if (arg.startsWith("\"")) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(arg);
+            while (!arg.endsWith("\"")) {
+                index++;
+                if (args.length <= index) break;
+                arg = args[index];
+                builder.append(" ").append(arg);
+            }
+
+            args = Arrays.copyOfRange(args, index + 1, args.length);
+
+            return new Duple<>(args, builder.toString().replace("\"", ""));
+        }
+        return new Duple<>(Arrays.copyOfRange(args, index + 1, args.length), arg);
     }
 }

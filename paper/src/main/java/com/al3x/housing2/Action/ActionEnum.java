@@ -29,6 +29,7 @@ public enum ActionEnum {
     TELEPORT("Teleport Action", TeleportAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
     PLAY_SOUND("Play Sound Action", PlaySoundAction.class),
+    STOP_SOUND("Stop Sound Action", StopSoundAction.class),
     SET_GAMEMODE("Set Gamemode Action", SetGamemodeAction.class),
     CHANGE_HEALTH("Change Health Action", ChangeHealthAction.class),
     CHANGE_HUNGER("Change Hunger Action", ChangeHungerAction.class),

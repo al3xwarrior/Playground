@@ -211,6 +211,7 @@ public class AddActionMenu extends Menu {
             if (function != null) {
                 if (function.isGlobal() && action.requiresPlayer()) continue;
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(EventType.FUNCTION)) continue;
+                if (action.disallowedEvents() != null && action.disallowedEvents().contains(EventType.FUNCTION)) continue;
                 newActions.add(action);
                 continue;
             }
@@ -219,6 +220,7 @@ public class AddActionMenu extends Menu {
 
             if (event != null) {
                 if (action.allowedEvents() != null && !action.allowedEvents().contains(event)) continue;
+                if (action.disallowedEvents() != null && action.disallowedEvents().contains(event)) continue;
                 newActions.add(action);
                 continue;
             }

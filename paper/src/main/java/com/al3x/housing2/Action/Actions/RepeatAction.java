@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
@@ -206,8 +207,9 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
             throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
         }
         if (action.contains(" ")) {
-            times = action.split(" ")[0];
-            action = action.replace(times + " ", "");
+            Duple<String[], String> timesArg = handleArg(action.split(" "), 0);
+            this.times = timesArg.getSecond();
+            action = String.join(" ", timesArg.getFirst());
         }
         ArrayList<String> subactions = new ArrayList<>();
         if (action.startsWith("{")) {

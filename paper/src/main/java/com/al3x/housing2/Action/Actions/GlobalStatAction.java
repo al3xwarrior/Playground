@@ -324,13 +324,11 @@ public class GlobalStatAction extends HTSLImpl {
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
-        if (parts.length < 3) {
-            return nextLines;
-        }
 
-        statName = parts[0].replace("\"", "");
+        Duple<String[], String> statArg = handleArg(parts, 0);
+        this.statName = statArg.getSecond();
+        parts = statArg.getFirst();
 
-        parts = Arrays.copyOfRange(parts, 1, parts.length);
         ArrayList<StatInstance> statInstances = new ArrayList<>();
 
         StatInstance instance = new StatInstance("global");

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.jetbrains.annotations.NotNull;
 
@@ -135,5 +136,25 @@ public abstract class HTSLImpl extends Action {
             }
         }
         return nextLines;
+    }
+
+    public static Duple<String[], String> handleArg(String[] args, int index) {
+        if (args.length <= index) return null;
+        String arg = args[index];
+        if (arg.startsWith("\"")) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(arg);
+            while (!arg.endsWith("\"")) {
+                index++;
+                if (args.length <= index) break;
+                arg = args[index];
+                builder.append(" ").append(arg);
+            }
+
+            args = Arrays.copyOfRange(args, index + 1, args.length);
+
+            return new Duple<>(args, builder.toString().replace("\"", ""));
+        }
+        return new Duple<>(Arrays.copyOfRange(args, index + 1, args.length), arg);
     }
 }

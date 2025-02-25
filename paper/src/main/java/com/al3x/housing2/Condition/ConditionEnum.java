@@ -7,6 +7,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public enum ConditionEnum {
+    CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
+    DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
+    DAMAGE_AMOUNT("Damage Amount", DamageAmountCondition.class),
+    INTERACTION_TYPE("Interaction Type", InteractionTypeCondition.class),
+    BLOCK_TYPE("Block Type", BlockTypeCondition.class),
     REQUIRED_GROUP("Required Group", GroupRequirementCondition.class),
     STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
     NPC_STAT_REQUIREMENT("NPC Stat Requirement", NPCStatRequirementCondition.class),
@@ -25,10 +30,6 @@ public enum ConditionEnum {
     GAMEMODE_REQUIREMENT("Gamemode Requirement", GamemodeRequirementCondition.class),
     PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
     IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
-    CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
-    DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
-    DAMAGE_AMOUNT("Damage Amount", DamageAmountCondition.class),
-    INTERACTION_TYPE("Interaction Type", InteractionTypeCondition.class),
     ;
     
     private String name;

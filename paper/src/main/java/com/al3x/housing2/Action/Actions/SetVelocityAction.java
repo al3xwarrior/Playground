@@ -255,30 +255,33 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
     @Override
     public String export(int indent) {
         String dir = direction == PushDirection.CUSTOM ? customDirection : direction.name();
-        String operation = this.operation.name();
+        String operation = this.operation.asString();
         return " ".repeat(indent) + keyword() + " " + operation + " " + dir + " " + amount;
     }
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] split = action.split(" ");
-        if (split.length < 3) {
+
+        operation = VelocityOperation.fromString(split[0]);
+        Duple<String[], String> directionArg = handleArg(split, 1);
+        if (PushDirection.fromString(directionArg.getSecond()) == null) {
+            customDirection = directionArg.getSecond();
+            direction = PushDirection.CUSTOM;
+        } else {
+            direction = PushDirection.fromString(directionArg.getSecond());
+        }
+        split = directionArg.getFirst();
+
+        if (split.length == 0) {
             return nextLines;
         }
 
-        VelocityOperation operation = VelocityOperation.fromString(split[0]);
-        String direction = split[1];
-        String amount = split[2];
+        Duple<String[], String> amountArg = handleArg(directionArg.getFirst(), 0);
+        amount = amountArg.getSecond();
+        split = amountArg.getFirst();
 
-        if (PushDirection.fromString(direction) == null) {
-            customDirection = direction;
-            this.direction = PushDirection.CUSTOM;
-        } else {
-            this.direction = PushDirection.fromString(direction);
-        }
-        this.operation = operation;
-        this.amount = amount;
-        return nextLines;
+        return new ArrayList<>(Arrays.asList(split));
     }
 
     @Override

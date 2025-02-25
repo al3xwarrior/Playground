@@ -497,7 +497,9 @@ public class ParticleAction extends HTSLImpl {
         data.put("amount", amount);
         data.put("direction", direction);
         data.put("customDirection", customDirection);
-        data.put("customData", customData);
+        if (customData != null && !customData.isEmpty()) {
+            data.put("customData", customData);
+        }
         return data;
     }
 
@@ -516,7 +518,14 @@ public class ParticleAction extends HTSLImpl {
         customDirection = (String) data.get("customDirection");
         if (data.get("customData") != null) {
             LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
-            customData = new HashMap<>(map);
+            customData = new HashMap<>();
+            List<String> keys = ParticleUtils.keys(particle);
+            if (keys == null) {
+                return;
+            }
+            for (String key : keys) {
+                customData.put(key, map.get(key));
+            }
         }
     }
 
@@ -567,53 +576,45 @@ public class ParticleAction extends HTSLImpl {
         type = ParticleType.valueOf(parts[1]);
         radius = Double.parseDouble(parts[2]);
         amount = Double.parseDouble(parts[3]);
-        int nextIndex = 4;
-        if (Locations.fromString(parts[nextIndex]) != null) {
-            location = Locations.fromString(parts[nextIndex]);
-            nextIndex++;
+
+        Duple<String[], String> locationArg = handleArg(parts, 4);
+        if (Locations.fromString(locationArg.getSecond()) != null) {
+            location = Locations.fromString(locationArg.getSecond());
         } else {
             location = CUSTOM;
-            customLocation = parts[nextIndex];
-            if (customLocation.startsWith("\"")) {
-                customLocation = customLocation.substring(1);
-                parts = new ArrayList<>(Arrays.asList(parts).subList(nextIndex, parts.length)).toArray(new String[0]);
-                while (!customLocation.endsWith("\"")) {
-                    customLocation += " " + parts[1];
-                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-                }
-                customLocation = customLocation.substring(0, customLocation.length() - 1);
-            }
-            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            nextIndex = 0;
+            customLocation = locationArg.getSecond();
         }
-        if (Locations.fromString(parts[nextIndex]) != null) {
-            location2 = Locations.fromString(parts[nextIndex]);
+        parts = locationArg.getFirst();
+
+        if (parts.length == 0) {
+            return nextLines;
+        }
+
+        Duple<String[], String> location2Arg = handleArg(parts, 0);
+        if (Locations.fromString(location2Arg.getSecond()) != null) {
+            location2 = Locations.fromString(location2Arg.getSecond());
         } else {
             location2 = CUSTOM;
-            customLocation2 = parts[nextIndex];
-            if (customLocation2.startsWith("\"")) {
-                customLocation2 = customLocation2.substring(1);
-                parts = new ArrayList<>(Arrays.asList(parts).subList(nextIndex, parts.length)).toArray(new String[0]);
-                while (!customLocation2.endsWith("\"")) {
-                    customLocation2 += " " + parts[1];
-                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-                }
-                customLocation2 = customLocation2.substring(0, customLocation2.length() - 1);
+            customLocation2 = location2Arg.getSecond();
+        }
+        parts = location2Arg.getFirst();
 
-                isLineRange = !customLocation2.contains(",");
-            }
-            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            nextIndex = 0;
+        if (parts.length == 0) {
+            return nextLines;
         }
 
-        List<String> keys = ParticleUtils.keys(particle);
-        if (keys != null) {
-            for (int i = 0; i < keys.size(); i++) {
-                if (nextIndex >= parts.length) {
-                    break;
-                }
-                customData.put(keys.get(i), parts[nextIndex++]);
+        List<String> requireNonNull = ParticleUtils.keys(particle);
+        if (requireNonNull == null) {
+            return nextLines;
+        }
+        for (int i = 0; i < requireNonNull.size(); i++) {
+            String key = requireNonNull.get(i);
+            Duple<String[], String> arg = handleArg(parts, i);
+            if (arg == null) {
+                continue;
             }
+            customData.put(key, arg.getSecond());
+            parts = arg.getFirst();
         }
 
         return nextLines;

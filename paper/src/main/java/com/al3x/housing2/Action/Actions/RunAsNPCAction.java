@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.google.gson.Gson;
@@ -190,15 +191,17 @@ public class RunAsNPCAction extends HTSLImpl {
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        if (action.contains(" ")) {
+            Duple<String[], String> npcIdArg = handleArg(action.split(" "), 0);
+            this.npcId = npcIdArg.getSecond();
+            action = String.join(" ", npcIdArg.getFirst());
+        }
         ArrayList<String> subactions = new ArrayList<>();
-        String[] parts = action.split(" ");
-
-
         if (action.startsWith("{")) {
             for (int i = 0; i < nextLines.size(); i++) {
                 String line = nextLines.get(i);
                 if (line.startsWith(indent + "}")) {
-                    nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
+                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
                     break;
                 }
                 subactions.add(line);

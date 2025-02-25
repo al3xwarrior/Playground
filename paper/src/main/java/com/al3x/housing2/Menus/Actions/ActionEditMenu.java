@@ -189,7 +189,7 @@ public class ActionEditMenu extends Menu {
                 switch (item.getType()) {
                     case STRING: {
                         player.sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                        openChat(main, o.value.toString(), (input) -> {
+                        openChat(main, String.valueOf(o.value), (input) -> {
                             // Set the field
                             if (o.field == null) return;
                             o.setValue(input);

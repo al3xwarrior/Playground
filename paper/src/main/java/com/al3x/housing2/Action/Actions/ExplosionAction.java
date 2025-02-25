@@ -7,6 +7,7 @@ import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -194,18 +195,19 @@ public class ExplosionAction extends HTSLImpl {
         String[] args = action.split(" ");
         if (args.length < 2) return nextLines;
 
-        if (Locations.fromString(args[0]) != null) {
-            location = Locations.fromString(args[0]);
-            if (location == PLAYER_LOCATION) {
-                customLocation = "0,0,0";
-            }
-        } else {
+        Duple<String[], String> locationArg = handleArg(args, 0);
+        if (Locations.fromString(locationArg.getSecond()) == null) {
             location = CUSTOM;
-            customLocation = args[0];
+            customLocation = locationArg.getSecond();
+        } else {
+            location = Locations.fromString(locationArg.getSecond());
         }
+        args = locationArg.getFirst();
+
+        if (args.length == 0) return nextLines;
 
         try {
-            power = Double.parseDouble(args[1]);
+            power = Double.parseDouble(args[0]);
         } catch (NumberFormatException e) {
             return nextLines;
         }

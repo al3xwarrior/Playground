@@ -93,7 +93,7 @@ public class PlaySoundAction extends HTSLImpl {
                                     "&eSelect a Sound", soundDuple,
                                     player, house, backMenu, (e, potion) -> {
                                 if (e.isRightClick()) {
-                                    player.playSound(player.getLocation(), potion, 1.0F, 1.0F);
+                                    player.playSound(player.getLocation(), potion, this.volume.floatValue(), this.pitch.floatValue());
                                 } else {
                                     sound = potion;
                                     backMenu.open();
@@ -214,17 +214,8 @@ public class PlaySoundAction extends HTSLImpl {
             location = Locations.fromString(parts[3]);
         } else {
             location = CUSTOM;
-            customLocation = parts[3];
-            if (customLocation.startsWith("\"")) {
-                customLocation = customLocation.substring(1);
-                parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
-                while (!customLocation.endsWith("\"")) {
-                    customLocation += " " + parts[1];
-                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-                }
-                customLocation = customLocation.substring(0, customLocation.length() - 1);
-            }
-            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            Duple<String[], String> locationArg = handleArg(parts, 3);
+            customLocation = locationArg.getSecond();
         }
         return nextLines;
     }

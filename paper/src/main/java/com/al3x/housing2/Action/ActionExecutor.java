@@ -133,7 +133,8 @@ public class ActionExecutor {
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         Action action;
-        while (!queue.isEmpty()) {
+        int index = 0;
+        while (index < queue.size()) {
             if (isPaused || !isAllComplete()) {
                 break;
             }
@@ -142,7 +143,8 @@ public class ActionExecutor {
                 return SUCCESS;
             }
 
-            action = queue.removeFirst();
+            action = queue.get(index);
+            index++;
 
             if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 2000)) {
                 exitAllTheWay(this);
@@ -186,9 +188,9 @@ public class ActionExecutor {
             }
 
             if (pause == 0) {
-                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                    return ERROR;
-                }
+//                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+//                    return ERROR;
+//                }
 
                 if (player == entity) {
                     action.execute(player, house, event, this);
@@ -197,11 +199,11 @@ public class ActionExecutor {
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
 
-                if (queue.isEmpty()) {
+                executeChildren(entity, player, house, event); //Look for children to execute. >:)
+
+                if (index >= queue.size()) {
                     isComplete = true;
                 }
-
-                executeChildren(entity, player, house, event); //Look for children to execute. >:)
                 continue;
             }
 
@@ -210,6 +212,7 @@ public class ActionExecutor {
             }
 
             Action finalAction = action;
+            int finalIndex = index;
 
             scheduler.runTaskLater(Main.getInstance(), () -> {
                 if (isComplete || isPaused) {
@@ -220,12 +223,17 @@ public class ActionExecutor {
                 }
                 if (player == entity) {
                     finalAction.execute(player, house, event, this);
+                    System.out.println("Executing action: " + finalAction);
                 } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
                     NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
 
                 executeChildren(entity, player, house, event);
+
+                if (finalIndex >= queue.size()) {
+                    isComplete = true;
+                }
             }, (long) pause);
         }
 
