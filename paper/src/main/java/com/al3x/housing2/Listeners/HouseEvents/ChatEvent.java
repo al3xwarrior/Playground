@@ -55,6 +55,12 @@ public class ChatEvent implements Listener {
             return;
         }
 
+        if (housesManager.getHouse(world).getPlayersData().get(player.getUniqueId().toString()).getMuted()) {
+            e.setCancelled(true);
+            player.sendMessage(colorize("&cYou are muted in this house!"));
+            return;
+        }
+
         lastChatEvent.put(player.getUniqueId(), e);
         sendEventExecution(housesManager, EventType.PLAYER_CHAT, player, e);
 

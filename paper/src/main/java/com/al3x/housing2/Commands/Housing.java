@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -373,6 +374,70 @@ public class Housing implements CommandExecutor {
             }
         }
 
+        if (strings[0].equalsIgnoreCase("mute")) {
+            if (strings.length == 2) {
+                HousingWorld house = housesManager.getHouse(player.getWorld());
+                if (house == null) {
+                    player.sendMessage(colorize("&cYou are not in a house!"));
+                    return true;
+                }
+                if (!house.hasPermission(player, Permissions.MUTE)) {
+                    player.sendMessage(colorize("&cYou don't have permission to mute players in this house!"));
+                    return true;
+                }
+                if (Bukkit.getPlayer(strings[1]) == null) {
+                    player.sendMessage(colorize("&cThat player is not online!"));
+                    return true;
+                }
+                boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
+                if (!online) {
+                    player.sendMessage(colorize("&cThat player is not in the same house as you!"));
+                    return true;
+                }
+                if (player.getName().equals(strings[1])) {
+                    player.sendMessage(colorize("&cYou can't mute yourself in this house!"));
+                    return true;
+                }
+                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(true);
+                player.sendMessage(String.format(colorize("&cMuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
+                return true;
+            }
+            player.sendMessage(colorize("&cYou need to specify a player!"));
+            return true;
+        }
+
+        if (strings[0].equalsIgnoreCase("unmute")) {
+            if (strings.length == 2) {
+                HousingWorld house = housesManager.getHouse(player.getWorld());
+                if (house == null) {
+                    player.sendMessage(colorize("&cYou are not in a house!"));
+                    return true;
+                }
+                if (!house.hasPermission(player, Permissions.MUTE)) {
+                    player.sendMessage(colorize("&cYou don't have permission to mute players in this house!"));
+                    return true;
+                }
+                if (Bukkit.getPlayer(strings[1]) == null) {
+                    player.sendMessage(colorize("&cThat player is not online!"));
+                    return true;
+                }
+                boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
+                if (!online) {
+                    player.sendMessage(colorize("&cThat player is not in the same house as you!"));
+                    return true;
+                }
+                if (player.getName().equals(strings[1])) {
+                    player.sendMessage(colorize("&cYou can't mute yourself in this house!"));
+                    return true;
+                }
+                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(false);
+                player.sendMessage(String.format(colorize("&cUnmuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
+                return true;
+            }
+            player.sendMessage(colorize("&cYou need to specify a player!"));
+            return true;
+        }
+
         player.sendMessage(colorize("&7&m---------------------------------------"));
         player.sendMessage(colorize("&6&lHousing Commands:"));
         player.sendMessage(colorize("&7- &f/housing create &7&o- start the creation process"));
@@ -387,6 +452,8 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7- &f/housing kick <player> &7&o- kick player from your house"));
         player.sendMessage(colorize("&7- &f/housing ban <player> &7&o- bans player from your house"));
         player.sendMessage(colorize("&7- &f/housing unban <player> &7&o- unbans player from your house"));
+        player.sendMessage(colorize("&7- &f/housing mute <player> &7&o- mutes player in your house"));
+        player.sendMessage(colorize("&7- &f/housing unmute <player> &7&o- unmutes player in your house"));
         player.sendMessage(colorize("&7- &f/housing kickall &7&o- kick all players from your house"));
         player.sendMessage(colorize("&7&m---------------------------------------"));
 
@@ -397,7 +464,7 @@ public class Housing implements CommandExecutor {
         @Override
         public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
             if (args.length == 1) {
-                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl", "kick", "ban", "unban", "kickall").stream().filter(i -> i.startsWith(args[0])).toList();
+                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl", "kick", "ban", "unban", "kickall", "mute", "unmute").stream().filter(i -> i.startsWith(args[0])).toList();
             }
 
             if (args.length == 2) {
@@ -411,7 +478,7 @@ public class Housing implements CommandExecutor {
                     return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList().stream().filter(i -> i.startsWith(args[1])).toList();
                 }
 
-                if (args[0].equalsIgnoreCase("kick") || args[0].equalsIgnoreCase("ban")) {
+                if (List.of("kick", "ban", "mute", "unmute").contains(args[0].toLowerCase())) {
                     return Bukkit.getPlayer(commandSender.getName()).getWorld().getPlayers().stream().map(Player::getName).toList();
                 }
             }
