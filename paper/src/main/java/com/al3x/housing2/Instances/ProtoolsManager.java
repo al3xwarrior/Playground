@@ -7,12 +7,12 @@ import com.al3x.housing2.Utils.Color;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.util.Vector3f;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import me.tofaa.entitylib.meta.EntityMeta;
 import me.tofaa.entitylib.meta.display.BlockDisplayMeta;
 import me.tofaa.entitylib.wrapper.WrapperEntity;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,12 +23,13 @@ public class ProtoolsManager {
     private Map<UUID, Long> cooldowns;
     private Map<UUID, Duple<Location, Location>> selections;
     private Map<UUID, Cuboid> copiedRegions;
-    private Map<UUID, Stack<List<BlockState>>> undoStacks; // shoutout to chatgpt for information about the Stack Class (i still dont know how it works!)
+    private Map<UUID, Stack<Duple<List<BlockState>, Integer>>> undoStacks; // shoutout to chatgpt for information about the Stack Class (i still dont know how it works!)
     private HousesManager housesManager;
 
+    private Stack<Integer> cancelledTasks = new Stack<>();
+
     // Queue Stuff
-    private final Queue<Runnable> taskQueue;
-    private boolean isProcessing;
+    private final HashMap<Integer, List<HashMap<Block, Duple<Material, BlockData>>>> taskQueue;
 
     public ProtoolsManager(Main main, HousesManager housesManager) {
         this.main = main;
@@ -38,8 +39,7 @@ public class ProtoolsManager {
         this.copiedRegions = new HashMap<>();
         this.housesManager = housesManager;
 
-        this.taskQueue = new LinkedList<>();
-        this.isProcessing = false;
+        this.taskQueue = new HashMap<>();
     }
 
     public List<Block> removeIllegalBlocks(Player player, List<Block> blocks) {
@@ -59,33 +59,6 @@ public class ProtoolsManager {
         return blocks;
     }
 
-    /* I dont like how this is implemented, it seems like it could be done better, ill come back to it -al3x
-    private void enqueueTask(Runnable task) {
-        synchronized (taskQueue) {
-            taskQueue.add(task);
-        }
-        processQueue();
-    }
-
-    private void processQueue() {
-        if (isProcessing || taskQueue.isEmpty()) return;
-        isProcessing = true;
-
-        Bukkit.getScheduler().runTaskLater(main, () -> {
-            Runnable task;
-            synchronized (taskQueue) {
-                task = taskQueue.poll();
-            }
-            if (task != null) {
-                task.run();
-            }
-            isProcessing = false;
-            if (!taskQueue.isEmpty()) {
-                processQueue();
-            }
-        }, 30L);
-    }
-    */
 
     public void setPos1(Player player, Location pos1) {
         if (this.selections.containsKey(player.getUniqueId())) {
@@ -127,7 +100,7 @@ public class ProtoolsManager {
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
-        if (blocks.size() > 2000) {
+        if (blocks.size() > 100 * 100 * 100) {
             player.sendMessage(Color.colorize("&cThe region is too large!"));
             return;
         }
@@ -140,10 +113,16 @@ public class ProtoolsManager {
             currentState.add(block.getState());
         }
 
-        addUndoStack(player.getUniqueId(), currentState);
-
         List<Material> blockOptions = blockList.generateBlocks();
-        blocks.forEach(block -> block.setType(blockOptions.get((int) (Math.random() * blockOptions.size()))));
+        HashMap<Block, Duple<Material, BlockData>> changes = new HashMap<>();
+        blocks.forEach(block -> {
+            changes.put(block, new Duple<>(blockOptions.get((int) (Math.random() * blockOptions.size())), null));
+        });
+        int taskID = (int) (Math.random() * 10000);
+
+        split(changes, taskID);
+
+        addUndoStack(player.getUniqueId(), currentState, taskID);
         player.sendMessage(Color.colorize("&aRegion set successfully!"));
     }
 
@@ -155,7 +134,7 @@ public class ProtoolsManager {
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
-        if (blocks.size() > 2000) {
+        if (blocks.size() > 100 * 100 * 100) {
             player.sendMessage(Color.colorize("&cThe region is too large!"));
             return;
         }
@@ -167,14 +146,20 @@ public class ProtoolsManager {
         for (Block block : blocks) {
             currentState.add(block.getState());
         }
-        addUndoStack(player.getUniqueId(), currentState);
 
         List<Material> blockOptions = to.generateBlocks();
+        HashMap<Block, Duple<Material, BlockData>> changes = new HashMap<>();
         blocks.forEach(block -> {
             if (from.includesMaterial(block.getType())) {
-                block.setType(blockOptions.get((int) (Math.random() * blockOptions.size())));
+                changes.put(block, new Duple<>(blockOptions.get((int) (Math.random() * blockOptions.size())), null));
             }
         });
+
+        int taskID = (int) (Math.random() * 10000);
+
+        split(changes, taskID);
+
+        addUndoStack(player.getUniqueId(), currentState, taskID);
         player.sendMessage(Color.colorize("&aRegion replaced successfully!"));
     }
 
@@ -193,7 +178,7 @@ public class ProtoolsManager {
         if (copiedRegions.containsKey(player.getUniqueId())) {
             Cuboid cuboid = copiedRegions.get(player.getUniqueId());
             List<Block> blocks = cuboid.getBlocks();
-            if (blocks.size() > 2000) {
+            if (blocks.size() > 100 * 100 * 100) {
                 player.sendMessage(Color.colorize("&cThe region is too large!"));
                 return;
             }
@@ -203,30 +188,75 @@ public class ProtoolsManager {
             // Save the current state of the blocks to be able to be undone
             List<BlockState> currentState = new ArrayList<>();
 
+            HashMap<Block, Duple<Material, BlockData>> changes = new HashMap<>();
+
             for (Block block : blocks) {
                 int relX = block.getX() - cuboid.getLowerX();
                 int relY = block.getY() - cuboid.getLowerY();
                 int relZ = block.getZ() - cuboid.getLowerZ();
 
-                BlockState state = block.getState();
-                currentState.add(state);
-
                 Location newLoc = player.getLocation().clone().add(relX, relY, relZ);
                 Block newBlock = newLoc.getBlock();
-                newBlock.setType(block.getType());
-                newBlock.setBlockData(block.getBlockData());
+                currentState.add(newBlock.getState());
+                changes.put(newBlock, new Duple<>(block.getType(), block.getBlockData()));
             }
-            addUndoStack(player.getUniqueId(), currentState);
+            int taskID = (int) (Math.random() * 10000);
+
+            split(changes, taskID);
+
+            addUndoStack(player.getUniqueId(), currentState, taskID);
             player.sendMessage(Color.colorize("&aRegion pasted successfully!"));
         } else {
             player.sendMessage(Color.colorize("&cYou must copy a region before pasting."));
         }
     }
 
+    public void split(HashMap<Block, Duple<Material, BlockData>> changes, int taskID) {
+        if (changes.size() > 100 * 100 * 100) {
+            return;
+        }
+
+        int split = 2000;
+
+        //faster tps = more blocks per tick
+        if (Bukkit.getServer().getTPS()[0] > 18) {
+            split = 5000;
+        }
+
+        //slower tps = less blocks per tick
+        if (Bukkit.getServer().getTPS()[0] < 15) {
+            split = 1000;
+        }
+
+        ArrayList<HashMap<Block, Duple<Material, BlockData>>> task = new ArrayList<>();
+
+        if (changes.size() <= split) {
+            task.add(changes);
+        } else {
+            // Split the changes into smaller chunks
+            int i = 0;
+            HashMap<Block, Duple<Material, BlockData>> chunk = new HashMap<>();
+            for (Map.Entry<Block, Duple<Material, BlockData>> entry : changes.entrySet()) {
+                chunk.put(entry.getKey(), entry.getValue());
+                i++;
+                if (i % split == 0) {
+                    task.add(chunk);
+                    chunk = new HashMap<>();
+                }
+            }
+
+            if (!chunk.isEmpty()) {
+                task.add(chunk);
+            }
+        }
+
+        taskQueue.put(taskID, task);
+    }
+
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
-        if (radius > 20) {
-            player.sendMessage(Color.colorize("&cThe radius cannot be greater than 20."));
+        if (radius > 60) {
+            player.sendMessage(Color.colorize("&cThe radius cannot be greater than 60."));
             return;
         }
 
@@ -234,6 +264,7 @@ public class ProtoolsManager {
         // Save the current state of the blocks to enable undo functionality
         List<BlockState> currentState = new ArrayList<>();
 
+        HashMap<Block, Duple<Material, BlockData>> changes = new HashMap<>();
         // Calculate the blocks within the sphere
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
@@ -251,31 +282,37 @@ public class ProtoolsManager {
                         // Randomly select a block material from the BlockList and set the block type
                         List<Material> blockOptions = blockList.generateBlocks();
                         Material material = blockOptions.get((int) (Math.random() * blockOptions.size()));
-                        block.setType(material);
+                        changes.put(block, new Duple<>(material, block.getBlockData()));
                     }
                 }
             }
         }
+        int taskID = (int) (Math.random() * 10000);
 
-        addUndoStack(player.getUniqueId(), currentState);
+        split(changes, taskID);
+
+        addUndoStack(player.getUniqueId(), currentState, taskID);
         player.sendMessage(Color.colorize("&aSphere created successfully!"));
     }
 
-    private void addUndoStack(UUID uuid, List<BlockState> blockStates) {
-        Stack<List<BlockState>> undoStack = undoStacks.computeIfAbsent(uuid, k -> new Stack<>());
+    private void addUndoStack(UUID uuid, List<BlockState> blockStates, int taskID) {
+        Stack<Duple<List<BlockState>, Integer>> undoStack = undoStacks.computeIfAbsent(uuid, k -> new Stack<>());
         if (undoStack.size() >= 25) {
             undoStack.remove(0); // Remove the oldest state
         }
-        undoStack.push(blockStates);
+        undoStack.push(new Duple<>(blockStates, taskID));
     }
 
     public void undo(Player player) {
         player.sendMessage(Color.colorize("&aUndoing..."));
         UUID uuid = player.getUniqueId();
         if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
-            List<BlockState> previousState = undoStacks.get(uuid).pop();
-            for (BlockState state : previousState) {
-                state.update(true, false);
+            Duple<List<BlockState>, Integer> previousState = undoStacks.get(uuid).pop();
+            List<BlockState> blockStates = previousState.getFirst();
+            int taskID = previousState.getSecond();
+            cancelledTasks.push(taskID);
+            for (BlockState blockState : blockStates) {
+                blockState.update(true, false);
             }
             player.sendMessage(Color.colorize("&aUndo successful."));
         } else {
@@ -420,5 +457,35 @@ public class ProtoolsManager {
 
     public Map<UUID, Long> getCooldowns() {
         return this.cooldowns;
+    }
+
+    public void runQueue() {
+        //first task
+        if (!taskQueue.isEmpty()) {
+            for (Integer taskID : taskQueue.keySet()) {
+                if (!cancelledTasks.contains(taskID)) {
+                    List<HashMap<Block, Duple<Material, BlockData>>> task = taskQueue.get(taskID);
+                    if (!task.isEmpty()) {
+                        HashMap<Block, Duple<Material, BlockData>> changes = task.getFirst();
+                        System.out.println("Running task " + taskID + " with " + changes.size() + " blocks");
+                        for (Map.Entry<Block, Duple<Material, BlockData>> entry : changes.entrySet()) {
+                            Block block = entry.getKey();
+                            Material material = entry.getValue().getFirst();
+                            BlockData blockData = entry.getValue().getSecond();
+                            block.setType(material, false);
+                            if (blockData != null) {
+                                block.setBlockData(blockData, false);
+                            }
+                        }
+                        task.removeFirst();
+                    } else {
+                        taskQueue.remove(taskID);
+                    }
+                } else {
+                    taskQueue.remove(taskID);
+                    cancelledTasks.remove(taskID);
+                }
+            }
+        }
     }
 }

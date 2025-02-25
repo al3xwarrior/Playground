@@ -34,6 +34,14 @@ public class Runnables {
     private static Gson gson = new Gson();
 
     public static void startRunnables(Main main) {
+        runnables.put("protoolsQueue", new BukkitRunnable() {
+            @Override
+            public void run() {
+                main.getProtoolsManager().runQueue();
+            }
+        }.runTaskTimer(main, 0L, 3L));
+
+
         runnables.put("unloadIfEmpty", new BukkitRunnable() {
             @Override
             public void run() {

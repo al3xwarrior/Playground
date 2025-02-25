@@ -2,6 +2,7 @@ package com.al3x.housing2.Utils
 
 import java.lang.Double.parseDouble
 import java.lang.Integer.parseInt
+import java.text.DecimalFormat
 
 fun Double.toInt(): Int {
     return this.toInt()
@@ -19,6 +20,20 @@ fun String?.isDouble(): Boolean {
     } catch (e: NumberFormatException) {
         return false
     }
+}
+
+fun formatNumber(value: Double, places: Int): String {
+    val suffixes = arrayOf("", "k", "m", "b", "t", "q", "Q", "s", "S", "o", "n", "d")
+    var newValue = value
+    var suffixIndex = 0
+
+    while (newValue >= 1000 && suffixIndex < suffixes.size - 1) {
+        newValue /= 1000
+        suffixIndex++
+    }
+
+    val format = DecimalFormat("#.${"#".repeat(places)}")
+    return format.format(newValue) + suffixes[suffixIndex]
 }
 
 fun String?.isInt(): Boolean {

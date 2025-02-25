@@ -45,6 +45,7 @@ public abstract class Placeholder {
         new RemoveFormatting();
 
         new Npc();
+        new FormattedStat();
     }
 
     public List<String> getAliases() {
