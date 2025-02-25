@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
@@ -83,6 +84,11 @@ public class SetGamemodeAction extends HTSLImpl {
     @Override
     public boolean mustBeSync() {
         return true;
+    }
+
+    @Override
+    public List<EventType> disallowedEvents() {
+        return Arrays.asList(EventType.PLAYER_QUIT);
     }
 
     @Override

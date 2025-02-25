@@ -282,23 +282,11 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         String[] parts = action.split(" ");
-        if (parts.length < 3) {
-            return nextLines;
-        }
 
-        statName = parts[0];
-        if (statName.startsWith("\"")) {
-            statName = statName.substring(1);
-            parts = new ArrayList<>(Arrays.asList(parts).subList(0, parts.length)).toArray(new String[0]);
-            while (!statName.endsWith("\"")) {
-                statName += " " + parts[1];
-                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            }
-            statName = statName.substring(0, statName.length() - 1);
-        }
-        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        Duple<String[], String> statArg = handleArg(parts, 0);
+        this.statName = statArg.getSecond();
+        parts = statArg.getFirst();
 
-        parts = Arrays.copyOfRange(parts, 1, parts.length);
         ArrayList<StatInstance> statInstances = new ArrayList<>();
 
         StatInstance instance = new StatInstance("npc");

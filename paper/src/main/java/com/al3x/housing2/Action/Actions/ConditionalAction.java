@@ -25,7 +25,7 @@ import java.util.*;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
-public class ConditionalAction extends HTSLImpl implements NPCAction{
+public class ConditionalAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
     private List<Condition> conditions;
     private boolean matchAnyCondition;

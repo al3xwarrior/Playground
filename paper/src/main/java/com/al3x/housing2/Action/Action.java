@@ -113,6 +113,10 @@ public abstract class Action {
         return null;
     }
 
+    public List<EventType> disallowedEvents() {
+        return null;
+    }
+
 
     public boolean mustBeSync() {
         return false;

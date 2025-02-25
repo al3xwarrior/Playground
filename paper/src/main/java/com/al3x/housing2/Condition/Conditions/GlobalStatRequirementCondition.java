@@ -9,6 +9,7 @@ import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
@@ -134,6 +135,33 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
     @Override
     public String keyword() {
         return "globalstat";
+    }
+
+    @Override
+    public String export(int indent) {
+        String compareValue = this.compareValue;
+        if (compareValue.contains(" ")) {
+            compareValue = "\"" + compareValue + "\"";
+        }
+        return "globalstat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
+    }
+
+    @Override
+    public void importCondition(String action, List<String> nextLines) {
+        String[] parts = action.split(" ");
+        Duple<String[], String> statArg = handleArg(parts, 0);
+        this.stat = statArg.getSecond();
+        parts = statArg.getFirst();
+        if (parts.length == 0) {
+            return;
+        }
+        this.comparator = StatComparator.getComparator(parts[0]);
+        Duple<String[], String> compareValueArg = handleArg(parts, 1);
+        compareValue = compareValueArg.getSecond();
+        parts = compareValueArg.getFirst();
+        if (parts.length > 0) {
+            ignoreCase = Boolean.parseBoolean(parts[0]);
+        }
     }
 
     @Override

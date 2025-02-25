@@ -1,12 +1,15 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class StartHouseMusicAction extends HTSLImpl {
 
@@ -39,6 +42,11 @@ public class StartHouseMusicAction extends HTSLImpl {
     public boolean execute(Player player, HousingWorld house) {
         house.startMusic();
         return true;
+    }
+
+    @Override
+    public List<EventType> disallowedEvents() {
+        return Arrays.asList(EventType.PLAYER_QUIT);
     }
 
     @Override

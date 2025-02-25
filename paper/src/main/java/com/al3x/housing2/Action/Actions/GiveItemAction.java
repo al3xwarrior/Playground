@@ -152,7 +152,7 @@ public class GiveItemAction extends Action {
             player.getInventory().setItemInMainHand(item);
             return true;
         }
-        if (slot == -106) {
+        if (slot == -106 || slot == -3) {
             if (!player.getInventory().getItemInOffHand().isEmpty() && !replaceExistingSlot) {
                 return true;
             }

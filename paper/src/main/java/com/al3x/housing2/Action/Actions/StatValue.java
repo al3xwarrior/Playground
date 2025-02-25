@@ -23,6 +23,7 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.*;
 
+import static com.al3x.housing2.Action.HTSLImpl.handleArg;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class StatValue extends Action {
@@ -455,16 +456,9 @@ public class StatValue extends Action {
             this.statInstances = statInstances;
         } else {
             setExpression(false);
-            literalValue = parts[0];
-            if (literalValue.startsWith("\"")) {
-                literalValue = literalValue.substring(1);
-                while (!literalValue.endsWith("\"")) {
-                    literalValue += " " + parts[1];
-                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-                }
-                literalValue = literalValue.substring(0, literalValue.length() - 1);
-            }
-            parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+            Duple<String[], String> literalArg = handleArg(parts, 0);
+            this.literalValue = literalArg.getSecond();
+            parts = literalArg.getFirst();
         }
         return parts;
     }

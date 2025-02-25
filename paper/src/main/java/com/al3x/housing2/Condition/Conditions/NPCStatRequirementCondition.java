@@ -8,6 +8,7 @@ import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
@@ -136,7 +137,7 @@ public class NPCStatRequirementCondition extends CHTSLImpl implements NPCConditi
 
     @Override
     public String keyword() {
-        return "stat";
+        return "npcstat";
     }
 
     @Override
@@ -145,26 +146,22 @@ public class NPCStatRequirementCondition extends CHTSLImpl implements NPCConditi
         if (compareValue.contains(" ")) {
             compareValue = "\"" + compareValue + "\"";
         }
-        return "stat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
+        return "npcstat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
     }
 
     @Override
     public void importCondition(String action, List<String> nextLines) {
         String[] parts = action.split(" ");
-        if (parts.length < 4) return;
-        this.stat = parts[0];
-        this.comparator = StatComparator.getComparator(parts[1]);
-        compareValue = parts[2];
-        if (compareValue.startsWith("\"")) {
-            compareValue = compareValue.substring(1);
-            parts = new ArrayList<>(Arrays.asList(parts).subList(3, parts.length)).toArray(new String[0]);
-            while (!compareValue.endsWith("\"")) {
-                compareValue += " " + parts[1];
-                parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-            }
-            compareValue = compareValue.substring(0, compareValue.length() - 1);
+        Duple<String[], String> statArg = handleArg(parts, 0);
+        this.stat = statArg.getSecond();
+        parts = statArg.getFirst();
+        if (parts.length == 0) {
+            return;
         }
-        parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
+        this.comparator = StatComparator.getComparator(parts[0]);
+        Duple<String[], String> compareValueArg = handleArg(parts, 1);
+        compareValue = compareValueArg.getSecond();
+        parts = compareValueArg.getFirst();
         if (parts.length > 0) {
             ignoreCase = Boolean.parseBoolean(parts[0]);
         }

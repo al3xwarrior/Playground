@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import net.citizensnpcs.api.npc.NPC;
@@ -13,10 +14,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -99,6 +97,18 @@ public class PauseAction extends HTSLImpl implements NPCAction {
     @Override
     public String keyword() {
         return "pause";
+    }
+
+    @Override
+    public String export(int indent) {
+        return "pause " + (duration.contains(" ") ? "\"" + duration + "\"" : duration);
+    }
+
+    @Override
+    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+        Duple<String[], String> durationArg = handleArg(action.split(" "), 0);
+        duration = durationArg.getSecond();
+        return nextLines;
     }
 
     @Override
