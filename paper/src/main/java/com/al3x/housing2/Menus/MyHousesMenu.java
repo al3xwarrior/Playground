@@ -136,7 +136,7 @@ public class MyHousesMenu extends Menu {
             lore.add(Component.empty());
             lore.add(Component.text("§eClick to join!"));
             if (player.hasPermission("housing.admin")) {
-                lore.add(Component.text("§Shift-click to Join! &4[ADMIN]"));
+                lore.add(Component.text("§cShift-click to Join! §4[ADMIN]"));
             }
             if (house.getOwnerID().equals(player.getUniqueId().toString())) {
                 lore.add(Component.text("§eRight-click to edit!"));
