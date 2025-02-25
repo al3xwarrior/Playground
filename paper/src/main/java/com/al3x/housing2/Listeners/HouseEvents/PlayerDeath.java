@@ -53,7 +53,7 @@ public class PlayerDeath implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
         HousingWorld house = housesManager.getHouse(player.getWorld());

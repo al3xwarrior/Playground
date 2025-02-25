@@ -7,9 +7,13 @@ import com.al3x.housing2.Utils.StringToBase64;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.bukkit.event.inventory.ClickType.CONTROL_DROP;
 
@@ -78,5 +82,16 @@ public class Item {
         }
         nbtItemBuilder.build();
         return base;
+    }
+
+    public static int getItemNBTSize(ItemStack item) {
+        if (item == null || item.getType().isAir()) return 0;
+
+        // Convert ItemStack to a Map
+        Map<String, Object> itemData = item.serialize();
+
+        // Convert to JSON and measure size
+        String json = Main.getInstance().getGson().toJson(itemData);
+        return json.getBytes(StandardCharsets.UTF_8).length; // Get byte size
     }
 }

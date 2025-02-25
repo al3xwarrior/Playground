@@ -6,12 +6,12 @@ import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Menus.SlotSelectMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
@@ -132,7 +134,7 @@ public class DropItemAction extends Action {
                 new ActionEditor.ActionItem("itemMerging",
                         ItemBuilder.create((this.itemMerging ? Material.LIME_DYE : Material.RED_DYE))
                                 .name("&aDisable Item Merging")
-                                .description("When enabled, the item will not merge with other items on the ground.")
+                                .description("When enabled, the item will not merge with other items on the ground immediately.")
                                 .info("&7Current Value", "")
                                 .info(null, itemMerging ? "&aYes" : "&cNo"),
                         ActionEditor.ActionItem.ActionType.BOOLEAN
@@ -203,8 +205,26 @@ public class DropItemAction extends Action {
             }
         }
 
-        // TODO: make not hardcoded
-        if (house.getWorld().getEntities().size() > 200) {
+        AtomicBoolean executed = new AtomicBoolean(false);
+
+        AtomicInteger dropppedItems = new AtomicInteger();
+        List<Entity> entities = house.getWorld().getEntities();
+        entities.stream().filter(entity -> entity instanceof Item).forEach(entity -> {
+            dropppedItems.getAndIncrement();
+            Item item = (Item) entity;
+            if (item.getItemStack().isSimilar(this.item) && itemMerging && !executed.get()) {
+                ItemStack newItemStack = this.item.clone();
+                newItemStack.setAmount(item.getItemStack().getAmount() + this.item.getAmount());
+                item.setItemStack(newItemStack);
+                executed.set(true);
+            }
+        });
+
+        if (executed.get()) {
+            return true;
+        }
+
+        if (dropppedItems.get() > 200) {
             if (player.getInventory().firstEmpty() != -1) {
                 player.getInventory().addItem(item);
             }
@@ -257,7 +277,14 @@ public class DropItemAction extends Action {
         prioritizePlayer = (boolean) data.get("prioritizePlayer");
         fallbackToInventory = (boolean) data.get("fallbackToInventory");
         showName = (boolean) data.get("showName");
-        pickupDelay = (int) data.get("pickupDelay");
+
+        // ender dont look at this!!
+        Object o = data.get("pickupDelay");
+        if (o instanceof Double) {
+            pickupDelay = ((Double) o).intValue();
+        } else {
+            pickupDelay = (int) data.get("pickupDelay");
+        }
     }
 
     @Override

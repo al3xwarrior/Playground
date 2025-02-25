@@ -15,6 +15,8 @@ import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
@@ -43,6 +45,8 @@ public final class Main extends JavaPlugin implements Listener {
     private PlayerSpeedManager playerSpeedManager;
     private NetworkManager networkManager;
     private HeadDatabaseAPI headDatabaseAPI;
+
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private String mineSkinKey;
 
@@ -103,6 +107,7 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("reply").setExecutor(new Reply());
         getCommand("globalchat").setExecutor(new GlobalChat());
         getCommand("globalchat").setTabCompleter(new GlobalChat());
+        getCommand("checkItemSize").setExecutor(new CheckItemSize());
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
@@ -243,6 +248,10 @@ public final class Main extends JavaPlugin implements Listener {
 
     public LobbyDisplays getLobbyDisplays() {
         return this.lobbyDisplays;
+    }
+
+    public Gson getGson() {
+        return GSON;
     }
 
     public HeadDatabaseAPI getHeadDatabaseAPI() {

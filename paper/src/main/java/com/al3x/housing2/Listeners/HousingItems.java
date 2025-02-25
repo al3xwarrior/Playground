@@ -220,10 +220,10 @@ public class HousingItems implements Listener {
             }
         }
 
+        if (clickType == null) return;
+
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
-
-        if (clickType == null) return;
 
         Item customItem = Item.fromItemStack(item);
 
