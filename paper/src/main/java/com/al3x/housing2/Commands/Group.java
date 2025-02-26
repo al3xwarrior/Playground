@@ -43,6 +43,10 @@ public class Group implements CommandExecutor {
             player.sendMessage(colorize("&cThat player is not online!"));
             return true;
         }
+        if (Bukkit.getPlayer(args[0]) == player) {
+            player.sendMessage(colorize("&cYou can't change your own group!"));
+            return false;
+        }
         boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(args[0]));
         if (!online) {
             player.sendMessage(colorize("&cThat player is not in the same house as you!"));
