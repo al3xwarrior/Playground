@@ -60,5 +60,12 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
             }
         }
+
+        // Prevent teleporting between worlds
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+            if (event.getFrom().getWorld() != event.getTo().getWorld()) {
+                event.setCancelled(true);
+            }
+        }
     }
 }
