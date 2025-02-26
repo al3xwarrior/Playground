@@ -50,7 +50,6 @@ public class Updater {
                     stat.getAsJsonObject().remove("id");
 
                 }
-
             }
             case 1: {
                 JsonArray groups = data.getAsJsonArray("groups");
@@ -58,9 +57,11 @@ public class Updater {
                     if (group.getAsJsonObject().getAsJsonPrimitive("name").getAsString().equals("owner")) {
                         group.getAsJsonObject().addProperty("priority", 2147483647);
                     }
+                    if (group.getAsJsonObject().get("color").getAsString().startsWith("&")) {
+                        group.getAsJsonObject().addProperty("color", group.getAsJsonObject().get("color").getAsString().replace("&", "§"));
+                    }
                 }
             }
-
         }
 
         data.addProperty("version", LATEST_VERSION); // overwrites old version
