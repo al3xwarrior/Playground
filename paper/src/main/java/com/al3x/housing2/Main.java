@@ -1,6 +1,7 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
+import com.al3x.housing2.Commands.Group;
 import com.al3x.housing2.Commands.Protools.*;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
@@ -108,6 +109,8 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("globalchat").setExecutor(new GlobalChat());
         getCommand("globalchat").setTabCompleter(new GlobalChat());
         getCommand("checkItemSize").setExecutor(new CheckItemSize());
+        getCommand("group").setExecutor(new Group(housesManager));
+        getCommand("group").setTabCompleter(new Group.TabCompleter(housesManager));
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

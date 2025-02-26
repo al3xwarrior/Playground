@@ -51,3 +51,4 @@ commands:
     aliases: [ "r" ]
   globalchat:
     aliases: [ "gc" ]
+  group:
