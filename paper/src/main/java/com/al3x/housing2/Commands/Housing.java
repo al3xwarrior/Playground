@@ -13,6 +13,7 @@ import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
+import com.al3x.housing2.Utils.DurationString;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import org.apache.commons.io.FileUtils;
@@ -27,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidParameterException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -298,7 +301,7 @@ public class Housing implements CommandExecutor {
             }
 
             if (strings[0].equalsIgnoreCase("ban")) {
-                if (strings.length == 2) {
+                if (strings.length >= 2) {
                     HousingWorld house = housesManager.getHouse(player.getWorld());
                     if (house == null) {
                         player.sendMessage(colorize("&cYou are not in a house!"));
@@ -320,6 +323,16 @@ public class Housing implements CommandExecutor {
                     if (player.getName().equals(strings[1])) {
                         player.sendMessage(colorize("&cYou can't ban yourself from this house!"));
                         return true;
+                    }
+                    if (strings.length == 3) {
+                        try {
+                            house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime(strings[2]));
+                        } catch (InvalidParameterException e) {
+                            player.sendMessage(colorize("&cInvalid duration: ") + strings[2]);
+                            return true;
+                        }
+                    } else {
+                        house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime("99999d"));
                     }
                     house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanned(true);
                     house.kickPlayerFromHouse(Bukkit.getPlayer(strings[1]));
@@ -346,6 +359,7 @@ public class Housing implements CommandExecutor {
                         return true;
                     }
                     house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanned(false);
+                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(Instant.now());
                     player.sendMessage(String.format(colorize("&cUnbanned %s from this house!"), Bukkit.getPlayer(strings[1]).getName()));
                     return true;
                 }
@@ -359,12 +373,12 @@ public class Housing implements CommandExecutor {
                     player.sendMessage(colorize("&cYou are not in a house!"));
                     return true;
                 }
-                if (house.getOwnerUUID() != player.getUniqueId()) {
+                if (!house.getOwnerUUID().equals(player.getUniqueId())) {
                     player.sendMessage(colorize("&cYou don't have permission to kick all players from this house!"));
                     return true;
                 }
                 for (Player playerToKick : player.getWorld().getPlayers()) {
-                    if (playerToKick.getUniqueId() == player.getUniqueId()) {
+                    if (playerToKick.getUniqueId().equals(player.getUniqueId())) {
                         continue;
                     }
                     house.kickPlayerFromHouse(playerToKick);
@@ -372,10 +386,29 @@ public class Housing implements CommandExecutor {
                 player.sendMessage(colorize("&cKicked all players from this house!"));
                 return true;
             }
+
+            if (strings[0].equalsIgnoreCase("kickallguests")) {
+                HousingWorld house = housesManager.getHouse(player.getWorld());
+                if (house == null) {
+                    player.sendMessage(colorize("&cYou are not in a house!"));
+                    return true;
+                }
+                if (!house.getOwnerUUID().equals(player.getUniqueId())) {
+                    player.sendMessage(colorize("&cYou don't have permission to kick all players from this house!"));
+                    return true;
+                }
+                for (Player playerToKick : player.getWorld().getPlayers()) {
+                    if (house.houseData.getPlayerData().get(playerToKick.getUniqueId().toString()).getGroup().equals(house.getDefaultGroup())) {
+                        house.kickPlayerFromHouse(playerToKick);
+                    }
+                }
+                player.sendMessage(colorize("&cKicked all guests from this house!"));
+                return true;
+            }
         }
 
         if (strings[0].equalsIgnoreCase("mute")) {
-            if (strings.length == 2) {
+            if (strings.length >= 2) {
                 HousingWorld house = housesManager.getHouse(player.getWorld());
                 if (house == null) {
                     player.sendMessage(colorize("&cYou are not in a house!"));
@@ -397,6 +430,16 @@ public class Housing implements CommandExecutor {
                 if (player.getName().equals(strings[1])) {
                     player.sendMessage(colorize("&cYou can't mute yourself in this house!"));
                     return true;
+                }
+                if (strings.length == 3) {
+                    try {
+                        house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime(strings[2]));
+                    } catch (InvalidParameterException e) {
+                        player.sendMessage(colorize("&cInvalid duration: ") + strings[2]);
+                        return true;
+                    }
+                } else {
+                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime("99999d"));
                 }
                 house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(true);
                 player.sendMessage(String.format(colorize("&cMuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
@@ -431,6 +474,7 @@ public class Housing implements CommandExecutor {
                     return true;
                 }
                 house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(false);
+                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(Instant.now());
                 player.sendMessage(String.format(colorize("&cUnmuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
                 return true;
             }
@@ -450,11 +494,12 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7- &f/housing playerstats <player> &7&o- view a players stats"));
         player.sendMessage(colorize("&7- &f/housing globalstats &7&o- view the global stats"));
         player.sendMessage(colorize("&7- &f/housing kick <player> &7&o- kick player from your house"));
-        player.sendMessage(colorize("&7- &f/housing ban <player> &7&o- bans player from your house"));
+        player.sendMessage(colorize("&7- &f/housing ban <player> <duration>&7&o- bans player from your house"));
         player.sendMessage(colorize("&7- &f/housing unban <player> &7&o- unbans player from your house"));
-        player.sendMessage(colorize("&7- &f/housing mute <player> &7&o- mutes player in your house"));
+        player.sendMessage(colorize("&7- &f/housing mute <player> <duration>&7&o- mutes player in your house"));
         player.sendMessage(colorize("&7- &f/housing unmute <player> &7&o- unmutes player in your house"));
         player.sendMessage(colorize("&7- &f/housing kickall &7&o- kick all players from your house"));
+        player.sendMessage(colorize("&7- &f/housing kickallguests &7&o- kick all players with the default group from your house"));
         player.sendMessage(colorize("&7&m---------------------------------------"));
 
         return true;
@@ -464,7 +509,7 @@ public class Housing implements CommandExecutor {
         @Override
         public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
             if (args.length == 1) {
-                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl", "kick", "ban", "unban", "kickall", "mute", "unmute").stream().filter(i -> i.startsWith(args[0])).toList();
+                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl", "kick", "ban", "unban", "kickall", "kickallguests", "mute", "unmute").stream().filter(i -> i.startsWith(args[0])).toList();
             }
 
             if (args.length == 2) {

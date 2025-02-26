@@ -5,6 +5,7 @@ import com.al3x.housing2.Instances.HousingWorld
 import com.al3x.housing2.Instances.Stat
 import com.al3x.housing2.Instances.Team
 import net.minecraft.stats.Stats
+import java.time.Instant
 
 // Per house player data, so groups, inventory, etc
 data class PlayerData(
@@ -14,7 +15,9 @@ data class PlayerData(
     var armor: String?,
     var enderchest: String?,
     var muted: Boolean,
+    var muteExpiration: Instant?,
     var banned: Boolean,
+    var banExpiration: Instant?,
     var stats: List<StatData>,
     @Transient var cacheStats: List<Stat> = ArrayList()
 ) {

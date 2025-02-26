@@ -1,13 +1,12 @@
 package com.al3x.housing2.Utils;
 
 import com.google.gson.*;
-import org.bukkit.Bukkit;
 
 import java.util.Map;
 
 public class Updater {
 
-    public static final Integer LATEST_VERSION = 1;
+    public static final Integer LATEST_VERSION = 2;
 
     public static JsonObject update(JsonObject data) {
 
@@ -54,7 +53,12 @@ public class Updater {
 
             }
             case 1: {
-
+                JsonArray groups = data.getAsJsonArray("groups");
+                for (JsonElement group : groups) {
+                    if (group.getAsJsonObject().getAsJsonPrimitive("name").getAsString().equals("owner")) {
+                        group.getAsJsonObject().addProperty("priority", 2147483647);
+                    }
+                }
             }
 
         }

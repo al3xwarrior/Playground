@@ -5,7 +5,9 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.InstantTypeAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -15,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class HousesManager {
-    public static final Gson gson = new Gson();
+    public static final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
     private Main main;
 
     // All the loaded houses

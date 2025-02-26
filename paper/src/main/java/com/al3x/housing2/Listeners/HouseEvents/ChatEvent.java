@@ -3,6 +3,7 @@ package com.al3x.housing2.Listeners.HouseEvents;
 import com.al3x.housing2.Commands.GlobalChat;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -55,10 +57,13 @@ public class ChatEvent implements Listener {
             return;
         }
 
-        if (housesManager.getHouse(world).getPlayersData().get(player.getUniqueId().toString()).getMuted()) {
+        PlayerData playerData = housesManager.getHouse(world).getPlayersData().get(player.getUniqueId().toString());
+        if (playerData.getMuted() && playerData.getMuteExpiration().isAfter(Instant.now())) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou are muted in this house!"));
             return;
+        } else if (playerData.getMuted()) {
+            playerData.setMuted(false);
         }
 
         lastChatEvent.put(player.getUniqueId(), e);

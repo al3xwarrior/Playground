@@ -12,10 +12,7 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Utils.Duple;
-import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Utils.StringUtilsKt;
-import com.al3x.housing2.Utils.Updater;
+import com.al3x.housing2.Utils.*;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -53,7 +51,7 @@ import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
     private transient Main main;
     private transient SlimeLoader loader;
@@ -405,13 +403,14 @@ public class HousingWorld {
         Group defaultGroup = new Group("default");
         defaultGroup.setPrefix("&7");
         defaultGroup.setDisplayName("&7Default");
-        defaultGroup.setColor("&7");
+        defaultGroup.setColor("§7");
         groups.add(defaultGroup);
 
         Group ownerGroup = new Group("owner");
         ownerGroup.setPrefix("&e[Owner] ");
         ownerGroup.setDisplayName("&eOwner");
-        ownerGroup.setColor("&e");
+        ownerGroup.setColor("§e");
+        ownerGroup.setPriority(2147483647);
         groups.add(ownerGroup);
 
         if (owner instanceof Player) {
@@ -670,9 +669,12 @@ public class HousingWorld {
 
     public void sendPlayerToHouse(Player player) {
         try {
-            if (houseData.getPlayerData().get(player.getUniqueId().toString()).getBanned()) {
+            PlayerData playerData = houseData.getPlayerData().get(player.getUniqueId().toString());
+            if (playerData.getBanned() && playerData.getBanExpiration().isAfter(Instant.now())) {
                 player.sendMessage(colorize("&cYou are banned from " + name + "!"));
                 return;
+            } else if (playerData.getBanned()) {
+                playerData.setBanned(false);
             }
         } catch (NullPointerException ignored) {}
         if (loaded) {
@@ -1100,7 +1102,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(null, null, null, null, null, false, false, new ArrayList<>(), new ArrayList<>());
+            data = new PlayerData(null, null, null, null, null, false, Instant.now(), false, Instant.now(), new ArrayList<>(), new ArrayList<>());
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }

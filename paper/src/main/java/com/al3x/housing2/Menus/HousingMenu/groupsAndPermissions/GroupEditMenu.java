@@ -8,6 +8,7 @@ import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -105,9 +106,9 @@ public class GroupEditMenu extends Menu {
         });
         i++;
 
-        addItem(slots[i], ItemBuilder.create(fromColorcode(group.getColor()).getMaterial()).name("&aChange Color")
+        addItem(slots[i], ItemBuilder.create(fromColorcode(colorize(group.getColor())).getMaterial()).name("&aChange Color")
                 .description("Change the color of the group")
-                .info("&7Current Color", group.getColor() + StringUtilsKt.formatCapitalize(fromColorcode(group.getColor()).name()))
+                .info("&7Current Color", colorize(group.getColor()) + StringUtilsKt.formatCapitalize(fromColorcode(colorize(group.getColor())).name()))
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
                 .build(), () -> {
             new EnumMenu<>(main, "&7Select Group Color", Colors.values(), null, player, house, this, (color) -> {
@@ -131,7 +132,7 @@ public class GroupEditMenu extends Menu {
 
 
         addItem(slots[i], ItemBuilder.create(Material.PLAYER_HEAD).name("&aEdit Permissions")
-                .skullTexture(colorStrings.get(group.getColor()))
+                .skullTexture(colorStrings.get(colorize(group.getColor())))
                 .description("Change the permissions the players have within this group.")
                 .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
                 .build(), () -> {
