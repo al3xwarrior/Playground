@@ -82,18 +82,26 @@ public class ProtoolsManager {
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
-    public void copyRegion(Player player) {
+public boolean checkSelection(Player player) {
         if (this.selections.containsKey(player.getUniqueId())) {
             Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
-            Cuboid cuboid = new Cuboid(selection.getFirst(), selection.getSecond());
-            copiedRegions.put(player.getUniqueId(), cuboid);
-            player.sendMessage(Color.colorize("&aRegion copied!"));
+            if (selection.getFirst() == null || selection.getSecond() == null) {
+                return false;
+            }
+            if (selection.getFirst().getWorld() != selection.getSecond().getWorld()) {
+                return false;
+            }
+            return true;
         } else {
-            player.sendMessage(Color.colorize("&cYou must have a selection to do this."));
+            return false;
         }
     }
 
     public void setRegionTo(Player player, BlockList blockList) {
+        if (!checkSelection(player)) {
+            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            return;
+        }
         this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
         Location pos1 = selection.getFirst();
@@ -127,6 +135,10 @@ public class ProtoolsManager {
     }
 
     public void setRegionTo(Player player, BlockList from, BlockList to) {
+        if (!checkSelection(player)) {
+            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            return;
+        }
         player.sendMessage(Color.colorize("&aReplacing region..."));
         cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
@@ -164,6 +176,10 @@ public class ProtoolsManager {
     }
 
     public void copyToClipboard(Player player) {
+        if (!checkSelection(player)) {
+            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            return;
+        }
         player.sendMessage(Color.colorize("&aCopying region to clipboard..."));
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
         Location pos1 = selection.getFirst();
@@ -174,6 +190,10 @@ public class ProtoolsManager {
     }
 
     public void pasteRegion(Player player) {
+        if (!checkSelection(player)) {
+            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            return;
+        }
         player.sendMessage(Color.colorize("&aPasting region..."));
         if (copiedRegions.containsKey(player.getUniqueId())) {
             Cuboid cuboid = copiedRegions.get(player.getUniqueId());
@@ -255,6 +275,10 @@ public class ProtoolsManager {
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
+        if (!checkSelection(player)) {
+            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            return;
+        }
         if (radius > 60) {
             player.sendMessage(Color.colorize("&cThe radius cannot be greater than 60."));
             return;
@@ -467,7 +491,6 @@ public class ProtoolsManager {
                     List<HashMap<Block, Duple<Material, BlockData>>> task = taskQueue.get(taskID);
                     if (!task.isEmpty()) {
                         HashMap<Block, Duple<Material, BlockData>> changes = task.getFirst();
-                        System.out.println("Running task " + taskID + " with " + changes.size() + " blocks");
                         for (Map.Entry<Block, Duple<Material, BlockData>> entry : changes.entrySet()) {
                             Block block = entry.getKey();
                             Material material = entry.getValue().getFirst();
