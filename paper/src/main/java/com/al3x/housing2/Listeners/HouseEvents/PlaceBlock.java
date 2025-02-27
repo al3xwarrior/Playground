@@ -19,7 +19,7 @@ public class PlaceBlock implements Listener {
         this.housesManager = housesManager;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
         HousingWorld house = housesManager.getHouse(e.getPlayer().getWorld());
         if (house == null) return;

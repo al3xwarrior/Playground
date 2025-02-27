@@ -19,7 +19,7 @@ public class BreakBlock implements Listener {
         this.housesManager = housesManager;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
         HousingWorld house = housesManager.getHouse(e.getPlayer().getWorld());
         if (house == null) return;
