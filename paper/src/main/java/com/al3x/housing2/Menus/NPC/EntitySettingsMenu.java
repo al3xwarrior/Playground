@@ -145,6 +145,7 @@ public class EntitySettingsMenu extends Menu {
         public void setupItems() {
             addEventActionItem(10, Material.SKELETON_SKULL, "&aNPC Death", "&7Executes when the NPC dies.", EventType.NPC_DEATH);
             addEventActionItem(11, Material.FIRE_CHARGE, "&aNPC Damage", "&7Executes when the NPC takes damage.", EventType.NPC_DAMAGE);
+            addEventActionItem(12, Material.CHERRY_TRAPDOOR, "&aNPC Swim/Crawl", "&7Executes when the NPC swims or crawls.", EventType.ENTITY_SWIM_CRAWL);
         }
 
         private void addEventActionItem(int slot, Material material, String name, String description, EventType eventType) {

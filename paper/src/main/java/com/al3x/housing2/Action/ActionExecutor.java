@@ -223,7 +223,6 @@ public class ActionExecutor {
                 }
                 if (player == entity) {
                     finalAction.execute(player, house, event, this);
-                    System.out.println("Executing action: " + finalAction);
                 } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
                     NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
                     npcAction.npcExecute(player, npc, house, event, this);
