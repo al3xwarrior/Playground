@@ -63,6 +63,7 @@ public enum ActionEnum {
     RUN_AS_NPC("Run As NPC Action", RunAsNPCAction.class),
     HIDE_NPC("Hide NPC Action", HideNPCAction.class),
     SHOW_NPC("Show NPC Action", ShowNPCAction.class),
+    SWIM_CRAWL("Swim/Crawl Action", SwimCrawlAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;
