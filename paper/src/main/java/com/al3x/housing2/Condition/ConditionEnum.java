@@ -11,7 +11,7 @@ public enum ConditionEnum {
     DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
     DAMAGE_AMOUNT("Damage Amount", DamageAmountCondition.class),
     INTERACTION_TYPE("Interaction Type", InteractionTypeCondition.class),
-    BLOCK_TYPE("Block Type", BlockTypeCondition.class),
+    BLOCK_TYPE("Block Type Requirement", BlockTypeCondition.class),
     REQUIRED_GROUP("Required Group", GroupRequirementCondition.class),
     STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
     NPC_STAT_REQUIREMENT("NPC Stat Requirement", NPCStatRequirementCondition.class),

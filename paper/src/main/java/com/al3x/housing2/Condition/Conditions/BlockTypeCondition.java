@@ -60,7 +60,7 @@ public class BlockTypeCondition extends CHTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + type.name())
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.ENUM, Material.values(), null
+                        ActionEditor.ActionItem.ActionType.ENUM, Material.values(), null
                 )
         );
         return new ActionEditor(4, "Click Type Requirement", items);
