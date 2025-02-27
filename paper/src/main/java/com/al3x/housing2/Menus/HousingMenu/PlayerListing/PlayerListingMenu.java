@@ -39,17 +39,23 @@ public class PlayerListingMenu extends Menu {
     public void setupItems() {
         clearItems();
         int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-        PaginationList<Map.Entry<String, PlayerData>> paginationList = new PaginationList<>(house.getPlayersData().entrySet(), slots.length);
+        HashMap<String, PlayerData> playersData = new HashMap<>(house.getPlayersData());
         if (search != null && !search.isBlank()) {
             for (Map.Entry<String, PlayerData> entry : house.getPlayersData().entrySet()) {
-                if (!Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey())).getName().toLowerCase().contains(search.toLowerCase())) {
-                    Main.getInstance().getLogger().info("remove" + entry.getKey());
-                    paginationList.remove(entry);
-                } else {
-                    Main.getInstance().getLogger().info("Dont remove" + search.toLowerCase() + " " + Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey())).getName().toLowerCase());
+                PlayerData data = entry.getValue();
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey()));
+                if (offlinePlayer.getName() == null) {
+                    playersData.remove(entry);
+                    continue;
+                }
+                if (!offlinePlayer.getName().toLowerCase().contains(search.toLowerCase())) {
+                    playersData.remove(entry);
                 }
             }
         }
+
+        PaginationList<Map.Entry<String, PlayerData>> paginationList = new PaginationList<>(house.getPlayersData().entrySet(), slots.length);
+
 
         List<Map.Entry<String, PlayerData>> players = paginationList.getPage(currentPage);
 
@@ -57,11 +63,9 @@ public class PlayerListingMenu extends Menu {
 
             PlayerData playerData = house.getPlayersData().get(player.getUniqueId().toString());
             for (int i = 0; i < players.size(); i++) {
-
                 OfflinePlayer listedPlayer = Bukkit.getOfflinePlayer(UUID.fromString(players.get(i).getKey()));
                 PlayerData listedPlayerData = players.get(i).getValue();
                 boolean online = player.getWorld().getPlayers().contains(listedPlayer.getPlayer());
-                if (listedPlayer.getName() == null) continue;
                 ItemBuilder item = ItemBuilder.create(Material.PLAYER_HEAD);
                 HashMap<String, String> skullData = SkinCache.getSkins();
                 if (skullData == null) return;

@@ -242,8 +242,10 @@ public class ActionEnumMenu extends Menu {
                 if (value instanceof BossBar.Color)
                     items.add(new ItemBuilder().material(Color.fromColor((BossBar.Color) value)).name("&e" + name));
 
-                if (value instanceof Material)
+                if (value instanceof Material m) {
+                    if (!m.isItem()) continue;
                     items.add(new ItemBuilder().material((Material) value).name("&e" + name));
+                }
 
                 if (value instanceof EnumMaterial enumMaterial) {
                     items.add(new ItemBuilder().material(enumMaterial.getMaterial()).name("&e" + name));
