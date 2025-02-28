@@ -6,12 +6,11 @@ import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.LuckpermsHandler;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
-import com.moulberry.axiom.AxiomPaper;
-import com.moulberry.axiom.packet.impl.SetBlockPacketListener;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.text.Component;
@@ -140,9 +139,12 @@ public class JoinLeaveHouse implements Listener {
             }
         }
 
-        PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true));
-
-        perms.put(player.getUniqueId(), attachment);
+        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            LuckpermsHandler.addPermission(player, "housing.world." + house.getHouseUUID());
+        } else {
+            PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true));
+            perms.put(player.getUniqueId(), attachment);
+        }
 
         if (house.getJoinLeaveMessages()) house.broadcast(colorize(player.getDisplayName() + " &eentered the world."));
 
@@ -177,8 +179,11 @@ public class JoinLeaveHouse implements Listener {
         from.setGuests();
         if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
 
-        player.removeAttachment(perms.get(player.getUniqueId()));
-        perms.remove(player.getUniqueId());
+        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            LuckpermsHandler.removePermission(player, "housing.world." + from.getHouseUUID());
+        } else {
+            player.removeAttachment(perms.remove(player.getUniqueId()));
+        }
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));

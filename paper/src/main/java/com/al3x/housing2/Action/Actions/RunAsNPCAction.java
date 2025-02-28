@@ -116,6 +116,7 @@ public class RunAsNPCAction extends HTSLImpl {
             return true;
         }
         String parsed = Placeholder.handlePlaceholders(npcId, house, player);
+        String npcId;
         if (NumberUtilsKt.isInt(parsed)) {
             npcId = parsed;
         } else {
@@ -176,7 +177,7 @@ public class RunAsNPCAction extends HTSLImpl {
             builder.append(impl.export(indent + 4)).append("\n");
         }
         if (builder.isEmpty()) return " ".repeat(indent) + keyword();
-        return " ".repeat(indent) + keyword() + "\"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
+        return " ".repeat(indent) + keyword() + " \"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
     }
 
     @Override

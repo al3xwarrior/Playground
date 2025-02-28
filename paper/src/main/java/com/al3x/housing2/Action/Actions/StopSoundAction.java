@@ -48,7 +48,7 @@ public class StopSoundAction extends HTSLImpl {
         builder.material(Material.QUARTZ);
         builder.name("&eStop Sound");
         builder.info("&eSettings", "");
-        builder.info("Potion", "&a" + sound.name());
+        builder.info("Sound", "&a" + sound.name());
         builder.info("Clear All", ((clearAll) ? "&aYes" : "&cNo"));
         builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -58,7 +58,7 @@ public class StopSoundAction extends HTSLImpl {
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.QUARTZ);
         builder.name("&eStop Sound");
-        builder.description("Clears all or a specific potion effect");
+        builder.description("Clears all or a specific sound effect");
         builder.lClick(ActionType.ADD_YELLOW);
     }
 
@@ -92,16 +92,16 @@ public class StopSoundAction extends HTSLImpl {
                         }
                 ),
                 new ActionItem("clearAll", //Needs to be the exact same as the variable name
-                        ItemBuilder.create(Material.POTION)
+                        ItemBuilder.create((clearAll) ? Material.LIME_DYE : Material.RED_DYE)
                                 .name("&aClear All")
-                                .description("If toggled on, this will clear all potion effects except the one selected")
+                                .description("If toggled on, this will clear all sound effects except the one selected")
                                 .info("&7Current Value", "")
                                 .info(null, ((clearAll) ? "&aYes" : "&cNo"))
                                 .lClick(ActionType.CHANGE_YELLOW),
                         ActionItem.ActionType.BOOLEAN
                 )
         );
-        return new ActionEditor(4, "&ePotion Effect Action Settings", items);
+        return new ActionEditor(4, "&eSound Effect Action Settings", items);
     }
 
     @Override
@@ -141,6 +141,6 @@ public class StopSoundAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "clearEffect";
+        return "clearSound";
     }
 }
