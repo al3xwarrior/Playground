@@ -46,8 +46,8 @@ public class LockHouse implements CommandExecutor {
         }
 
         StringBuilder reason = new StringBuilder();
-        for (int i = 1; i < strings.length; i++) {
-            reason.append(strings[i]).append(" ");
+        for (String string : strings) {
+            reason.append(string).append(" ");
         }
 
         house.setPrivacy(HousePrivacy.LOCKED);
