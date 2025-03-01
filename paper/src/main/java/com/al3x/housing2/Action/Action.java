@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import de.maxhenkel.voicechat.api.events.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -75,7 +76,15 @@ public abstract class Action {
         return execute(player, house);
     }
 
+    public boolean execute(Player player, HousingWorld house, Event event) {
+        return execute(player, house);
+    }
+
     public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        return execute(player, house, event);
+    }
+
+    public boolean execute(Player player, HousingWorld house, Event event, ActionExecutor executor) {
         return execute(player, house, event);
     }
 

@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -220,13 +221,13 @@ public class Runnables {
                                     region.getPlayersInRegion().add(player.getUniqueId());
                                     ActionExecutor executor = new ActionExecutor("enter");
                                     executor.addActions(region.getEnterActions());
-                                    executor.execute(player, house, null);
+                                    executor.execute(player, house, (Cancellable) null);
                                 }
                             } else if (region.getPlayersInRegion().contains(player.getUniqueId())) {
                                 region.getPlayersInRegion().remove(player.getUniqueId());
                                 ActionExecutor executor = new ActionExecutor("exit");
                                 executor.addActions(region.getExitActions());
-                                executor.execute(player, house, null);
+                                executor.execute(player, house, (Cancellable) null);
                             }
                         });
                     }

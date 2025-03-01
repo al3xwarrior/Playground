@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class Function {
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
-            executor.execute(p, p, house, null);
+            executor.execute(p, p, house, (Cancellable) null);
 //            executor.execute(entity, p, house, null);
         }
     }

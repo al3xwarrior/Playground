@@ -7,6 +7,7 @@ import com.al3x.housing2.Main;
 import org.bukkit.Material;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class Command {
     public void execute(Player player, HousingWorld world) {
         ActionExecutor executor = new ActionExecutor("command");
         executor.addActions(actions);
-        executor.execute(player, world, null);
+        executor.execute(player, world, (Cancellable) null);
     }
 
 

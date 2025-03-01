@@ -9,6 +9,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.LuckpermsHandler;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.VoiceChat;
 import com.al3x.housing2.Utils.tablist.HousingTabList;
 import com.google.gson.internal.LinkedTreeMap;
 import net.citizensnpcs.api.CitizensAPI;
@@ -197,6 +198,10 @@ public class JoinLeaveHouse implements Listener {
 
         World from = e.getFrom();
         World to = player.getWorld();
+
+        if (VoiceChat.isPlayerConnected(player)) {
+            VoiceChat.setPlayerGroup(player, null);
+        }
 
         // They are not leaving the hub so that means they are leaving another house
         if (!from.getName().equals("world")) {

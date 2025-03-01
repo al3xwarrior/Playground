@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.PortalType;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -29,7 +30,7 @@ public class PlayerEnterPortal implements Listener {
     @EventHandler
     public void onEnterPortal(EntityPortalEnterEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
-        sendEventExecution(housesManager, EventType.PLAYER_ENTER_PORTAL, (Player) e.getEntity(), null);
+        sendEventExecution(housesManager, EventType.PLAYER_ENTER_PORTAL, (Player) e.getEntity(), (Cancellable) null);
     }
 
     @EventHandler(ignoreCancelled = true)

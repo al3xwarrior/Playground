@@ -4,7 +4,7 @@ main: com.al3x.housing2.Main
 api-version: '1.21'
 authors: [ Al3x, Sin_Ender ]
 soft-depend: [PlaceholderAPI, ItemsAdder]
-depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, HeadDatabase]
+depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, HeadDatabase, voicechat]
 loadbefore: [Citizens]
 commands:
   lockhouse:

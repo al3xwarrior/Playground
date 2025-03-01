@@ -6,6 +6,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -25,7 +26,7 @@ public class PlayerRespawn implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player player = e.getPlayer();
-        sendEventExecution(housesManager, EventType.PLAYER_RESPAWN, player, null);
+        sendEventExecution(housesManager, EventType.PLAYER_RESPAWN, player, (Cancellable) null);
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;

@@ -28,6 +28,7 @@ import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
+import de.maxhenkel.voicechat.api.events.Event;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.bossbar.BossBar;
@@ -1180,6 +1181,19 @@ public class HousingWorld {
 
         if (eventType == EventType.PLAYER_JOIN) playerJoins(player);
         if (eventType == EventType.PLAYER_QUIT) playerLeaves(player);
+
+        List<Action> actions = eventActions.get(eventType);
+        if (actions != null) {
+            ActionExecutor executor = new ActionExecutor("event");
+            executor.addActions(actions);
+            executor.execute(player, this, event);
+            return event != null && event.isCancelled();
+        }
+        return false;
+    }
+
+    public boolean executeEventActions(EventType eventType, Player player, Event event) {
+        if (isAdminMode(player)) return false;
 
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {

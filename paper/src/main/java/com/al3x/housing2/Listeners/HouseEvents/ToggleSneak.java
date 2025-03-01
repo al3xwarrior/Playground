@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners.HouseEvents;
 
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -18,7 +19,7 @@ public class ToggleSneak implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_SNEAK, e.getPlayer(), null);
+        sendEventExecution(housesManager, EventType.PLAYER_TOGGLE_SNEAK, e.getPlayer(), (Cancellable) null);
     }
 
 }

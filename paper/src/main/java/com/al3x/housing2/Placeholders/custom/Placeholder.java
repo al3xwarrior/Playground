@@ -46,6 +46,8 @@ public abstract class Placeholder {
 
         new Npc();
         new FormattedStat();
+
+        new Voice();
     }
 
     public List<String> getAliases() {

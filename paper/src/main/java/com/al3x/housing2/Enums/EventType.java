@@ -33,4 +33,6 @@ public enum EventType {
     NPC_DEATH,
     NPC_DAMAGE,
 
+    PLAYER_JOIN_VOICE_GROUP,
+    PLAYER_CREATE_VOICE_GROUP,
 }

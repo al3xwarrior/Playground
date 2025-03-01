@@ -14,6 +14,7 @@ import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
+import com.al3x.housing2.Utils.VoiceChat;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.Gson;
@@ -22,6 +23,7 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
+import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
@@ -31,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
@@ -46,6 +49,7 @@ public final class Main extends JavaPlugin implements Listener {
     private PlayerSpeedManager playerSpeedManager;
     private NetworkManager networkManager;
     private HeadDatabaseAPI headDatabaseAPI;
+    private VoiceChat voiceChat;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -176,6 +180,13 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new SkinCache(), this);
 //        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, SkinCache::save, 0, 360000); // save skin cache every 5 minutes
         // ^ this never triggers for some reason but its no biggie. only really needed in case the server crashes
+
+        BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
+        if (service != null) {
+            voiceChat = new VoiceChat();
+            service.registerPlugin(voiceChat);
+            voiceChat.startup(this);
+        }
 
         // PlaceholderAPI
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

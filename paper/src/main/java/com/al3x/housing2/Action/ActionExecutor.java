@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import de.maxhenkel.voicechat.api.events.Event;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.minecraft.util.parsing.packrat.Atom;
@@ -119,6 +120,10 @@ public class ActionExecutor {
     }
 
     public OutputType execute(Player player, HousingWorld house, Cancellable event) {
+        return execute(player, player, house, event);
+    }
+
+    public OutputType execute(Player player, HousingWorld house, Event event) {
         return execute(player, player, house, event);
     }
 
@@ -249,6 +254,147 @@ public class ActionExecutor {
     }
 
     private void executeChildren(Entity entity, Player player, HousingWorld house, Cancellable event) {
+        if (isAllComplete() || children.isEmpty()) {
+            return;
+        }
+
+        if (workingIndex >= children.size()) {
+            workingIndex = 0;
+        }
+        AtomicReference<ActionExecutor> executor = new AtomicReference<>(children.get(workingIndex));
+        if (executor.get().isComplete()) {
+            workingIndex++;
+            executeChildren(entity, player, house, event);
+            return;
+        }
+        AtomicReference<OutputType> output = new AtomicReference<>(executor.get().execute(entity, player, house, event));
+        workingIndex++;
+
+        Bukkit.getScheduler().runTaskTimer(Main.getInstance(), (t) -> {
+            if (executor.get().isComplete() && (output.get() != EXIT)) { //Move on to the next child
+                executeChildren(entity, player, house, event);
+                t.cancel();
+            }
+        }, 0, 1);
+    }
+
+    public OutputType execute(Entity entity, Player player, HousingWorld house, Event event) {
+        if (limits == null) {
+            limits = new HashMap<>();
+        }
+
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        Action action;
+        int index = 0;
+        while (index < queue.size()) {
+            if (isPaused || !isAllComplete()) {
+                break;
+            }
+
+            if (isComplete) {
+                return SUCCESS;
+            }
+
+            action = queue.get(index);
+            index++;
+
+            if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 2000)) {
+                exitAllTheWay(this);
+                return EXIT;
+            }
+            limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
+
+            if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
+                String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
+                if (!NumberUtilsKt.isDouble(dur)) {
+                    return ERROR;
+                }
+                double duration = Double.parseDouble(dur);
+                pause += duration;
+                continue;
+            }
+
+            if (action instanceof ExitAction) {
+                exitAllTheWay(this);
+                return EXIT;
+            }
+
+            if (action instanceof ContinueAction) {
+                isComplete = true;
+                ActionExecutor parent = findHighestParentWithContext("repeat");
+                if (parent != null) {
+                    parent.isComplete = true;
+                }
+                return CONTINUE;
+            }
+
+            if (action instanceof BreakAction) {
+                isComplete = true;
+                ActionExecutor parent = findHighestParentWithContext("repeat");
+                if (parent != null && parent.parent != null) {
+                    parent.isComplete = true;
+                    parent.parent.children.forEach(executor -> executor.setComplete(true));
+                }
+                workingIndex = 0;
+                return SUCCESS;
+            }
+
+            if (pause == 0) {
+//                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+//                    return ERROR;
+//                }
+
+                if (player == entity) {
+                    action.execute(player, house, event, this);
+                }
+
+                executeChildren(entity, player, house, event); //Look for children to execute. >:)
+
+                if (index >= queue.size()) {
+                    isComplete = true;
+                }
+                continue;
+            }
+
+            if (action.requiresPlayer() && player == null) {
+                return ERROR;
+            }
+
+            Action finalAction = action;
+            int finalIndex = index;
+
+            scheduler.runTaskLater(Main.getInstance(), () -> {
+                if (isComplete || isPaused) {
+                    return;
+                }
+                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+                    return;
+                }
+                if (player == entity) {
+                    finalAction.execute(player, house, event, this);
+                }
+
+                executeChildren(entity, player, house, event);
+
+                if (finalIndex >= queue.size()) {
+                    isComplete = true;
+                }
+            }, (long) pause);
+        }
+
+        if (isPaused || !isAllComplete()) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
+            scheduler.runTaskTimer(Main.getInstance(), (t) -> {
+                if (!isPaused && isAllComplete()) {
+                    execute(player, house, event);
+                    t.cancel();
+                }
+            }, 0, 1);
+        }
+
+        return queue.isEmpty() ? SUCCESS : RUNNING;
+    }
+
+    private void executeChildren(Entity entity, Player player, HousingWorld house, Event event) {
         if (isAllComplete() || children.isEmpty()) {
             return;
         }

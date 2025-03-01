@@ -232,7 +232,7 @@ public class HousingItems implements Listener {
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
             ActionExecutor executor = new ActionExecutor("item");
             executor.addActions(customItem.getActions().get(clickType));
-            executor.execute(player, house, null);
+            executor.execute(player, house, (Cancellable) null);
         }
     }
 

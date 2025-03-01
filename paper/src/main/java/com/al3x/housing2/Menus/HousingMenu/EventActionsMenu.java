@@ -64,6 +64,8 @@ public class EventActionsMenu extends Menu {
             addEventActionItem(12, Material.COOKIE, "&aPlayer Give Cookie", "&7Executes when a player gives the house a cookie.", EventType.GIVE_COOKIE);
             addEventActionItem(13, Material.BUCKET, "&aEntity Bucket", "&7Executes when a player uses a bucket on an entity.", EventType.ENTITY_BUCKET);
             addEventActionItem(14, Material.CHERRY_TRAPDOOR, "&aPlayer Swim/Crawl", "&7Executes when the Player swims or crawls.", EventType.ENTITY_SWIM_CRAWL);
+            addEventActionItem(15, Material.JUKEBOX, "&aPlayer Create Voice Group", "&7Executes when a player attempts to create a voice chat group.", EventType.PLAYER_CREATE_VOICE_GROUP);
+            addEventActionItem(16, Material.MUSIC_DISC_CAT, "&aPlayer Join Voice Group", "&7Executes when a player attempts to join a voice chat group.", EventType.PLAYER_JOIN_VOICE_GROUP);
             addItem(45, new ItemBuilder().material(Material.ARROW).name("&aPrevious Page").build(), () -> {
                 page = 1;
                 open();
