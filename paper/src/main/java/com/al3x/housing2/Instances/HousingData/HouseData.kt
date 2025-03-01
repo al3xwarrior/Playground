@@ -52,7 +52,8 @@ data class HouseData(
     var joinLeaveMessages: Boolean?,
     var deathMessages: Boolean?,
     var jukeboxPlaying: Boolean?,
-    var keepInventory: Boolean?
+    var keepInventory: Boolean?,
+    var lockedMessage: String?,
 ) {
 
     companion object {
@@ -97,7 +98,8 @@ data class HouseData(
                 world.joinLeaveMessages,
                 world.isJukeboxPlaying,
                 world.deathMessages,
-                world.keepInventory
+                world.keepInventory,
+                world.lockedReason
             )
             return houseData
         }

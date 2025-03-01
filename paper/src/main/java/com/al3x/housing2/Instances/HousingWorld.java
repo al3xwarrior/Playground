@@ -103,6 +103,8 @@ public class HousingWorld {
     private boolean deathMessages;
     private boolean keepInventory;
 
+    private String lockedReason = "";
+
     public HouseData houseData;
 
     // Jukebox
@@ -116,7 +118,7 @@ public class HousingWorld {
 
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
-        long start = System.currentTimeMillis();
+        // long start = System.currentTimeMillis();
 
         main.getServer().getAsyncScheduler().runNow(main, (t) -> {
             long asyncStart = System.currentTimeMillis();
@@ -253,6 +255,7 @@ public class HousingWorld {
         this.joinLeaveMessages = houseData.getJoinLeaveMessages() != null ? houseData.getJoinLeaveMessages() : true;
         this.deathMessages = houseData.getDeathMessages() != null ? houseData.getDeathMessages() : true;
         this.keepInventory = houseData.getKeepInventory() != null ? houseData.getKeepInventory() : false;
+        this.lockedReason = houseData.getLockedMessage() != null ? houseData.getLockedMessage() : "";
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -628,8 +631,19 @@ public class HousingWorld {
         return playlist.getSongList();
     }
 
+    // Runs after the player joined
     public void playerJoins(Player player) {
         radioSongPlayer.addPlayer(player);
+
+        if (privacy == HousePrivacy.LOCKED) {
+            player.sendMessage(colorize("&6&m                                 "));
+            player.sendMessage(colorize("&cThis house has been &4&lLOCKED&c!"));
+            player.sendMessage(colorize("&r"));
+            player.sendMessage(colorize("&cReason: &e" + lockedReason));
+            player.sendMessage(colorize("&r"));
+            player.sendMessage(colorize("&7&oYou may make the house public again after changes have been made."));
+            player.sendMessage(colorize("&6&m                                 "));
+        }
     }
 
     public void playerLeaves(Player player) {
@@ -677,6 +691,12 @@ public class HousingWorld {
                 playerData.setBanned(false);
             }
         } catch (NullPointerException ignored) {}
+
+        if (privacy == HousePrivacy.LOCKED && !ownerUUID.equals(player.getUniqueId())) {
+            player.sendMessage(colorize("&cThis house has been locked by a Staff Member! Let the owner know they need to make some changes!"));
+            return;
+        }
+
         if (loaded) {
             player.teleport(spawn);
             player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
@@ -1145,7 +1165,7 @@ public class HousingWorld {
                 EDIT_TEAMS,
                 EDIT_CUSTOM_MENUS
         };
-        if (player.getUniqueId().equals(ownerUUID)) return true;
+        if (player.getUniqueId().equals(ownerUUID) || isAdminMode(player)) return true;
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) return false;
         for (Permissions permissions : permission) {
@@ -1221,5 +1241,13 @@ public class HousingWorld {
 
     public void setScoreboardTitle(String title) {
         this.scoreboardTitle = title;
+    }
+
+    public String getLockedReason() {
+        return lockedReason;
+    }
+
+    public void setLockedReason(String lockedReason) {
+        this.lockedReason = lockedReason;
     }
 }

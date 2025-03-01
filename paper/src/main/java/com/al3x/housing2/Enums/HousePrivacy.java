@@ -3,9 +3,10 @@ package com.al3x.housing2.Enums;
 public enum HousePrivacy {
     PUBLIC("&aPUBLIC"),
     PRIVATE("&cPRIVATE"), //Eventually also add others if we add friends/party systems
+    LOCKED("&4LOCKED")
     ;
 
-    String display;
+    final String display;
     HousePrivacy(String display) {
         this.display = display;
     }

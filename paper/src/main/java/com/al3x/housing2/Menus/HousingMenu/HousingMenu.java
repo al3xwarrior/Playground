@@ -123,9 +123,15 @@ public class HousingMenu extends Menu {
             visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
             visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
             addItem(0, visitingRules.build(), () -> {
-                //thanks chatgippity lol, I would have made this a lot more complicated
-                house.setPrivacy(HousePrivacy.values()[(house.getPrivacy().ordinal() + 1) % HousePrivacy.values().length]);
-                player.sendMessage(colorize("&fPrivacy set to " + house.getPrivacy().asString()));
+
+                // Needs to be updated if more privacy options are added
+                if (house.getPrivacy() == HousePrivacy.PRIVATE) {
+                    house.setPrivacy(HousePrivacy.PUBLIC);
+                } else {
+                    house.setPrivacy(HousePrivacy.PRIVATE);
+                }
+
+                player.sendMessage(colorize("&7Privacy set to " + house.getPrivacy().asString()));
                 setupItems();
             });
 

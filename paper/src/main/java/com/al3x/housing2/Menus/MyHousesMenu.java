@@ -132,7 +132,7 @@ public class MyHousesMenu extends Menu {
             lore.add(Component.text("§7Cookies: §6" + house.getCookies()));
 
             lore.add(Component.empty());
-            lore.add(Component.text("§7Privacy: §a" + HousePrivacy.valueOf(house.getPrivacy()).toString()));
+            lore.add(Component.text("§7Privacy: §a" + HousePrivacy.valueOf(house.getPrivacy())));
             lore.add(Component.empty());
             lore.add(Component.text("§eClick to join!"));
             if (player.hasPermission("housing.admin")) {

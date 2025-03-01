@@ -111,6 +111,7 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("checkItemSize").setExecutor(new CheckItemSize());
         getCommand("group").setExecutor(new Group(housesManager));
         getCommand("group").setTabCompleter(new Group.TabCompleter(housesManager));
+        getCommand("lockhouse").setExecutor(new LockHouse(housesManager));
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));
