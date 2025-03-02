@@ -125,21 +125,30 @@ public class HouseSettingsMenu extends Menu {
         addItem(20, ItemBuilder.create(Material.BOOK)
                 .name(colorize("&aResource Pack"))
                 .description(colorize("Manage the custom resource pack in your house.")) // \n\n&cWarning: Your pack needs to be approved by a moderator before it can be used!"))
-                .lClick(ItemBuilder.ActionType.VIEW_YELLOW)
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
                 .build(), () -> {
-            // if (house.getResourcePack() == null) {
-                String sessionToken = main.getPlaygroundWeb().resourcePackController.createSession(house);
-                String url = String.format("%s/upload?key=%s", main.getConfig().getString("web_base"), sessionToken);
+            String sessionToken = main.getPlaygroundWeb().resourcePackController.createSession(house);
+            String url = String.format("%s/upload?key=%s", main.getConfig().getString("web_base"), sessionToken);
 
-                player.closeInventory();
-                player.sendMessage(Component.empty()
-                        .append(Component.text("Click here to upload a resource pack.")
-                                .color(NamedTextColor.YELLOW)
-                                .clickEvent(ClickEvent.openUrl(url))));
-            //     return;
-            // }
+            player.closeInventory();
+            player.sendMessage(Component.empty()
+                    .append(Component.text("Click here to upload a resource pack.")
+                            .color(NamedTextColor.YELLOW)
+                            .clickEvent(ClickEvent.openUrl(url))));
+        }, () -> {
+            if (house.getResourcePack() == null) {
+                player.sendMessage(colorize("&cThis house doesn't have a resource pack!"));
+                return;
+            }
 
-            // new ResourcePackMenu(main, player, house).open();
+            for (Player guest : house.getWorld().getPlayers()) {
+                guest.sendMessage(colorize("&cThe resource pack in this house has been removed!"));
+                main.getResourcePackManager().removeResourcePack(guest, house);
+            }
+
+            player.closeInventory();
+            house.setResourcePack(null);
         });
 
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)

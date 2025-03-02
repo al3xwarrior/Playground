@@ -38,14 +38,13 @@ import java.util.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class JoinLeaveHouse implements Listener {
-
     private HousesManager housesManager;
-
+    private ResourcePackManager resourcePackManager;
     HashMap<UUID, PermissionAttachment> perms = new HashMap<>();
 
-
-    public JoinLeaveHouse(HousesManager housesManager) {
+    public JoinLeaveHouse(HousesManager housesManager, ResourcePackManager resourcePackManager) {
         this.housesManager = housesManager;
+        this.resourcePackManager = resourcePackManager;
     }
 
     // Actions that modify the player's "profile" need to be reset.
@@ -188,10 +187,7 @@ public class JoinLeaveHouse implements Listener {
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
 
         HousingTabList.lobbyTabList(player);
-
-        if (from.getResourcePack() != null) {
-            player.removeResourcePack(UUID.fromString(from.getResourcePack().getId()));
-        }
+        resourcePackManager.removeResourcePack(player, from);
     }
 
     @EventHandler

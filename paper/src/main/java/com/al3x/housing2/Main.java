@@ -52,6 +52,7 @@ public final class Main extends JavaPlugin implements Listener {
     private HeadDatabaseAPI headDatabaseAPI;
     private VoiceChat voiceChat;
     private PlaygroundWeb playgroundWeb;
+    private ResourcePackManager resourcePackManager;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -87,6 +88,7 @@ public final class Main extends JavaPlugin implements Listener {
         this.lobbyDisplays = new LobbyDisplays(housesManager);
         this.playerSpeedManager = new PlayerSpeedManager();
         this.networkManager = new NetworkManager(this);
+        this.resourcePackManager = new ResourcePackManager(this);
 
         this.playgroundWeb = (PlaygroundWeb) Jooby.createApp(new String[0], ExecutionMode.EVENT_LOOP, () -> new PlaygroundWeb(this));
         this.playgroundWeb.start();
@@ -137,7 +139,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new JoinLeaveHouse(housesManager, resourcePackManager), this);
         Bukkit.getPluginManager().registerEvents(new NPCInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HousingItems(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
@@ -281,5 +283,9 @@ public final class Main extends JavaPlugin implements Listener {
 
     public PlaygroundWeb getPlaygroundWeb() {
         return playgroundWeb;
+    }
+
+    public ResourcePackManager getResourcePackManager() {
+        return resourcePackManager;
     }
 }

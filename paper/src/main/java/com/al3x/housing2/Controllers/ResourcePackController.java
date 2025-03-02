@@ -6,6 +6,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.PlaygroundWeb;
 import io.jooby.FileUpload;
 import io.jooby.StatusCode;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -13,6 +14,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ResourcePackController {
     private final Main main;
@@ -27,6 +30,11 @@ public class ResourcePackController {
             ResourcePackSession session = packSessions.get(formMap.get("key"));
             FileUpload archive = ctx.file("archive");
 
+            if (session == null) {
+                ctx.setResponseCode(StatusCode.BAD_REQUEST);
+                return "";
+            }
+
             String packUuid = UUID.randomUUID().toString();
             Files.copy(archive.stream(), new File(main.getDataFolder(), String.format("pack_objects/%s.zip", packUuid)).toPath(), StandardCopyOption.REPLACE_EXISTING);
 
@@ -35,6 +43,11 @@ public class ResourcePackController {
                     "This house uses a custom resource pack.",
                     true);
             session.house.setResourcePack(resourcePack);
+
+            for (Player guest : session.house.getWorld().getPlayers()) {
+                guest.sendMessage(colorize("&aA resource pack has been added to this house!"));
+                main.getResourcePackManager().addResourcePack(guest, session.house);
+            }
 
             ctx.setResponseCode(StatusCode.NO_CONTENT);
             return "";
