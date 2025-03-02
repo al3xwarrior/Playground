@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.placeholders.House;
 import com.al3x.housing2.Utils.*;
 import com.al3x.housing2.Utils.Color;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
@@ -61,6 +62,8 @@ public class ProtoolsManager {
 
 
     public void setPos1(Player player, Location pos1) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
         if (this.selections.containsKey(player.getUniqueId())) {
             Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
             this.selections.put(player.getUniqueId(), new Duple<>(pos1, selection.getSecond()));
@@ -70,6 +73,8 @@ public class ProtoolsManager {
     }
 
     public void setPos2(Player player, Location pos2) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
         if (this.selections.containsKey(player.getUniqueId())) {
             Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
             this.selections.put(player.getUniqueId(), new Duple<>(selection.getFirst(), pos2));
@@ -79,16 +84,26 @@ public class ProtoolsManager {
     }
 
     public void setPositions(Player player, Location pos1, Location pos2) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
 public boolean checkSelection(Player player) {
         if (this.selections.containsKey(player.getUniqueId())) {
             Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+            HousingWorld house = housesManager.getHouse(player.getWorld());
+            if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return false;
+            if (selection.getFirst().getWorld().getName().equals("world") || selection.getSecond().getWorld().getName().equals("world")) {
+                return false;
+            }
             if (selection.getFirst() == null || selection.getSecond() == null) {
                 return false;
             }
             if (selection.getFirst().getWorld() != selection.getSecond().getWorld()) {
+                return false;
+            }
+            if (selection.getFirst().getWorld() != player.getWorld() || selection.getSecond().getWorld() != player.getWorld()) {
                 return false;
             }
             return true;
