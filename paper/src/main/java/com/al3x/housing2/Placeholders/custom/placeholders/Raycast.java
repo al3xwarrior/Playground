@@ -425,7 +425,7 @@ public class Raycast {
                     Double range = argsHandled.getFirst();
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
                     if (entity != null) {
-                        return String.valueOf(entity.getSecond().getY());
+                        return String.valueOf(entity.getSecond().getZ());
                     }
                     return "null";
                 } catch (Exception e) {

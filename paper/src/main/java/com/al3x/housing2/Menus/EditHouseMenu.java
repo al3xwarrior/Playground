@@ -1,6 +1,5 @@
 package com.al3x.housing2.Menus;
 
-import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -11,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
