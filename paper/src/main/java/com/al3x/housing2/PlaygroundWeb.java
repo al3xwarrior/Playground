@@ -7,12 +7,17 @@ import io.jooby.handler.AssetHandler;
 import io.jooby.handler.AssetSource;
 import io.jooby.netty.NettyServer;
 
+import java.io.File;
+
 public class PlaygroundWeb extends Jooby {
     public Main main;
     public ResourcePackController resourcePackController;
 
     public PlaygroundWeb(Main main) {
         this.main = main;
+
+        File packObjectsFolder = new File(main.getDataFolder(), "pack_objects");
+        if (!packObjectsFolder.exists()) packObjectsFolder.mkdirs();
 
         ServerOptions options = new ServerOptions();
         options.setPort(main.getConfig().getInt("api_port"));
