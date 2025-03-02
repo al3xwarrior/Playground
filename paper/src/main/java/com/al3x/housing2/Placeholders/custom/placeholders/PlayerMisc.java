@@ -1,6 +1,7 @@
 package com.al3x.housing2.Placeholders.custom.placeholders;
 
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Listeners.EatingListener;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import org.bukkit.entity.Player;
 
@@ -13,6 +14,7 @@ public class PlayerMisc {
         new Food();
         new Ping();
         new IsSprinting();
+        new IsEating();
         new XP();
     }
 
@@ -100,6 +102,22 @@ public class PlayerMisc {
                 return "null";
             }
             return String.valueOf(player.isSprinting());
+        }
+    }
+
+    //isEating
+    private static class IsEating extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%player.isEating%";
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (player == null) {
+                return "null";
+            }
+            return String.valueOf(EatingListener.isPlayerEating(player));
         }
     }
 

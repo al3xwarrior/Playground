@@ -9,6 +9,7 @@ import com.al3x.housing2.Listeners.HousingItems;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -188,6 +189,15 @@ public class ItemsMenu extends Menu {
             player.getInventory().addItem(ItemBuilder.create(Material.DEBUG_STICK)
                     .name("&aDebug Stick")
                     .build());
+        });
+
+        ItemStack blockableSword = ItemBuilder.create(Material.IRON_SWORD)
+                .name("&aBlockable Sword")
+                .description("&7This sword like in the old days can be blocked! Note that by default no damage is reduced. You can use the Is Eating condition to check if they are blocking.")
+                .build();
+        addItem(15, blockableSword, () -> {
+            // please if anyone can convert this to something NOT using the command method ill give you a kiss
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:give " + player.getName() + " minecraft:iron_sword[consumable={animation:'block',consume_seconds:72000}]");
         });
 
         ItemStack xSocialMediaHead = getCustomSkull("91b7a0c210e6cdf5a35fd8197e6e24a038315bbe3bdcd1bcc3630bf26f59ec5c");

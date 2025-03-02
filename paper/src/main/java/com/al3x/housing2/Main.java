@@ -35,7 +35,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.Optional;
 
 public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
@@ -150,6 +149,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityLimitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new EatingListener(this), this);
 
 //        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "housing:export");
 

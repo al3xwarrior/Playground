@@ -32,6 +32,7 @@ public enum ConditionEnum {
     PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
     IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
     IS_VOICE_CONNECTED("Is Voice Connected", IsVoiceConnected.class),
+    IS_EATING("Is Eating", IsEating.class),
     ;
     
     private String name;

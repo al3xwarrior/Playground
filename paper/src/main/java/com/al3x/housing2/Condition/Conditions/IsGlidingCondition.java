@@ -22,7 +22,7 @@ public class IsGlidingCondition extends CHTSLImpl {
 
         @Override
         public void createDisplayItem(ItemBuilder builder) {
-            builder.material(Material.FEATHER);
+            builder.material(Material.ELYTRA);
             builder.name("&eIs Gliding");
             builder.description("Check if the player is gliding with an elytra.");
             builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -31,7 +31,7 @@ public class IsGlidingCondition extends CHTSLImpl {
 
         @Override
         public void createAddDisplayItem(ItemBuilder builder) {
-            builder.material(Material.FEATHER);
+            builder.material(Material.ELYTRA);
             builder.name("&eIs Gliding");
             builder.description("Check if the player is gliding with an elytra.");
             builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
