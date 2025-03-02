@@ -1,17 +1,36 @@
-<form action="/internal/upload-pack" enctype="multipart/form-data" method="post">
-    <input type="text" hidden readonly name="key" value="" />
-    <input type="file" required accept="application/zip" name="archive" />
-    <input type="submit" value="Submit" />
-</form>
-<p>I promise this UI will look better later, if it doesn't shout at me -PixelBedrock</p>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        window.location.searchParams = new URLSearchParams(location.search);
-        document.querySelector('[name="key"]').setAttribute("value", location.searchParams.get("key"));
-
-        document.querySelector("form").addEventListener("submit", _event => {
-            document.querySelector("form").style.display = "none";
-            document.querySelector("p").innerText = "File uploaded, leave and rejoin your house to apply it.";
-        });
-    });
-</script>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Upload a resource pack - Playground</title>
+        <link rel="stylesheet" href="/upload/styles.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="heading">Upload a resource pack</h1>
+            <ul class="list">
+                <li class="item">Inappropriate content will result in your house being locked.</li>
+                <li class="item">Your resource pack will be applied to all players in your house after it has been uploaded, same with if you choose to remove it later.</li>
+                <li class="item">If your house has a cutscene when players join, you should allow time for the resource pack to download and apply on the client.</li>
+                <li class="item">If you already have a resource pack in your house, the next one you upload will overwrite that one.</li>
+            </ul>
+            <form action="/internal/upload-pack" enctype="multipart/form-data" method="post">
+                <input type="text" hidden readonly name="key" value="" />
+                <label for="upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" fill="currentColor">
+                        <path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"></path>
+                        <path d="M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z"></path>
+                    </svg>
+                    <span id="filename">Choose a file to upload or drag it here.</span>
+                </label>
+                <input type="file" hidden accept="application/zip" name="archive" id="upload" />
+                <div class="row">
+                    <span class="success"></span>
+                    <input type="submit" value="Submit" disabled />
+                </div>
+            </form>
+        </div>
+        <script src="/upload/index.js"></script>
+    </body>
+</html>

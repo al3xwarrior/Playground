@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    align-items: center;
+    background-color: #0d1117;
+    color: #f0f6fc;
+    display: flex;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    justify-content: center;
+}
+
+div.container {
+    border: solid 1px #3d444d;
+    border-radius: 6px;
+    box-sizing: content-box;
+    max-width: 470px;
+    padding: 16px 20px;
+}
+
+h1.heading {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+ul.list {
+    margin-bottom: 24px;
+}
+
+li.item {
+    font-size: 14px;
+    line-height: 1.4285;
+    margin-bottom: 6px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label[for="upload"] {
+    align-items: center;
+    border: dashed 2px #3d444d;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 6px;
+    line-height: 1.4285;
+    margin-bottom: 12px;
+    padding: 16px 0;
+}
+
+div.row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+span.success {
+    color: #4493f8;
+    font-size: 14px;
+    line-height: 1.4285;
+}
+
+input[type="submit"] {
+    background-color: #1f6feb;
+    border: solid 1px rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4285;
+    height: 32px;
+    padding: 0 16px;
+    transition: background-color: .08s ease, color .08s ease;
+}
+
+input[type="submit"]:disabled {
+    background-color: #212830;
+    color: #656c7699;
+    cursor: not-allowed;
+}
