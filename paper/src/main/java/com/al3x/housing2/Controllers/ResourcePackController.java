@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +25,24 @@ public class ResourcePackController {
     public ResourcePackController(Main main, PlaygroundWeb server) {
         this.main = main;
 
+        server.get("/internal/upload-session", ctx -> {
+            Map<String, String> queryMap = ctx.queryMap();
+            ResourcePackSession session = packSessions.get(queryMap.get("key"));
+
+            if (session == null) {
+                ctx.setResponseCode(StatusCode.NOT_FOUND);
+                return "";
+            }
+
+            if (Instant.now().isAfter(session.expires)) {
+                ctx.setResponseCode(StatusCode.FORBIDDEN);
+                return "";
+            }
+
+            ctx.setResponseCode(StatusCode.NO_CONTENT);
+            return "";
+        });
+
         server.post("/internal/upload-pack", ctx -> {
             Map<String, String> formMap = ctx.formMap();
 
@@ -32,6 +51,11 @@ public class ResourcePackController {
 
             if (session == null) {
                 ctx.setResponseCode(StatusCode.BAD_REQUEST);
+                return "";
+            }
+
+            if (Instant.now().isAfter(session.expires)) {
+                ctx.setResponseCode(StatusCode.FORBIDDEN);
                 return "";
             }
 
@@ -49,6 +73,7 @@ public class ResourcePackController {
                 main.getResourcePackManager().addResourcePack(guest, session.house);
             }
 
+            session.expires = Instant.now();
             ctx.setResponseCode(StatusCode.NO_CONTENT);
             return "";
         });

@@ -72,6 +72,10 @@ span.success {
     line-height: 1.4285;
 }
 
+span.error {
+    color: #f0883e;
+}
+
 input[type="submit"] {
     background-color: #1f6feb;
     border: solid 1px rgba(255, 255, 255, 0.1);
