@@ -1,0 +1,17 @@
+<form action="/internal/upload-pack" enctype="multipart/form-data" method="post">
+    <input type="text" hidden readonly name="key" value="" />
+    <input type="file" required accept="application/zip" name="archive" />
+    <input type="submit" value="Submit" />
+</form>
+<p>I promise this UI will look better later, if it doesn't shout at me -PixelBedrock</p>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        window.location.searchParams = new URLSearchParams(location.search);
+        document.querySelector('[name="key"]').setAttribute("value", location.searchParams.get("key"));
+
+        document.querySelector("form").addEventListener("submit", _event => {
+            document.querySelector("form").style.display = "none";
+            document.querySelector("p").innerText = "File uploaded, leave and rejoin your house to apply it.";
+        });
+    });
+</script>

@@ -103,8 +103,8 @@ public class HousingWorld {
     private boolean joinLeaveMessages;
     private boolean deathMessages;
     private boolean keepInventory;
-
     private String lockedReason = "";
+    private ResourcePackData resourcePack;
 
     public HouseData houseData;
 
@@ -265,6 +265,7 @@ public class HousingWorld {
         }
 
         this.radioSongPlayer.setPlaying(houseData.getJukeboxPlaying() != null ? houseData.getJukeboxPlaying() : true);
+        this.resourcePack = houseData.getResourcePack();
     }
 
     private void setupDataAfterLoad(OfflinePlayer owner) {
@@ -701,10 +702,20 @@ public class HousingWorld {
         if (loaded) {
             player.teleport(spawn);
             player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
+
+            if (resourcePack != null) {
+                String resourcePackUrl = String.format("%s/objects/%s.zip", main.getConfig().getString("web_base"), resourcePack.getId());
+                player.addResourcePack(UUID.fromString(resourcePack.getId()), resourcePackUrl, null, resourcePack.getPrompt(), resourcePack.getForce());
+            }
         } else {
             onLoad.add(house -> {
                 player.teleport(house.getSpawn());
                 player.sendMessage(StringUtilsKt.housingStringFormatter("&aSending you to " + name + "&a..."));
+
+                if (resourcePack != null) {
+                    String resourcePackUrl = String.format("%s/objects/%s.zip", main.getConfig().getString("web_base"), resourcePack.getId());
+                    player.addResourcePack(UUID.fromString(resourcePack.getId()), resourcePackUrl, null, resourcePack.getPrompt(), resourcePack.getForce());
+                }
             });
         }
     }
@@ -1264,4 +1275,8 @@ public class HousingWorld {
     public void setLockedReason(String lockedReason) {
         this.lockedReason = lockedReason;
     }
+
+    public ResourcePackData getResourcePack() { return resourcePack; }
+
+    public void setResourcePack(ResourcePackData resourcePack) { this.resourcePack = resourcePack; }
 }

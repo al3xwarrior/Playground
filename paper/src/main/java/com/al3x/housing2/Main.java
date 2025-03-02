@@ -24,6 +24,8 @@ import com.infernalsuite.aswm.loaders.file.FileLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
+import io.jooby.ExecutionMode;
+import io.jooby.Jooby;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
@@ -50,6 +52,7 @@ public final class Main extends JavaPlugin implements Listener {
     private NetworkManager networkManager;
     private HeadDatabaseAPI headDatabaseAPI;
     private VoiceChat voiceChat;
+    private PlaygroundWeb playgroundWeb;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -85,6 +88,9 @@ public final class Main extends JavaPlugin implements Listener {
         this.lobbyDisplays = new LobbyDisplays(housesManager);
         this.playerSpeedManager = new PlayerSpeedManager();
         this.networkManager = new NetworkManager(this);
+
+        this.playgroundWeb = (PlaygroundWeb) Jooby.createApp(new String[0], ExecutionMode.EVENT_LOOP, () -> new PlaygroundWeb(this));
+        this.playgroundWeb.start();
 
         HologramLib.getManager().ifPresentOrElse(
                 manager -> hologramManager = manager,
@@ -271,5 +277,9 @@ public final class Main extends JavaPlugin implements Listener {
 
     public HeadDatabaseAPI getHeadDatabaseAPI() {
         return headDatabaseAPI;
+    }
+
+    public PlaygroundWeb getPlaygroundWeb() {
+        return playgroundWeb;
     }
 }

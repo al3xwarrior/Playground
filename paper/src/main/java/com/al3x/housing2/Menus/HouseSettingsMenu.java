@@ -3,11 +3,11 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
-import com.al3x.housing2.Menus.HousingMenu.JukeboxMenu;
-import com.al3x.housing2.Menus.HousingMenu.TimeSelectorMenu;
-import com.al3x.housing2.Menus.HousingMenu.WeatherSelectorMenu;
+import com.al3x.housing2.Menus.HousingMenu.*;
 import com.al3x.housing2.Utils.ItemBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -120,6 +120,26 @@ public class HouseSettingsMenu extends Menu {
                 house.setKeepInventory(true);
                 player.sendMessage(colorize("&eEnabled &aKeep Inventory"));
             }
+        });
+
+        addItem(20, ItemBuilder.create(Material.BOOK)
+                .name(colorize("&aResource Pack"))
+                .description(colorize("Manage the custom resource pack in your house.")) // \n\n&cWarning: Your pack needs to be approved by a moderator before it can be used!"))
+                .lClick(ItemBuilder.ActionType.VIEW_YELLOW)
+                .build(), () -> {
+            // if (house.getResourcePack() == null) {
+                String sessionToken = main.getPlaygroundWeb().resourcePackController.createSession(house);
+                String url = String.format("%s/upload?key=%s", main.getConfig().getString("web_base"), sessionToken);
+
+                player.closeInventory();
+                player.sendMessage(Component.empty()
+                        .append(Component.text("Click here to upload a resource pack.")
+                                .color(NamedTextColor.YELLOW)
+                                .clickEvent(ClickEvent.openUrl(url))));
+            //     return;
+            // }
+
+            // new ResourcePackMenu(main, player, house).open();
         });
 
         addItem(49, ItemBuilder.create(Material.NETHER_STAR)

@@ -62,7 +62,9 @@ dependencies {
     implementation 'com.github.ShieldCommunity:SternalBoard:84b5137622'
     compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.27"
 
-
+    // resource packs
+    implementation 'io.jooby:jooby:3.6.1'
+    implementation 'io.jooby:jooby-netty:3.6.1'
 
     // note block
     compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.2'

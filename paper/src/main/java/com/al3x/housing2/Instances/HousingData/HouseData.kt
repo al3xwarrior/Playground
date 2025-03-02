@@ -54,6 +54,7 @@ data class HouseData(
     var jukeboxPlaying: Boolean?,
     var keepInventory: Boolean?,
     var lockedMessage: String?,
+    var resourcePack: ResourcePackData?
 ) {
 
     companion object {
@@ -99,7 +100,8 @@ data class HouseData(
                 world.isJukeboxPlaying,
                 world.deathMessages,
                 world.keepInventory,
-                world.lockedReason
+                world.lockedReason,
+                world.resourcePack
             )
             return houseData
         }

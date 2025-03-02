@@ -103,8 +103,6 @@ public class JoinLeaveHouse implements Listener {
             return;
         }
 
-
-
         PlayerData data = house.loadOrCreatePlayerData(player);
 
         loadPermissions(player, house, data);
@@ -190,6 +188,10 @@ public class JoinLeaveHouse implements Listener {
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
 
         HousingTabList.lobbyTabList(player);
+
+        if (from.getResourcePack() != null) {
+            player.removeResourcePack(UUID.fromString(from.getResourcePack().getId()));
+        }
     }
 
     @EventHandler
