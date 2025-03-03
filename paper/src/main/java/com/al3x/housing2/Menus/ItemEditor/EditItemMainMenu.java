@@ -82,6 +82,19 @@ public class EditItemMainMenu extends Menu {
             new EditActionTypesMenu(player, customItem).open();
         });
 
+        // Toggle Unbreakable
+        addItem(38, ItemBuilder.create(item.getItemMeta().isUnbreakable() ? Material.LIME_DYE : Material.GRAY_DYE)
+                .name("&aUnbreakable")
+                .description("Toggle if the item is unbreakable or not.")
+                .lClick(EDIT_YELLOW)
+                .build(), () -> {
+            ItemMeta meta = item.getItemMeta();
+            meta.setUnbreakable(!meta.isUnbreakable());
+            item.setItemMeta(meta);
+            player.getInventory().setItemInMainHand(item);
+            new EditItemMainMenu(player).open();
+        });
+
         addItem(40, ItemBuilder.create(Material.BLACK_BANNER)
                 .name("&aEdit Item Flags")
                 .description("Toggle which flags are shown on the tooltip of the item.")

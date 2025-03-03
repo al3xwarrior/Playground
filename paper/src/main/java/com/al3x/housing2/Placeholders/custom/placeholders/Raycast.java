@@ -30,8 +30,11 @@ public class Raycast {
     private static class Block extends Placeholder {
         public Block() {
             new X();
+            new ExactX();
             new Y();
+            new ExactY();
             new Z();
+            new ExactZ();
             new Coords();
         }
 
@@ -100,6 +103,37 @@ public class Raycast {
             }
         }
 
+        private static class ExactX extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exactx/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getX());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
         private static class Y extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -131,6 +165,37 @@ public class Raycast {
             }
         }
 
+        private static class ExactY extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exacty/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getY());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
         private static class Z extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -156,6 +221,37 @@ public class Raycast {
                 try {
                     Double range = argsHandled.getFirst();
                     return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockZ());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class ExactZ extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exactz/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }

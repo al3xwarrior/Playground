@@ -103,6 +103,27 @@ public class EditFlagMenu extends Menu {
             setupItems();
         });
 
+        boolean hideUnbreakable = meta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE);
+        addItem(13, ItemBuilder.create(hideUnbreakable ? Material.GRAY_DYE : Material.LIME_DYE)
+                .name("&aUnbreakable")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            if (hideUnbreakable) {
+                meta.removeItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            } else {
+                meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            }
+
+            item.setItemMeta(meta);
+            if (!item.getItemMeta().hasItemFlag(ItemFlag.HIDE_UNBREAKABLE) && !hideUnbreakable) {
+                player.sendMessage(colorize("&cAn error occurred while trying to apply this flag!"));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                return;
+            }
+            player.getInventory().setItemInMainHand(item);
+            setupItems();
+        });
+
         //back
         addItem(31, ItemBuilder.create(Material.BARRIER)
                 .name("&cBack")
