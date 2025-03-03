@@ -36,7 +36,7 @@ public class NPCInteractListener implements Listener {
         if (house == null) return;
 
         NPC citizensNPC = CitizensAPI.getNPCRegistry().getNPC(entity);
-        HousingNPC npc = house.getNPC(citizensNPC.getId());
+        HousingNPC npc = house.getNPCByCitizensID(citizensNPC.getId());
         if (npc == null) return;
 
         if (house.hasPermission(player, Permissions.ITEM_NPCS) && player.isSneaking() && rightClick) {

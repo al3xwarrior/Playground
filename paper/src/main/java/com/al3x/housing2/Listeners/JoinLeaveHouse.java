@@ -95,7 +95,7 @@ public class JoinLeaveHouse implements Listener {
 
         if (CitizensAPI.getNPCRegistry().isNPC(player)) {
             NPC cNPC = CitizensAPI.getNPCRegistry().getNPC(player);
-            HousingNPC npc = house.getNPC(cNPC.getId());
+            HousingNPC npc = house.getNPCByCitizensID(cNPC.getId());
             if (npc != null && npc.isCanBeDamaged()) {
 
             }
