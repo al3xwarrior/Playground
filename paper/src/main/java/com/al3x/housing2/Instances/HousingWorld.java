@@ -1004,11 +1004,7 @@ public class HousingWorld {
     }
 
     public HousingNPC getNPC(int id) {
-        return housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().orElse(null);
-    }
-
-    public HousingNPC getNPC(UUID uuid) {
-        return housingNPCS.stream().filter(npc -> npc.getNpcUUID().equals(uuid)).findFirst().orElse(null);
+        return housingNPCS.stream().filter(npc -> npc.getInternalID() == id).findFirst().orElse(null);
     }
 
     public void removeNPC(int id, boolean delete) {
