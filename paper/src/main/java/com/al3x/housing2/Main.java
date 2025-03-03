@@ -123,6 +123,7 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("group").setExecutor(new Group(housesManager));
         getCommand("group").setTabCompleter(new Group.TabCompleter(housesManager));
         getCommand("lockhouse").setExecutor(new LockHouse(housesManager));
+        getCommand("find").setExecutor(new Find(housesManager));
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

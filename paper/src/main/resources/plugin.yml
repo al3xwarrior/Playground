@@ -7,6 +7,7 @@ soft-depend: [PlaceholderAPI, ItemsAdder]
 depend: [Citizens, ProtocolLib, NoteBlockAPI, packetevents, HeadDatabase, voicechat]
 loadbefore: [Citizens]
 commands:
+  find:
   lockhouse:
   checkItemSize:
   staffalerts:
