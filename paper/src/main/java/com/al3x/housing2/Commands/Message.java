@@ -34,9 +34,11 @@ public class Message implements CommandExecutor {
         if (commandSender instanceof Player p) {
             fromPrefix = PlaceholderAPI.setPlaceholders(p, "%luckperms_prefix%");
             lastMessage.put(p.getUniqueId(), target.getUniqueId());
+            lastMessage.put(target.getUniqueId(), p.getUniqueId());
         } else {
             fromPrefix = "§f";
             lastMessage.put(UUID.fromString("00000000-0000-0000-0000-000000000000"), target.getUniqueId());
+            lastMessage.put(target.getUniqueId(), UUID.fromString("00000000-0000-0000-0000-000000000000"));
         }
 
         String toPrefix = PlaceholderAPI.setPlaceholders(target, "%luckperms_prefix%");

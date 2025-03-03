@@ -77,8 +77,6 @@ public final class Main extends JavaPlugin implements Listener {
             getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
         }
 
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "playground:export");
-
         this.housesManager = new HousesManager(this);
         this.protoolsManager = new ProtoolsManager(this, housesManager);
         this.commandFramework = new HousingCommandFramework(this);

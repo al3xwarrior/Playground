@@ -140,7 +140,7 @@ public class JoinLeaveHouse implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
             LuckpermsHandler.addPermission(player, "housing.world." + house.getHouseUUID());
         } else {
-            PermissionAttachment attachment = perms.getOrDefault(player.getUniqueId(), player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true));
+            PermissionAttachment attachment = player.addAttachment(Main.getInstance(), "housing.world." + house.getHouseUUID(), true);
             perms.put(player.getUniqueId(), attachment);
         }
 

@@ -112,7 +112,6 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
                 player.teleport(loc);
             }
-
         }
         return true;
     }
