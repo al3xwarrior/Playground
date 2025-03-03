@@ -67,6 +67,7 @@ public class HousingNPC {
     private Main main;
 
     // Npc Properties
+    private int internalID;
     private int npcID;
     private UUID npcUUID;
     private UUID creatorUUID;
@@ -116,7 +117,7 @@ public class HousingNPC {
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
         this.stats = StatData.Companion.toList(data.getStats() == null ? new ArrayList<>() : data.getStats());
-
+        this.internalID = data.getNpcID();
         this.eventActions = new HashMap<>();
         if (data.getEventActions() == null) {
             for (EventType type : NPC_EVENTS) {
@@ -194,6 +195,7 @@ public class HousingNPC {
         configureEntitySettings();
         citizensNPC.spawn(location);
         citizensNPC.faceLocation(player.getLocation());
+        this.internalID = citizensNPC.getId();
         this.npcID = citizensNPC.getId();
         this.npcUUID = citizensNPC.getUniqueId();
 
@@ -335,7 +337,7 @@ public class HousingNPC {
     }
 
     public int getNpcID() {
-        return npcID;
+        return internalID;
     }
 
     public UUID getNpcUUID() {
