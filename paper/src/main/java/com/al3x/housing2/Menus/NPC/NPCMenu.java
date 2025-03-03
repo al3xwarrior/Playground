@@ -123,7 +123,7 @@ public class NPCMenu extends Menu {
         removeNPCMeta.setDisplayName(colorize("&cRemove NPC"));
         removeNPC.setItemMeta(removeNPCMeta);
         addItem(53, removeNPC, () -> {
-            house.removeNPC(housingNPC.getNpcID());
+            house.removeNPC(housingNPC.getNpcID(), true);
             player.closeInventory();
         });
 

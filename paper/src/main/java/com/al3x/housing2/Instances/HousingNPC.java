@@ -8,6 +8,8 @@ import com.al3x.housing2.Instances.HousingData.HologramData;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
 import com.al3x.housing2.Instances.HousingData.StatData;
+import com.al3x.housing2.Instances.npc.FollowTrait;
+import com.al3x.housing2.Instances.npc.RespawnTrait;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.MineSkin.BiggerSkinData;
 import com.al3x.housing2.MineSkin.SkinData;
@@ -110,8 +112,6 @@ public class HousingNPC {
         this.name = data.getNpcName();
         this.lookAtPlayer = data.getLookAtPlayer();
         this.location = location;
-        this.npcID = data.getNpcID();
-        this.npcUUID = UUID.fromString(data.getNpcUUID());
         this.entityType = EntityType.valueOf(data.getNpcType());
         this.creatorUUID = player.getUniqueId();
         this.actions = Companion.toList(data.getActions());
@@ -145,7 +145,9 @@ public class HousingNPC {
         if (data.getWaypoints() != null) this.waypoints = data.getWaypoints().stream().map(LocationData::toLocation).toList();
         else this.waypoints = new ArrayList<>();
 
-        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, npcUUID, npcID, this.name);
+        citizensNPC = CitizensAPI.getNPCRegistry().createNPC(entityType, this.name, this.location);
+        this.npcID = citizensNPC.getId();
+        this.npcUUID = citizensNPC.getUniqueId();
         configureLookCloseTrait();
         configureEquipment(data.getEquipment());
         configureNavigation(data);
@@ -242,6 +244,9 @@ public class HousingNPC {
         citizensNPC.getNavigator().getDefaultParameters().speedModifier((float) speed);
         configureWaypoints(data.getWaypoints());
         updateNavigationState();
+
+        if (citizensNPC.hasTrait(FollowTrait.class)) citizensNPC.removeTrait(FollowTrait.class);
+        citizensNPC.addTrait(new FollowTrait(this));
     }
 
     public void configureEntitySettings() {
@@ -249,6 +254,9 @@ public class HousingNPC {
         citizensNPC.setUseMinecraftAI(minecraftAI);
         citizensNPC.setProtected(!canBeDamaged);
         citizensNPC.getOrAddTrait(Age.class).setAge(isBaby ? -1 : 0);
+
+        if (citizensNPC.hasTrait(RespawnTrait.class)) citizensNPC.removeTrait(RespawnTrait.class);
+        citizensNPC.addTrait(new RespawnTrait(this));
     }
 
     private void configureWaypoints(List<LocationData> dataWaypoints) {
@@ -291,65 +299,6 @@ public class HousingNPC {
                     return;
                 }
                 if (citizensNPC.isSpawned()) {
-                    if (citizensNPC.getEntity().getLocation().getY() < -64) {
-                        citizensNPC.despawn();
-                        citizensNPC.spawn(location);
-                    }
-
-                    FollowTrait followTrait = citizensNPC.getOrAddTrait(FollowTrait.class);
-                    followTrait.setProtect(false);
-                    if (navigationType == NavigationType.PLAYER) {
-                        Player closest = getClosestPlayer();
-                        if (closest != null) {
-                            followTrait.follow(closest);
-                        }
-                    } else {
-                        followTrait.follow(null);
-                    }
-                }
-            }
-        }.runTaskTimer(main, 0, 20);
-
-        new BukkitRunnable() {
-            int ticks = 0;
-            @Override
-            public void run() {
-                if (deleted) {
-                    citizensNPC.despawn();
-                    citizensNPC.destroy();
-                    cancel();
-                    return;
-                }
-                if (citizensNPC.isSpawned()) {
-                    if (!spawned) {
-                        spawned = true;
-                        if (citizensNPC.getEntity() instanceof LivingEntity le) {
-                            le.setHealth(maxHealth);
-                        }
-                        citizensNPC.setUseMinecraftAI(minecraftAI);
-                    }
-                } else {
-                    if (spawned) {
-                        ticks++;
-                        if (ticks >= respawnTime) {
-                            citizensNPC.spawn(location);
-                            ticks = 0;
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(main, 0, 1);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (deleted) {
-                    citizensNPC.despawn();
-                    citizensNPC.destroy();
-                    cancel();
-                    return;
-                }
-                if (citizensNPC.isSpawned()) {
                     if (hologram != null) {
                         Location loc = citizensNPC.getEntity().getLocation().clone();
                         hologram.setLocation(loc.set(loc.getX(), hologram.getLocation().getY(), loc.getZ()));
@@ -357,21 +306,6 @@ public class HousingNPC {
                 }
             }
         }.runTaskTimer(main, 0, 1);
-    }
-
-    private Player getClosestPlayer() {
-        Player closest = null;
-        double closestDistance = 20;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().equals(citizensNPC.getEntity().getWorld())) {
-                double distance = player.getLocation().distance(citizensNPC.getEntity().getLocation());
-                if (distance < closestDistance) {
-                    closest = player;
-                    closestDistance = distance;
-                }
-            }
-        }
-        return closest;
     }
 
     public void setEntity(EntityType entityType) {

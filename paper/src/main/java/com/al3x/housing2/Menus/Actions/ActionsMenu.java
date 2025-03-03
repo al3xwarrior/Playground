@@ -206,36 +206,45 @@ public class ActionsMenu extends Menu {
                 });
             } else {
                 for (int i = 0; i < conditions.size(); i++) {
-                    Condition condition = conditions.get(i);
-                    int slot = allowedSlots[i];
-                    ItemBuilder item = new ItemBuilder();
-                    item.mClick(ItemBuilder.ActionType.CLONE);
-                    condition.createDisplayItem(item);
-                    replacePlayerWithNPC(item);
-                    int finalI = i;
-                    addItem(slot, item.build(), (e) -> {
-                        if (e.isShiftClick()) {
-                            //shift actions around
-                            shiftCondition(condition, e.isRightClick());
-                            return;
-                        }
+                    try {
+                        Condition condition = conditions.get(i);
+                        int slot = allowedSlots[i];
+                        ItemBuilder item = new ItemBuilder();
+                        item.mClick(ItemBuilder.ActionType.CLONE);
+                        condition.createDisplayItem(item);
+                        replacePlayerWithNPC(item);
+                        int finalI = i;
+                        addItem(slot, item.build(), (e) -> {
+                            if (e.isShiftClick()) {
+                                //shift actions around
+                                shiftCondition(condition, e.isRightClick());
+                                return;
+                            }
 
-                        if (e.getClick() == ClickType.MIDDLE) {
-                            this.conditions.add(finalI, condition.clone());
-                            setupItems();
-                            return;
-                        }
+                            if (e.getClick() == ClickType.MIDDLE) {
+                                this.conditions.add(finalI, condition.clone());
+                                setupItems();
+                                return;
+                            }
 
-                        if (e.isLeftClick() && condition.editorMenu(house, player, backMenu) != null) {
-                            ActionEditMenu menu = new ActionEditMenu(condition, main, player, house, this);
-                            menu.setEvent(event);
-                            menu.setHousingNPC(housingNPC);
-                            menu.setParentActions(parentActions);
-                            menu.open();
-                        } else if (e.isRightClick()) {
-                            removeCondition(condition);
-                        }
-                    });
+                            if (e.isLeftClick() && condition.editorMenu(house, player, backMenu) != null) {
+                                ActionEditMenu menu = new ActionEditMenu(condition, main, player, house, this);
+                                menu.setEvent(event);
+                                menu.setHousingNPC(housingNPC);
+                                menu.setParentActions(parentActions);
+                                menu.open();
+                            } else if (e.isRightClick()) {
+                                removeCondition(condition);
+                            }
+                        });
+                    } catch (Exception e) {
+                        int finalI1 = i;
+                        addItem(allowedSlots[i], ItemBuilder.create(Material.BARRIER).name("&cError!").description("An error occurred whilst adding this condition!\n\n&cPlease report this to your nearest admin :).").rClick(ItemBuilder.ActionType.REMOVE_YELLOW).build(), () -> {
+
+                        }, () -> {
+                            removeCondition(conditions.get(finalI1));
+                        });
+                    }
                 }
             }
 
@@ -280,45 +289,54 @@ public class ActionsMenu extends Menu {
                 });
             } else {
                 for (int i = 0; i < actions.size(); i++) {
-                    Action action = actions.get(i);
-                    int slot = allowedSlots[i];
-                    ItemBuilder item = new ItemBuilder();
-                    item.mClick(ItemBuilder.ActionType.CLONE);
-                    if (!Objects.equals(action.getComment(), "") && action.getComment() != null) {
-                        item.description(action.getComment()).punctuation(false);
-                    }
-                    action.createDisplayItem(item, house);
-                    replacePlayerWithNPC(item);
-                    int finalI = i;
-                    addItem(slot, item.build(), (e) -> {
-                        if (e.isShiftClick()) {
-                            //shift actions around
-                            shiftAction(action, finalI + (currentPage - 1) * 21, e.isRightClick());
-                            return;
+                    try {
+                        Action action = actions.get(i);
+                        int slot = allowedSlots[i];
+                        ItemBuilder item = new ItemBuilder();
+                        item.mClick(ItemBuilder.ActionType.CLONE);
+                        if (!Objects.equals(action.getComment(), "") && action.getComment() != null) {
+                            item.description(action.getComment()).punctuation(false);
                         }
-
-                        if (e.getClick() == ClickType.MIDDLE) {
-                            if (ActionEditMenu.isLimitReached(actions, action)) {
-                                player.sendMessage(colorize("&cYou have reached the limit for this action!"));
+                        action.createDisplayItem(item, house);
+                        replacePlayerWithNPC(item);
+                        int finalI = i;
+                        addItem(slot, item.build(), (e) -> {
+                            if (e.isShiftClick()) {
+                                //shift actions around
+                                shiftAction(action, finalI + (currentPage - 1) * 21, e.isRightClick());
                                 return;
                             }
-                            this.actions.add(finalI, action.clone());
-                            setupItems();
-                            return;
-                        }
+
+                            if (e.getClick() == ClickType.MIDDLE) {
+                                if (ActionEditMenu.isLimitReached(actions, action)) {
+                                    player.sendMessage(colorize("&cYou have reached the limit for this action!"));
+                                    return;
+                                }
+                                this.actions.add(finalI, action.clone());
+                                setupItems();
+                                return;
+                            }
 
 
-                        if (e.isLeftClick() && action.editorMenu(house, backMenu, player) != null) {
-                            ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
-                            menu.setEvent(event);
-                            menu.setHousingNPC(housingNPC);
-                            menu.setUpdate(update);
-                            menu.setParentActions(parentActions);
-                            menu.open();
-                        } else {
-                            removeAction(action);
-                        }
-                    });
+                            if (e.isLeftClick() && action.editorMenu(house, backMenu, player) != null) {
+                                ActionEditMenu menu = new ActionEditMenu(action, main, player, house, this);
+                                menu.setEvent(event);
+                                menu.setHousingNPC(housingNPC);
+                                menu.setUpdate(update);
+                                menu.setParentActions(parentActions);
+                                menu.open();
+                            } else {
+                                removeAction(action);
+                            }
+                        });
+                    } catch (Exception e) {
+                        int finalI1 = i;
+                        addItem(allowedSlots[i], ItemBuilder.create(Material.BARRIER).name("&cError!").description("An error occurred whilst adding this action!\n\n&cPlease report this to your nearest admin :).").rClick(ItemBuilder.ActionType.REMOVE_YELLOW).build(), () -> {
+
+                        }, () -> {
+                            removeAction(actions.get(finalI1));
+                        });
+                    }
                 }
 
                 if (cachedAction != null) {

@@ -1,5 +1,7 @@
 mineskin_key: "4c29f0cf3aac439c9fcde63dd52aa90e"
-executorLimits: 200
+globalLimits: 2000
+actionLimits:
+  Particle Action: 100
 
 # web
 api_port: 8080

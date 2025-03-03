@@ -151,7 +151,9 @@ public class ActionExecutor {
             action = queue.get(index);
             index++;
 
-            if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 2000)) {
+            int global = Main.getInstance().getConfig().getInt("globalLimits", 2000);
+            int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.name.replace(" ", "_").toLowerCase(), global);
+            if (limits.containsKey(action.name) && limits.get(action.name) >= actionLimit) {
                 exitAllTheWay(this);
                 return EXIT;
             }
@@ -197,15 +199,20 @@ public class ActionExecutor {
 //                    return ERROR;
 //                }
 
-                if (player == entity) {
-                    action.execute(player, house, event, this);
-                } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
-                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-                    npcAction.npcExecute(player, npc, house, event, this);
+                try {
+                    if (player == entity) {
+                        action.execute(player, house, event, this);
+                    } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
+                        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                        npcAction.npcExecute(player, npc, house, event, this);
+                    }
+
+                    executeChildren(entity, player, house, event); //Look for children to execute. >:)
+
+                } catch (Exception e) {
+                    player.sendMessage("An error occurred while executing the action: " + action.name);
+                    player.sendMessage(e.getMessage());
                 }
-
-                executeChildren(entity, player, house, event); //Look for children to execute. >:)
-
                 if (index >= queue.size()) {
                     isComplete = true;
                 }
@@ -226,14 +233,21 @@ public class ActionExecutor {
                 if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
                     return;
                 }
-                if (player == entity) {
-                    finalAction.execute(player, house, event, this);
-                } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
-                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-                    npcAction.npcExecute(player, npc, house, event, this);
-                }
 
-                executeChildren(entity, player, house, event);
+                try {
+                    if (player == entity) {
+                        finalAction.execute(player, house, event, this);
+                    } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
+                        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                        npcAction.npcExecute(player, npc, house, event, this);
+                    }
+
+                    executeChildren(entity, player, house, event);
+
+                } catch (Exception e) {
+                    player.sendMessage("An error occurred while executing the action: " + finalAction.name);
+                    player.sendMessage(e.getMessage());
+                }
 
                 if (finalIndex >= queue.size()) {
                     isComplete = true;

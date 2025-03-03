@@ -113,6 +113,7 @@ public class HousingWorld {
     private RadioSongPlayer radioSongPlayer;
 
     private boolean loaded = false;
+    private boolean unloaded = false;
     private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
     public HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
     private HousingScoreboard scoreboardInstance;
@@ -527,7 +528,11 @@ public class HousingWorld {
             player.sendMessage(colorize("&e&lHouse is being unloaded!"));
             kickPlayerFromHouse(player);
         });
-        housingNPCS.forEach(npc -> npc.getCitizensNPC().destroy());
+        housingNPCS.forEach(npc -> {
+            npc.getCitizensNPC().despawn();
+            npc.getCitizensNPC().destroy();
+            CitizensAPI.getNPCRegistry().deregister(npc.getCitizensNPC());
+        });
         killAllEntities();
         trashCans.forEach(location -> { //I dont think this is needed cause of the killAllEntities() method
             for (ArmorStand armorStand : getWorld().getEntitiesByClass(ArmorStand.class)) {
@@ -555,7 +560,7 @@ public class HousingWorld {
     }
 
     private boolean deleteWorld() {
-        housingNPCS.forEach(npc -> removeNPC(npc.getNpcID()));
+        housingNPCS.forEach(npc -> removeNPC(npc.getNpcID(), true));
         commands.forEach(command -> main.getCommandFramework().unregisterCommand(command.getCommand(), this));
         commands.clear();
         File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
@@ -1006,14 +1011,16 @@ public class HousingWorld {
         return housingNPCS.stream().filter(npc -> npc.getNpcUUID().equals(uuid)).findFirst().orElse(null);
     }
 
-    public void removeNPC(int id) {
+    public void removeNPC(int id, boolean delete) {
         housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().ifPresent(npc -> {
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);
             if (citizensNPC != null) {
                 citizensNPC.destroy();
                 CitizensAPI.getNPCRegistry().deregister(citizensNPC);
-                npc.deleted = true;
-                housingNPCS.remove(npc);
+                if (delete) {
+                    npc.deleted = true;
+                    housingNPCS.remove(npc);
+                }
             }
             npc.getHologram().remove();
         });
