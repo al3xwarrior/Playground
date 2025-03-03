@@ -315,7 +315,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
     public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
         if (player == null) return;
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
-        HousingNPC housingNPC = house.getNPC(npc.getId());
+        HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());
         Stat stat = housingNPC.getStats().stream().filter(s -> s.getStatName().equals(name)).findFirst().orElse(new Stat(name, "0"));
 
         for (StatInstance instance : statInstances) {

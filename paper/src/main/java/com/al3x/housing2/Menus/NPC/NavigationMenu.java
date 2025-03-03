@@ -178,7 +178,7 @@ public class NavigationMenu extends Menu {
                     container.set(key, PersistentDataType.BOOLEAN, true);
 
                     key = new NamespacedKey(main, "npc");
-                    container.set(key, PersistentDataType.INTEGER, housingNPC.getNpcID());
+                    container.set(key, PersistentDataType.INTEGER, housingNPC.getInternalID());
                     itemStack.setItemMeta(meta);
 
                     player.getInventory().addItem(itemStack);

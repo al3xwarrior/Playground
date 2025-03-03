@@ -34,7 +34,7 @@ public class NPCEvents implements Listener {
         if (house == null) return;
         if (CitizensAPI.getNPCRegistry().isNPC(e.getEntity())) {
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getEntity());
-            HousingNPC housingNPC = house.getNPC(npc.getId());
+            HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());
             if (housingNPC != null) {
                 housingNPC.executeEventActions(house, EventType.NPC_DEATH, player, e);
             }
@@ -49,7 +49,7 @@ public class NPCEvents implements Listener {
         if (house == null) return;
         if (CitizensAPI.getNPCRegistry().isNPC(e.getEntity())) {
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getEntity());
-            HousingNPC housingNPC = house.getNPC(npc.getId());
+            HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());
             if (housingNPC != null) {
                 List<Action> actions = housingNPC.getEventActions().get(EventType.NPC_DAMAGE);
                 if (actions != null) {

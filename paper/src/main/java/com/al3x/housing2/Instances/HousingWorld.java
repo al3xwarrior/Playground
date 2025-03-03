@@ -1007,6 +1007,10 @@ public class HousingWorld {
         return housingNPCS.stream().filter(npc -> npc.getInternalID() == id).findFirst().orElse(null);
     }
 
+    public HousingNPC getNPCByCitizensID(int id) {
+        return housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().orElse(null);
+    }
+
     public void removeNPC(int id, boolean delete) {
         housingNPCS.stream().filter(npc -> npc.getNpcID() == id).findFirst().ifPresent(npc -> {
             NPC citizensNPC = CitizensAPI.getNPCRegistry().getById(id);

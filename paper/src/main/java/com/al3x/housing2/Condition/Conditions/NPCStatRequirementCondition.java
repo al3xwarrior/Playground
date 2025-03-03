@@ -109,7 +109,7 @@ public class NPCStatRequirementCondition extends CHTSLImpl implements NPCConditi
     @Override
     public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
         String statString = HandlePlaceholders.parsePlaceholders(player, house, this.stat);
-        Stat stat = house.getNPC(npc.getId()).getStats().stream().filter(s -> s.getStatName().equalsIgnoreCase(statString)).findFirst().orElse(null);
+        Stat stat = house.getNPCByCitizensID(npc.getId()).getStats().stream().filter(s -> s.getStatName().equalsIgnoreCase(statString)).findFirst().orElse(null);
         String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
         String statValue = stat.getValue();
         if (ignoreCase) {
