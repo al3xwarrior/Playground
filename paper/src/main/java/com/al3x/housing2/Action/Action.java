@@ -10,6 +10,7 @@ import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.common.io.ByteArrayDataOutput;
@@ -25,6 +26,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+import org.incendo.cloud.bukkit.parser.location.LocationParser;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -52,6 +55,7 @@ public abstract class Action {
     public abstract String toString();
 
     public abstract void createDisplayItem(ItemBuilder builder);
+
     public void createDisplayItem(ItemBuilder builder, HousingWorld house) {
         createDisplayItem(builder);
     }
@@ -90,15 +94,20 @@ public abstract class Action {
 
     public abstract LinkedHashMap<String, Object> data();
 
-    public String getComment() { return this.comment; }
-    public void setComment(String value) { this.comment = value; }
+    public String getComment() {
+        return this.comment;
+    }
+
+    public void setComment(String value) {
+        this.comment = value;
+    }
 
     public abstract boolean requiresPlayer();
 
     public Object getField(String name) throws NoSuchFieldException, IllegalAccessException, NumberFormatException {
         Field field = this.getClass().getDeclaredField(name.split(" ")[0]);
         field.setAccessible(true);
-        if(field.getType() == List.class && name.contains(" ")) {
+        if (field.getType() == List.class && name.contains(" ")) {
             return ((List<?>) field.get(this)).get(Integer.parseInt(name.split(" ")[1]));
         }
         return field.get(this);
@@ -131,7 +140,7 @@ public abstract class Action {
         return false;
     }
 
-    public void fromData(HashMap<String, Object> data, Class< ? extends Action> actionClass) {
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         for (String key : data.keySet()) {
             try {
                 Field field = actionClass.getDeclaredField(key);
@@ -206,6 +215,10 @@ public abstract class Action {
                             split[i] = split[i].substring(1);
                         }
 
+                        if (split[i].startsWith("^")) {
+                            split[i] = split[i].substring(1);
+                        }
+
                         if (split[i].isEmpty()) continue;
                         if (split[i].equalsIgnoreCase("null")) {
                             split[i] = "0";
@@ -228,10 +241,10 @@ public abstract class Action {
     }
 
     protected Location getLocationFromString(Player player, HousingWorld house, String message) {
-        return getLocationFromString(player, player.getLocation(), house, message);
+        return getLocationFromString(player, player.getLocation(), player.getEyeLocation(), house, message);
     }
 
-    protected Location getLocationFromString(Player player, Location baseLocation, HousingWorld house, String message) {
+    protected Location getLocationFromString(Player player, Location baseLocation, Location eyeLocation, HousingWorld house, String message) {
         message = HandlePlaceholders.parsePlaceholders(player, house, message);
         String[] split = message.split(",");
         if (split.length != 3 && split.length != 5) {
@@ -240,49 +253,69 @@ public abstract class Action {
         }
 
         try {
-            String x = split[0];
-            String y = split[1];
-            String z = split[2];
+            if (message.contains("^")) {
+                String x = split[0];
+                String y = split[1];
+                String z = split[2];
 
-            String yaw = "0";
-            String pitch = "0";
+                double xV = (x.startsWith("^")) ? Double.parseDouble(x.substring(1)) : Double.parseDouble(x);
+                double yV = (y.startsWith("^")) ? Double.parseDouble(y.substring(1)) : Double.parseDouble(y);
+                double zV = (z.startsWith("^")) ? Double.parseDouble(z.substring(1)) : Double.parseDouble(z);
 
-            if (split.length == 5) {
-                yaw = split[3];
-                pitch = split[4];
+                //forward
+                Vector forward = eyeLocation.getDirection().clone().multiply(zV);
+                //right
+                Vector right = eyeLocation.getDirection().clone().crossProduct(new Vector(0, 1, 0)).normalize().multiply(xV);
+                //up
+                Vector up = new Vector(0, yV, 0);
+
+                return baseLocation.clone().add(forward).add(right).add(up);
             }
 
-            if (x.equalsIgnoreCase("null") || x.isEmpty()) return null;
-            if (y.equalsIgnoreCase("null") || y.isEmpty()) return null;
-            if (z.equalsIgnoreCase("null") || z.isEmpty()) return null;
-            if (yaw.equalsIgnoreCase("null") || yaw.isEmpty()) return null;
-            if (pitch.equalsIgnoreCase("null") || pitch.isEmpty()) return null;
+            double x = 0, y = 0, z = 0, yaw = baseLocation.getYaw(), pitch = baseLocation.getPitch();
 
-            double x1 = (x.startsWith("~")) ? baseLocation.getX() : Double.parseDouble(x);
-            double y1 = (y.startsWith("~")) ? baseLocation.getY() : Double.parseDouble(y);
-            double z1 = (z.startsWith("~")) ? baseLocation.getZ() : Double.parseDouble(z);
-            double yaw1 = (yaw.startsWith("~")) ? baseLocation.getYaw() : Double.parseDouble(yaw);
-            double pitch1 = (pitch.startsWith("~")) ? baseLocation.getPitch() : Double.parseDouble(pitch);
-            if (x.startsWith("~") && x.length() > 1) {
-                x1 += Double.parseDouble(x.substring(1));
+            for (int i = 0; i < split.length; i++) {
+                double handledValue = handleRelative(i, split[i], baseLocation, eyeLocation);
+                if (i == 0) {
+                    x = handledValue;
+                } else if (i == 1) {
+                    y = handledValue;
+                } else if (i == 2) {
+                    z = handledValue;
+                } else if (i == 3) {
+                    yaw = handledValue;
+                } else {
+                    pitch = handledValue;
+                }
             }
-            if (y.startsWith("~") && y.length() > 1) {
-                y1 += Double.parseDouble(y.substring(1));
-            }
-            if (z.startsWith("~") && z.length() > 1) {
-                z1 += Double.parseDouble(z.substring(1));
-            }
-            if (yaw.startsWith("~") && yaw.length() > 1) {
-                yaw1 += Double.parseDouble(yaw.substring(1));
-            }
-            if (pitch.startsWith("~") && pitch.length() > 1) {
-                pitch1 += Double.parseDouble(pitch.substring(1));
-            }
-            return new Location(player.getWorld(), x1, y1, z1, (float) yaw1, (float) pitch1);
+
+            return new Location(baseLocation.getWorld(), x, y, z, (float) yaw, (float) pitch);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
             return null;
         }
+    }
+
+    private double handleRelative(int index, String part, Location baseLocation, Location eyeLocation) {
+        //Sorry if this looks like a mess :(
+        double value = (part.startsWith("~")) ?
+                (part.length() == 1 ? 0 : Double.parseDouble(part.substring(1))) :
+                Double.parseDouble(part);
+
+        double base = switch (index) {
+            case 0 -> baseLocation.getX();
+            case 1 -> baseLocation.getY();
+            case 2 -> baseLocation.getZ();
+            case 3 -> baseLocation.getYaw();
+            case 4 -> baseLocation.getPitch();
+            default -> 0;
+        };
+
+        if (part.startsWith("~")) {
+            return base + value;
+        }
+        return value;
     }
 
     @Override

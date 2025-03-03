@@ -363,7 +363,7 @@ public class ParticleAction extends HTSLImpl {
             }
             case CUSTOM, PLAYER_LOCATION -> {
                 if (base != null) {
-                    return getLocationFromString(player, base, house, customLocation);
+                    return getLocationFromString(player, base, player.getEyeLocation(), house, customLocation);
                 }
                 return getLocationFromString(player, house, customLocation);
             }

@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
@@ -81,7 +82,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                                     if (location == PLAYER_LOCATION) {
                                         customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
                                     }
-                                    backMenu.open();
+                                    Bukkit.getScheduler().runTask(Main.getInstance(), backMenu::open);
                                 }
                         )
                 )
@@ -103,15 +104,11 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                     return true;
                 }
 
-                if (loc.getX() > 255) {
-                    loc.setX(255);
-                }
-                if (loc.getZ() > 255) {
-                    loc.setY(255);
-                }
-                if (loc.getY() > 255) {
-                    loc.setY(255);
-                }
+                loc.setX(Math.max(-255, Math.min(255, loc.getX())));
+                loc.setZ(Math.max(-255, Math.min(255, loc.getZ())));
+                loc.setY(Math.max(-64, Math.min(320, loc.getY())));
+                loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
+                loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
 
                 player.teleport(loc);
             }
@@ -186,15 +183,11 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                     return;
                 }
 
-                if (loc.getX() > 255) {
-                    loc.setX(255);
-                }
-                if (loc.getZ() > 255) {
-                    loc.setY(255);
-                }
-                if (loc.getY() > 255) {
-                    loc.setY(255);
-                }
+                loc.setX(Math.max(-255, Math.min(255, loc.getX())));
+                loc.setZ(Math.max(-255, Math.min(255, loc.getZ())));
+                loc.setY(Math.max(-64, Math.min(320, loc.getY())));
+                loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
+                loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
 
                 npc.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
