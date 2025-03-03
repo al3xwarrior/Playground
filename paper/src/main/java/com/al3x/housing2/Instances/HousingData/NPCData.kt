@@ -30,7 +30,7 @@ data class NPCData(
             npcList.forEach {
                 list.add(
                     NPCData(
-                        it.npcID,
+                        it.internalID,
                         it.npcUUID.toString(),
                         it.name,
                         it.entityType.name,

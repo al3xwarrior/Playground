@@ -337,6 +337,10 @@ public class HousingNPC {
     }
 
     public int getNpcID() {
+        return npcID;
+    }
+
+    public int getInternalID() {
         return internalID;
     }
 
