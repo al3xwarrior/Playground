@@ -471,7 +471,7 @@ public class ActionEditMenu extends Menu {
                         List<Duple<HousingNPC, ItemBuilder>> npcs = new ArrayList<>();
                         for (HousingNPC npc : house.getNPCs()) {
                             double distance = npc.getLocation().distance(player.getLocation());
-                            npcs.add(new Duple<>(npc, ItemBuilder.create(Material.PLAYER_HEAD).name(npc.getName()).info("Distance", Math.toIntExact(Math.round(distance))).info("NPC ID", npc.getNpcID()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
+                            npcs.add(new Duple<>(npc, ItemBuilder.create(Material.PLAYER_HEAD).name(npc.getName()).info("Distance", Math.toIntExact(Math.round(distance))).info("NPC ID", npc.getInternalID()).lClick(ItemBuilder.ActionType.SELECT_YELLOW)));
                         }
 
                         npcs.sort(Comparator.comparing(npc -> npc.getFirst().getLocation().distance(player.getLocation())));
@@ -481,7 +481,7 @@ public class ActionEditMenu extends Menu {
                                 // Set the field
                                 Field field = action.getClass().getDeclaredField(item.getVarName());
                                 field.setAccessible(true);
-                                field.set(action, npc.getNpcID());
+                                field.set(action, npc.getInternalID());
                                 player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: " + npc.getName()));
                                 open();
                             } catch (NoSuchFieldException | IllegalAccessException ex) {

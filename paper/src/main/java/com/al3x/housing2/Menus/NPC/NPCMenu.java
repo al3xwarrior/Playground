@@ -131,7 +131,7 @@ public class NPCMenu extends Menu {
                 .name("&aNPC Info")
                 .description("Information about this NPC")
                 .info("Name", housingNPC.getName())
-                .info("ID", "&a" + housingNPC.getNpcID())
+                .info("ID", "&a" + housingNPC.getInternalID())
                 .info("Entity Type", "&b" + housingNPC.getEntityType().name())
                 .info("Navigation Type", "&6" + housingNPC.getNavigationType().name())
                 .info("Look at Players", housingNPC.isLookAtPlayer() ? "&aYes" : "&cNo")
