@@ -229,7 +229,7 @@ public class AddActionMenu extends Menu {
             if (action.getName().equals("Break Action") || action.getName().equals("Continue Action")) continue;
 
             if (action instanceof RunAsNPCAction) { //update the default if the npc is not null
-                if (npc != null) action = new RunAsNPCAction(npc.getCitizensNPC());
+                if (npc != null) action = new RunAsNPCAction(npc);
             }
 
             newActions.add(action);

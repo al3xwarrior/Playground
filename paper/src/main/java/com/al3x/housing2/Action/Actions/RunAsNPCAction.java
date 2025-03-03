@@ -28,9 +28,10 @@ public class RunAsNPCAction extends HTSLImpl {
     private String npcId;
     private List<Action> subActions;
 
-    public RunAsNPCAction(NPC npc) {
+    public RunAsNPCAction(HousingNPC npc) {
         super("Run As NPC Action");
-        this.npcId = String.valueOf(npc.getId());
+
+        this.npcId = String.valueOf(npc.getInternalID());
         this.subActions = new ArrayList<>();
     }
 
