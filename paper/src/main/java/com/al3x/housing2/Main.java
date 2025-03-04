@@ -1,7 +1,6 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Commands.*;
-import com.al3x.housing2.Commands.Group;
 import com.al3x.housing2.Commands.Protools.*;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
@@ -96,32 +95,16 @@ public final class Main extends JavaPlugin implements Listener {
                 () -> getLogger().severe("Failed to initialize HologramLib manager.")
         );
 
-        getCommand("visit").setExecutor(new Visit());
-        getCommand("housing").setExecutor(new Housing(housesManager, this));
-        getCommand("housing").setTabCompleter(new Housing.TabCompleter());
-        getCommand("home").setExecutor(new Home(this));
-        getCommand("cancelinput").setExecutor(new CancelInput(this));
         getCommand("testplaceholder").setExecutor(new TestPlaceholder(this));
         getCommand("testplaceholder").setTabCompleter(new TestPlaceholder.TabCompleter());
         getCommand("placeholders").setExecutor(new Placeholders(this));
-        getCommand("edit").setExecutor(new Edit(this));
         getCommand("setspawn").setExecutor(new SetSpawn(housesManager, this));
-        getCommand("fly").setExecutor(new Fly(this));
-        getCommand("gamemode").setExecutor(new Gamemode(this));
-        getCommand("gamemode").setTabCompleter(new Gamemode.TabCompleter());
-        getCommand("hub").setExecutor(new Hub());
         getCommand("WTFMap").setExecutor(new WTFMap(housesManager));
-        getCommand("broadcast").setExecutor(new Broadcast());
+
         getCommand("staffalerts").setExecutor(new StaffAlerts());
         getCommand("message").setExecutor(new Message());
         getCommand("reply").setExecutor(new Reply());
-        getCommand("globalchat").setExecutor(new GlobalChat());
-        getCommand("globalchat").setTabCompleter(new GlobalChat());
-        getCommand("checkItemSize").setExecutor(new CheckItemSize());
-        getCommand("group").setExecutor(new Group(housesManager));
-        getCommand("group").setTabCompleter(new Group.TabCompleter(housesManager));
         getCommand("lockhouse").setExecutor(new LockHouse(housesManager));
-        getCommand("find").setExecutor(new Find(housesManager));
 
         // Protools
         this.getCommand("wand").setExecutor(new Wand(this));

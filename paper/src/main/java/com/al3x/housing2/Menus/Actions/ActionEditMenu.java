@@ -3,7 +3,6 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
-import com.al3x.housing2.Commands.Housing;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.*;
@@ -14,11 +13,6 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StackUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,7 +23,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
