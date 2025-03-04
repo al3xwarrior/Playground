@@ -180,7 +180,7 @@ public class JoinLeaveHouse implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
             LuckpermsHandler.removePermission(player, "housing.world." + from.getHouseUUID());
         } else {
-            player.removeAttachment(perms.remove(player.getUniqueId()));
+            if (perms.containsKey(player.getUniqueId())) player.removeAttachment(perms.remove(player.getUniqueId()));
         }
         PlayerData data = from.loadOrCreatePlayerData(player);
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
