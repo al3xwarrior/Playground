@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EnumMaterial;
 import com.al3x.housing2.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -13,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Command {
-    private CommandRegistry command;
-
     private boolean loaded;
     private String name;
     private List<CommandArg> args;
@@ -51,7 +50,7 @@ public class Command {
         this.loaded = b;
 
         if (!b) {
-            Main.getInstance().getCommandFramework().unregisterCommand(getCommand(), world);
+//            Main.getInstance().getCommandFramework().unregisterCommand(getCommand(), world);
         }
     }
 
@@ -61,13 +60,6 @@ public class Command {
             usage.append(" ").append(arg.isRequired() ? "<" : "[").append(arg.getName()).append(arg.isGreedy() ? "..." : "").append(arg.isRequired() ? ">" : "]");
         }
         return usage.toString();
-    }
-
-    public CommandRegistry getCommand() {
-        if (command == null) {
-            command = new CommandRegistry(name, this);
-        }
-        return command;
     }
 
     public void execute(Player player, HousingWorld world) {
@@ -170,7 +162,8 @@ public class Command {
 
     public void setName(String name) {
         this.name = name;
-        command.setName(name);
+
+        Bukkit.reloadData();
     }
 
     public boolean isLoaded() {

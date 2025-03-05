@@ -20,6 +20,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver;
+import io.papermc.paper.math.FinePosition;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -93,16 +96,62 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                         )
                 )
                 .then(Commands.literal("unmute")
-                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.MUTE)))
-                .then(Commands.argument("target", StringArgumentType.word())
-                        .suggests(Housing::getPlayerWorldSuggestions)
-                        .executes(this::unmute)
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.MUTE))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .suggests(Housing::getPlayerWorldSuggestions)
+                                .executes(this::unmute)
+                        )
+                )
+
+                .then(Commands.literal("tp")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_TP))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .suggests(Housing::getPlayerWorldSuggestions)
+                                .executes(this::tp)
+                        )
+                        .then(Commands.argument("location", ArgumentTypes.finePosition(true))
+                                .executes(this::tp)
+                        )
+                )
+                .then(Commands.literal("tpall")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_TP))
+                        .executes(this::tpall)
                 )
 
                 .then(Commands.literal("help").executes(this::help))
                 .executes(this::help)
                 .build(), List.of("h")
         );
+    }
+
+    private int tpall(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        for (Player p : house.getWorld().getPlayers()) {
+            p.teleportAsync(player.getLocation());
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int tp(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        try {
+            String target = StringArgumentType.getString(context, "target");
+            Player targetPlayer = Bukkit.getPlayer(target);
+            if (targetPlayer != null && house.getWorld().equals(targetPlayer.getWorld())) {
+                targetPlayer.teleportAsync(player.getLocation());
+            } else {
+                player.sendMessage(colorize("&cPlayer not found!"));
+            }
+        } catch (IllegalArgumentException e) {
+            final FinePositionResolver resolver = context.getArgument("location", FinePositionResolver.class);
+            final FinePosition finePosition = resolver.resolve(context.getSource());
+            player.teleportAsync(finePosition.toLocation(player.getWorld()));
+        }
+
+        return Command.SINGLE_SUCCESS;
     }
 
     public static CompletableFuture<Suggestions> getPlayerWorldSuggestions(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {

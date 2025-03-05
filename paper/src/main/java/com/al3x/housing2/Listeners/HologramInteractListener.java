@@ -37,22 +37,6 @@ public class HologramInteractListener implements Listener {
     }
 
     @EventHandler
-    public void handleInteraction(PlayerInteractEntityEvent e) {
-        Player player = e.getPlayer();
-        if (!housesManager.hasPermissionInHouse(player, Permissions.ITEM_HOLOGRAM)) return;
-        if (housesManager.getHouse(player.getWorld()) == null) return;
-
-        if (e.getRightClicked().getType() == EntityType.INTERACTION) {
-            for (Hologram hologram : housesManager.getHouse(player.getWorld()).getHolograms()) {
-                if (hologram.getInteraction().getLocation().distance(e.getRightClicked().getLocation()) <= 0.5) {
-                    new HologramEditorMenu(main, player, hologram).open();
-                    return;
-                }
-            }
-        }
-    }
-
-    @EventHandler
     public void armorStandEditor(PlayerInteractEvent e) {
         Player player = e.getPlayer();
 

@@ -6,10 +6,15 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PlibHologramLine;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.maximde.hologramlib.__relocated__.com.tcoded.folialib.FoliaLib;
 import com.maximde.hologramlib.hologram.RenderMode;
 import com.maximde.hologramlib.hologram.TextHologram;
 import com.maximde.hologramlib.utils.Vector3F;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import me.tofaa.entitylib.meta.display.BlockDisplayMeta;
+import me.tofaa.entitylib.meta.other.InteractionMeta;
+import me.tofaa.entitylib.wrapper.WrapperEntity;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
@@ -40,7 +45,7 @@ public class Hologram {
     private HousingWorld house;
     private Location location;
     private ConcurrentHashMap<Player, List<TextHologram>> entitys = new ConcurrentHashMap<>();
-    private Interaction interaction;
+    private ConcurrentHashMap<Player, WrapperEntity> interaction = new ConcurrentHashMap<>();
 
 
     public static List<Color> rainbow = com.al3x.housing2.Utils.Color.rainbow();
@@ -109,15 +114,18 @@ public class Hologram {
                 entitys.get(player).forEach(hologram -> hologram.removeViewer(player));
             }
 
-            if (interaction != null) {
-                interaction.remove();
+            if (interaction.containsKey(player)) {
+                interaction.get(player).removeViewer(player.getUniqueId());
             }
 
-            interaction = (Interaction) player.getWorld().spawnEntity(location, EntityType.INTERACTION);
-            interaction.setInteractionHeight(0.5f);
-            interaction.setInteractionWidth(0.5f);
-            interaction.setInvisible(true);
-            interaction.setInvulnerable(true);
+            WrapperEntity entity = new WrapperEntity(EntityTypes.INTERACTION);
+            entity.consumeEntityMeta(InteractionMeta.class, meta -> {
+                meta.setHeight(0.5f);
+                meta.setWidth(0.5f);
+            });
+            entity.addViewer(player.getUniqueId());
+            entity.spawn(new com.github.retrooper.packetevents.protocol.world.Location(location.getX(), location.getY(), location.getZ(), 0, 0));
+            interaction.put(player, entity);
 
             new FoliaLib(Main.getInstance()).getScheduler().runAsync((t) -> {
                 List<TextHologram> holograms = new ArrayList<>();
@@ -277,7 +285,9 @@ public class Hologram {
         entitys.forEach((player, hologram) -> {
             hologram.forEach(holo -> holo.removeViewer(player));
         });
-        if (interaction != null) interaction.remove();
+        interaction.forEach((player, hologram) -> {
+            hologram.removeViewer(player.getUniqueId());
+        });
     }
 
     public boolean isDestroyed() {
@@ -333,7 +343,7 @@ public class Hologram {
         updateInternal(shadow, seeThroughBlocks, alignment, billboard, color, scale);
     }
 
-    public Interaction getInteraction() {
-        return interaction;
+    public WrapperEntity getInteractionEntity(Player player) {
+        return interaction.get(player);
     }
 }

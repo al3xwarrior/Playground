@@ -96,10 +96,7 @@ public final class Main extends JavaPlugin implements Listener {
         );
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-
-
             commandManager.registerCommands(commands);
-
         });
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);

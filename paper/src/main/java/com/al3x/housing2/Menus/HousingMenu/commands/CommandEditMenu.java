@@ -35,9 +35,9 @@ public class CommandEditMenu extends Menu {
                 .build(), () -> {
             player.sendMessage("§eEnter the new name for this command: ");
             openChat(main, command.getName(), (message) -> {
-                main.getCommandFramework().unregisterCommand(command.getCommand(), house);
+//                main.getCommandFramework().unregisterCommand(command.getCommand(), house);
                 command.setName(message);
-                main.getCommandFramework().registerCommand(house.getHouseUUID().toString(), command.getCommand());
+//                main.getCommandFramework().registerCommand(house.getHouseUUID().toString(), command.getCommand());
             });
         });
 

@@ -72,6 +72,12 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
                 .build(), List.of("/removeselection")
         );
 
+        commandRegistrar.register(Commands.literal("protools")
+                .requires(this::canUseProtools)
+                .executes(this::protools)
+                .build()
+        );
+
     }
 
     private boolean canUseProtools(CommandSourceStack commandSourceStack) {

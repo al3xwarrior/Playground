@@ -127,6 +127,8 @@ public class HousingWorld {
             initialize(main, owner, null);
             loadHouseData(owner, houseID);
             setupHouseData(owner);
+            loadCommands();
+
             main.getLogger().info("Loaded Async Part of house " + name + " in " + (System.currentTimeMillis() - asyncStart) + "ms!");
 
             main.getServer().getScheduler().runTask(main, () -> {
@@ -135,7 +137,6 @@ public class HousingWorld {
                     loadWorld(owner);
                     setupDataAfterLoad(owner);
                     loadNPCs(owner);
-                    loadCommands();
                     setupWorldBorder();
                     if (groups.isEmpty()) {
                         addDefaultGroups(owner);
@@ -348,11 +349,15 @@ public class HousingWorld {
     }
 
     private void loadCommands() {
-        for (Command command : commands) {
-            CommandRegistry r = command.getCommand();
-            r.setPermission("housing.world." + houseUUID.toString());
-            main.getCommandFramework().registerCommand(houseUUID.toString(), r);
-        }
+        onLoad.add((w) -> {
+            Bukkit.reloadData();
+        });
+
+//        for (Command command : commands) {
+//            CommandRegistry r = command.getCommand();
+//            r.setPermission("housing.world." + houseUUID.toString());
+//            main.getCommandFramework().registerCommand(houseUUID.toString(), r);
+//        }
     }
 
     private void setupNewHouse(Player owner, HouseSize size) {
@@ -529,10 +534,12 @@ public class HousingWorld {
             kickPlayerFromHouse(player);
         });
         housingNPCS.forEach(npc -> {
+            npc.getHologram().remove();
             npc.getCitizensNPC().despawn();
             npc.getCitizensNPC().destroy();
             CitizensAPI.getNPCRegistry().deregister(npc.getCitizensNPC());
         });
+        holograms.forEach(Hologram::remove);
         killAllEntities();
         trashCans.forEach(location -> { //I dont think this is needed cause of the killAllEntities() method
             for (ArmorStand armorStand : getWorld().getEntitiesByClass(ArmorStand.class)) {
@@ -561,7 +568,7 @@ public class HousingWorld {
 
     private boolean deleteWorld() {
         housingNPCS.forEach(npc -> removeNPC(npc.getNpcID(), true));
-        commands.forEach(command -> main.getCommandFramework().unregisterCommand(command.getCommand(), this));
+//        commands.forEach(command -> main.getCommandFramework().unregisterCommand(command.getCommand(), this));
         commands.clear();
         File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
         if (file.exists()) file.delete();
@@ -1098,9 +1105,9 @@ public class HousingWorld {
             return null;
         Command command = new Command(name);
         commands.add(command);
-        CommandRegistry r = command.getCommand();
-        r.setPermission("housing.world." + houseUUID.toString());
-        main.getCommandFramework().registerCommand(houseUUID.toString(), r);
+//        CommandRegistry r = command.getCommand();
+//        r.setPermission("housing.world." + houseUUID.toString());
+//        main.getCommandFramework().registerCommand(houseUUID.toString(), r);
         return command;
     }
 

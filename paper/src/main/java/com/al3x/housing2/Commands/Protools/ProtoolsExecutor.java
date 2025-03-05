@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.entity.Player;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public interface ProtoolsExecutor {
     default ProtoolsManager getProtoolsManager() {
         return Main.getInstance().getProtoolsManager();
@@ -79,6 +81,24 @@ public interface ProtoolsExecutor {
         Player player = (Player) context.getSource().getSender();
         getProtoolsManager().pasteRegion(player);
         player.sendMessage(Color.colorize("&aRegion pasted..."));
+        return 1;
+    }
+
+    default int protools(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+
+        player.sendMessage(colorize("&7&m---------------------------------------"));
+        player.sendMessage(colorize("&6&lProtools Commands:"));
+        player.sendMessage(colorize("&7- &f/wand &7- &eGet the Protools wand."));
+        player.sendMessage(colorize("&7- &f/set <blocks> &7- &eSet the region to the specified blocks."));
+        player.sendMessage(colorize("&7- &f/replace <blocks1> <blocks2> &7- &eReplace blocks in the region."));
+        player.sendMessage(colorize("&7- &f/sphere <block> <radius> &7- &eCreate a sphere of blocks."));
+        player.sendMessage(colorize("&7- &f/undo &7- &eUndo the last action."));
+        player.sendMessage(colorize("&7- &f/copy &7- &eCopy the region to the clipboard."));
+        player.sendMessage(colorize("&7- &f/paste &7- &ePaste the region from the clipboard."));
+        player.sendMessage(colorize("&7- &f/removeselection &7- &eRemove the current selection."));
+        player.sendMessage(colorize("&7&m---------------------------------------"));
+
         return 1;
     }
 }

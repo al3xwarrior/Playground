@@ -137,6 +137,8 @@ public class JoinLeaveHouse implements Listener {
             }
         }
 
+        player.updateCommands();
+
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
             LuckpermsHandler.addPermission(player, "housing.world." + house.getHouseUUID());
         } else {
