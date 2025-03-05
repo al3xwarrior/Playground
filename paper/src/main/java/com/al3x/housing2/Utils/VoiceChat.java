@@ -6,17 +6,19 @@ import com.al3x.housing2.Main;
 import de.maxhenkel.voicechat.api.*;
 import de.maxhenkel.voicechat.api.events.*;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 
 public class VoiceChat implements VoicechatPlugin {
     private static VoicechatServerApi serverApi;
     private static VoicechatApi api;
-    private Main main;
+    private static Main main;
+    private static Group transferGroup;
 
     @Override
     public String getPluginId() {
@@ -40,6 +42,7 @@ public class VoiceChat implements VoicechatPlugin {
     }
 
     private void groupJoin(JoinGroupEvent event) {
+        if (transferGroup != null) if (event.getGroup().equals(transferGroup)) return;
         Player player = (Player) event.getConnection().getPlayer().getPlayer();
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         if (house == null) {
@@ -60,6 +63,7 @@ public class VoiceChat implements VoicechatPlugin {
         sendEventExecution(main.getHousesManager(), EventType.PLAYER_JOIN_VOICE_GROUP, (Player) event.getConnection().getPlayer().getPlayer(), event);
     }
     private void groupCreate(CreateGroupEvent event) {
+        if (transferGroup != null) if (event.getGroup().equals(transferGroup)) return;
         Player player = (Player) event.getConnection().getPlayer().getPlayer();
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         if (house == null) {
@@ -87,13 +91,52 @@ public class VoiceChat implements VoicechatPlugin {
     public static void setPlayerGroup(Player player, String name) {
         VoicechatConnection connection = serverApi.getConnectionOf(player.getUniqueId());
         if (!isPlayerConnected(player)) return;
-        Collection<Group> groups = serverApi.getGroups();
-        for (Group group : groups) {
-            if (group.getName().equals(name)) {
+        if (name == null) {
+            connection.setGroup(null);
+            return;
+        }
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (!isPlayerConnected(onlinePlayer)) continue;
+            if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).isInGroup()) continue;
+            Group group = serverApi.getConnectionOf(onlinePlayer.getUniqueId()).getGroup();
+            if (!group.isHidden()) continue;
+            if (group.getName().equals(name) && onlinePlayer.getWorld().equals(player.getWorld())) {
                 connection.setGroup(group);
                 return;
             }
         }
-        connection.setGroup(null);
+        Group group = serverApi.groupBuilder()
+                .setName(name)
+                .setHidden(true)
+                .build();
+        connection.setGroup(group);
+    }
+    public static Group getGroup(World world, String name) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (!isPlayerConnected(onlinePlayer)) continue;
+            if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).isInGroup()) continue;
+            Group group = serverApi.getConnectionOf(onlinePlayer.getUniqueId()).getGroup();
+            if (!group.isHidden()) continue;
+            if (group.getName().equals(name) && onlinePlayer.getWorld().equals(world)) {
+                return group;
+            }
+        }
+        return null;
+    }
+    public static void setGroupType(Group group, Group.Type type) {
+        if (group.getType() == type) return;
+        Group newGroup = serverApi.groupBuilder()
+                .setName(group.getName())
+                .setType(type)
+                .setHidden(true)
+                .build();
+        transferGroup = newGroup;
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (!isPlayerConnected(onlinePlayer)) continue;
+            if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).isInGroup()) continue;
+            if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).getGroup().equals(group)) continue;
+            serverApi.getConnectionOf(onlinePlayer.getUniqueId()).setGroup(newGroup);
+        }
+        transferGroup = null;
     }
 }

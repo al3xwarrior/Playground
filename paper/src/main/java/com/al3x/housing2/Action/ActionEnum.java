@@ -64,6 +64,8 @@ public enum ActionEnum {
     HIDE_NPC("Hide NPC Action", HideNPCAction.class),
     SHOW_NPC("Show NPC Action", ShowNPCAction.class),
     SWIM_CRAWL("Swim/Crawl Action", SwimCrawlAction.class),
+    SET_VOICE_GROUP("Set Voice Group Action", SetVoiceGroupAction.class),
+    EDIT_VOICE_GROUP("Edit Voice Group Action", EditVoiceGroupAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;
