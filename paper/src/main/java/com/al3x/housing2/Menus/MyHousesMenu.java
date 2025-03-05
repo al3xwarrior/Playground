@@ -83,6 +83,22 @@ public class MyHousesMenu extends Menu {
         int[] slots = {11, 13, 15};
 
         for (int i = 0; i < slots.length; i++) {
+            if (i >= houseIDs.size()) {
+                addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
+                        .name("&e&oCreate a House!")
+                        .build(), () -> {
+                    if (houseIDs.size() >= 3) {
+                        player.sendMessage(colorize("&cYou have reached the maximum amount of houses!"));
+                        return;
+                    }
+                    player.sendMessage(colorize("&eCreating your house..."));
+                    player.closeInventory();
+                    HousingWorld newHouse = housesManager.createHouse(player, HouseSize.XLARGE);
+                    player.sendMessage(colorize("&aYour house has been created!"));
+                    newHouse.sendPlayerToHouse(player);
+                });
+                continue;
+            }
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
             if (house == null) {
