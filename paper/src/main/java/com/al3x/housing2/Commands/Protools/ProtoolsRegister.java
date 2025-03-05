@@ -23,14 +23,14 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
         commandRegistrar.register(Commands.literal("wand")
                 .requires(this::canUseProtoolsIS)
                 .executes(this::wand)
-                .build(), List.of("/")
+                .build(), List.of("/", "/wand")
         );
         commandRegistrar.register(Commands.literal("set")
                 .then(Commands.argument("blocks", StringArgumentType.string())
                         .suggests(ProtoolsRegister::getBlocksSuggestions)
                         .executes(this::set)
                 )
-                .build()
+                .build(), List.of("/set")
         );
         commandRegistrar.register(Commands.literal("replace")
                 .then(Commands.argument("blocks1", StringArgumentType.string())
@@ -40,7 +40,7 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
                                 .executes(this::replace)
                         )
                 )
-                .build()
+                .build(), List.of("/replace")
         );
         commandRegistrar.register(Commands.literal("sphere")
                 .then(Commands.argument("block", StringArgumentType.string())
@@ -49,27 +49,27 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
                                 .executes(this::sphere)
                         )
                 )
-                .build()
+                .build(), List.of("/sphere")
         );
         commandRegistrar.register(Commands.literal("undo")
                 .requires(this::canUseProtoolsIS)
                 .executes(this::undo)
-                .build()
+                .build(), List.of("/undo")
         );
         commandRegistrar.register(Commands.literal("copy")
                 .requires(this::canUseProtools)
                 .executes(this::copy)
-                .build()
+                .build(), List.of("/copy")
         );
         commandRegistrar.register(Commands.literal("paste")
                 .requires(this::canUseProtools)
                 .executes(this::paste)
-                .build()
+                .build(), List.of("/paste")
         );
         commandRegistrar.register(Commands.literal("removeselection")
                 .requires(this::canUseProtools)
                 .executes(this::removeSelection)
-                .build()
+                .build(), List.of("/removeselection")
         );
 
     }

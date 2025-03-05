@@ -183,7 +183,7 @@ public class MyHousesMenu extends Menu {
                 if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                     return;
                 }
-                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player)).open();
+                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player), house).open();
             }, () -> {
                 if (player.hasPermission("housing.admin")) {
                     player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));

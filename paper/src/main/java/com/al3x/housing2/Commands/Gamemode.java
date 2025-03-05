@@ -18,6 +18,26 @@ public class Gamemode extends AbstractHousingCommand{
                         .then(Commands.argument("gamemode", ArgumentTypes.gameMode())
                         .executes(context -> execute(context.getSource(), context.getArgument("gamemode", GameMode.class))))
                 .build());
+
+        commandRegistrar.register(Commands.literal("gmc")
+                .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_GAMEMODE))
+                .executes(context -> execute(context.getSource(), GameMode.CREATIVE))
+                .build());
+
+        commandRegistrar.register(Commands.literal("gms")
+                .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_GAMEMODE))
+                .executes(context -> execute(context.getSource(), GameMode.SURVIVAL))
+                .build());
+
+        commandRegistrar.register(Commands.literal("gma")
+                .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_GAMEMODE))
+                .executes(context -> execute(context.getSource(), GameMode.ADVENTURE))
+                .build());
+
+        commandRegistrar.register(Commands.literal("gmsp")
+                .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_GAMEMODE))
+                .executes(context -> execute(context.getSource(), GameMode.SPECTATOR))
+                .build());
     }
 
     private int execute(CommandSourceStack source, GameMode gamemode) {

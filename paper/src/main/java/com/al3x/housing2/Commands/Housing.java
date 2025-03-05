@@ -101,7 +101,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
 
                 .then(Commands.literal("help").executes(this::help))
                 .executes(this::help)
-                .build()
+                .build(), List.of("h")
         );
     }
 

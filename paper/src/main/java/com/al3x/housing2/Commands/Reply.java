@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -21,13 +22,13 @@ public class Reply extends AbstractCommand {
     public Reply(Commands commandRegistrar) {
         super(commandRegistrar);
 
-        commandRegistrar.register(Commands.literal("message")
+        commandRegistrar.register(Commands.literal("reply")
                 .requires(this::isPlayer)
                 .then(Commands.argument("message", StringArgumentType.greedyString())
                         .executes(context -> {
                             return message(context, context.getSource().getSender(), StringArgumentType.getString(context, "message"));
                         })
-                ).build()
+                ).build(), List.of("r")
         );
     }
 
