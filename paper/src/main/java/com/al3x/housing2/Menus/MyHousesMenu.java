@@ -83,6 +83,22 @@ public class MyHousesMenu extends Menu {
         int[] slots = {11, 13, 15};
 
         for (int i = 0; i < slots.length; i++) {
+            if (i >= houseIDs.size()) {
+                addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
+                        .name("&e&oCreate a House!")
+                        .build(), () -> {
+                    if (houseIDs.size() >= 3) {
+                        player.sendMessage(colorize("&cYou have reached the maximum amount of houses!"));
+                        return;
+                    }
+                    player.sendMessage(colorize("&eCreating your house..."));
+                    player.closeInventory();
+                    HousingWorld newHouse = housesManager.createHouse(player, HouseSize.XLARGE);
+                    player.sendMessage(colorize("&aYour house has been created!"));
+                    newHouse.sendPlayerToHouse(player);
+                });
+                continue;
+            }
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
             if (house == null) {
@@ -120,6 +136,8 @@ public class MyHousesMenu extends Menu {
                     item = new ItemStack(Material.OAK_DOOR);
                 }
             }
+
+
 
             List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), new ArrayList<>(), new ArrayList<>(), false, 28));
 
@@ -165,12 +183,7 @@ public class MyHousesMenu extends Menu {
                 if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                     return;
                 }
-                if (world[0] != null) {
-                    new EditHouseMenu(main, player, world[0], house).open();
-                } else {
-                    player.sendMessage(colorize("&cYou can only edit your house from inside your house, by doing /home"));
-                }
-
+                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player)).open();
             }, () -> {
                 if (player.hasPermission("housing.admin")) {
                     player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));
