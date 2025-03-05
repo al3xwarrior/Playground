@@ -8,11 +8,5 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 public class Bootstrapper implements PluginBootstrap {
     @Override
     public void bootstrap(BootstrapContext context) {
-        context.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-
-            CommandManager commandManager = new CommandManager();
-            commandManager.registerCommands(commands);
-
-        });
     }
 }

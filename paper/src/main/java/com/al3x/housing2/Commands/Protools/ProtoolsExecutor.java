@@ -1,0 +1,84 @@
+package com.al3x.housing2.Commands.Protools;
+
+import com.al3x.housing2.Instances.ProtoolsManager;
+import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.BlockList;
+import com.al3x.housing2.Utils.Color;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.entity.Player;
+
+public interface ProtoolsExecutor {
+    default ProtoolsManager getProtoolsManager() {
+        return Main.getInstance().getProtoolsManager();
+    }
+
+    default int set(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        String blocks = context.getArgument("blocks", String.class);
+        BlockList blockList = BlockList.fromString(player, blocks);
+        getProtoolsManager().setRegionTo(player, blockList);
+        player.sendMessage(Color.colorize("&aSetting region set..."));
+
+        return 1;
+    }
+
+    default int wand(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        player.getInventory().addItem(ProtoolsManager.getWand());
+        return 1;
+    }
+
+    default int replace(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        String blocks1 = context.getArgument("blocks1", String.class);
+        String blocks2 = context.getArgument("blocks2", String.class);
+        BlockList from = BlockList.fromString(player, blocks1);
+        BlockList to = BlockList.fromString(player, blocks2);
+        if (from == null || to == null) {
+            player.sendMessage(Color.colorize("&cUsage: //replace <from> <to>"));
+            return 1;
+        }
+        getProtoolsManager().setRegionTo(player, from, to);
+        player.sendMessage(Color.colorize("&aReplacing region set..."));
+        return 1;
+    }
+
+    default int removeSelection(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().clearSelection(player);
+        player.sendMessage(Color.colorize("&aSelection removed..."));
+        return 1;
+    }
+
+    default int sphere(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        String block = context.getArgument("block", String.class);
+        int radius = context.getArgument("radius", Integer.class);
+        BlockList blockList = BlockList.fromString(player, block);
+        getProtoolsManager().createSphere(player, radius, blockList);
+        player.sendMessage(Color.colorize("&aSetting sphere set..."));
+        return 1;
+    }
+
+    default int undo(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().undo(player);
+        player.sendMessage(Color.colorize("&aUndoing last action..."));
+        return 1;
+    }
+
+    default int copy(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().copyToClipboard(player);
+        player.sendMessage(Color.colorize("&aRegion copied..."));
+        return 1;
+    }
+
+    default int paste(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().pasteRegion(player);
+        player.sendMessage(Color.colorize("&aRegion pasted..."));
+        return 1;
+    }
+}

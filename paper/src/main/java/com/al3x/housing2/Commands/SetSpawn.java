@@ -3,49 +3,33 @@ package com.al3x.housing2.Commands;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import static com.al3x.housing2.Utils.Color.colorize;
 
-public class SetSpawn implements CommandExecutor, TabExecutor {
+public class SetSpawn extends AbstractHousingCommand {
+    public SetSpawn(Commands commandRegistrar, HousesManager housesManager) {
+        super(commandRegistrar, housesManager);
 
-    private final Main main;
-    private HousesManager housesManager;
-
-    public SetSpawn(HousesManager housesManager, Main main) {
-        this.housesManager = housesManager;
-        this.main = main;
+        commandRegistrar.register(Commands.literal("setspawn")
+                .requires(ctx -> hasPermission(ctx, Permissions.HOUSE_SETTINGS))
+                .executes(context -> {
+                    return setSpawn(context, context.getSource().getSender());
+                })
+                .build()
+        );
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player player)) return true;
-
-        HousingWorld house = housesManager.getHouse(player.getWorld());
-        if (house == null) {
-            player.sendMessage("§cYou are not in a house world.");
-            return true;
-        }
-
-        if (!house.hasPermission(player, Permissions.HOUSE_SETTINGS)) {
-            player.sendMessage("§cYou are not the owner of this house.");
-            return true;
-        }
-
+    private int setSpawn(CommandContext<CommandSourceStack> context, CommandSender sender) {
+        Player player = (Player) sender;
+        HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         house.setSpawn(player.getLocation());
-        player.sendMessage("§aHouses spawn set to your current location.");
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of();
+        return 1;
     }
 }

@@ -1,4 +1,4 @@
-package com.al3x.housing2.Commands.newcommands;
+package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;

@@ -1,7 +1,5 @@
 package com.al3x.housing2;
 
-import com.al3x.housing2.Commands.*;
-import com.al3x.housing2.Commands.Protools.*;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
@@ -10,7 +8,6 @@ import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Network.NetworkManager;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
-import com.al3x.housing2.Utils.BlockList;
 import com.al3x.housing2.Utils.HousingCommandFramework;
 import com.al3x.housing2.Utils.SkinCache;
 import com.al3x.housing2.Utils.VoiceChat;
@@ -25,6 +22,7 @@ import com.maximde.hologramlib.hologram.HologramManager;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import io.jooby.ExecutionMode;
 import io.jooby.Jooby;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
@@ -39,6 +37,7 @@ public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
     private SlimeLoader loader;
     private HousesManager housesManager;
+    private CommandManager commandManager;
     private HousingCommandFramework commandFramework;
     private ProtoolsManager protoolsManager;
     private ProtocolManager protocolManager;
@@ -86,6 +85,7 @@ public final class Main extends JavaPlugin implements Listener {
         this.playerSpeedManager = new PlayerSpeedManager();
         this.networkManager = new NetworkManager(this);
         this.resourcePackManager = new ResourcePackManager(this);
+        this.commandManager = new CommandManager();
 
         this.playgroundWeb = (PlaygroundWeb) Jooby.createApp(new String[0], ExecutionMode.EVENT_LOOP, () -> new PlaygroundWeb(this));
         this.playgroundWeb.start();
@@ -95,29 +95,12 @@ public final class Main extends JavaPlugin implements Listener {
                 () -> getLogger().severe("Failed to initialize HologramLib manager.")
         );
 
-        getCommand("testplaceholder").setExecutor(new TestPlaceholder(this));
-        getCommand("testplaceholder").setTabCompleter(new TestPlaceholder.TabCompleter());
-        getCommand("placeholders").setExecutor(new Placeholders(this));
-        getCommand("setspawn").setExecutor(new SetSpawn(housesManager, this));
-        getCommand("WTFMap").setExecutor(new WTFMap(housesManager));
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
 
-        getCommand("staffalerts").setExecutor(new StaffAlerts());
-        getCommand("message").setExecutor(new Message());
-        getCommand("reply").setExecutor(new Reply());
-        getCommand("lockhouse").setExecutor(new LockHouse(housesManager));
 
-        // Protools
-        this.getCommand("wand").setExecutor(new Wand(this));
-        this.getCommand("set").setExecutor(new Set(protoolsManager));
-        this.getCommand("set").setTabCompleter(new BlockList.TabCompleter());
-        this.getCommand("replace").setExecutor(new Replace(protoolsManager));
-        this.getCommand("replace").setTabCompleter(new BlockList.DuoTabCompleter());
-        this.getCommand("sphere").setExecutor(new Sphere(protoolsManager));
-        this.getCommand("sphere").setTabCompleter(new BlockList.TabCompleter());
-        this.getCommand("undo").setExecutor(new Undo(protoolsManager));
-        this.getCommand("copy").setExecutor(new Copy(protoolsManager));
-        this.getCommand("paste").setExecutor(new Paste(protoolsManager));
-        this.getCommand("removeselection").setExecutor(new RemoveSelection(protoolsManager));
+            commandManager.registerCommands(commands);
+
+        });
 
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new HousingMenuClickEvent(this, housesManager), this);

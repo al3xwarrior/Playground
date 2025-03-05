@@ -1,4 +1,4 @@
-package com.al3x.housing2.Commands.newcommands;
+package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;

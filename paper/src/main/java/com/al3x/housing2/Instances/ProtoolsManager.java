@@ -365,15 +365,12 @@ public boolean checkSelection(Player player) {
                 if (ignoreSelection || hasSelection(player)) {
                     return true;
                 } else {
-                    player.sendMessage(Color.colorize("&cYou must have a selection to do this."));
                     return false;
                 }
             } else {
-                player.sendMessage(Color.colorize("&cYou are on cooldown."));
                 return false;
             }
         } else {
-            player.sendMessage(Color.colorize("&cYou must be in your own house to do this."));
             return false;
         }
     }

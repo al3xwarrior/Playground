@@ -1,4 +1,4 @@
-package com.al3x.housing2.Commands.newcommands;
+package com.al3x.housing2.Commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;

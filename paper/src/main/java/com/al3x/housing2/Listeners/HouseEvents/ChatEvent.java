@@ -1,6 +1,6 @@
 package com.al3x.housing2.Listeners.HouseEvents;
 
-import com.al3x.housing2.Commands.newcommands.GlobalChat;
+import com.al3x.housing2.Commands.GlobalChat;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.PlayerData;

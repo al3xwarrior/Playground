@@ -1,13 +1,11 @@
-package com.al3x.housing2.Commands.newcommands;
+package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Menus.ItemEditor.EditItemMainMenu;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static com.al3x.housing2.Utils.Color.colorize;

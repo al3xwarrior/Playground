@@ -1,37 +1,39 @@
 package com.al3x.housing2.Commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class StaffAlerts implements CommandExecutor {
-
+public class StaffAlerts extends AbstractCommand {
     private static final HashMap<UUID, Boolean> staffAlerts = new HashMap<>();
 
     public static boolean isStaffAlerts(Player player) {
         return staffAlerts.containsKey(player.getUniqueId());
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
 
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage("Only players can use this command");
-            return false;
-        }
+    public StaffAlerts(Commands commandRegistrar) {
+        super(commandRegistrar);
 
-        if (!player.hasPermission("housing2.admin")) {
-            player.sendMessage(colorize("&cYou do not have permission to use this command"));
-            return false;
-        }
+        commandRegistrar.register(Commands.literal("staffalerts")
+                .requires(this::isPlayer)
+                .requires(this::isAdmin)
+                .executes(context -> {
+                    return staffAlerts(context, context.getSource().getSender());
+                })
+                .build()
+        );
+    }
 
+    private int staffAlerts(CommandContext<CommandSourceStack> context, CommandSender sender) {
+        Player player = (Player) sender;
         if (staffAlerts.containsKey(player.getUniqueId())) {
             staffAlerts.remove(player.getUniqueId());
             player.sendMessage(colorize("&cStaff alerts disabled"));
@@ -40,7 +42,6 @@ public class StaffAlerts implements CommandExecutor {
             player.sendMessage(colorize("&aStaff alerts enabled"));
         }
 
-        return true;
+        return 1;
     }
-
 }
