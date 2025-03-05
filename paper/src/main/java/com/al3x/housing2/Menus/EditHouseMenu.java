@@ -1,15 +1,19 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Instances.HousingData.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Serialization;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -17,21 +21,32 @@ public class EditHouseMenu extends Menu{
 
     private Main main;
     private Player player;
+    private HouseData houseData;
     private HousingWorld house;
 
-    public EditHouseMenu(Main main, Player player, HousingWorld house) {
+    public EditHouseMenu(Main main, Player player, HousingWorld house, HouseData houseData) {
         super(player, "&cHousing Browser", 36);
         this.main = main;
         this.player = player;
         this.house = house;
+        this.houseData = houseData;
         setupItems();
     }
 
     @Override
     public void setupItems() {
-
         // Change Icon Item
-        ItemStack item = house.getIcon();
+        String hIcon = houseData.getIcon() == null ? "OAK_DOOR" : houseData.getIcon();
+        ItemStack item;
+        if (Material.getMaterial(hIcon) != null) {
+            item = new ItemStack(Material.getMaterial(hIcon));
+        } else {
+            try {
+                item = Serialization.itemStackFromBase64(hIcon);
+            } catch (IOException e) {
+                item = new ItemStack(Material.OAK_DOOR);
+            }
+        }
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(colorize("&eChange Icon"));
         meta.setLore(Arrays.asList("§7Change the icon used when displaying this house", "", "§eLeft Click to change Material", "§eMiddle Click to select item"));
@@ -43,7 +58,10 @@ public class EditHouseMenu extends Menu{
                                 player.sendMessage(colorize("&cSomething went wrong..."));
                                 return;
                             }
-                            house.setIcon(material);
+                            houseData.setIcon(material.name());
+                            if (house != null) {
+                                house.setIcon(material);
+                            }
                             open();
                         });
                         enumMenu.open();
@@ -55,7 +73,10 @@ public class EditHouseMenu extends Menu{
                                 player.sendMessage(colorize("&cSomething went wrong..."));
                                 return;
                             }
-                            house.setIcon(itemStack);
+                            houseData.setIcon(Serialization.itemStackToBase64(itemStack));
+                            if (house != null) {
+                                house.setIcon(itemStack);
+                            }
                             open();
                         }).open();
                     }
@@ -78,7 +99,7 @@ public class EditHouseMenu extends Menu{
                 .build(), () -> {
                     player.closeInventory();
                     new ConfirmMenu(player, this, "&cYou want to delete your house?", () -> {
-                        main.getHousesManager().deleteHouse(house.getHouseUUID());
+                        main.getHousesManager().deleteHouse(UUID.fromString(houseData.getHouseID()));
                     }).open();
                 }
         );

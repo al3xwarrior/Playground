@@ -1,12 +1,9 @@
 package com.al3x.housing2.Menus.HousingMenu.PlayerListing;
 
-import com.al3x.housing2.Commands.Gamemode;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingData.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.GameMode;

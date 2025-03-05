@@ -101,6 +101,7 @@ public class HousesManager {
         return houseData;
     }
 
+    @Deprecated
     public HousingWorld getHouse(Player owner) {
         for (HousingWorld house : getLoadedHouses()) {
             if (house.getOwnerUUID().equals(owner.getUniqueId())) {
