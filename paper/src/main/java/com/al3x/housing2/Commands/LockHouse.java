@@ -3,52 +3,34 @@ package com.al3x.housing2.Commands;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class LockHouse implements CommandExecutor {
-
-    private HousesManager housesManager;
-
-    public LockHouse(HousesManager housesManager) {
-        this.housesManager = housesManager;
+public class LockHouse extends AbstractHousingCommand {
+    public LockHouse(Commands commandRegistrar, HousesManager housesManager) {
+        super(commandRegistrar, housesManager);
+        commandRegistrar.register(Commands.literal("lockhouse")
+                .requires(this::inHouse)
+                .requires(this::isAdmin)
+                .then(Commands.argument("reason", StringArgumentType.greedyString())
+                        .executes(context -> {
+                            String reason = StringArgumentType.getString(context, "reason");
+                            lockHouse(context, reason);
+                            return 1;
+                        })
+                )
+                .build()
+        );
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
-
-        if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage("Only players can use this command!");
-            return false;
-        }
-
-        Player player = (Player) commandSender;
-
-        if (!player.hasPermission("housing2.admin")) {
-            player.sendMessage(colorize("&cYou do not have permission to use this command!"));
-            return false;
-        }
-
-        if (strings.length < 1) {
-            player.sendMessage(colorize("&cUsage: /lockhouse <reason>"));
-            return false;
-        }
-
+    private void lockHouse(CommandContext<CommandSourceStack> context, String reason) {
+        Player player = (Player) context.getSource().getSender();
         HousingWorld house = housesManager.getHouse(player.getWorld());
-        if (house == null) {
-            player.sendMessage(colorize("&cYou are not in a house! Stupid."));
-            return false;
-        }
-
-        StringBuilder reason = new StringBuilder();
-        for (String string : strings) {
-            reason.append(string).append(" ");
-        }
 
         house.setPrivacy(HousePrivacy.LOCKED);
         house.setLockedReason(reason.toString());
@@ -69,7 +51,5 @@ public class LockHouse implements CommandExecutor {
 
             house.kickPlayerFromHouse(playerInHouse);
         }
-
-        return true;
     }
 }

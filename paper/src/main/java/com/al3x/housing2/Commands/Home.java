@@ -2,38 +2,26 @@ package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.MyHousesMenu;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class Home implements CommandExecutor, TabExecutor {
-
-    private final Main main;
-
-    public Home(Main main) {
-        this.main = main;
+public class Home extends AbstractCommand {
+    public Home(Commands registrar) {
+        super(registrar);
+        registrar.register(Commands.literal("home")
+                .requires(context -> context.getSender() instanceof Player)
+                .executes(context -> command(context, context.getSource().getSender()))
+                .build(), "Go to your home");
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage("Only players can use this command");
-            return true;
-        }
-
-        new MyHousesMenu(main, player, player).open();
-
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of();
+    protected int command(CommandContext<CommandSourceStack> context, CommandSender sender, Object... args) throws CommandSyntaxException {
+        Player player = (Player) sender;
+        new MyHousesMenu(Main.getInstance(), player, player).open();
+        return 1;
     }
 }

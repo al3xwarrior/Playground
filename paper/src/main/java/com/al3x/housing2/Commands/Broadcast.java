@@ -1,33 +1,31 @@
 package com.al3x.housing2.Commands;
 
-import com.al3x.housing2.Main;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class Broadcast implements CommandExecutor {
+public class Broadcast extends AbstractCommand {
+    public Broadcast(Commands commandRegistrar) {
+        super(commandRegistrar);
+        commandRegistrar.register(Commands.literal("broadcast")
+                .requires(context -> context.getSender().hasPermission("housing2.admin"))
+                        .then(Commands.argument("message", StringArgumentType.greedyString())
+                                .executes(context -> command(context, context.getSource().getSender(), context.getArgument("message", String.class)))
+                        )
+                .build()
+        );
+    }
+
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-
-        if (commandSender.hasPermission("housing2.admin")) {
-            if (strings.length == 0) {
-                commandSender.sendMessage(colorize("Usage: /broadcast <message>"));
-                return true;
-            }
-
-            StringBuilder message = new StringBuilder();
-            for (String string : strings) {
-                message.append(string).append(" ");
-            }
-
-            Bukkit.getServer().broadcastMessage(colorize("&8[&4&lBroadcast&8] &7" + message.toString()));
-            return true;
-        }
-
-        return false;
+    protected int command(CommandContext<CommandSourceStack> context, CommandSender sender, Object... args) throws CommandSyntaxException {
+        String message = (String) args[0];
+        Bukkit.getServer().broadcastMessage(colorize("&8[&4&lBroadcast&8] &7" + message));
+        return 1;
     }
 }

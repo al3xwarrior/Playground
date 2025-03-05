@@ -1,498 +1,133 @@
 package com.al3x.housing2.Commands;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.ConditionEnum;
-import com.al3x.housing2.Enums.*;
+import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.*;
-import com.al3x.housing2.Main;
+import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
-import com.al3x.housing2.Menus.MyHousesMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
-import com.al3x.housing2.Utils.DurationString;
-import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
-import org.apache.commons.io.FileUtils;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.command.*;
-import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidParameterException;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class Housing implements CommandExecutor {
+public class Housing extends AbstractHousingCommand implements HousingPunishments {
+    public Housing(Commands commandRegistrar, HousesManager housesManager) {
+        super(commandRegistrar, housesManager);
 
-    private final Main main;
-    private final HousesManager housesManager;
+        commandRegistrar.register(Commands.literal("housing")
+                .requires(context -> context.getSender() instanceof Player)
+                .then(Commands.literal("create").executes(this::create))
+                .then(Commands.literal("name")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.playerHasHouse(p))
+                        .then(Commands.argument("name", StringArgumentType.greedyString())
+                                .executes(this::name)
+                        )
+                )
+                .then(Commands.literal("browse").executes(this::browse))
+                .then(Commands.literal("menu")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.getHouse(p.getWorld()) != null)
+                        .executes(this::menu)
+                )
+                .then(Commands.literal("random").executes(this::random))
+                .then(Commands.literal("ptsl").executes(this::ptsl))
+                .then(Commands.literal("kick")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.KICK))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .suggests(Housing::getPlayerWorldSuggestions)
+                                .executes(this::kick)
+                        )
+                )
+                .then(Commands.literal("ban")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.BAN))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .then(Commands.argument("duration", StringArgumentType.string())
+                                        .suggests(Housing::getPlayerWorldSuggestions)
+                                        .executes(this::ban)
+                                )
+                                .suggests(Housing::getPlayerWorldSuggestions)
+                                .executes(this::ban)
+                        )
+                )
+                .then(Commands.literal("unban")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.BAN))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .suggests(Housing::getPlayerOnlineSuggestions)
+                                .executes(this::unban)
+                        )
+                )
+                .then(Commands.literal("kickall")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.KICK))
+                        .executes(this::kickall)
+                )
+                .then(Commands.literal("kickallguests")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.KICK))
+                        .executes(this::kickallguests)
+                )
+                .then(Commands.literal("mute")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.MUTE))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .then(Commands.argument("duration", StringArgumentType.string())
+                                        .executes(this::mute)
+                                )
+                                .suggests(Housing::getPlayerWorldSuggestions)
+                                .executes(this::mute)
+                        )
+                )
+                .then(Commands.literal("unmute")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.MUTE)))
+                .then(Commands.argument("target", StringArgumentType.word())
+                        .suggests(Housing::getPlayerWorldSuggestions)
+                        .executes(this::unmute)
+                )
 
-    public Housing(HousesManager housesManager, Main main) {
-        this.housesManager = housesManager;
-        this.main = main;
+                .then(Commands.literal("help").executes(this::help))
+                .executes(this::help)
+                .build(), List.of("h")
+        );
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage("This command can only be done by players.");
-            return true;
-        }
+    public static CompletableFuture<Suggestions> getPlayerWorldSuggestions(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
+        List<Player> players = ((Player) ctx.getSource().getSender()).getWorld().getPlayers();
+        players.stream()
+                .filter(entry -> entry.getName().toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                .forEach((entry) -> builder.suggest(entry.getName()));
+        return builder.buildFuture();
+    }
 
-        if (strings.length > 0) {
-            if (strings[0].equalsIgnoreCase("create")) {
-                if (housesManager.getHouseCount(player) >= 3) {
-                    player.sendMessage(colorize("&cYou have the maximum amount of houses!"));
-                    return true;
-                }
+    public static CompletableFuture<Suggestions> getPlayerOnlineSuggestions(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        players.stream()
+                .filter(entry -> entry.getName().toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                .forEach((entry) -> builder.suggest(entry.getName()));
+        return builder.buildFuture();
+    }
 
-                player.sendMessage(colorize("&eCreating your house..."));
-                HousingWorld house = housesManager.createHouse(player, HouseSize.XLARGE);
-                player.sendMessage(colorize("&aYour house has been created!"));
-                house.sendPlayerToHouse(player);
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("home")) {
-                new MyHousesMenu(main, player, player).open();
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("name")) {
-                if (!housesManager.playerHasHouse(player)) {
-                    player.sendMessage(colorize("&cYou don't have a house!"));
-                    return true;
-                }
-
-                if (strings.length < 2) {
-                    player.sendMessage(colorize("&cYou need to supply a name!"));
-                    return true;
-                }
-
-                StringBuilder fullName = new StringBuilder();
-                for (int i = 1; i < strings.length; i++) {
-                    fullName.append(strings[i]);
-                    if (i + 1 != strings.length) fullName.append(" ");
-                }
-
-                HousingWorld house = housesManager.getHouse(player);
-                house.setName(fullName.toString());
-                player.sendMessage(colorize("&aThe name of your house was set to " + fullName + "&a!"));
-
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("goto")) {
-                if (housesManager.playerHasHouse(player)) {
-                    HousingWorld house = housesManager.getHouse(player);
-                    house.sendPlayerToHouse(player);
-                    return true;
-                }
-                player.sendMessage(colorize("&cYou don't have a house!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("visit")) {
-                if (strings.length == 2) {
-                    OfflinePlayer target = Bukkit.getOfflinePlayer(strings[1]);
-
-                    if (!housesManager.playerHasHouse(target)) {
-                        player.sendMessage(colorize("&cThat player doesn't have a house!"));
-                        return true;
-                    }
-
-                    MyHousesMenu menu = new MyHousesMenu(main, player, target);
-                    menu.open();
-                    return true;
-                }
-
-                player.sendMessage(colorize("&cUsage: /housing visit <player>"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("hub")) {
-                World hub = Bukkit.getWorld("world");
-                if (hub == null) return false;
-                player.teleport(hub.getSpawnLocation());
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("browse")) {
-                new HouseBrowserMenu(player, housesManager).open();
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("menu")) {
-                if (housesManager.getHouse(player.getWorld()).getOwnerUUID() == player.getUniqueId()) {
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-                    new HousingMenu(main, player, house).open();
-                    return true;
-                }
-                player.sendMessage(colorize("&cYou are not the owner of this house!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("playerstats")) {
-                if (strings.length == 2) {
-                    Player target = Bukkit.getPlayer(strings[1]);
-                    if (target == null) {
-                        player.sendMessage(colorize("&cThere is no player with that username online!"));
-                        return true;
-                    }
-
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-
-                    if (!house.hasPermission(player, Permissions.COMMAND_EDITSTATS)) {
-                        player.sendMessage(colorize("&cYou do not have permission to view player stats!"));
-                        return true;
-                    }
-
-                    if (house.getStatManager().getPlayerStats(target) == null || house.getStatManager().getPlayerStats(target).isEmpty()) {
-                        player.sendMessage(colorize("&cThat player has no stats!"));
-                        return true;
-                    }
-                    player.sendMessage(colorize("&aStats for " + target.getName() + ":"));
-                    house.getStatManager().getPlayerStats(target).forEach((stat) -> {
-                        player.sendMessage(colorize("&a" + stat.getStatName() + ": &f" + stat.getValue()));
-                    });
-                    return true;
-                }
-
-                player.sendMessage(colorize("&cUsage: /housing playerstats <player>"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("globalstats")) {
-                if (strings.length == 1) {
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-                    if (house == null) {
-                        player.sendMessage(colorize("&cYou are not in a house!"));
-                        return true;
-                    }
-                    if (!house.hasPermission(player, Permissions.COMMAND_EDITSTATS)) {
-                        player.sendMessage(colorize("&cYou do not have permission to view global stats!"));
-                        return true;
-                    }
-
-                    if (house.getStatManager().getGlobalStats() == null || house.getStatManager().getGlobalStats().isEmpty()) {
-                        player.sendMessage(colorize("&cThe current house has no stats"));
-                        return true;
-                    }
-                    player.sendMessage(colorize("&aGlobal stats for " + house.getName() + ":"));
-                    house.getStatManager().getGlobalStats().forEach((stat) -> {
-                        player.sendMessage(colorize("&a" + stat.getStatName() + ": &f" + stat.getValue()));
-                    });
-                    return true;
-                }
-
-                player.sendMessage(colorize("&cUsage: /housing globalstats"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("random")) {
-                HousingWorld house = housesManager.getRandomPublicHouse();
-                if (house != null) {
-                    house.sendPlayerToHouse(player);
-                } else {
-                    player.sendMessage(colorize("&cThere are no public houses available!"));
-                }
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("ptsl")) {
-                if (PlayerNetwork.getNetwork(player).isUsingMod()) {
-                    String actionsSyntax = "";
-                    for (HTSLImpl action : Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(a -> a instanceof HTSLImpl).map(a -> (HTSLImpl) a).toList()) {
-                        actionsSyntax += action.syntax() + "\n";
-                    }
-
-                    String conditionsSyntax = "";
-                    for (CHTSLImpl condition : Arrays.stream(ConditionEnum.values()).map(ConditionEnum::getConditionInstance).filter(c -> c instanceof CHTSLImpl).map(c -> (CHTSLImpl) c).toList()) {
-                        conditionsSyntax += condition.syntax() + "\n";
-                    }
-
-                    conditionsSyntax += "\n\nPermissions:\n";
-                    for (Permissions permissions : Permissions.values()) {
-                        conditionsSyntax += permissions + ",";
-                    }
-
-                    conditionsSyntax += "\n\nDamage Types:\n";
-                    for (DamageTypes damageTypes : DamageTypes.values()) {
-                        conditionsSyntax += damageTypes + ",";
-                    }
-
-                    conditionsSyntax += "\n\nProjectiles:\n";
-                    for (Projectile projectile : Projectile.values()) {
-                        conditionsSyntax += projectile + ",";
-                    }
-
-                    conditionsSyntax += "\n\nParticles:\n";
-                    for (Particles particle : Particles.values()) {
-                        conditionsSyntax += particle + ",";
-                    }
-
-                    conditionsSyntax += "\n\nSounds:\n";
-                    for (org.bukkit.Sound sound : org.bukkit.Sound.values()) {
-                        conditionsSyntax += sound + ",";
-                    }
-
-                    conditionsSyntax += "\n\nAttributes:\n";
-                    for (AttributeType attribute : AttributeType.values()) {
-                        conditionsSyntax += attribute + ",";
-                    }
-
-                    ClientboundSyntax syntax = new ClientboundSyntax(actionsSyntax, conditionsSyntax);
-                    PlayerNetwork.getNetwork(player).sendMessage(syntax);
-                } else {
-                    player.sendMessage(colorize("&cYou must be using the mod to use this command!"));
-                }
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("givecookie") && player.hasPermission("housing2.admin")) {
-                CookieManager.givePhysicalCookie(player);
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("kick")) {
-                if (strings.length == 2) {
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-                    if (house == null) {
-                        player.sendMessage(colorize("&cYou are not in a house!"));
-                        return true;
-                    }
-                    if (!house.hasPermission(player, Permissions.KICK)) {
-                        player.sendMessage(colorize("&cYou don't have permission to kick players from this house!"));
-                        return true;
-                    }
-                    if (Bukkit.getPlayer(strings[1]) == null) {
-                        player.sendMessage(colorize("&cThat player is not online!"));
-                        return true;
-                    }
-                    boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
-                    if (!online) {
-                        player.sendMessage(colorize("&cThat player is not in the same house as you!"));
-                        return true;
-                    }
-                    if (player.getName().equals(strings[1])) {
-                        player.sendMessage(colorize("&cYou can't kick yourself from this house!"));
-                        return true;
-                    }
-                    house.kickPlayerFromHouse(Bukkit.getPlayer(strings[1]));
-                    player.sendMessage(String.format(colorize("&cKicked %s from the house!"), Bukkit.getPlayer(strings[1]).getName()));
-                    return true;
-                }
-                player.sendMessage(colorize("&cYou need to specify a player!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("ban")) {
-                if (strings.length >= 2) {
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-                    if (house == null) {
-                        player.sendMessage(colorize("&cYou are not in a house!"));
-                        return true;
-                    }
-                    if (!house.hasPermission(player, Permissions.BAN)) {
-                        player.sendMessage(colorize("&cYou don't have permission to ban players in this house!"));
-                        return true;
-                    }
-                    if (Bukkit.getPlayer(strings[1]) == null) {
-                        player.sendMessage(colorize("&cThat player is not online!"));
-                        return true;
-                    }
-                    boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
-                    if (!online) {
-                        player.sendMessage(colorize("&cThat player is not in the same house as you!"));
-                        return true;
-                    }
-                    if (player.getName().equals(strings[1])) {
-                        player.sendMessage(colorize("&cYou can't ban yourself from this house!"));
-                        return true;
-                    }
-                    if (strings.length == 3) {
-                        try {
-                            house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime(strings[2]));
-                        } catch (InvalidParameterException e) {
-                            player.sendMessage(colorize("&cInvalid duration: ") + strings[2]);
-                            return true;
-                        }
-                    } else {
-                        house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime("99999d"));
-                    }
-                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanned(true);
-                    house.kickPlayerFromHouse(Bukkit.getPlayer(strings[1]));
-                    player.sendMessage(String.format(colorize("&cBanned %s from this house!"), Bukkit.getPlayer(strings[1]).getName()));
-                    return true;
-                }
-                player.sendMessage(colorize("&cYou need to specify a player!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("unban")) {
-                if (strings.length == 2) {
-                    HousingWorld house = housesManager.getHouse(player.getWorld());
-                    if (house == null) {
-                        player.sendMessage(colorize("&cYou are not in a house!"));
-                        return true;
-                    }
-                    if (!house.hasPermission(player, Permissions.BAN)) {
-                        player.sendMessage(colorize("&cYou don't have permission to ban players in this house!"));
-                        return true;
-                    }
-                    if (Bukkit.getPlayer(strings[1]) == null) {
-                        player.sendMessage(colorize("&cThat player is not online!"));
-                        return true;
-                    }
-                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanned(false);
-                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setBanExpiration(Instant.now());
-                    player.sendMessage(String.format(colorize("&cUnbanned %s from this house!"), Bukkit.getPlayer(strings[1]).getName()));
-                    return true;
-                }
-                player.sendMessage(colorize("&cYou need to specify a player!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("kickall")) {
-                HousingWorld house = housesManager.getHouse(player.getWorld());
-                if (house == null) {
-                    player.sendMessage(colorize("&cYou are not in a house!"));
-                    return true;
-                }
-                if (!house.getOwnerUUID().equals(player.getUniqueId())) {
-                    player.sendMessage(colorize("&cYou don't have permission to kick all players from this house!"));
-                    return true;
-                }
-                for (Player playerToKick : player.getWorld().getPlayers()) {
-                    if (playerToKick.getUniqueId().equals(player.getUniqueId())) {
-                        continue;
-                    }
-                    house.kickPlayerFromHouse(playerToKick);
-                }
-                player.sendMessage(colorize("&cKicked all players from this house!"));
-                return true;
-            }
-
-            if (strings[0].equalsIgnoreCase("kickallguests")) {
-                HousingWorld house = housesManager.getHouse(player.getWorld());
-                if (house == null) {
-                    player.sendMessage(colorize("&cYou are not in a house!"));
-                    return true;
-                }
-                if (!house.getOwnerUUID().equals(player.getUniqueId())) {
-                    player.sendMessage(colorize("&cYou don't have permission to kick all players from this house!"));
-                    return true;
-                }
-                for (Player playerToKick : player.getWorld().getPlayers()) {
-                    if (house.houseData.getPlayerData().get(playerToKick.getUniqueId().toString()).getGroup().equals(house.getDefaultGroup())) {
-                        house.kickPlayerFromHouse(playerToKick);
-                    }
-                }
-                player.sendMessage(colorize("&cKicked all guests from this house!"));
-                return true;
-            }
-        }
-
-        if (strings[0].equalsIgnoreCase("mute")) {
-            if (strings.length >= 2) {
-                HousingWorld house = housesManager.getHouse(player.getWorld());
-                if (house == null) {
-                    player.sendMessage(colorize("&cYou are not in a house!"));
-                    return true;
-                }
-                if (!house.hasPermission(player, Permissions.MUTE)) {
-                    player.sendMessage(colorize("&cYou don't have permission to mute players in this house!"));
-                    return true;
-                }
-                if (Bukkit.getPlayer(strings[1]) == null) {
-                    player.sendMessage(colorize("&cThat player is not online!"));
-                    return true;
-                }
-                boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
-                if (!online) {
-                    player.sendMessage(colorize("&cThat player is not in the same house as you!"));
-                    return true;
-                }
-                if (player.getName().equals(strings[1])) {
-                    player.sendMessage(colorize("&cYou can't mute yourself in this house!"));
-                    return true;
-                }
-                if (strings.length == 3) {
-                    try {
-                        house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime(strings[2]));
-                    } catch (InvalidParameterException e) {
-                        player.sendMessage(colorize("&cInvalid duration: ") + strings[2]);
-                        return true;
-                    }
-                } else {
-                    house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime("99999d"));
-                }
-                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(true);
-                player.sendMessage(String.format(colorize("&cMuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
-                return true;
-            }
-            player.sendMessage(colorize("&cYou need to specify a player!"));
-            return true;
-        }
-
-        if (strings[0].equalsIgnoreCase("unmute")) {
-            if (strings.length == 2) {
-                HousingWorld house = housesManager.getHouse(player.getWorld());
-                if (house == null) {
-                    player.sendMessage(colorize("&cYou are not in a house!"));
-                    return true;
-                }
-                if (!house.hasPermission(player, Permissions.MUTE)) {
-                    player.sendMessage(colorize("&cYou don't have permission to mute players in this house!"));
-                    return true;
-                }
-                if (Bukkit.getPlayer(strings[1]) == null) {
-                    player.sendMessage(colorize("&cThat player is not online!"));
-                    return true;
-                }
-                boolean online = house.getWorld().getPlayers().contains(Bukkit.getPlayer(strings[1]));
-                if (!online) {
-                    player.sendMessage(colorize("&cThat player is not in the same house as you!"));
-                    return true;
-                }
-                if (player.getName().equals(strings[1])) {
-                    player.sendMessage(colorize("&cYou can't mute yourself in this house!"));
-                    return true;
-                }
-                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuted(false);
-                house.getPlayersData().get(Bukkit.getPlayer(strings[1]).getUniqueId().toString()).setMuteExpiration(Instant.now());
-                player.sendMessage(String.format(colorize("&cUnmuted %s in this house!"), Bukkit.getPlayer(strings[1]).getName()));
-                return true;
-            }
-            player.sendMessage(colorize("&cYou need to specify a player!"));
-            return true;
-        }
-
+    private int help(CommandContext<CommandSourceStack> ctx) {
+        Player player = (Player) ctx.getSource().getSender();
         player.sendMessage(colorize("&7&m---------------------------------------"));
         player.sendMessage(colorize("&6&lHousing Commands:"));
         player.sendMessage(colorize("&7- &f/housing create &7&o- start the creation process"));
-        player.sendMessage(colorize("&7- &f/housing home &7&o- open the my houses menu"));
         player.sendMessage(colorize("&7- &f/housing name <name> &7&o- rename your housing"));
-        player.sendMessage(colorize("&7- &f/housing goto &7&o- teleport to your housing"));
-        player.sendMessage(colorize("&7- &f/housing visit <player> &7&o- visit another users housing"));
-        player.sendMessage(colorize("&7- &f/housing hub &7&o- go back to the lobby"));
         player.sendMessage(colorize("&7- &f/housing menu &7&o- view the housing browser"));
-        player.sendMessage(colorize("&7- &f/housing playerstats <player> &7&o- view a players stats"));
-        player.sendMessage(colorize("&7- &f/housing globalstats &7&o- view the global stats"));
         player.sendMessage(colorize("&7- &f/housing kick <player> &7&o- kick player from your house"));
         player.sendMessage(colorize("&7- &f/housing ban <player> <duration>&7&o- bans player from your house"));
         player.sendMessage(colorize("&7- &f/housing unban <player> &7&o- unbans player from your house"));
@@ -502,33 +137,97 @@ public class Housing implements CommandExecutor {
         player.sendMessage(colorize("&7- &f/housing kickallguests &7&o- kick all players with the default group from your house"));
         player.sendMessage(colorize("&7&m---------------------------------------"));
 
-        return true;
+        return Command.SINGLE_SUCCESS;
     }
 
-    public static class TabCompleter implements org.bukkit.command.TabCompleter {
-        @Override
-        public java.util.List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String commandName, @NotNull String[] args) {
-            if (args.length == 1) {
-                return java.util.List.of("create", "delete", "home", "name", "goto", "visit", "hub", "browse", "menu", "playerstats", "globalstats", "ptsl", "kick", "ban", "unban", "kickall", "kickallguests", "mute", "unmute").stream().filter(i -> i.startsWith(args[0])).toList();
+    private int ptsl(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        if (PlayerNetwork.getNetwork(player).isUsingMod()) {
+            String actionsSyntax = "";
+            for (HTSLImpl action : Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(a -> a instanceof HTSLImpl).map(a -> (HTSLImpl) a).toList()) {
+                actionsSyntax += action.syntax() + "\n";
             }
 
-            if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("visit")) {
-                    return HouseBrowserMenu.getSortedHouses().stream()
-                            .map((h) -> Bukkit.getOfflinePlayer(UUID.fromString(h.getOwnerID())).getName())
-                            .filter(i -> i.startsWith(args[1])).limit(20).toList();
-                }
-
-                if (args[0].equalsIgnoreCase("playerstats") || args[0].equalsIgnoreCase("unban")) {
-                    return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList().stream().filter(i -> i.startsWith(args[1])).toList();
-                }
-
-                if (List.of("kick", "ban", "mute", "unmute").contains(args[0].toLowerCase())) {
-                    return Bukkit.getPlayer(commandSender.getName()).getWorld().getPlayers().stream().map(Player::getName).toList();
-                }
+            String conditionsSyntax = "";
+            for (CHTSLImpl condition : Arrays.stream(ConditionEnum.values()).map(ConditionEnum::getConditionInstance).filter(c -> c instanceof CHTSLImpl).map(c -> (CHTSLImpl) c).toList()) {
+                conditionsSyntax += condition.syntax() + "\n";
             }
 
-            return java.util.List.of();
+            ClientboundSyntax syntax = new ClientboundSyntax(actionsSyntax, conditionsSyntax);
+            PlayerNetwork.getNetwork(player).sendMessage(syntax);
+        } else {
+            player.sendMessage(colorize("&cYou must be using the mod to use this command!"));
         }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    HashMap<UUID, Long> randomCooldown = new HashMap<>();
+
+    private int random(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        if (randomCooldown.containsKey(player.getUniqueId()) && System.currentTimeMillis() - randomCooldown.get(player.getUniqueId()) < 5000) {
+            player.sendMessage(colorize("&cYou must wait 5 seconds before using this command again!"));
+            return Command.SINGLE_SUCCESS;
+        }
+        randomCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+        HousingWorld house = housesManager.getRandomPublicHouse();
+        if (house != null) {
+            house.sendPlayerToHouse(player);
+        } else {
+            player.sendMessage(colorize("&cThere are no public houses available!"));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int menu(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house.hasPermission(player, Permissions.HOUSING_MENU)) {
+            new HousingMenu(main, player, house).open();
+            return Command.SINGLE_SUCCESS;
+        }
+        player.sendMessage(colorize("&cYou do not have permission to use the housing menu!"));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int browse(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        new HouseBrowserMenu(player, housesManager).open();
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int name(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) {
+            player.sendMessage(colorize("&cYou are not in a house!"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        String name = StringArgumentType.getString(context, "name");
+        house.setName(name);
+        player.sendMessage(colorize("&aThe name of your house was set to " + name + "&a!"));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    protected int create(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        if (housesManager.getHouseCount(player) >= 3) {
+            player.sendMessage(colorize("&cYou have the maximum amount of houses!"));
+            return Command.SINGLE_SUCCESS;
+        }
+        player.sendMessage(colorize("&eCreating your house..."));
+        HousingWorld house = housesManager.createHouse(player, HouseSize.XLARGE);
+        house.runOnLoadOrNow((h) -> {
+            player.sendMessage(colorize("&aYour house has been created!"));
+            h.sendPlayerToHouse(player);
+        });
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
+    protected int command(CommandContext<CommandSourceStack> context, CommandSender sender, Object... args) throws CommandSyntaxException {
+        return 0; // we wont use this
     }
 }

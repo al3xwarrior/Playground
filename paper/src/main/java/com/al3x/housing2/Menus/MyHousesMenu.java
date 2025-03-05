@@ -137,6 +137,8 @@ public class MyHousesMenu extends Menu {
                 }
             }
 
+
+
             List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), new ArrayList<>(), new ArrayList<>(), false, 28));
 
             lore.add(Component.empty());
@@ -181,12 +183,7 @@ public class MyHousesMenu extends Menu {
                 if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                     return;
                 }
-                if (world[0] != null) {
-                    new EditHouseMenu(main, player, world[0], house).open();
-                } else {
-                    player.sendMessage(colorize("&cYou can only edit your house from inside your house, by doing /home"));
-                }
-
+                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player), house).open();
             }, () -> {
                 if (player.hasPermission("housing.admin")) {
                     player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));

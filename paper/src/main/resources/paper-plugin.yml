@@ -1,0 +1,29 @@
+name: Housing2
+version: '1.0'
+main: com.al3x.housing2.Main
+api-version: '1.21.4'
+authors: [ Al3x, Sin_Ender ]
+bootstrapper: com.al3x.housing2.Bootstrapper
+loader: com.al3x.housing2.Loader
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      required: false
+    ItemsAdder:
+      required: false
+      load: BEFORE
+    HeadDatabase:
+      required: false
+    Citizens:
+      required: true
+      load: BEFORE
+    ProtocolLib:
+      required: true
+    NoteBlockAPI:
+      required: true
+    packetevents:
+      required: true
+    voicechat:
+      required: true
+      load: BEFORE

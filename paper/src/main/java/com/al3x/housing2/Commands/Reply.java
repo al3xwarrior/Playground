@@ -1,58 +1,64 @@
 package com.al3x.housing2.Commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class Reply implements CommandExecutor {
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
-        if (strings.length == 0) {
-            commandSender.sendMessage("Usage: /reply <message>");
-            return true;
-        }
+public class Reply extends AbstractCommand {
+    public static HashMap<UUID, UUID> lastMessage = new HashMap<>();
 
-        UUID lastMessage = null;
-        if (commandSender instanceof Player p) {
-            lastMessage = Message.lastMessage.get(p.getUniqueId());
-        } else {
-            lastMessage = Message.lastMessage.get(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        }
+    public Reply(Commands commandRegistrar) {
+        super(commandRegistrar);
+
+        commandRegistrar.register(Commands.literal("reply")
+                .requires(this::isPlayer)
+                .then(Commands.argument("message", StringArgumentType.greedyString())
+                        .executes(context -> {
+                            return message(context, context.getSource().getSender(), StringArgumentType.getString(context, "message"));
+                        })
+                ).build(), List.of("r")
+        );
+    }
+
+    private int message(CommandContext<CommandSourceStack> context, CommandSender sender, String message) {
+        Player p = (Player) sender;
+
+        UUID lastMessage = Message.lastMessage.get(p.getUniqueId());
 
         if (lastMessage == null) {
-            commandSender.sendMessage("You have no one to reply to.");
-            return true;
+            sender.sendMessage("You have no one to reply to.");
+            return 1;
         }
 
-        Player target = commandSender.getServer().getPlayer(lastMessage);
+        Player target = sender.getServer().getPlayer(lastMessage);
         if (target == null) {
-            commandSender.sendMessage("Player not found.");
-            return true;
+            sender.sendMessage("Player not found.");
+            return 1;
         }
 
-        String message = String.join(" ", strings);
-        String prefix;
+        String prefix = PlaceholderAPI.setPlaceholders(p, "%luckperms_prefix%");
+        Message.lastMessage.put(p.getUniqueId(), target.getUniqueId());
+
         String toPrefix = PlaceholderAPI.setPlaceholders(target, "%luckperms_prefix%");
-        if (commandSender instanceof Player p) {
-            prefix = PlaceholderAPI.setPlaceholders(p, "%luckperms_prefix%");
-            Message.lastMessage.put(p.getUniqueId(), target.getUniqueId());
-        } else {
-            prefix = "§f";
-            Message.lastMessage.put(UUID.fromString("00000000-0000-0000-0000-000000000000"), target.getUniqueId());
-        }
 
-        String fromMessage = "§dFrom " + prefix + commandSender.getName() + "§f: " + message;
+
+        String fromMessage = "§dFrom " + prefix + sender.getName() + "§f: " + message;
         String toMessage = "§dTo " + toPrefix + target.getName() + "§f: " + message;
 
         target.sendMessage(colorize(fromMessage));
-        commandSender.sendMessage(colorize(toMessage));
-        return true;
+        sender.sendMessage(colorize(toMessage));
+        return 1;
     }
 }

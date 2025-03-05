@@ -2,39 +2,44 @@ package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.MyHousesMenu;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class Visit implements CommandExecutor {
+public class Visit extends AbstractCommand {
+    public Visit(Commands commandRegistrar) {
+        super(commandRegistrar);
+        commandRegistrar.register(Commands.literal("visit")
+                .requires(context -> context.getSender() instanceof Player)
+                .then(Commands.argument("player", StringArgumentType.string())
+                        .executes(context -> command(context, context.getSource().getSender(),
+                                StringArgumentType.getString(context, "player")
+                        ))
+                )
+                .build(), "Visit a player's house"
+        );
+    }
+
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+    protected int command(CommandContext<CommandSourceStack> context, CommandSender sender, Object... args) throws CommandSyntaxException {
+        Player player = (Player) sender;
+        String target = (String) args[0];
 
-        if (!(commandSender instanceof OfflinePlayer)) return true;
-
-        Player player = (Player) commandSender;
-
-        if (strings.length == 1) {
-            String target = strings[0];
-
-            if (!Main.getInstance().getHousesManager().playerHasHouse(target)) {
-                player.sendMessage(colorize("&cThat player doesn't have a house!"));
-                return true;
-            }
-
-            MyHousesMenu menu = new MyHousesMenu(Main.getInstance(), player, Bukkit.getOfflinePlayer(target));
-            menu.open();
-            return true;
-        } else {
-            player.sendMessage(colorize("&cUsage: /visit <player>"));
+        if (!Main.getInstance().getHousesManager().playerHasHouse(target)) {
+            player.sendMessage(colorize("&cThat player doesn't have a house!"));
+            return Command.SINGLE_SUCCESS;
         }
 
-        return false;
+        MyHousesMenu menu = new MyHousesMenu(Main.getInstance(), player, Bukkit.getOfflinePlayer(target));
+        menu.open();
+        return Command.SINGLE_SUCCESS;
     }
 }

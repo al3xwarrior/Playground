@@ -1,68 +1,36 @@
 package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
-import com.al3x.housing2.Main;
+import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Menus.ItemEditor.EditItemMainMenu;
-import com.al3x.housing2.Utils.Color;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import kotlin.text.MatchResult;
-import kotlin.text.Regex;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static org.bukkit.Material.AIR;
 
-public class Edit implements CommandExecutor, TabExecutor {
+public class Edit extends AbstractHousingCommand {
+    public Edit(Commands commandRegistrar, HousesManager housesManager) {
+        super(commandRegistrar, housesManager);
 
-    private final Main main;
-
-    public Edit(Main main) {
-        this.main = main;
+        commandRegistrar.register(Commands.literal("edit")
+                .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.ITEM_EDITOR))
+                .executes(this::execute)
+                .build()
+        );
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage("Only players can use this command");
-            return true;
-        }
-
-        if (main.getHousesManager().getHouse(player.getWorld()) == null) {
-            player.sendMessage(colorize("&cYou are not in a house!"));
-            return true;
-        }
-
-        HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
+    private int execute(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
 
         if (player.getInventory().getItemInMainHand().getType() == AIR || player.getInventory().getItemInMainHand().getItemMeta() == null) {
             player.sendMessage(colorize("&cYou must be holding an item to edit it!"));
-            return true;
-        }
-
-        if (!house.hasPermission(player, Permissions.ITEM_EDITOR)) {
-            player.sendMessage(colorize("&cYou do not have permission to edit items in this house!"));
-            return true;
+            return 1;
         }
 
         new EditItemMainMenu(player).open();
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of();
+        return 1;
     }
 }
