@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
@@ -31,6 +32,9 @@ public class ActionExecutor {
     private List<Action> queue = new ArrayList<>();
     private ActionExecutor parent;
     private List<ActionExecutor> children = new ArrayList<>();
+
+    private List<Stat> localStats = new ArrayList<>();
+
     double pause = 0;
     boolean isPaused = false;
     boolean isComplete = false;
@@ -52,6 +56,49 @@ public class ActionExecutor {
 
     public void addChild(ActionExecutor executor) {
         children.add(executor);
+    }
+
+    public Stat getLocalStat(String name) {
+        if (parent != null) {
+            return parent.getLocalStat(name);
+        } else {
+            for (Stat stat : localStats) {
+                if (stat.getStatName().equals(name)) {
+                    return stat;
+                }
+            }
+            return null;
+        }
+    }
+
+    public boolean hasLocalStat(String name) {
+        if (parent != null) {
+            return parent.hasLocalStat(name);
+        } else {
+            for (Stat stat : localStats) {
+                if (stat.getStatName().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public void removeLocalStat(String name) {
+        if (parent != null) {
+            parent.removeLocalStat(name);
+        } else {
+            for (Stat stat : localStats) {
+                if (stat.getStatName().equals(name)) {
+                    localStats.remove(stat);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void addLocalStat(Stat stat) {
+        localStats.add(stat);
     }
 
     public List<ActionExecutor> getChildren() {

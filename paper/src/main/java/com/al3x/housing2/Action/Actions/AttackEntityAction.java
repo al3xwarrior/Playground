@@ -142,7 +142,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
                 for (Entity entity : entities) {
                     if (entity instanceof Player) {
                         Player target = (Player) entity;
-                        if (conditions.stream().allMatch(condition -> condition.execute(target, house, null))) {
+                        if (conditions.stream().allMatch(condition -> condition.execute(target, house, null, executor))) {
                             target.damage(damageValue);
                         }
                     } else if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
@@ -205,7 +205,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
                 for (Entity entity : entities) {
                     if (entity instanceof Player) {
                         Player target = (Player) entity;
-                        if (conditions.stream().allMatch(condition -> condition.execute(target, house, null))) {
+                        if (conditions.stream().allMatch(condition -> condition.execute(target, house, null, executor))) {
                             target.damage(damageValue);
                         }
                     } else if (CitizensAPI.getNPCRegistry().isNPC(entity)) {

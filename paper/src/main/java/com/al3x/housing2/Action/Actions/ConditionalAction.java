@@ -141,7 +141,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
                     continue;
                 }
                 if (entity == player) {
-                    if (condition.execute(player, house, event) != not) {
+                    if (condition.execute(player, house, event, oldExecutor) != not) {
                         result = true;
                         if (matchAnyCondition) break;
                     } else {

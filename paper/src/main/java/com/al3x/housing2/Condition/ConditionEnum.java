@@ -16,6 +16,7 @@ public enum ConditionEnum {
     STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
     NPC_STAT_REQUIREMENT("NPC Stat Requirement", NPCStatRequirementCondition.class),
     GLOBALSTAT_REQUIREMENT("Global Stat Requirement", GlobalStatRequirementCondition.class),
+    LOCALSTAT_REQUIREMENT("Local Stat Requirement", LocalStatRequirementCondition.class),
     HAS_PERMISSION("Has Permission", HasPermissionCondition.class),
     WITHIN_REGION("Within Region", WithinRegionCondition.class),
     HAS_ITEM("Has Item", HasItemCondition.class),

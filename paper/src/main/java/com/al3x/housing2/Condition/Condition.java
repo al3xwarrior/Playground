@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -53,6 +54,10 @@ public abstract class Condition {
 
     public boolean execute(Player player, HousingWorld house, Cancellable event) {
         return execute(player, house);
+    }
+
+    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+        return execute(player, house, event);
     }
 
     public abstract boolean execute(Player player, HousingWorld house);
