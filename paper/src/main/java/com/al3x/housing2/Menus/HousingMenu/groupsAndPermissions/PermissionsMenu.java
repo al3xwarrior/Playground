@@ -52,7 +52,10 @@ public class PermissionsMenu extends Menu {
             }
 
             addItem(slots[i], item.build(), () -> {
-                permissions.put(perm, perm.cycle(value));
+                permissions.put(perm, perm.cycle(value, true));
+                setupItems();
+            }, () -> {
+                permissions.put(perm, perm.cycle(value, false));
                 setupItems();
             });
         }

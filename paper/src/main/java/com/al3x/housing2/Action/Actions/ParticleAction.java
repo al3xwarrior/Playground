@@ -39,7 +39,13 @@ public class ParticleAction extends HTSLImpl {
     private ParticleType type;
     private Double radius;
     private Double amount;
-    private HashMap<String, Object> customData = new HashMap<>();
+    private boolean globallyVisible = false;
+
+    // Custom data for particles
+    private Float size = null;
+    private String color1 = null;
+    private String color2 = null;
+
     public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
 
     public ParticleAction() {
@@ -78,12 +84,32 @@ public class ParticleAction extends HTSLImpl {
         if (type == ParticleType.CURVE || type == ParticleType.LINE) {
             builder.info("Direction&a", direction.name());
         }
-        if (customData != null && !customData.isEmpty()) {
-            builder.info("&eCustom Data", "");
-            for (Map.Entry<String, Object> entry : customData.entrySet()) {
-                builder.info(entry.getKey(), entry.getValue().toString());
+
+        if (particle.getData() != null) {
+            for (String key : ParticleUtils.keys(particle)) {
+                switch (key) {
+                    case "size" -> {
+                        if (size == null) {
+                            size = 1F;
+                        }
+                        builder.info("Size", "&6" + size);
+                    }
+                    case "color" -> {
+                        if (color1 == null) {
+                            color1 = "255,255,255";
+                        }
+                        builder.info("Color 1", "&6" + color1);
+                    }
+                    case "color2" -> {
+                        if (color2 == null) {
+                            color2 = "255,255,255";
+                        }
+                        builder.info("Color 2", "&6" + color2);
+                    }
+                }
             }
         }
+
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -215,7 +241,9 @@ public class ParticleAction extends HTSLImpl {
                             }
                     )
             );
+        }
 
+        if (type == ParticleType.LINE || type == ParticleType.CURVE && isLineRange) {
             items.add(new ActionEditor.ActionItem("direction",
                     ItemBuilder.create(Material.COMPASS)
                             .name("&eDirection")
@@ -243,8 +271,126 @@ public class ParticleAction extends HTSLImpl {
                 )
         );
 
+        items.add(new ActionEditor.ActionItem("globallyVisible",
+                ItemBuilder.create(Material.ENDER_EYE)
+                        .name("&eGlobally Visible")
+                        .info("&7Current Value", "")
+                        .info(null, "&a" + globallyVisible)
+                        .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                (event, o) -> {
+                    globallyVisible = !globallyVisible;
+                    Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                    return true;
+                }
+        ));
+
         if (particle.getData() != null) {
-            items.addAll(ParticleUtils.customData(particle, customData, house, editMenu, player));
+            for (String key : ParticleUtils.keys(particle)) {
+                switch (key) {
+                    case "size" -> {
+                        if (size == null) {
+                            size = 1F;
+                        }
+                        items.add(new ActionEditor.ActionItem("size",
+                            ItemBuilder.create(Material.PAPER)
+                                    .name("&eSize")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + size)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
+                                editMenu.openChat(Main.getInstance(), "" + size, (s) -> {
+                                    if (NumberUtilsKt.isDouble(s)) {
+                                        size = Float.parseFloat(s);
+                                        if (size < 0) {
+                                            size = 0F;
+                                        }
+                                        if (size > 10) {
+                                            size = 10F;
+                                        }
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    }
+                                });
+                                return true;
+                            }
+                    ));
+                    }
+                    case "color" -> {
+                        if (color1 == null) {
+                            color1 = "255,255,255";
+                        }
+                        items.add(new ActionEditor.ActionItem("color1",
+                            ItemBuilder.create(Material.PINK_DYE)
+                                    .name("&eColor 1")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + color1)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
+                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
+                                    String[] split = s.split(",");
+                                    if (split.length != 3) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                        return;
+                                    }
+                                    try {
+                                        int r = Integer.parseInt(split[0]);
+                                        int g = Integer.parseInt(split[1]);
+                                        int b = Integer.parseInt(split[2]);
+                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+                                            player.sendMessage(colorize("&cInvalid color format!"));
+                                            return;
+                                        }
+                                        color1 = s;
+                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    } catch (NumberFormatException e) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                    }
+                                });
+                                return true;
+                            })
+                    );
+                    }
+                    case "color2" -> {
+                        if (color2 == null) {
+                            color2 = "255,255,255";
+                        }
+                        items.add(new ActionEditor.ActionItem("color2",
+                            ItemBuilder.create(Material.PURPLE_DYE)
+                                    .name("&eColor 2")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + color2)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
+                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
+                                    String[] split = s.split(",");
+                                    if (split.length != 3) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                        return;
+                                    }
+                                    try {
+                                        int r = Integer.parseInt(split[0]);
+                                        int g = Integer.parseInt(split[1]);
+                                        int b = Integer.parseInt(split[2]);
+                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+                                            player.sendMessage(colorize("&cInvalid color format!"));
+                                            return;
+                                        }
+                                        color2 = s;
+                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    } catch (NumberFormatException e) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                    }
+                                });
+                                return true;
+                            })
+                    );
+                    }
+                }
+            }
         }
 
         return new ActionEditor(5, "&eParticle Settings", items);
@@ -469,11 +615,16 @@ public class ParticleAction extends HTSLImpl {
             particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
         }
 
-        Object data = ParticleUtils.output(particle, customData);
-
-        for (Location loc : locations) {
+        Object data = ParticleUtils.output(particle, color1, color2, size);
+        if (globallyVisible) {
             for (Player p : house.getWorld().getPlayers()) {
-                p.spawnParticle(particle.getParticle(), loc, 1, data);
+                for (Location loc : locations) {
+                    p.spawnParticle(particle.getParticle(), loc, 1, data);
+                }
+            }
+        } else {
+            for (Location loc : locations) {
+                player.spawnParticle(particle.getParticle(), loc, 1, data);
             }
         }
     }
@@ -497,9 +648,18 @@ public class ParticleAction extends HTSLImpl {
         data.put("amount", amount);
         data.put("direction", direction);
         data.put("customDirection", customDirection);
-        if (customData != null && !customData.isEmpty()) {
-            data.put("customData", customData);
+        data.put("globallyVisible", globallyVisible);
+
+        if (particle.getData() != null) {
+            for (String key : ParticleUtils.keys(particle)) {
+                switch (key) {
+                    case "size" -> data.put("size", size);
+                    case "color" -> data.put("color", color1);
+                    case "color2" -> data.put("color2", color2);
+                }
+            }
         }
+
         return data;
     }
 
@@ -516,15 +676,20 @@ public class ParticleAction extends HTSLImpl {
         amount = (Double) data.get("amount");
         direction = PushDirection.valueOf((String) data.get("direction"));
         customDirection = (String) data.get("customDirection");
-        if (data.get("customData") != null) {
-            LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) data.get("customData");
-            customData = new HashMap<>();
-            List<String> keys = ParticleUtils.keys(particle);
-            if (keys == null) {
-                return;
-            }
-            for (String key : keys) {
-                customData.put(key, map.get(key));
+        if (data.containsKey("globallyVisible")) {
+            globallyVisible = (boolean) data.get("globallyVisible");
+        }
+
+        if (particle.getData() != null) {
+            for (String key : ParticleUtils.keys(particle)) {
+                if (!data.containsKey(key)) {
+                    continue;
+                }
+                switch (key) {
+                    case "size" -> size = NumberUtilsKt.toFloat((Double) data.get("size"));
+                    case "color" -> color1 = (String) data.get("color");
+                    case "color2" -> color2 = (String) data.get("color2");
+                }
             }
         }
     }
@@ -562,8 +727,16 @@ public class ParticleAction extends HTSLImpl {
         }
 
         StringBuilder customData = new StringBuilder();
-        for (Map.Entry<String, Object> entry : this.customData.entrySet()) {
-            customData.append(" ").append(entry.getValue());
+        List<String> requireNonNull = ParticleUtils.keys(particle);
+        if (requireNonNull == null) {
+            return " ".repeat(indent) + keyword() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2;
+        }
+        for (String key : requireNonNull) {
+            switch (key) {
+                case "size" -> customData.append(" ").append(size);
+                case "color" -> customData.append(" ").append(color1);
+                case "color2" -> customData.append(" ").append(color2);
+            }
         }
 
         return " ".repeat(indent) + keyword() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2 + customData;
@@ -613,7 +786,13 @@ public class ParticleAction extends HTSLImpl {
             if (arg == null) {
                 continue;
             }
-            customData.put(key, arg.getSecond());
+            if (key.equals("size")) {
+                size = Float.parseFloat(arg.getSecond());
+            } else if (key.equals("color")) {
+                color1 = arg.getSecond();
+            } else if (key.equals("color2")) {
+                color2 = arg.getSecond();
+            }
             parts = arg.getFirst();
         }
 

@@ -539,6 +539,7 @@ public class HousingWorld {
             npc.getCitizensNPC().destroy();
             CitizensAPI.getNPCRegistry().deregister(npc.getCitizensNPC());
         });
+
         holograms.forEach(Hologram::remove);
         killAllEntities();
         trashCans.forEach(location -> { //I dont think this is needed cause of the killAllEntities() method
@@ -552,6 +553,7 @@ public class HousingWorld {
     }
 
     public void delete() {
+        radioSongPlayer.setPlaying(false);
         houseWorld.getPlayers().forEach(player -> {
             kickPlayerFromHouse(player);
             player.sendMessage(colorize("&e&lThis house has been deleted!"));
@@ -568,7 +570,6 @@ public class HousingWorld {
 
     private boolean deleteWorld() {
         housingNPCS.forEach(npc -> removeNPC(npc.getNpcID(), true));
-//        commands.forEach(command -> main.getCommandFramework().unregisterCommand(command.getCommand(), this));
         commands.clear();
         File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
         if (file.exists()) file.delete();

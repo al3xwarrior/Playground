@@ -22,7 +22,7 @@ public class Gamemodes implements PermissionInterface {
         return name;
     }
 
-    public static Object cycle(Object value) {
+    public static Object cycle(Object value, boolean forward) {
         int index = 0;
         for (int i = 0; i < VALUES.length; i++) {
             if (VALUES[i] == value) {
@@ -30,10 +30,19 @@ public class Gamemodes implements PermissionInterface {
                 break;
             }
         }
-        index++;
-        if (index >= VALUES.length) {
-            index = 0;
+
+        if (forward) {
+            index++;
+            if (index >= VALUES.length) {
+                index = 0;
+            }
+        } else {
+            index--;
+            if (index < 0) {
+                index = VALUES.length - 1;
+            }
         }
+
         return VALUES[index];
     }
 }

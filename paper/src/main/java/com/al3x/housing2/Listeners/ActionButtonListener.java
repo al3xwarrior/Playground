@@ -5,6 +5,8 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import net.minecraft.world.level.block.ButtonBlock;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,16 +18,6 @@ import java.util.List;
 
 public class ActionButtonListener implements Listener {
     @EventHandler
-    public void onBreakButton(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
-        if (house == null) return;
-
-        if (!event.getBlock().getType().name().contains("BUTTON")) return;
-
-    }
-
-    @EventHandler
     public void onInteractButton(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
@@ -34,7 +26,10 @@ public class ActionButtonListener implements Listener {
 
         if (!event.getClickedBlock().getType().name().contains("BUTTON")) return;
 
-        if (!event.getAction().isRightClick()) {
+        List<Action> actions = house.getActionButton(event.getClickedBlock().getLocation());
+        if (actions == null) return;
+
+        if (event.getAction().isLeftClick() && player.getGameMode() != GameMode.ADVENTURE) {
             if (house.removeActionButton(event.getClickedBlock().getLocation())) {
                 event.setCancelled(true);
                 player.sendMessage("§aSuccessfully removed action button!");
@@ -43,9 +38,8 @@ public class ActionButtonListener implements Listener {
             return;
         }
 
+        if (event.getClickedBlock().isBlockPowered()) return;
 
-        List<Action> actions = house.getActionButton(event.getClickedBlock().getLocation());
-        if (actions == null) return;
 
         if (player.isSneaking()) {
             ActionsMenu menu = new ActionsMenu(Main.getInstance(), player, house, actions, null, "button");
@@ -56,7 +50,6 @@ public class ActionButtonListener implements Listener {
             return;
         }
 
-        System.out.println(actions.stream().map(Action::getName).toList());
         ActionExecutor executor = new ActionExecutor("button", actions);
         executor.execute(player, house, event);
     }

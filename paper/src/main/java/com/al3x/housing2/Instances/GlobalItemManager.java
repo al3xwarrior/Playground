@@ -4,6 +4,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.GlobalItem;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -72,6 +73,10 @@ public class GlobalItemManager {
         GlobalItemManager.registerItem(new GlobalItem("action_button", ItemBuilder.create(Material.STONE_BUTTON).name("&aAction Button"), event -> {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 run(event, (house, player) -> {
+                    if (player.getGameMode() == GameMode.ADVENTURE) {
+                        player.sendMessage("§cYou cannot create an Action Button in Adventure Mode");
+                        return;
+                    }
                     if (event.getInteractionPoint() != null) {
                         house.addActionButton(event.getInteractionPoint());
                         player.sendMessage("§aSuccessfully created Action Button");

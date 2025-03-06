@@ -83,7 +83,7 @@ public class MyHousesMenu extends Menu {
         int[] slots = {11, 13, 15};
 
         for (int i = 0; i < slots.length; i++) {
-            if (i >= houseIDs.size()) {
+            if (i >= houseIDs.size() && target.equals(player)) {
                 addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
                         .name("&e&oCreate a House!")
                         .build(), () -> {
@@ -102,6 +102,7 @@ public class MyHousesMenu extends Menu {
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
             if (house == null) {
+                if (!target.equals(player)) continue;
                 addItem(slots[i], ItemBuilder.create(Material.OAK_BUTTON)
                         .name("&e&oCreate a House!")
                         .build(), () -> {

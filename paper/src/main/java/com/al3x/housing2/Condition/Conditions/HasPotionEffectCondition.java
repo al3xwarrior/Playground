@@ -40,7 +40,7 @@ public class HasPotionEffectCondition extends CHTSLImpl implements NPCCondition 
         builder.material(Material.POTION);
         builder.name("&aHas Potion Effect");
         builder.description("Requires the user to have the specified potion effect.");
-        builder.info("Potion Effect", (potionEffect == null ? "&aNot Set" : "&6" + potionEffect));
+        builder.info("Potion Effect", (potionEffect == null ? "&aNot Set" : "&6" + potionEffect.getName()));
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -61,7 +61,7 @@ public class HasPotionEffectCondition extends CHTSLImpl implements NPCCondition 
                         ItemBuilder.create(Material.POTION)
                                 .name("&eEffect")
                                 .info("&7Current Value", "")
-                                .info(null, "&a" + (potionEffect == null ? "Not Set" : potionEffect))
+                                .info(null, "&a" + (potionEffect == null ? "Not Set" : potionEffect.getName()))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         (e, o) -> {
                             List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();

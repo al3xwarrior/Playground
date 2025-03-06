@@ -86,10 +86,10 @@ public enum Permissions implements PermissionInterface{
     }
 
 
-    public Object cycle(Object value) {
+    public Object cycle(Object value, boolean forward) {
         if (subEnum != null) {
             try {
-                return subEnum.getMethod("cycle", Object.class).invoke(value, value);
+                return subEnum.getMethod("cycle", Object.class, Boolean.class).invoke(value, value, forward);
             } catch (Exception e) {
                 e.printStackTrace();
             }
