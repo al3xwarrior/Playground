@@ -13,7 +13,6 @@ import com.al3x.housing2.Utils.StackUtils;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +28,8 @@ public class HasItemCondition extends Condition {
     private WhatToCheck whatToCheck = WhatToCheck.METADATA;
     private WhereToCheck whereToCheck = WhereToCheck.ANYWHERE;
     private int customSlot = -1;
-    private Amount amount = Amount.ANY_AMOUNT;
+    private Amount amountCondition = Amount.ANY_AMOUNT;
+    private int amount = 1;
 
 
     public HasItemCondition() {
@@ -50,7 +50,8 @@ public class HasItemCondition extends Condition {
         builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType().name()));
         builder.info("What to check", "&6" + StringUtilsKt.formatCapitalize(whatToCheck.name()));
         builder.info("Where to check", "&6" + StringUtilsKt.formatCapitalize(whereToCheck.name()));
-        builder.info("Amount", "&6" + StringUtilsKt.formatCapitalize(amount.name()));
+        builder.info("Amount Condition", "&6" + StringUtilsKt.formatCapitalize(amountCondition.name()));
+        builder.info("Amount", "&6" + amount);
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -102,13 +103,21 @@ public class HasItemCondition extends Condition {
                     return false;
                 }
                 ),
-                new ActionEditor.ActionItem("amount",
-                        ItemBuilder.create(amount.getMaterial())
-                                .name("&eRequired Amount")
+                new ActionEditor.ActionItem("amountCondition",
+                        ItemBuilder.create(amountCondition.getMaterial())
+                                .name("&eAmount Condition")
                                 .info("&7Current Value", "")
-                                .info(null, "&a" + StringUtilsKt.formatCapitalize(amount.name()))
+                                .info(null, "&a" + StringUtilsKt.formatCapitalize(amountCondition.name()))
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.ENUM, Amount.values(), null
+                ),
+                new ActionEditor.ActionItem("amount",
+                        ItemBuilder.create(Material.PAPER)
+                                .name("&eAmount")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + amount)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                        ActionEditor.ActionItem.ActionType.DOUBLE, 1, 64
                 )
         );
         return new ActionEditor(4, "Settings", items);
@@ -146,26 +155,26 @@ public class HasItemCondition extends Condition {
             case CUSTOM: {
                 if (customSlot == -1) return false;
                 if (checkItem(player.getInventory().getItem(customSlot))) {
-                    return checkAmount(player.getInventory().getItem(customSlot), item.getAmount());
+                    return checkAmount(player.getInventory().getItem(customSlot), amount);
                 }
                 break;
             }
             case HAND: {
                 if (checkItem(player.getInventory().getItemInMainHand())) {
-                    return checkAmount(player.getInventory().getItemInMainHand(), item.getAmount());
+                    return checkAmount(player.getInventory().getItemInMainHand(), amount);
                 }
                 break;
             }
             case OFFHAND: {
                 if (checkItem(player.getInventory().getItemInOffHand())) {
-                    return checkAmount(player.getInventory().getItemInOffHand(), item.getAmount());
+                    return checkAmount(player.getInventory().getItemInOffHand(), amount);
                 }
                 break;
             }
             case ARMOR: {
                 for (ItemStack armor : player.getInventory().getArmorContents()) {
                     if (checkItem(armor)) {
-                        return checkAmount(armor, item.getAmount());
+                        return checkAmount(armor, amount);
                     }
                 }
                 break;
@@ -173,7 +182,7 @@ public class HasItemCondition extends Condition {
             case HOTBAR: {
                 for (int i = 0; i < 9; i++) {
                     if (checkItem(player.getInventory().getItem(i))) {
-                        return checkAmount(player.getInventory().getItem(i), item.getAmount());
+                        return checkAmount(player.getInventory().getItem(i), amount);
                     }
                 }
                 break;
@@ -181,7 +190,7 @@ public class HasItemCondition extends Condition {
             case INVENTORY: {
                 for (ItemStack inventory : player.getInventory().getContents()) {
                     if (checkItem(inventory)) {
-                        return checkAmount(inventory, item.getAmount());
+                        return checkAmount(inventory, amount);
                     }
                 }
                 break;
@@ -189,24 +198,24 @@ public class HasItemCondition extends Condition {
             case ANYWHERE: {
                 for (ItemStack inventory : player.getInventory().getContents()) {
                     if (checkItem(inventory)) {
-                        return checkAmount(inventory, item.getAmount());
+                        return checkAmount(inventory, amount);
                     }
                 }
                 for (ItemStack armor : player.getInventory().getArmorContents()) {
                     if (checkItem(armor)) {
-                        return checkAmount(armor, item.getAmount());
+                        return checkAmount(armor, amount);
                     }
                 }
                 for (int i = 0; i < 9; i++) {
                     if (checkItem(player.getInventory().getItem(i))) {
-                        return checkAmount(player.getInventory().getItem(i), item.getAmount());
+                        return checkAmount(player.getInventory().getItem(i), amount);
                     }
                 }
                 if (checkItem(player.getInventory().getItemInMainHand())) {
-                    return checkAmount(player.getInventory().getItemInMainHand(), item.getAmount());
+                    return checkAmount(player.getInventory().getItemInMainHand(), amount);
                 }
                 if (checkItem(player.getInventory().getItemInOffHand())) {
-                    return checkAmount(player.getInventory().getItemInOffHand(), item.getAmount());
+                    return checkAmount(player.getInventory().getItemInOffHand(), amount);
                 }
                 break;
             }
@@ -225,7 +234,7 @@ public class HasItemCondition extends Condition {
     }
 
     private boolean checkAmount(ItemStack item, int amount) {
-        switch (this.amount) {
+        switch (this.amountCondition) {
             case ANY_AMOUNT: {
                 return true;
             }
@@ -255,6 +264,7 @@ public class HasItemCondition extends Condition {
         data.put("whatToCheck", whatToCheck);
         data.put("whereToCheck", whereToCheck);
         data.put("customSlot", customSlot);
+        data.put("amountCondition", amountCondition);
         data.put("amount", amount);
         return data;
     }
@@ -269,7 +279,13 @@ public class HasItemCondition extends Condition {
         whatToCheck = WhatToCheck.valueOf((String) data.get("whatToCheck"));
         whereToCheck = WhereToCheck.valueOf((String) data.get("whereToCheck"));
         if (data.get("customSlot") != null) customSlot = ((Double) data.get("customSlot")).intValue();
-        amount = Amount.valueOf((String) data.get("amount"));
+        if (data.get("amountCondition") != null) {
+            amountCondition = Amount.valueOf((String) data.get("amountCondition"));
+            amount = ((Double) data.get("amount")).intValue();
+        } else {
+            amountCondition = Amount.valueOf((String) data.get("amount"));
+            amount = 1;
+        }
     }
 
     @Override
