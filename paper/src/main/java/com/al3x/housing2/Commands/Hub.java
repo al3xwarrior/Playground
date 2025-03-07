@@ -13,13 +13,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.List;
+
 public class Hub extends AbstractCommand {
     public Hub(Commands registrar) {
         super(registrar);
+
         registrar.register(Commands.literal("hub")
                 .requires(context -> context.getSender() instanceof Player)
                 .executes(context -> command(context, context.getSource().getSender()))
-                .build());
+                .build(), List.of("l", "lobby"));
     }
 
     @Override

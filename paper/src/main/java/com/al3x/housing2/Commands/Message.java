@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -32,7 +33,7 @@ public class Message extends AbstractCommand {
                                     return message(context, context.getSource().getSender(), StringArgumentType.getString(context, "message"), target);
                                 })
                         )
-                ).build()
+                ).build(), List.of("msg")
         );
     }
 
