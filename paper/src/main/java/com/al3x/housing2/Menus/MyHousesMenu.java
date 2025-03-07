@@ -99,6 +99,8 @@ public class MyHousesMenu extends Menu {
                 });
                 continue;
             }
+
+            if (i >= houseIDs.size()) continue;
             HouseData house = housesManager.getHouseData(houseIDs.get(i));
 
             if (house == null) {
