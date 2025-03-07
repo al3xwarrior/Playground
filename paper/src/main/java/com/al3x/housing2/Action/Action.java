@@ -135,7 +135,6 @@ public abstract class Action {
         return null;
     }
 
-
     public boolean mustBeSync() {
         return false;
     }

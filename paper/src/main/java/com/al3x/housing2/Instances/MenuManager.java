@@ -15,6 +15,7 @@ public class MenuManager {
     private static Map<Player, Menu> playerMenus = new HashMap<>();
     private static Map<Player, UUID> playerHouseID = new HashMap<>();
     private static Map<Player, Listener> playerListeners = new HashMap<>();
+    private static Map<Player, Menu> hasWindowOpen = new HashMap<>();
 
     public static Listener setListener(Player player, Listener listener) {
         playerListeners.put(player, listener);
@@ -35,6 +36,14 @@ public class MenuManager {
         if (house != null) {
             playerHouseID.put(player, house.getHouseUUID());
         }
+    }
+
+    public static void setWindowOpen(Player player, Menu open) {
+        hasWindowOpen.put(player, open);
+    }
+
+    public static Menu getWindowOpen(Player player) {
+        return hasWindowOpen.get(player);
     }
 
     public static Menu getPlayerMenu(Player player) {

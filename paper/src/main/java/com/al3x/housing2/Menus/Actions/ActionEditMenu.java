@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.OpenActionMenuEvent;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.ItemSelectMenu;
@@ -16,6 +17,7 @@ import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -118,6 +120,21 @@ public class ActionEditMenu extends Menu {
             }
         }
         return false;
+    }
+
+    @Override
+    public void open() {
+        OpenActionMenuEvent event = new OpenActionMenuEvent(this, action, main, player, house, backMenu);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+            }
+            MenuManager.setWindowOpen(player, this);
+            MenuManager.setMenu(player, this);
+            return;
+        }
+        super.open();
     }
 
     @Override
@@ -542,28 +559,6 @@ public class ActionEditMenu extends Menu {
             addItem(((editor.getRows() - 1) * 9) + 1, importItem.build(), () -> {
                 new ActionClipboardMenu(player, main, house, action, this).open();
             });
-
-//            ItemBuilder editExternally = ItemBuilder.create(Material.PURPLE_DYE).name("&eEdit Externally").lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-//            addItem(((editor.getRows() - 1) * 9) + 2, editExternally.build(), (e) -> {
-//                TextComponent text = Component.text("Exporting to external editor...").color(TextColor.color(0xFFEE00));
-//                player.sendMessage(text);
-//                Housing2Api.Companion.getInstance().addEditing(
-//                        player.getUniqueId().toString(), UUID.randomUUID().toString(), action
-//                );
-//
-//                text = Component.text("Exported successfully, open it ").append(
-//                        Component.text("here").color(TextColor.color(0x00FF00)).decorate(TextDecoration.UNDERLINED)
-//                                .clickEvent(ClickEvent.openUrl("http://localhost:8080/action?uuid=" + player.getUniqueId()))
-//                                .hoverEvent(Component.text("Click to open the external editor")
-//                                        .color(TextColor.color(0xFFEE00))
-//                                )
-//                ).append(
-//                        Component.text(" §c[Back]").clickEvent(ClickEvent.runCommand("/cancelinput"))
-//                                .hoverEvent(Component.text("§eClick to go back to where you were"))
-//                ).color(TextColor.color(0xFFEE00));
-//                player.sendMessage(text);
-//                player.closeInventory();
-//            });
         }
     }
 

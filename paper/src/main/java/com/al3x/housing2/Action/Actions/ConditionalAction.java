@@ -9,6 +9,7 @@ import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
@@ -16,10 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -77,8 +80,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
+    public List<ActionEditor.ActionItem> getItems(HousingWorld house) {
         List<ActionEditor.ActionItem> items = List.of(
                 new ActionEditor.ActionItem("conditions",
                         ItemBuilder.create(Material.COMPARATOR)
@@ -122,7 +124,13 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
                 )
 
         );
-        return new ActionEditor(4, "&eConditional Settings", items);
+
+        return items;
+    }
+
+    @Override
+    public ActionEditor editorMenu(HousingWorld house) {
+        return new ActionEditor(4, "&eConditional Settings", getItems(house));
     }
 
     @Override

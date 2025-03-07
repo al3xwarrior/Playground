@@ -50,16 +50,8 @@ public class Command {
         this.loaded = b;
 
         if (!b) {
-//            Main.getInstance().getCommandFramework().unregisterCommand(getCommand(), world);
+            Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), Bukkit::reloadData);
         }
-    }
-
-    public String getUsage() {
-        StringBuilder usage = new StringBuilder(name);
-        for (CommandArg arg : args) {
-            usage.append(" ").append(arg.isRequired() ? "<" : "[").append(arg.getName()).append(arg.isGreedy() ? "..." : "").append(arg.isRequired() ? ">" : "]");
-        }
-        return usage.toString();
     }
 
     public void execute(Player player, HousingWorld world) {
@@ -163,7 +155,7 @@ public class Command {
     public void setName(String name) {
         this.name = name;
 
-        Bukkit.reloadData();
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), Bukkit::reloadData);
     }
 
     public boolean isLoaded() {

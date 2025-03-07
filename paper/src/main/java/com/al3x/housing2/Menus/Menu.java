@@ -28,10 +28,10 @@ public abstract class Menu {
     protected Inventory inventory;
     private String title;
     private int size;
-    private Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
-    private Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
-    private Map<Integer, Consumer<InventoryClickEvent>> shiftLeftClickActions = new HashMap<>();
-    private Map<Integer, Consumer<InventoryClickEvent>> anyClickActions = new HashMap<>();
+    protected Map<Integer, Consumer<InventoryClickEvent>> leftClickActions = new HashMap<>();
+    protected Map<Integer, Consumer<InventoryClickEvent>> rightClickActions = new HashMap<>();
+    protected Map<Integer, Consumer<InventoryClickEvent>> shiftLeftClickActions = new HashMap<>();
+    protected Map<Integer, Consumer<InventoryClickEvent>> anyClickActions = new HashMap<>();
     protected Player player;
 
     public Menu(Player player, String title, int size) {
@@ -69,7 +69,7 @@ public abstract class Menu {
         if (event.getClickedInventory() == inventory) {
             event.setCancelled(isCancelled());
 
-            int slot = event.getSlot();
+            int slot = event.getRawSlot();
             Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
             Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
             Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
@@ -85,6 +85,26 @@ public abstract class Menu {
                 anyAction.accept(event);
             }
         }
+    }
+
+    public void handleExternalClick(InventoryClickEvent event) {
+            event.setCancelled(isCancelled());
+
+            int slot = event.getSlot();
+            Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
+            Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
+            Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
+            Consumer<InventoryClickEvent> anyAction = anyClickActions.get(slot);
+
+            if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
+                leftAction.accept(event); // Run the left-click action
+            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
+                rightAction.accept(event); // Run the right-click action
+            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
+                shiftLeftAction.accept(event); // Run the shift-left-click action
+            } else if (anyClickActions.get(slot) != null) {
+                anyAction.accept(event);
+            }
     }
 
     public String getTitle() {

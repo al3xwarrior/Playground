@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Listeners.HouseEvents.DamageEvent;
 import com.al3x.housing2.Listeners.HouseEvents.PlayerDropItem;
 import com.al3x.housing2.Main;
@@ -42,6 +43,8 @@ public class LobbyListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             // They are in a house
             if (player.isDead()) continue;
+            //Because they have a split Menu open
+            if (MenuManager.getWindowOpen(player) != null && MenuManager.getWindowOpen(player) == MenuManager.getPlayerMenu(player)) continue;
             if (!(player.getWorld().equals(lobby))) {
                 World world = player.getWorld();
                 HousingWorld house = main.getHousesManager().getHouse(world);

@@ -41,8 +41,7 @@ public class LocalStatRequirementCondition extends CHTSLImpl implements NPCCondi
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
+        builder.material(Material.LIGHTNING_ROD);
         builder.name("&eLocal Stat Requirement");
         builder.description("Requires a Local stat to match the provided condition.");
         builder.info("Stat", stat);
@@ -56,8 +55,7 @@ public class LocalStatRequirementCondition extends CHTSLImpl implements NPCCondi
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
+        builder.material(Material.LIGHTNING_ROD);
         builder.name("&eLocal Stat Requirement");
         builder.description("Requires a Local stat to match the provided condition.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);

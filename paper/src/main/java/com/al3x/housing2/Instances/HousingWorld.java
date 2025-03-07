@@ -501,6 +501,8 @@ public class HousingWorld {
 
     public void save() {
         for (Player player : houseWorld.getPlayers()) {
+            //They have a window open so we shouldnt save their inventory
+            if (MenuManager.getWindowOpen(player) != null && MenuManager.getWindowOpen(player) == MenuManager.getPlayerMenu(player)) continue;
             PlayerData data = loadOrCreatePlayerData(player);
             data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
             data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
@@ -1106,9 +1108,7 @@ public class HousingWorld {
             return null;
         Command command = new Command(name);
         commands.add(command);
-//        CommandRegistry r = command.getCommand();
-//        r.setPermission("housing.world." + houseUUID.toString());
-//        main.getCommandFramework().registerCommand(houseUUID.toString(), r);
+        Bukkit.getScheduler().runTaskAsynchronously(main, Bukkit::reloadData);
         return command;
     }
 

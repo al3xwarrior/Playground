@@ -48,6 +48,7 @@ public class EditPlayerStats extends AbstractHousingCommand {
 
     private CompletableFuture<Suggestions> getOperators(CommandContext<CommandSourceStack> context, SuggestionsBuilder suggestionsBuilder) {
         Arrays.stream(StatOperation.values())
+                .filter(entry -> !entry.expressionOnly())
                 .filter(entry -> entry.name().toLowerCase().startsWith(suggestionsBuilder.getRemaining().toLowerCase()))
                 .forEach(statOperation -> suggestionsBuilder.suggest(statOperation.name()));
         return suggestionsBuilder.buildFuture();
@@ -70,6 +71,17 @@ public class EditPlayerStats extends AbstractHousingCommand {
 
         try {
             stat.modifyStat(operation, value);
+            player.sendMessage(colorize("&aSuccessfully modified stat: " + statName + " with mode: " + operation + " and value: " + value + " for player: " + target.getName()));
+            if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
+                if (house.getStatManager().hasStat(target, statName)) {
+                    house.getStatManager().getPlayerStats(target).remove(stat);
+                }
+                return 1;
+            }
+
+            if (!house.getStatManager().hasStat(target, statName)) {
+                house.getStatManager().addPlayerStat(target, stat);
+            }
         } catch (IllegalArgumentException e) {
             player.sendMessage(colorize("&cFailed to modify stat: " + statName + " with mode: " + operation + " and value: " + value));
             return 0;

@@ -1,8 +1,10 @@
 package com.al3x.housing2.Listeners;
 
+import com.al3x.housing2.Events.MenuClickEvent;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Menus.ItemSelectMenu;
 import com.al3x.housing2.Menus.Menu;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +24,14 @@ public class MenuListener implements Listener {
             // Here you would need a way to retrieve the player's current menu
             Menu menu = getMenuForPlayer(player);
             if (menu != null) {
+                MenuClickEvent menuClickEvent = MenuClickEvent.fromInventoryClickEvent(menu, event);
+                Bukkit.getPluginManager().callEvent(menuClickEvent);
+
+                if (menuClickEvent.isStopped()) {
+                    event.setCancelled(true);
+                    return;
+                }
+
                 menu.handleClick(event);
             }
         }
