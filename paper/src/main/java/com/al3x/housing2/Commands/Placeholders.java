@@ -33,7 +33,7 @@ public class Placeholders extends AbstractHousingCommand {
                         })
                 )
                 .executes(context -> {
-                    return placeholders(context, context.getSource().getSender(), null);
+                    return placeholders(context, context.getSource().getSender(), "");
                 })
                 .build()
         );
