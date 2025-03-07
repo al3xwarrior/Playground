@@ -30,11 +30,11 @@ public class Raycast {
     private static class Block extends Placeholder {
         public Block() {
             new X();
-            new ExactX();
+            //new ExactX(); not done. Ill come back to it eventually !
             new Y();
-            new ExactY();
+            //new ExactY();
             new Z();
-            new ExactZ();
+            //new ExactZ();
             new Coords();
         }
 
