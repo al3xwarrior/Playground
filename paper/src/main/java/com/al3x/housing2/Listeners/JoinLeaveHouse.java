@@ -58,6 +58,8 @@ public class JoinLeaveHouse implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.getActivePotionEffects().clear();
 
+        player.updateCommands();
+
         player.playerListName(Component.text(player.getName()));
 
         player.sendActionBar(Component.empty());
