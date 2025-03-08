@@ -109,7 +109,13 @@ public class ShowBossbarAction extends HTSLImpl {
     @Override
     public boolean execute(Player player, HousingWorld house) {
         try {
-            BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), Float.parseFloat(Placeholder.handlePlaceholders(progress, house, player)), barColor, barStyle);
+            float progressFixed = Float.parseFloat(Placeholder.handlePlaceholders(progress, house, player));
+            if (progressFixed > 1) {
+                progressFixed = 1;
+            } else if (progressFixed < 0) {
+                progressFixed = 0;
+            }
+            BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), progressFixed, barColor, barStyle);
             bossBar.addViewer(player);
             if (!house.bossBars.containsKey(player.getUniqueId())) {
                 house.bossBars.put(player.getUniqueId(), new ArrayList<>());
