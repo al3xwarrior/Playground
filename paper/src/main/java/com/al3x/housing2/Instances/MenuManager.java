@@ -53,6 +53,9 @@ public class MenuManager {
         if (!playerHouseID.containsKey(player)) {
             return null;
         }
+        if (Main.getInstance().getHousesManager().getHouse(player.getWorld()) == null) {
+            return null;
+        }
         if (playerHouseID.get(player) != Main.getInstance().getHousesManager().getHouse(player.getWorld()).getHouseUUID()) {
             return null;
         }
