@@ -90,7 +90,7 @@ public class HasPotionEffectCondition extends CHTSLImpl implements NPCCondition 
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("potionEffect", potionEffect.getName());
+        data.put("potionEffect", potionEffect == null ? PotionEffectType.SPEED.getName() : potionEffect.getName());
         return data;
     }
 
