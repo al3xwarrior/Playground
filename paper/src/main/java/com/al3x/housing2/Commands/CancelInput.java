@@ -1,6 +1,7 @@
 package com.al3x.housing2.Commands;
 
 import com.al3x.housing2.Instances.MenuManager;
+import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -25,6 +26,7 @@ public class CancelInput extends AbstractCommand {
 
     private int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Player player = (Player) context.getSource().getSender();
+        ChatEvent.isEditing.remove(player.getUniqueId());
         if (MenuManager.getListener(player) != null) {
             AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
         }
