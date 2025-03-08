@@ -135,7 +135,7 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("potion", potionEffectType.getName());
+        data.put("potion", potionEffectType == null ? PotionEffectType.SPEED.getName() : potionEffectType.getName());
         data.put("clearall", clearAll);
         return data;
     }
