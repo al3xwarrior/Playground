@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +30,9 @@ public class SetSpawn extends AbstractHousingCommand {
     private int setSpawn(CommandContext<CommandSourceStack> context, CommandSender sender) {
         Player player = (Player) sender;
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
-        house.setSpawn(player.getLocation());
+        Location location = player.getLocation();
+        house.setSpawn(location);
+        player.sendMessage(colorize(String.format("&aSet house spawn location to %s, %s, %s", location.getBlockX(), location.getBlockY(), location.getBlockZ())));
         return 1;
     }
 }
