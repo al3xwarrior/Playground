@@ -117,7 +117,7 @@ public class HasItemCondition extends Condition {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + amount)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 1, 64
+                        ActionEditor.ActionItem.ActionType.INT, 1, 64
                 )
         );
         return new ActionEditor(4, "Settings", items);
