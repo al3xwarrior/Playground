@@ -18,13 +18,16 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ChatEvent implements Listener {
+    public static List<UUID> isEditing = new ArrayList<>();
     public static HashMap<UUID, AsyncPlayerChatEvent> lastChatEvent = new HashMap<>();
     private HousesManager housesManager;
 
@@ -37,6 +40,11 @@ public class ChatEvent implements Listener {
         Player player = e.getPlayer();
         World world = player.getWorld();
         // Lobby Chat
+
+        if (isEditing.contains(player.getUniqueId())) {
+            e.setCancelled(true);
+            return;
+        }
 
         if (GlobalChat.globalChat.getOrDefault(player.getUniqueId(), false)) {
             e.setCancelled(true);
@@ -54,6 +62,10 @@ public class ChatEvent implements Listener {
             for (Player p : world.getPlayers()) {
                 p.sendMessage(colorize(message) + e.getMessage());
             }
+            return;
+        }
+
+        if (e.isCancelled()) {
             return;
         }
 

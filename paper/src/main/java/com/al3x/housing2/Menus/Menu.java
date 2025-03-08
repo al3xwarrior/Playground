@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.MenuManager;
+import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import com.al3x.housing2.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -167,6 +168,7 @@ public abstract class Menu {
         previousComp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, previous));
         previousComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§bClick to paste previous value")));
         player.spigot().sendMessage(previousComp, cancelComp);
+        ChatEvent.isEditing.add(player.getUniqueId());
 
         Bukkit.getPluginManager().registerEvents(MenuManager.setListener(player, new Listener() {
             @EventHandler(priority = EventPriority.LOWEST)
@@ -178,6 +180,7 @@ public abstract class Menu {
 
                     // Unregister this listener after capturing the message
                     AsyncPlayerChatEvent.getHandlerList().unregister(this);
+                    ChatEvent.isEditing.remove(player.getUniqueId());
 
                     // Reopen the ActionEditMenu
                     Bukkit.getScheduler().runTaskLater(main, Menu.this::open, 1L); // Delay slightly to allow chat event to complete
