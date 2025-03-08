@@ -49,7 +49,7 @@ public class StopSoundAction extends HTSLImpl {
         builder.name("&eStop Sound");
         builder.info("&eSettings", "");
         builder.info("Sound", "&a" + sound.name());
-        builder.info("Clear All", ((clearAll) ? "&aYes" : "&cNo"));
+        builder.info("Clear Others", ((clearAll) ? "&aYes" : "&cNo"));
         builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
         builder.shiftClick();
     }
@@ -93,7 +93,7 @@ public class StopSoundAction extends HTSLImpl {
                 ),
                 new ActionItem("clearAll", //Needs to be the exact same as the variable name
                         ItemBuilder.create((clearAll) ? Material.LIME_DYE : Material.RED_DYE)
-                                .name("&aClear All")
+                                .name("&aClear Others")
                                 .description("If toggled on, this will clear all sound effects except the one selected")
                                 .info("&7Current Value", "")
                                 .info(null, ((clearAll) ? "&aYes" : "&cNo"))
