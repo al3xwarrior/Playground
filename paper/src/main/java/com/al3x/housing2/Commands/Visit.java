@@ -20,6 +20,7 @@ public class Visit extends AbstractCommand {
         commandRegistrar.register(Commands.literal("visit")
                 .requires(context -> context.getSender() instanceof Player)
                 .then(Commands.argument("player", StringArgumentType.string())
+                        .suggests(Housing::getPlayerOnlineSuggestions)
                         .executes(context -> command(context, context.getSource().getSender(),
                                 StringArgumentType.getString(context, "player")
                         ))
