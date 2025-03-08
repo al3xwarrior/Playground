@@ -9,6 +9,8 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class ConfirmMenu extends Menu{
     Menu back;
     Runnable onConfirm;
+    boolean backOnConfirm = true;
+
     public ConfirmMenu(Player player, Menu back, Runnable onConfirm) {
         super(player, "Confirm", 3 * 9);
         this.back = back;
@@ -21,13 +23,20 @@ public class ConfirmMenu extends Menu{
         this.onConfirm = onConfirm;
     }
 
+    public ConfirmMenu(Player player, Menu back, String title, Runnable onConfirm, boolean backOnConfirm) {
+        super(player, title, 3 * 9);
+        this.back = back;
+        this.onConfirm = onConfirm;
+        this.backOnConfirm = backOnConfirm;
+    }
+
     @Override
     public void setupItems() {
         addItem(11, ItemBuilder.create(Material.GREEN_TERRACOTTA)
                 .name(colorize("&aConfirm"))
                 .build(), () -> {
             onConfirm.run();
-            back.open();
+            if (backOnConfirm) back.open();
         });
 
         addItem(15, ItemBuilder.create(Material.RED_TERRACOTTA)
