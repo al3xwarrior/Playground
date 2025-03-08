@@ -64,6 +64,9 @@ public class IndivisualHeadsMenu extends Menu {
             }
         }
 
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > paginationList.getPageCount()) currentPage = paginationList.getPageCount();
+
         if (currentPage < paginationList.getPageCount()) {
             // Next Page Arrow
             addItem(53, ItemBuilder.create(Material.ARROW)
