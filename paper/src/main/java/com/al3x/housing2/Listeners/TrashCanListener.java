@@ -73,7 +73,7 @@ public class TrashCanListener implements Listener {
         Player player = e.getPlayer();
 
         ItemStack item = e.getItemInHand();
-        if (item == null) return;
+        if (item.getType() == Material.AIR) return;
 
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         if (house == null) return;
