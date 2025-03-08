@@ -50,15 +50,19 @@ public interface HousingPunishments {
 
         HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
 
-        //Eventually this should be replaced with a custom argument type
-        String duration = context.getArgument("duration", String.class);
-        if (duration == null || duration.isEmpty()) {
+        // i am aware the try/catch is ugly but you can't check if an argument is there
+        try {
+            //Eventually this should be replaced with a custom argument type
+            String duration = context.getArgument("duration", String.class);
             house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime(duration));
             player.sendMessage(String.format(colorize("&cBanned %s from the house for %s!"), targetPlayer.getName(), duration));
-        } else {
-            house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime("99999d"));
-            player.sendMessage(String.format(colorize("&cBanned %s from the house for %s!"), targetPlayer.getName(), duration));
-        }
+            house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setBanned(true);
+            house.kickPlayerFromHouse(targetPlayer);
+            return 1;
+        } catch (IllegalArgumentException ex) {}
+
+        house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setBanExpiration(DurationString.convertToExpiryTime("99999d"));
+        player.sendMessage(String.format(colorize("&cBanned %s from the house!"), targetPlayer.getName()));
         house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setBanned(true);
         house.kickPlayerFromHouse(targetPlayer);
 
@@ -74,7 +78,7 @@ public interface HousingPunishments {
             return 1;
         }
         OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(target);
-        if (targetPlayer == null || !player.getWorld().getPlayers().contains(targetPlayer)) {
+        if (targetPlayer == null) {
             player.sendMessage("§cPlayer not found!");
             return 1;
         }
@@ -127,16 +131,19 @@ public interface HousingPunishments {
 
         HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
 
-        //Eventually this should be replaced with a custom argument type
-        String duration = context.getArgument("duration", String.class);
-        if (duration == null || duration.isEmpty()) {
+        // i am aware the try/catch is ugly but you can't check if an argument is there
+        try {
+            //Eventually this should be replaced with a custom argument type
+            String duration = context.getArgument("duration", String.class);
             house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime(duration));
+            house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuted(true);
             player.sendMessage(String.format(colorize("&cMuted %s from the house for %s!"), targetPlayer.getName(), duration));
-        } else {
-            house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime("99999d"));
-            player.sendMessage(String.format(colorize("&cMuted %s from the house for %s!"), targetPlayer.getName(), duration));
-        }
+            return 1;
+        } catch (IllegalArgumentException ex) {}
+
+        house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime("99999d"));
         house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuted(true);
+        player.sendMessage(String.format(colorize("&cMuted %s from the house!"), targetPlayer.getName()));
 
         return 1;
     }

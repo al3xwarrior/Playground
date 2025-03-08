@@ -63,7 +63,6 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                         .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.BAN))
                         .then(Commands.argument("target", StringArgumentType.word())
                                 .then(Commands.argument("duration", StringArgumentType.string())
-                                        .suggests(Housing::getPlayerWorldSuggestions)
                                         .executes(this::ban)
                                 )
                                 .suggests(Housing::getPlayerWorldSuggestions)
@@ -127,6 +126,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
     private int tpall(CommandContext<CommandSourceStack> context) {
         Player player = (Player) context.getSource().getSender();
         HousingWorld house = housesManager.getHouse(player.getWorld());
+        player.sendMessage(colorize("&aTeleporting all players to your location"));
         for (Player p : house.getWorld().getPlayers()) {
             p.teleportAsync(player.getLocation());
         }
@@ -141,7 +141,8 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
             String target = StringArgumentType.getString(context, "target");
             Player targetPlayer = Bukkit.getPlayer(target);
             if (targetPlayer != null && house.getWorld().equals(targetPlayer.getWorld())) {
-                targetPlayer.teleportAsync(player.getLocation());
+                player.teleportAsync(targetPlayer.getLocation());
+                player.sendMessage(colorize(String.format("&aTeleporting you to %s", targetPlayer.getName())));
             } else {
                 player.sendMessage(colorize("&cPlayer not found!"));
             }
@@ -149,6 +150,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
             final FinePositionResolver resolver = context.getArgument("location", FinePositionResolver.class);
             final FinePosition finePosition = resolver.resolve(context.getSource());
             player.teleportAsync(finePosition.toLocation(player.getWorld()));
+            player.sendMessage(colorize(String.format("&aTeleporting you to %s, %s, %s", finePosition.blockX(), finePosition.blockY(), finePosition.blockZ())));
         }
 
         return Command.SINGLE_SUCCESS;
