@@ -145,7 +145,7 @@ public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("potion", potionEffectType.getName());
+        data.put("potion", potionEffectType == null ? PotionEffectType.SPEED.getName() : potionEffectType.getName());
         data.put("duration", duration);
         data.put("level", level);
         data.put("hideParticles", hideParticles);
