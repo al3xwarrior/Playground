@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class ProtoolsManager {
     private Main main;
     private Map<UUID, Long> cooldowns;
@@ -114,7 +116,7 @@ public boolean checkSelection(Player player) {
 
     public void setRegionTo(Player player, BlockList blockList) {
         if (!checkSelection(player)) {
-            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
         this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
@@ -124,9 +126,12 @@ public boolean checkSelection(Player player) {
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
         if (blocks.size() > 100 * 100 * 100) {
-            player.sendMessage(Color.colorize("&cThe region is too large!"));
+            player.sendMessage(colorize("&cThe region is too large!"));
             return;
         }
+
+        // error message is probably sent to the player already
+        if (blockList == null) return;
 
         blocks = removeIllegalBlocks(player, blocks);
 
@@ -146,15 +151,15 @@ public boolean checkSelection(Player player) {
         split(changes, taskID);
 
         addUndoStack(player.getUniqueId(), currentState, taskID);
-        player.sendMessage(Color.colorize("&aRegion set successfully!"));
+        player.sendMessage(colorize("&aRegion set successfully!"));
     }
 
     public void setRegionTo(Player player, BlockList from, BlockList to) {
         if (!checkSelection(player)) {
-            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(Color.colorize("&aReplacing region..."));
+        player.sendMessage(colorize("&aReplacing region..."));
         cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
         Location pos1 = selection.getFirst();
@@ -162,7 +167,7 @@ public boolean checkSelection(Player player) {
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
         if (blocks.size() > 100 * 100 * 100) {
-            player.sendMessage(Color.colorize("&cThe region is too large!"));
+            player.sendMessage(colorize("&cThe region is too large!"));
             return;
         }
 
@@ -187,34 +192,34 @@ public boolean checkSelection(Player player) {
         split(changes, taskID);
 
         addUndoStack(player.getUniqueId(), currentState, taskID);
-        player.sendMessage(Color.colorize("&aRegion replaced successfully!"));
+        player.sendMessage(colorize("&aRegion replaced successfully!"));
     }
 
     public void copyToClipboard(Player player) {
         if (!checkSelection(player)) {
-            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(Color.colorize("&aCopying region to clipboard..."));
+        player.sendMessage(colorize("&aCopying region to clipboard..."));
         Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         copiedRegions.put(player.getUniqueId(), cuboid);
-        player.sendMessage(Color.colorize("&aRegion copied to clipboard!"));
+        player.sendMessage(colorize("&aRegion copied to clipboard!"));
     }
 
     public void pasteRegion(Player player) {
         if (!checkSelection(player)) {
-            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(Color.colorize("&aPasting region..."));
+        player.sendMessage(colorize("&aPasting region..."));
         if (copiedRegions.containsKey(player.getUniqueId())) {
             Cuboid cuboid = copiedRegions.get(player.getUniqueId());
             List<Block> blocks = cuboid.getBlocks();
             if (blocks.size() > 100 * 100 * 100) {
-                player.sendMessage(Color.colorize("&cThe region is too large!"));
+                player.sendMessage(colorize("&cThe region is too large!"));
                 return;
             }
 
@@ -240,9 +245,9 @@ public boolean checkSelection(Player player) {
             split(changes, taskID);
 
             addUndoStack(player.getUniqueId(), currentState, taskID);
-            player.sendMessage(Color.colorize("&aRegion pasted successfully!"));
+            player.sendMessage(colorize("&aRegion pasted successfully!"));
         } else {
-            player.sendMessage(Color.colorize("&cYou must copy a region before pasting."));
+            player.sendMessage(colorize("&cYou must copy a region before pasting."));
         }
     }
 
@@ -291,15 +296,18 @@ public boolean checkSelection(Player player) {
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
         if (!checkSelection(player)) {
-            player.sendMessage(Color.colorize("&cYou must have a valid selection to do this."));
+            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
         if (radius > 60) {
-            player.sendMessage(Color.colorize("&cThe radius cannot be greater than 60."));
+            player.sendMessage(colorize("&cThe radius cannot be greater than 60."));
             return;
         }
 
-        player.sendMessage(Color.colorize("&aCreating sphere..."));
+        // error message is probably sent to the player already
+        if (blockList == null) return;
+
+        player.sendMessage(colorize("&aCreating sphere..."));
         // Save the current state of the blocks to enable undo functionality
         List<BlockState> currentState = new ArrayList<>();
 
@@ -331,7 +339,7 @@ public boolean checkSelection(Player player) {
         split(changes, taskID);
 
         addUndoStack(player.getUniqueId(), currentState, taskID);
-        player.sendMessage(Color.colorize("&aSphere created successfully!"));
+        player.sendMessage(colorize("&aSphere created successfully!"));
     }
 
     private void addUndoStack(UUID uuid, List<BlockState> blockStates, int taskID) {
@@ -343,7 +351,7 @@ public boolean checkSelection(Player player) {
     }
 
     public void undo(Player player) {
-        player.sendMessage(Color.colorize("&aUndoing..."));
+        player.sendMessage(colorize("&aUndoing..."));
         UUID uuid = player.getUniqueId();
         if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
             Duple<List<BlockState>, Integer> previousState = undoStacks.get(uuid).pop();
@@ -353,9 +361,9 @@ public boolean checkSelection(Player player) {
             for (BlockState blockState : blockStates) {
                 blockState.update(true, false);
             }
-            player.sendMessage(Color.colorize("&aUndo successful."));
+            player.sendMessage(colorize("&aUndo successful."));
         } else {
-            player.sendMessage(Color.colorize("&cNothing to undo."));
+            player.sendMessage(colorize("&cNothing to undo."));
         }
     }
 
