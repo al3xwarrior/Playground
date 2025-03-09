@@ -2,7 +2,6 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Listeners.HouseEvents.ChatEvent;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import org.bukkit.Material;
@@ -33,7 +32,6 @@ public class HousingMenuClickEvent implements Listener {
 
             // Whole lotta yap but it makes sure the player is house owner, and is clicking the menu
             if (item.getType().equals(Material.NETHER_STAR) && item.getItemMeta().getDisplayName().equals("§dHousing Menu §7(Right-Click)") && housesManager.hasPermissionInHouse(player, Permissions.HOUSING_MENU)) {
-                ChatEvent.isEditing.remove(player.getUniqueId());
                 new HousingMenu(main, player, housesManager.getHouse(player.getWorld())).open();
             }
         }
