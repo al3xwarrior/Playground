@@ -205,6 +205,15 @@ public class JoinLeaveHouse implements Listener {
             VoiceChat.setPlayerGroup(player, null);
         }
 
+        for (Player onlinePlayer : player.getWorld().getPlayers()) {
+            if (!player.canSee(onlinePlayer)) {
+                player.showPlayer(Main.getInstance(), onlinePlayer);
+            }
+            if (!onlinePlayer.canSee(player)) {
+                onlinePlayer.showPlayer(Main.getInstance(), player);
+            }
+        }
+
         // They are not leaving the hub so that means they are leaving another house
         if (!from.getName().equals("world")) {
             leaveHouse(player, housesManager.getHouse(UUID.fromString(from.getName())));

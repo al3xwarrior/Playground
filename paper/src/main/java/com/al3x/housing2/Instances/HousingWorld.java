@@ -1288,4 +1288,6 @@ public class HousingWorld {
     public ResourcePackData getResourcePack() { return resourcePack; }
 
     public void setResourcePack(ResourcePackData resourcePack) { this.resourcePack = resourcePack; }
+
+    public Main getPlugin() { return this.main; }
 }
