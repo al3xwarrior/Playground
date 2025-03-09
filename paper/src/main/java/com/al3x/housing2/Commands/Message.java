@@ -33,7 +33,7 @@ public class Message extends AbstractCommand {
                                     return message(context, context.getSource().getSender(), StringArgumentType.getString(context, "message"), target);
                                 })
                         )
-                ).build(), List.of("msg")
+                ).build(), List.of("msg", "w", "tell")
         );
     }
 
