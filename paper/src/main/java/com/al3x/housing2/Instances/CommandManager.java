@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Commands.*;
+import com.al3x.housing2.Commands.Function;
 import com.al3x.housing2.Commands.Group;
 import com.al3x.housing2.Commands.Protools.ProtoolsRegister;
 import com.al3x.housing2.Main;
@@ -52,6 +53,7 @@ public class CommandManager {
         new ViewGlobalStats(registrar, housesManager);
         new EditGlobalStats(registrar, housesManager);
         new EditPlayerStats(registrar, housesManager);
+        new Function(registrar, housesManager);
 
         //Register the commands inside each house.
         HouseCommands.register(registrar);
