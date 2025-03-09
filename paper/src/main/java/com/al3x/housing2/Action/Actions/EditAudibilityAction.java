@@ -1,34 +1,30 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
-import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.EditVisibilityEnum;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NumberUtilsKt;
-import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.util.*;
 
-public class EditVisibilityAction extends HTSLImpl {
+public class EditAudibilityAction extends HTSLImpl {
     private EditVisibilityEnum mode;
     private String range;
     private List<Condition> conditions;
@@ -37,8 +33,8 @@ public class EditVisibilityAction extends HTSLImpl {
     private static Gson gson = new Gson();
 
 
-    public EditVisibilityAction() {
-        super("Edit Visibility Action");
+    public EditAudibilityAction() {
+        super("Edit Audibility Action");
         mode = EditVisibilityEnum.NEAREST;
         range = "10";
         conditions = new ArrayList<>();
@@ -48,13 +44,13 @@ public class EditVisibilityAction extends HTSLImpl {
 
     @Override
     public String toString() {
-        return "EditVisibilityAction (mode: " + mode + ", range: " + range + ", value: " + value + ", limit: " + limit + ")";
+        return "EditAudibilityAction (mode: " + mode + ", range: " + range + ", value: " + value + ", limit: " + limit + ")";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ENDER_EYE);
-        builder.name("&eEdit Visibility");
+        builder.material(Material.SCULK_SENSOR);
+        builder.name("&eEdit Audibility");
         builder.info("&eSettings", "");
         builder.info("Mode", mode.name());
         builder.info("Range", range);
@@ -69,16 +65,16 @@ public class EditVisibilityAction extends HTSLImpl {
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ENDER_EYE);
-        builder.name("&eEdit Visibility");
-        builder.description("Change the visibility of players.");
+        builder.material(Material.SCULK_SENSOR);
+        builder.name("&eEdit Audibility");
+        builder.description("Change the Audibility of players.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         if (backMenu == null) {
-            return new ActionEditor(6, "&eEdit Visibility Action Settings", new ArrayList<>());
+            return new ActionEditor(6, "&eEdit Audibility Action Settings", new ArrayList<>());
         }
         List<ActionEditor.ActionItem> items = new ArrayList<>();
 
@@ -98,7 +94,7 @@ public class EditVisibilityAction extends HTSLImpl {
                 ActionEditor.ActionItem.ActionType.STRING));
         items.add(new ActionEditor.ActionItem("value",
                 ItemBuilder.create((value ? Material.LIME_DYE : Material.GRAY_DYE))
-                        .name("&eShow player")
+                        .name("&eMake player audible")
                         .info("&7Current Value", "")
                         .info(null, "&a" + value)
                         .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
@@ -119,7 +115,7 @@ public class EditVisibilityAction extends HTSLImpl {
                             .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                     ActionEditor.ActionItem.ActionType.CONDITION));
         }
-        return new ActionEditor(6, "&eEdit Visibility Settings", items);
+        return new ActionEditor(6, "&eEdit Audibility Settings", items);
     }
 
     @Override
@@ -148,8 +144,7 @@ public class EditVisibilityAction extends HTSLImpl {
                 int count = 0;
                 for (Player onlinePlayer : players) {
                     if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor))) {
-                        if (!value) player.hidePlayer(main, onlinePlayer);
-                            else player.showPlayer(main, onlinePlayer);
+                        VoiceChat.editAudibility(player, onlinePlayer, value);
                         count++;
                         if (count > limitValue) return true;
                     }
@@ -161,8 +156,7 @@ public class EditVisibilityAction extends HTSLImpl {
         for (Player onlinePlayer : players) {
             if (onlinePlayer.getLocation().distance(player.getLocation()) > rangeValue) continue;
 
-            if (!value) player.hidePlayer(main, onlinePlayer);
-                else player.showPlayer(main, onlinePlayer);
+            VoiceChat.editAudibility(player, onlinePlayer, value);
 
             count++;
             if (count > limitValue) return true;
@@ -283,6 +277,6 @@ public class EditVisibilityAction extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "editVisibility";
+        return "editAudibility";
     }
 }

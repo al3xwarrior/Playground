@@ -203,6 +203,7 @@ public class JoinLeaveHouse implements Listener {
 
         if (VoiceChat.isPlayerConnected(player)) {
             VoiceChat.setPlayerGroup(player, null);
+            VoiceChat.resetAudibility(player);
         }
 
         for (Player onlinePlayer : player.getWorld().getPlayers()) {

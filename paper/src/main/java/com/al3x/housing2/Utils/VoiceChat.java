@@ -9,8 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 import static com.al3x.housing2.Listeners.HouseEvents.SendExecution.sendEventExecution;
 
@@ -19,6 +18,7 @@ public class VoiceChat implements VoicechatPlugin {
     private static VoicechatApi api;
     private static Main main;
     private static Group transferGroup;
+    private static Map<Player, ArrayList<Player>> audibility = new HashMap<>(); // terrible name but I can't think of anything better
 
     @Override
     public String getPluginId() {
@@ -39,8 +39,15 @@ public class VoiceChat implements VoicechatPlugin {
     public void registerEvents(EventRegistration registration) {
         registration.registerEvent(JoinGroupEvent.class, this::groupJoin);
         registration.registerEvent(CreateGroupEvent.class, this::groupCreate);
+        registration.registerEvent(EntitySoundPacketEvent.class, this::sendVoicePacket);
     }
 
+    private void sendVoicePacket(EntitySoundPacketEvent event) {
+        if (audibility.containsKey(event.getReceiverConnection().getPlayer().getPlayer())) {
+            Player sender = (Player) event.getSenderConnection().getPlayer().getPlayer();
+            if (audibility.get(event.getReceiverConnection().getPlayer().getPlayer()).contains(sender)) event.cancel();
+        }
+    }
     private void groupJoin(JoinGroupEvent event) {
         if (transferGroup != null) if (event.getGroup().equals(transferGroup)) return;
         Player player = (Player) event.getConnection().getPlayer().getPlayer();
@@ -52,6 +59,7 @@ public class VoiceChat implements VoicechatPlugin {
         // Disallow joining groups from other housings
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (!isPlayerConnected(onlinePlayer)) continue;
+            if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).isInGroup()) continue;
             if (!serverApi.getConnectionOf(onlinePlayer.getUniqueId()).getGroup().equals(event.getGroup())) continue; // Online player is in target group
             if (!onlinePlayer.getWorld().equals(player.getWorld())) {
                 event.cancel();
@@ -111,6 +119,7 @@ public class VoiceChat implements VoicechatPlugin {
                 .build();
         connection.setGroup(group);
     }
+
     public static Group getGroup(World world, String name) {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (!isPlayerConnected(onlinePlayer)) continue;
@@ -123,6 +132,7 @@ public class VoiceChat implements VoicechatPlugin {
         }
         return null;
     }
+
     public static void setGroupType(Group group, Group.Type type) {
         if (group.getType() == type) return;
         Group newGroup = serverApi.groupBuilder()
@@ -138,5 +148,26 @@ public class VoiceChat implements VoicechatPlugin {
             serverApi.getConnectionOf(onlinePlayer.getUniqueId()).setGroup(newGroup);
         }
         transferGroup = null;
+    }
+
+    public static void resetAudibility(Player player) {
+        if (!isPlayerConnected(player)) return;
+        audibility.remove(player);
+        for (Player hearer : audibility.keySet()) {
+            audibility.get(hearer).remove(player);
+        }
+    }
+
+    public static void editAudibility(Player player, Player toHear, boolean hear) {
+        if (!isPlayerConnected(player)) return;
+        if (!hear) {
+            if (audibility.containsKey(player)) {
+                audibility.get(player).add(toHear);
+            } else {
+                ArrayList<Player> players = new ArrayList<>();
+                players.add(toHear);
+                audibility.put(player, players);
+            }
+        } else if (audibility.containsKey(player)) audibility.get(player).remove(toHear);
     }
 }

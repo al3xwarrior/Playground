@@ -68,6 +68,7 @@ public enum ActionEnum {
     SET_VOICE_GROUP("Set Voice Group Action", SetVoiceGroupAction.class),
     EDIT_VOICE_GROUP("Edit Voice Group Action", EditVoiceGroupAction.class),
     EDIT_VISIBILITY("Edit Visibility Action", EditVisibilityAction.class),
+    EDIT_AUDIBILITY("Edit Audibility Action", EditAudibilityAction.class),
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;
