@@ -137,13 +137,13 @@ public interface HousingPunishments {
             String duration = context.getArgument("duration", String.class);
             house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime(duration));
             house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuted(true);
-            player.sendMessage(String.format(colorize("&cMuted %s from the house for %s!"), targetPlayer.getName(), duration));
+            player.sendMessage(String.format(colorize("&cMuted %s in this house for %s!"), targetPlayer.getName(), duration));
             return 1;
         } catch (IllegalArgumentException ex) {}
 
         house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuteExpiration(DurationString.convertToExpiryTime("99999d"));
         house.getPlayersData().get(targetPlayer.getUniqueId().toString()).setMuted(true);
-        player.sendMessage(String.format(colorize("&cMuted %s from the house!"), targetPlayer.getName()));
+        player.sendMessage(String.format(colorize("&cMuted %s in this house!"), targetPlayer.getName()));
 
         return 1;
     }
