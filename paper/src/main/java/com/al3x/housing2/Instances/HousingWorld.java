@@ -105,6 +105,7 @@ public class HousingWorld {
     private boolean keepInventory;
     private String lockedReason = "";
     private ResourcePackData resourcePack;
+    private boolean randomTicks;
 
     public HouseData houseData;
 
@@ -268,6 +269,7 @@ public class HousingWorld {
 
         this.radioSongPlayer.setPlaying(houseData.getJukeboxPlaying() != null ? houseData.getJukeboxPlaying() : true);
         this.resourcePack = houseData.getResourcePack();
+        this.randomTicks = Boolean.TRUE.equals(houseData.getRandomTicks());
     }
 
     private void setupDataAfterLoad(OfflinePlayer owner) {
@@ -337,6 +339,7 @@ public class HousingWorld {
         houseWorld.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         houseWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false); // No natural mob spawning
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, this.weatherCycle);
+        houseWorld.setGameRule(GameRule.RANDOM_TICK_SPEED, this.getRandomTicks() ? 0 : 3);
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
         TrashCanListener.initTrashCans(trashCans);
     }
@@ -1288,6 +1291,15 @@ public class HousingWorld {
     public ResourcePackData getResourcePack() { return resourcePack; }
 
     public void setResourcePack(ResourcePackData resourcePack) { this.resourcePack = resourcePack; }
+
+    public boolean getRandomTicks() {
+        return randomTicks;
+    }
+
+    public void setRandomTicks(boolean randomTicks) {
+        houseWorld.setGameRule(GameRule.RANDOM_TICK_SPEED, randomTicks ? 0 : 3);
+        this.randomTicks = randomTicks;
+    }
 
     public Main getPlugin() { return this.main; }
 }
