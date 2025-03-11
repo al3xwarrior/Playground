@@ -62,6 +62,10 @@ public class ResourcePackController {
             String packUuid = UUID.randomUUID().toString();
             Files.copy(archive.stream(), new File(main.getDataFolder(), String.format("pack_objects/%s.zip", packUuid)).toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+            for (Player guest : session.house.getWorld().getPlayers()) {
+                main.getResourcePackManager().removeResourcePack(guest, session.house);
+            }
+
             ResourcePackData resourcePack = new ResourcePackData(
                     packUuid,
                     "This house uses a custom resource pack.",

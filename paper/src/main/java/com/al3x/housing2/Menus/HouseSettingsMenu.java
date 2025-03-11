@@ -122,7 +122,21 @@ public class HouseSettingsMenu extends Menu {
             }
         });
 
-        addItem(20, ItemBuilder.create(Material.BOOK)
+        addItem(20, ItemBuilder.create(Material.OAK_SAPLING)
+                .name(colorize("&aRandom Ticks"))
+                .description("Click to toggle random ticks in your house.")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            if (house.getRandomTicks()) {
+                house.setRandomTicks(false);
+                player.sendMessage(colorize("&eEnabled &aRandom Ticks"));
+            } else {
+                house.setRandomTicks(true);
+                player.sendMessage(colorize("&eDisabled &cRandom Ticks"));
+            }
+        });
+
+        addItem(21, ItemBuilder.create(Material.BOOK)
                 .name(colorize("&aResource Pack"))
                 .description(colorize("Manage the custom resource pack in your house.")) // \n\n&cWarning: Your pack needs to be approved by a moderator before it can be used!"))
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
