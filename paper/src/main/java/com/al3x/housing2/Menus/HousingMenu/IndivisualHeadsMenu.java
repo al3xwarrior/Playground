@@ -45,7 +45,7 @@ public class IndivisualHeadsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         if (search.isEmpty()) {
             setTitle(colorize("&8" + category + " Heads (" + currentPage + "/" + (heads.size() / slots.length + 1) + ")"));
         } else {

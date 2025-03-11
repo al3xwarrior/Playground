@@ -46,7 +46,7 @@ public class NavigationMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         ItemBuilder modeBuilder = ItemBuilder.create(Material.COMPASS)
                 .name("&aMode")
                 .info("&eCurrent Value", "")

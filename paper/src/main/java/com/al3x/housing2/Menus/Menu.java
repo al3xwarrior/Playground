@@ -1,5 +1,8 @@
 package com.al3x.housing2.Menus;
 
+import com.al3x.housing2.Events.MenuSetupItemsEvent;
+import com.al3x.housing2.Events.OpenActionMenuEvent;
+import com.al3x.housing2.Events.OpenMenuEvent;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -41,18 +44,47 @@ public abstract class Menu {
         this.size = size;
     }
 
-    public abstract void setupItems();
+    @Deprecated() // Use setupItems instead
+    public abstract void initItems();
+
+    public void setupItems() {
+        MenuSetupItemsEvent.Pre event = new MenuSetupItemsEvent.Pre(player, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
+        initItems();
+
+        MenuSetupItemsEvent.Post postEvent = new MenuSetupItemsEvent.Post(player, this);
+        Bukkit.getPluginManager().callEvent(postEvent);
+    }
 
     public void clearItems() {
         leftClickActions.clear();
         rightClickActions.clear();
+        shiftLeftClickActions.clear();
+        anyClickActions.clear();
         inventory.clear();
     }
 
     // Opens the menu for the player
     public void open() {
+        OpenMenuEvent event = new OpenMenuEvent(this, player, Main.getInstance());
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+            }
+            MenuManager.setWindowOpen(player, this);
+            MenuManager.setMenu(player, this);
+            return;
+        }
+
         this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
+
         setupItems();
+
         if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
                 AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
         }
@@ -67,23 +99,7 @@ public abstract class Menu {
     // Handles the click event by running the corresponding action
     public void handleClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == inventory) {
-            event.setCancelled(isCancelled());
-
-            int slot = event.getRawSlot();
-            Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
-            Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
-            Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
-            Consumer<InventoryClickEvent> anyAction = anyClickActions.get(slot);
-
-            if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
-                leftAction.accept(event); // Run the left-click action
-            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
-                rightAction.accept(event); // Run the right-click action
-            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
-                shiftLeftAction.accept(event); // Run the shift-left-click action
-            } else if (anyClickActions.get(slot) != null) {
-                anyAction.accept(event);
-            }
+            handleExternalClick(event);
         }
     }
 
@@ -117,6 +133,10 @@ public abstract class Menu {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public ItemStack getItem(int slot) {
+        return inventory.getItem(slot);
     }
 
     // Helper method to add an item and bind actions to its slot

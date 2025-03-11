@@ -16,7 +16,7 @@ public class ChangeMenuSizeMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         Main main = Main.getInstance();
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
 

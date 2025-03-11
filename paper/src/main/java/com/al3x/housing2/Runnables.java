@@ -198,11 +198,12 @@ public class Runnables {
                     }
                 }
             }
-        }.runTaskTimer(main, 0L, 5L)); // might lower this. Right now it matches housings 2 second refresh. I will do it for you Al3x - Sin_ender <3
+        }.runTaskTimer(main, 0L, 5L));
 
         runnables.put("checkRegion", new BukkitRunnable() {
             @Override
             public void run() {
+                //O(N)^4 esh glad this is async
                 for (HousingWorld house : main.getHousesManager().getConcurrentLoadedHouses().values()) {
                     for (Player player : house.getWorld().getPlayers()) {
                         house.getRegions().forEach(region -> {

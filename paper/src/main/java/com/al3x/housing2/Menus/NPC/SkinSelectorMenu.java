@@ -60,7 +60,7 @@ public class SkinSelectorMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
         PaginationList<SkinData> skins = getPage();

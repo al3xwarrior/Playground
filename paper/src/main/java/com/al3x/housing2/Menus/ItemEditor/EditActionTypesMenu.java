@@ -22,7 +22,7 @@ public class EditActionTypesMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         Main main = Main.getInstance();
         HousingWorld housingWorld = main.getHousesManager().getHouse(player.getWorld());
         addItem(11, ItemBuilder.create(Material.IRON_SWORD)

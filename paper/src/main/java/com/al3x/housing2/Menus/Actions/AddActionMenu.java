@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.OpenMenuEvent;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -16,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -74,6 +76,17 @@ public class AddActionMenu extends Menu {
 
     @Override
     public void open() {
+        OpenMenuEvent event = new OpenMenuEvent(this, player, Main.getInstance());
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+            }
+            MenuManager.setWindowOpen(player, this);
+            MenuManager.setMenu(player, this);
+            return;
+        }
+
         this.inventory = Bukkit.createInventory(null, 54, "§aAdd Action (" + page + "/" + getActions().getPageCount() + ")");
         setupItems();
         MenuManager.setMenu(player, this);
@@ -81,7 +94,7 @@ public class AddActionMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 

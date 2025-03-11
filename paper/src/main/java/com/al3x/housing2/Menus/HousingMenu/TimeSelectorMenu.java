@@ -27,7 +27,7 @@ public class TimeSelectorMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         for (int i = 0; i < 9; i++) {
             int finalI = i;

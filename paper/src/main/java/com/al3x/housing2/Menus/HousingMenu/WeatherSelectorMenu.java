@@ -28,7 +28,7 @@ public class WeatherSelectorMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         addItem(11, ItemBuilder.create(Material.SUNFLOWER)
                 .name(colorize("&aSunny"))

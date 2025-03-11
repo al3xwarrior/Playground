@@ -20,6 +20,7 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundWebsocket;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -48,6 +49,7 @@ public class ActionsMenu extends Menu {
     private Action cachedAction;
     private Condition cachedCondition;
     private String varName = null;
+    private String search = "";
     //1 is the new 0
     private List<Action> parentActions = new ArrayList<>();
     private int currentPage = 1;
@@ -186,7 +188,7 @@ public class ActionsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
         int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
         if (update != null) update.run();
@@ -249,7 +251,7 @@ public class ActionsMenu extends Menu {
             }
 
             if (cachedCondition != null) {
-                addItem(51,
+                addItem(52,
                         ItemBuilder.create(Material.CAULDRON)
                                 .name("&aRestore Condition")
                                 .description("Restore the condition you last removed along with its settings.\n\nAction: " + cachedCondition.getName())
@@ -276,7 +278,15 @@ public class ActionsMenu extends Menu {
                 menu.open();
             });
         } else { // Actions
-            PaginationList<Action> paginationList = new PaginationList<>(actions, allowedSlots.length);
+
+            List<Action> as = new ArrayList<>();
+            for (Action action : this.actions) {
+                if (search.isEmpty() || action.getName().toLowerCase().contains(search.toLowerCase())) {
+                    as.add(action);
+                }
+            }
+
+            PaginationList<Action> paginationList = new PaginationList<>(as, allowedSlots.length);
             List<Action> actions = paginationList.getPage(currentPage);
 
             if (actions == null || actions.isEmpty()) {
@@ -340,7 +350,7 @@ public class ActionsMenu extends Menu {
                 }
 
                 if (cachedAction != null) {
-                    addItem(51,
+                    addItem(52,
                             ItemBuilder.create(Material.CAULDRON)
                                     .name("&aRestore Action")
                                     .description("Restore the action you last removed along with its settings.\n\nAction: " + cachedAction.getName())
@@ -428,6 +438,31 @@ public class ActionsMenu extends Menu {
                 menu.open();
             });
         }
+
+        addItem(51, ItemBuilder.create(Material.ANVIL)
+                .name("&aSearch")
+                .description("Search for an action or condition.")
+                .info("&7Current Value ", "")
+                .info(null, search)
+                .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
+                .rClick(ItemBuilder.ActionType.CLEAR_SEARCH)
+                .build(), () -> {
+            player.sendMessage(colorize("&aSearch for an action or condition."));
+            openChat(main, search, (message) -> {
+                if (message == null || message.isEmpty()) {
+                    setupItems();
+                    return;
+                }
+
+                search = message;
+
+                Bukkit.getScheduler().runTask(main, this::open);
+            });
+        }, () -> {
+            search = "";
+            setupItems();
+        });
+
 
         if (currentPage > 1) {
             ItemStack previous = new ItemStack(Material.ARROW);

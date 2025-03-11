@@ -47,7 +47,7 @@ public class BiomeStickMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         PaginationList<Biome> paginationList = getBiomes();
         List<Biome> biomeList = paginationList.getPage(page);
 

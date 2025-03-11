@@ -40,7 +40,7 @@ public class JukeboxMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         List<String> songNames = JukeBoxManager.getSongNames();
         if (songNames == null) {
             addItem(22, ItemBuilder.create(Material.BEDROCK)

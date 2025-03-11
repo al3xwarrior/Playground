@@ -36,7 +36,7 @@ public class EditMenuElementsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         Main main = Main.getInstance();
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
         List<Duple<ItemStack, List<Action>>> items = customMenu.getItems();

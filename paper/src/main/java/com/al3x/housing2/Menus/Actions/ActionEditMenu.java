@@ -138,7 +138,7 @@ public class ActionEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         if (update != null) update.run();
 
         clearItems();

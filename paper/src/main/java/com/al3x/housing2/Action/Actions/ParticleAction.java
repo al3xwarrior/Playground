@@ -686,7 +686,7 @@ public class ParticleAction extends HTSLImpl {
                     continue;
                 }
                 switch (key) {
-                    case "size" -> size = NumberUtilsKt.toFloat((Double) data.get("size"));
+                    case "size" -> size = NumberUtilsKt.isDouble(data.get("size").toString()) ? Float.parseFloat(data.get("size").toString()) : 1F;
                     case "color" -> color1 = (String) data.get("color");
                     case "color2" -> color2 = (String) data.get("color2");
                 }

@@ -41,7 +41,7 @@ public class CustomMenuViewer extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
         if (!player.getWorld().getName().equals(house.getHouseUUID().toString())) {
             task.cancel();

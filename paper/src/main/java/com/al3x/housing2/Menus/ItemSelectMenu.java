@@ -26,7 +26,7 @@ public class ItemSelectMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         for (int i = 0; i < 27; i++) {
             ItemBuilder builder = new ItemBuilder();
             builder.material(Material.GRAY_STAINED_GLASS_PANE);

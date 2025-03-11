@@ -50,7 +50,7 @@ public class EntitySettingsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         addItem(10, ItemBuilder.create(Material.STONE_SWORD)
                 .name("&eCan Be Damaged")
                 .description("Toggle if the NPC can be damaged")
@@ -142,7 +142,7 @@ public class EntitySettingsMenu extends Menu {
         }
 
         @Override
-        public void setupItems() {
+        public void initItems() {
             addEventActionItem(10, Material.SKELETON_SKULL, "&aNPC Death", "&7Executes when the NPC dies.", EventType.NPC_DEATH);
             addEventActionItem(11, Material.FIRE_CHARGE, "&aNPC Damage", "&7Executes when the NPC takes damage.", EventType.NPC_DAMAGE);
             addEventActionItem(12, Material.CHERRY_TRAPDOOR, "&aNPC Swim/Crawl", "&7Executes when the NPC swims or crawls.", EventType.ENTITY_SWIM_CRAWL);

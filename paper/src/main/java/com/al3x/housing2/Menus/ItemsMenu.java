@@ -33,7 +33,7 @@ public class ItemsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         int slot = 0;
         if (house.hasPermission(player, Permissions.ITEM_MAILBOX)) {
             ItemStack mailbox = getCustomSkull("b4bd9dd128c94c10c945eadaa342fc6d9765f37b3df2e38f7b056dc7c927ed");

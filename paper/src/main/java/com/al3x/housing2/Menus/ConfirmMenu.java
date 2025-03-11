@@ -31,7 +31,7 @@ public class ConfirmMenu extends Menu{
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         addItem(11, ItemBuilder.create(Material.GREEN_TERRACOTTA)
                 .name(colorize("&aConfirm"))
                 .build(), () -> {

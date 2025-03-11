@@ -28,7 +28,7 @@ public class EventActionsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         if (page == 1) {
             addEventActionItem(10, Material.OAK_DOOR, "&aPlayer Join", "&7Executes when a player joins the House.", EventType.PLAYER_JOIN);
             addEventActionItem(11, Material.SPRUCE_DOOR, "&aPlayer Quit", "&7Executes when a player leaves the House.", EventType.PLAYER_QUIT);

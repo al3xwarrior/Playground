@@ -38,7 +38,7 @@ public class EntityChooseMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         addEntityItem(0, Material.PLAYER_HEAD, "&aPlayer", EntityType.PLAYER);
         addEntityItem(1, Material.ZOMBIE_SPAWN_EGG, "&aZombie", EntityType.ZOMBIE);
         addEntityItem(2, Material.SKELETON_SPAWN_EGG, "&aSkeleton", EntityType.SKELETON);

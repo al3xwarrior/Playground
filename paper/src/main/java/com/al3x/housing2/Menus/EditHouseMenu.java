@@ -34,7 +34,7 @@ public class EditHouseMenu extends Menu{
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         // Change Icon Item
         String hIcon = houseData.getIcon() == null ? "OAK_DOOR" : houseData.getIcon();
         ItemStack item;

@@ -24,7 +24,7 @@ public class ResourcePackMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         addItem(31, ItemBuilder.create(Material.ARROW)
                 .name(colorize("&cGo Back"))
                 .build(), () -> new HouseSettingsMenu(main, player, house).open());

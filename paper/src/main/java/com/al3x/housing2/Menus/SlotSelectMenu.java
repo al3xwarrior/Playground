@@ -32,7 +32,7 @@ public class SlotSelectMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         //Helmet
         addItem(1, ItemBuilder.create(Material.CHAINMAIL_HELMET).name("&aHelmet")
                 .description("&8Manual Slot 103")

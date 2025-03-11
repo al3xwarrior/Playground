@@ -37,7 +37,7 @@ public class CustomItemBrowserMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         PaginationList<CustomItem> paginationList = getItems();
         List<CustomItem> itemList = paginationList.getPage(page);

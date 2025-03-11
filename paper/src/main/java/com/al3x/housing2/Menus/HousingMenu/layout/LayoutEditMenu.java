@@ -41,7 +41,7 @@ public class LayoutEditMenu extends Menu {
     //I dont know where to put Rename and Description so uhh yeah :) -Sin_ender
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
 
         List<ItemStack> inventory = layout.getInventory();

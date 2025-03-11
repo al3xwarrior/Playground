@@ -42,7 +42,7 @@ public class HouseBrowserMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         PaginationList<HouseData> paginationList = getHouses();
         List<HouseData> houseList = paginationList.getPage(page);
 

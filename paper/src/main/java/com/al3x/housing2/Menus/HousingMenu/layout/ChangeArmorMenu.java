@@ -31,7 +31,7 @@ public class ChangeArmorMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         //Helmet
         ItemStack helmet = layout.getArmor().get(3);
         addItem(13, helmet == null ? ItemBuilder.create(Material.CHAINMAIL_HELMET)

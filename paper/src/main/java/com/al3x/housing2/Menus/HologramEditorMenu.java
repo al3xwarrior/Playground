@@ -60,7 +60,7 @@ public class HologramEditorMenu extends Menu {
     int[] slots = new int[] {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         if (menu == null) {
             addItem(31 + add, ItemBuilder.create(Material.BARRIER).name("&cClose").build(), () -> player.closeInventory());
         } else {
@@ -171,7 +171,7 @@ public class HologramEditorMenu extends Menu {
         }
 
         @Override
-        public void setupItems() {
+        public void initItems() {
             addItem(31, ItemBuilder.create(Material.ARROW).name("&aBack").build(), () -> new HologramEditorMenu(main, player, hologram).open());
             addItem(10, ItemBuilder.create(Material.PAPER).description("Scale set for each direction.").name("&aScale").info("&eCurrent Value", "").info(null, hologram.getScale()).lClick(EDIT_YELLOW).build(), () -> {
                 player.sendMessage("§eEnter the new scale (x,y,z):");

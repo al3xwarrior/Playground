@@ -32,7 +32,7 @@ public class EquipmentMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         String[] equipmentnames = new String[] {
                 "Helmet", "Chestplate", "Leggings", "Boots", "Main Hand", "Off Hand"
         };

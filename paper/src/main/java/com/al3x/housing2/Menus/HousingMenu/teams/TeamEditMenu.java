@@ -27,7 +27,7 @@ public class TeamEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         int[] slots = {11, 13, 15, 29, 31, 33};
 
         int i = 0;

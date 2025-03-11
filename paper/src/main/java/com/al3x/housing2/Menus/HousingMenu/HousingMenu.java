@@ -36,7 +36,7 @@ public class HousingMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
         ItemMeta playerListingMeta = playerListing.getItemMeta();

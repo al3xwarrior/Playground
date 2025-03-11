@@ -44,7 +44,7 @@ public class MyHousesMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         // only valid slot for now is 13
 
 

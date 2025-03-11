@@ -58,7 +58,7 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
 
         PaginationList<E> paginationList = getItems(enums, player, material);

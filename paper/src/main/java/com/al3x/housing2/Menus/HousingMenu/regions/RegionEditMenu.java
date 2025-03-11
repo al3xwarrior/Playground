@@ -29,7 +29,7 @@ public class RegionEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         //Rename Region
         addItem(12, ItemBuilder.create(Material.NAME_TAG)
                 .name(colorize("&aRename Region"))

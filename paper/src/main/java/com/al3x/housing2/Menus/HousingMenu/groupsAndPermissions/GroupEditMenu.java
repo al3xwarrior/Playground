@@ -49,7 +49,7 @@ public class GroupEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         int[] slots = {10, 12, 14, 16, 29, 31, 33};
 
         int i = 0;

@@ -66,7 +66,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.3.0") { // replace $version with the latest version
         // Optionally disable audio natives to reduce jar size by excluding `opus-java`
         // Gradle DSL:
-        // exclude module: 'opus-java'
+         exclude module: 'opus-java'
         // Kotlin DSL:
         // exclude(module="opus-java")
     }
@@ -112,8 +112,21 @@ java {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "releasesRepo"
+            url = "https://repo.redstone.llc/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
+            groupId = "com.al3x"
+            artifactId = "Playground"
+            version = "1.0.2"
             from components.java
         }
     }

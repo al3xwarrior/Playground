@@ -33,7 +33,7 @@ public class EditItemMainMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         clearItems();
 
         Item customItem = Item.fromItemStack(player.getInventory().getItemInMainHand());

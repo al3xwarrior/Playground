@@ -35,7 +35,7 @@ public class HeadsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         HeadDatabaseAPI headDatabaseAPI = main.getHeadDatabaseAPI();
 
         // Alphabet

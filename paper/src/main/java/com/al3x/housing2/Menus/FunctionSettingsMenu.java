@@ -25,7 +25,7 @@ public class FunctionSettingsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         //Rename Function
         addItem(10, ItemBuilder.create(Material.ANVIL)

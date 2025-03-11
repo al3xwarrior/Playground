@@ -26,7 +26,7 @@ public class CommandEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         //Rename Command
         addItem(11, ItemBuilder.create(Material.ANVIL)
                 .name(colorize("&aRename Command"))

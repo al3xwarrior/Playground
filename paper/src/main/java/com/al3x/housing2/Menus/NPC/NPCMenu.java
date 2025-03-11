@@ -41,7 +41,7 @@ public class NPCMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         ItemStack editHologram = new ItemStack(Material.ANVIL);
         ItemMeta editHologramMeta = editHologram.getItemMeta();
         editHologramMeta.setDisplayName(colorize("&aEdit Hologram"));

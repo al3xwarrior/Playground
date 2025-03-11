@@ -28,7 +28,7 @@ public class HouseSettingsMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
 
         addItem(10, ItemBuilder.create(Material.CLOCK)
                 .name(colorize("&aTime Selector"))

@@ -22,7 +22,7 @@ public class EditFlagMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         ItemStack item = player.getInventory().getItemInMainHand();
         ItemMeta meta = item.getItemMeta();
 

@@ -104,7 +104,7 @@ public class LaunchPad {
         }
 
         @Override
-        public void setupItems() {
+        public void initItems() {
             addItem(11, ItemBuilder.create(Material.COMPASS)
                             .name("&aPush Direction")
                             .description("&7Set the direct the player is to be pushed in!")

@@ -29,7 +29,7 @@ public class CommandArugmentEditMenu extends Menu {
     }
 
     @Override
-    public void setupItems() {
+    public void initItems() {
         //Rename Argument
         addItem(11, ItemBuilder.create(Material.ANVIL)
                 .name(colorize("&aRename Argument"))
