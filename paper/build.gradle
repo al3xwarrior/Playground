@@ -63,6 +63,13 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.6'
     implementation 'com.github.ShieldCommunity:SternalBoard:84b5137622'
     compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.27"
+    implementation("net.dv8tion:JDA:5.3.0") { // replace $version with the latest version
+        // Optionally disable audio natives to reduce jar size by excluding `opus-java`
+        // Gradle DSL:
+        // exclude module: 'opus-java'
+        // Kotlin DSL:
+        // exclude(module="opus-java")
+    }
 
     // resource packs
     implementation 'io.jooby:jooby:3.6.1'

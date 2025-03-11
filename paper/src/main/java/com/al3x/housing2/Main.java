@@ -51,6 +51,7 @@ public final class Main extends JavaPlugin implements Listener {
     private VoiceChat voiceChat;
     private PlaygroundWeb playgroundWeb;
     private ResourcePackManager resourcePackManager;
+    private PlaygroundBot playgroundBot;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -68,6 +69,17 @@ public final class Main extends JavaPlugin implements Listener {
         loader = new FileLoader(new File("./slime_worlds"));
 
         saveDefaultConfig();
+
+        if (getConfig().contains("bot_key") && !Objects.equals(getConfig().getString("bot_key"), "") && getConfig().contains("guild_id") && !Objects.equals(getConfig().getString("guild_id"), "")) {
+            try {
+                playgroundBot = new PlaygroundBot(getConfig().getString("bot_key"), getConfig().getString("guild_id"));
+                getLogger().info("Discord bot properly loaded!");
+            } catch (InterruptedException e) {
+                getLogger().warning("Discord Bot didn't initialize properly.");
+            }
+        } else {
+            getLogger().warning("Discord bot key and/or guild id not found in config.yml. Discord bot will not be loaded.");
+        }
 
         if (getConfig().contains("mineskin_key") && !Objects.equals(getConfig().getString("mineskin_key"), "your-mineskin-key")) {
             mineSkinKey = getConfig().getString("mineskin_key");
@@ -249,5 +261,9 @@ public final class Main extends JavaPlugin implements Listener {
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
+    }
+
+    public PlaygroundBot getPlaygroundBot() {
+        return playgroundBot;
     }
 }
