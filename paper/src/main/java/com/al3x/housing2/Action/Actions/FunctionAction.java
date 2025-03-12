@@ -1,10 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingData.FunctionData;
@@ -83,25 +81,24 @@ public class FunctionAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (function == null) {
-            return false;
+            return OutputType.ERROR;
         }
         Function functionData = house.getFunction(function);
         if (functionData == null) {
-            return false;
+            return OutputType.ERROR;
         }
         if (runForAllPlayers) {
-            functionData.execute(Main.getInstance(), null, null, house, false, executor);
+            return functionData.execute(Main.getInstance(), null, null, house, false, executor);
         } else {
-            functionData.execute(Main.getInstance(), player, player, house, false, executor);
+            return functionData.execute(Main.getInstance(), player, player, house, false, executor);
         }
-        return true;
     }
 
     @Override

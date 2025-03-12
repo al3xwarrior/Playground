@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -79,24 +80,24 @@ public class RandomAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (subActions.isEmpty()) {
-            return true;
+            return OutputType.SUCCESS;
         }
 
         ActionExecutor executor1 = new ActionExecutor("random", new ArrayList<>(Collections.singletonList(subActions.get((int) (house.getRandom().nextDouble() * subActions.size())))));
-        executor1.setParent(executor);
-        executor.addChild(executor1);
-        return true;
+        executor1.setLimits(executor.getLimits());
+        return executor1.execute(player, house, event);
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+
         execute(player, house, event, executor);
     }
 

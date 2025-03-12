@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
@@ -224,12 +221,12 @@ public class GlobalStatAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
 
         if (name.contains(" ")) {
             player.sendMessage(colorize("&cStat name cannot contain spaces!"));
-            return false;
+            return OutputType.ERROR;
         }
 
         Stat stat = house.getStatManager().getGlobalStatByName(name);
@@ -244,14 +241,14 @@ public class GlobalStatAction extends HTSLImpl {
             if (house.getStatManager().hasGlobalStat(name)) {
                 house.getStatManager().getGlobalStats().remove(stat);
             }
-            return true;
+            return OutputType.SUCCESS;
         }
 
         if (!house.getStatManager().hasGlobalStat(name)) {
             house.getStatManager().getGlobalStats().add(stat);
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public String getStatName() {

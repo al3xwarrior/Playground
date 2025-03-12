@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Duple;
@@ -96,26 +97,26 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
         if (subActions.isEmpty()) {
-            return true;
+            return OutputType.SUCCESS;
         }
 
         String times = HandlePlaceholders.parsePlaceholders(player, house, this.times);
 
         if (!NumberUtilsKt.isInt(times)) {
-            return true;
+            return OutputType.ERROR;
         }
 
         int timesInt = Integer.parseInt(times);
         if (timesInt < 1) {
-            return true;
+            return OutputType.ERROR;
         }
         if (timesInt > 20) {
             timesInt = 20;
@@ -124,15 +125,15 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
         for (int i = 0; i < timesInt; i++) {
             ActionExecutor executor = new ActionExecutor("repeat");
             executor.addActions(subActions);
-            executor.setParent(oldExecutor);
-            oldExecutor.addChild(executor);
+            executor.setLimits(oldExecutor.getLimits());
+            executor.execute(player, house, event);
         }
 
-        return true;
+        return OutputType.RUNNING;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         execute(player, house, event, executor);
     }
 

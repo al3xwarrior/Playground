@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.Actions.Utils.ParticleUtils;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -490,13 +491,13 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
         if (location == null) {
-            return true;
+            return OutputType.ERROR;
         }
         summonParticles(player, house, location);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     private Location locationFromLocations(Player player, HousingWorld house, Location base, Locations location, String customLocation) {

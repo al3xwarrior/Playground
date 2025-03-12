@@ -2,6 +2,7 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -45,8 +46,8 @@ public class Function {
         this.global = global;
     }
 
-    public void execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
-        if (!loaded) return;
+    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
+        if (!loaded) return OutputType.ERROR;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
         if (global && automatic) {
@@ -64,8 +65,9 @@ public class Function {
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
             executor.execute(p, p, house, (Cancellable) null);
-//            executor.execute(entity, p, house, null);
         }
+
+        return OutputType.SUCCESS;
     }
 
     public String getName() {

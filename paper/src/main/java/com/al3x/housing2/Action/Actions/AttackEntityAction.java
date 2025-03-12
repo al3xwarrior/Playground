@@ -7,6 +7,7 @@ import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
@@ -109,16 +110,16 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.ERROR; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {
-            return true;
+            return OutputType.ERROR;
         }
         double rangeValue = Double.parseDouble(range);
         double damageValue = Double.parseDouble(value);
@@ -154,7 +155,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
                         }
                     }
                 }
-                return true;
+                return OutputType.SUCCESS;
         }
 
         for (Entity entity : entities) {
@@ -163,11 +164,12 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {

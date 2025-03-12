@@ -1,10 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.NPCAction;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import de.maxhenkel.voicechat.api.events.Event;
@@ -19,6 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.al3x.housing2.Action.OutputType.SUCCESS;
 import static com.al3x.housing2.Enums.EventType.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -50,20 +49,14 @@ public class CancelAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return SUCCESS;
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
         event.setCancelled(true);
-        return true;
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house, Event event) {
-        event.cancel();
-        return true;
+        return SUCCESS;
     }
 
     @Override
@@ -90,7 +83,7 @@ public class CancelAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         event.setCancelled(true);
     }
 }

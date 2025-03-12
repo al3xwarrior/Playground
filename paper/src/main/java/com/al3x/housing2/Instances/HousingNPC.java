@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.NavigationType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.HologramData;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingData.NPCData;
@@ -316,7 +317,7 @@ public class HousingNPC {
         citizensNPC.setBukkitEntityType(entityType);
     }
 
-    public void sendExecuteActions(HousingWorld house, Player player, Cancellable event) {
+    public void sendExecuteActions(HousingWorld house, Player player, CancellableEvent event) {
         if (actions != null) {
             ActionExecutor executor = new ActionExecutor("npc");
             executor.addActions(actions);
@@ -390,7 +391,7 @@ public class HousingNPC {
         this.citizensNPC.spawn(location);
     }
 
-    public boolean executeEventActions(HousingWorld house, EventType eventType, Player player, Cancellable event) {
+    public boolean executeEventActions(HousingWorld house, EventType eventType, Player player, CancellableEvent event) {
         if (house.isAdminMode(player)) return false;
 
         List<Action> actions = eventActions.get(eventType);

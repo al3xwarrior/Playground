@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
@@ -217,8 +214,8 @@ public class PlayerStatAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        if (player == null) return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        if (player == null) return OutputType.ERROR;
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
         Stat stat = house.getStatManager().getPlayerStatByName(player, name);
 
@@ -232,14 +229,14 @@ public class PlayerStatAction extends HTSLImpl {
             if (house.getStatManager().hasStat(player, name)) {
                 house.getStatManager().getPlayerStats(player).remove(stat);
             }
-            return true;
+            return OutputType.SUCCESS;
         }
 
         if (!house.getStatManager().hasStat(player, name)) {
             house.getStatManager().addPlayerStat(player, stat);
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public String getStatName() {

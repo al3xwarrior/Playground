@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousesManager;
@@ -137,75 +138,75 @@ public class GiveItemAction extends Action {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        if (item == null) return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        if (item == null) return OutputType.ERROR;
         int slot = (int) this.slot;
 
         if (player.getInventory().contains(item) && !allowMultiple) {
-            return true;
+            return OutputType.ERROR;
         }
 
         if (slot == -2) {
             if (!player.getInventory().getItemInMainHand().isEmpty() && !replaceExistingSlot) {
-                return true;
+                return OutputType.ERROR;
             }
             player.getInventory().setItemInMainHand(item);
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == -106 || slot == -3) {
             if (!player.getInventory().getItemInOffHand().isEmpty() && !replaceExistingSlot) {
-                return true;
+                return OutputType.ERROR;
             }
             player.getInventory().setItemInOffHand(item);
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == -1) {
             player.getInventory().addItem(item);
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot >= 0 && slot < 36) {
             if (player.getInventory().getItem(slot) == null || replaceExistingSlot) {
                 player.getInventory().setItem(slot, item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == 100) {
             if (player.getInventory().getBoots() == null || replaceExistingSlot) {
                 player.getInventory().setBoots(item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == 101) {
             if (player.getInventory().getLeggings() == null || replaceExistingSlot) {
                 player.getInventory().setLeggings(item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == 102) {
             if (player.getInventory().getChestplate() == null || replaceExistingSlot) {
                 player.getInventory().setChestplate(item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot == 103) {
             if (player.getInventory().getHelmet() == null || replaceExistingSlot) {
                 player.getInventory().setHelmet(item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
         if (slot >= 80 && slot <= 83) {
             if (player.getInventory().getItem(slot) == null || replaceExistingSlot) {
                 player.getInventory().setItem(slot, item);
-                return true;
+                return OutputType.SUCCESS;
             }
-            return true;
+            return OutputType.SUCCESS;
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

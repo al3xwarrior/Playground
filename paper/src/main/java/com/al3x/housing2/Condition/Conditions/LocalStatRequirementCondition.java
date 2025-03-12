@@ -5,6 +5,7 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -106,7 +107,7 @@ public class LocalStatRequirementCondition extends CHTSLImpl implements NPCCondi
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String statName = HandlePlaceholders.parsePlaceholders(player, house, this.stat);
         Stat stat = executor.getLocalStat(statName);
         if (stat == null) {
@@ -171,7 +172,7 @@ public class LocalStatRequirementCondition extends CHTSLImpl implements NPCCondi
     }
 
     @Override
-    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         return execute(player, house);
     }
 }

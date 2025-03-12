@@ -1,9 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -107,28 +105,28 @@ public class RunAsNPCAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (subActions.isEmpty()) {
-            return true;
+            return OutputType.SUCCESS;
         }
         String parsed = Placeholder.handlePlaceholders(npcId, house, player);
         String npcId;
         if (NumberUtilsKt.isInt(parsed)) {
             npcId = parsed;
         } else {
-            return true;
+            return OutputType.ERROR;
         }
 
         HousingNPC npc = house.getNPC(Integer.parseInt(npcId));
 
         ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
-        executor1.execute(npc.getCitizensNPC(), player, house, event);
-        return true;
+        executor1.setLimits(executor.getLimits());
+        return executor1.execute(npc.getCitizensNPC(), player, house, event);
     }
 
     public List<Action> getSubActions() {

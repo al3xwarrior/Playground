@@ -222,13 +222,13 @@ public class Runnables {
                                     region.getPlayersInRegion().add(player.getUniqueId());
                                     ActionExecutor executor = new ActionExecutor("enter");
                                     executor.addActions(region.getEnterActions());
-                                    executor.execute(player, house, (Cancellable) null);
+                                    executor.execute(player, house, null);
                                 }
                             } else if (region.getPlayersInRegion().contains(player.getUniqueId())) {
                                 region.getPlayersInRegion().remove(player.getUniqueId());
                                 ActionExecutor executor = new ActionExecutor("exit");
                                 executor.addActions(region.getExitActions());
-                                executor.execute(player, house, (Cancellable) null);
+                                executor.execute(player, house, null);
                             }
                         });
                     }

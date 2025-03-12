@@ -3,6 +3,7 @@ package com.al3x.housing2.Condition.Conditions;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.NPCCondition;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
@@ -61,7 +62,7 @@ public class IsNPCHiddenCondition extends CHTSLImpl implements NPCCondition {
     }
 
     @Override
-    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         return !player.canSee(npc.getEntity());
     }
 }

@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -208,8 +209,8 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
     public String getStatName() {
@@ -312,7 +313,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (player == null) return;
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
         HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());

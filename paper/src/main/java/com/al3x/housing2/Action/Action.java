@@ -6,33 +6,23 @@ import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
-import com.al3x.housing2.Instances.HousingData.ActionData;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import de.maxhenkel.voicechat.api.events.Event;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import org.incendo.cloud.bukkit.parser.location.LocationParser;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -74,21 +64,13 @@ public abstract class Action {
         return editorMenu(house);
     }
 
-    public abstract boolean execute(Player player, HousingWorld house);
+    public abstract OutputType execute(Player player, HousingWorld house);
 
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
         return execute(player, house);
     }
 
-    public boolean execute(Player player, HousingWorld house, Event event) {
-        return execute(player, house);
-    }
-
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        return execute(player, house, event);
-    }
-
-    public boolean execute(Player player, HousingWorld house, Event event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         return execute(player, house, event);
     }
 

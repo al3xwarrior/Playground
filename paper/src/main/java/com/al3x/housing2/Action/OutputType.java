@@ -5,5 +5,7 @@ public enum OutputType {
     EXIT,
     RUNNING,
     SUCCESS,
-    CONTINUE
+    PAUSE,
+    CONTINUE,
+    BREAK
 }

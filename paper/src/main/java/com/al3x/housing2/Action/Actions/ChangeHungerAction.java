@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingData.StatActionData;
@@ -89,14 +90,14 @@ public class ChangeHungerAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value)) {
-            return false;
+            return OutputType.ERROR;
         }
         int val = Integer.parseInt(value);
         player.setFoodLevel(val);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public StatOperation getMode() {

@@ -1,14 +1,12 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.EditVisibilityEnum;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -119,16 +117,16 @@ public class EditAudibilityAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String limit = HandlePlaceholders.parsePlaceholders(player, house, this.limit);
         if (!NumberUtilsKt.isDouble(limit) || !NumberUtilsKt.isDouble(range)) {
-            return true;
+            return OutputType.ERROR;
         }
         double rangeValue = Double.parseDouble(range);
         double limitValue = Double.parseDouble(limit);
@@ -146,10 +144,10 @@ public class EditAudibilityAction extends HTSLImpl {
                     if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor))) {
                         VoiceChat.editAudibility(player, onlinePlayer, value);
                         count++;
-                        if (count > limitValue) return true;
+                        if (count > limitValue) return OutputType.SUCCESS;
                     }
                 }
-                return true;
+                return OutputType.SUCCESS;
         }
 
         int count = 0;
@@ -159,10 +157,10 @@ public class EditAudibilityAction extends HTSLImpl {
             VoiceChat.editAudibility(player, onlinePlayer, value);
 
             count++;
-            if (count > limitValue) return true;
+            if (count > limitValue) return OutputType.SUCCESS;
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public EditVisibilityEnum getMode() {

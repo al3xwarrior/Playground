@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -96,7 +97,7 @@ public class ExplosionAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         World world = house.getWorld();
 
         if (player != null) {
@@ -107,7 +108,7 @@ public class ExplosionAction extends HTSLImpl {
                         player.sendMessage(colorize("&cYou have reached the limit of 5 explosions per tick!"));
                     }
                     amountDone.put(player.getUniqueId(), amount + 1);
-                    return true;
+                    return OutputType.SUCCESS;
                 }
                 amountDone.put(player.getUniqueId(), amount + 1);
             } else {
@@ -117,7 +118,7 @@ public class ExplosionAction extends HTSLImpl {
             if (amountDone.containsKey(house.getHouseUUID())) {
                 int amount = amountDone.get(house.getHouseUUID());
                 if (amount >= 5) {
-                    return true;
+                    return OutputType.SUCCESS;
                 }
                 amountDone.put(house.getHouseUUID(), amount + 1);
             } else {
@@ -135,22 +136,22 @@ public class ExplosionAction extends HTSLImpl {
 
         switch (location) {
             case INVOKERS_LOCATION -> {
-                if (player == null) return true;
+                if (player == null) return OutputType.ERROR;
                 world.createExplosion(player.getLocation(), (float) power, false, false);
             }
             case HOUSE_SPAWN -> {
-                if (house.getSpawn() == null) return true;
+                if (house.getSpawn() == null) return OutputType.ERROR;
                 world.createExplosion(house.getSpawn(), (float) power, false, false);
             }
             case CUSTOM, PLAYER_LOCATION -> {
-                if (customLocation == null) return true;
+                if (customLocation == null) return OutputType.ERROR;
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc != null) {
                     world.createExplosion(loc, (float) power, false, false);
                 }
             }
         }
-        return true;
+        return OutputType.ERROR;
     }
 
     @Override

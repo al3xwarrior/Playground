@@ -3,6 +3,7 @@ package com.al3x.housing2.Listeners.HouseEvents;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -36,7 +37,7 @@ public class NPCEvents implements Listener {
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getEntity());
             HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());
             if (housingNPC != null) {
-                housingNPC.executeEventActions(house, EventType.NPC_DEATH, player, e);
+                housingNPC.executeEventActions(house, EventType.NPC_DEATH, player, new CancellableEvent(null, e));
             }
         }
     }
@@ -55,7 +56,7 @@ public class NPCEvents implements Listener {
                 if (actions != null) {
                     ActionExecutor executor = new ActionExecutor("event");
                     executor.addActions(actions);
-                    executor.execute(npc, (e.getDamageSource().getCausingEntity() == null || !(e.getDamageSource().getCausingEntity() instanceof Player)) ? null : (Player) e.getDamageSource().getCausingEntity(), house, e);
+                    executor.execute(npc, (e.getDamageSource().getCausingEntity() == null || !(e.getDamageSource().getCausingEntity() instanceof Player)) ? null : (Player) e.getDamageSource().getCausingEntity(), house, new CancellableEvent(null, e));
                 }
             }
         }

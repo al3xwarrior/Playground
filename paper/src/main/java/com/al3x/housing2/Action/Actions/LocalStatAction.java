@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -211,17 +212,17 @@ public class LocalStatAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Event event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
 
         if (name.contains(" ")) {
             player.sendMessage(colorize("&cStat name cannot contain spaces!"));
-            return false;
+            return OutputType.ERROR;
         }
 
         Stat stat = executor.getLocalStat(name);
@@ -240,14 +241,14 @@ public class LocalStatAction extends HTSLImpl {
             if (executor.hasLocalStat(name)) {
                 executor.removeLocalStat(name);
             }
-            return true;
+            return OutputType.SUCCESS;
         }
 
         if (!executor.hasLocalStat(name)) {
             executor.addLocalStat(stat);
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public String getStatName() {

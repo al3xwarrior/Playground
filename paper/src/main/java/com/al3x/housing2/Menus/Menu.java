@@ -5,6 +5,7 @@ import com.al3x.housing2.Events.OpenActionMenuEvent;
 import com.al3x.housing2.Events.OpenMenuEvent;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -38,7 +39,7 @@ public abstract class Menu {
     protected Player player;
 
     public Menu(Player player, String title, int size) {
-        this.inventory = Bukkit.createInventory(null, size, colorize(title));
+        this.inventory = Bukkit.createInventory(null, size, StringUtilsKt.housingStringFormatter(title));
         this.player = player;
         this.title = title;
         this.size = size;

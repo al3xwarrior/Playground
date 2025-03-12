@@ -9,6 +9,7 @@ import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.WeatherTypes;
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
@@ -1199,24 +1200,11 @@ public class HousingWorld {
         return false; //Other permission types will be checked by itself
     }
 
-    public boolean executeEventActions(EventType eventType, Player player, Cancellable event) {
+    public boolean executeEventActions(EventType eventType, Player player, CancellableEvent event) {
         if (isAdminMode(player)) return false;
 
         if (eventType == EventType.PLAYER_JOIN) playerJoins(player);
         if (eventType == EventType.PLAYER_QUIT) playerLeaves(player);
-
-        List<Action> actions = eventActions.get(eventType);
-        if (actions != null) {
-            ActionExecutor executor = new ActionExecutor("event");
-            executor.addActions(actions);
-            executor.execute(player, this, event);
-            return event != null && event.isCancelled();
-        }
-        return false;
-    }
-
-    public boolean executeEventActions(EventType eventType, Player player, Event event) {
-        if (isAdminMode(player)) return false;
 
         List<Action> actions = eventActions.get(eventType);
         if (actions != null) {

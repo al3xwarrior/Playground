@@ -5,6 +5,7 @@ import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingData.ActionData;
 import com.al3x.housing2.Instances.HousingData.ConditionData;
@@ -134,11 +135,11 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; //does nothing
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; //does nothing
     }
 
-    public boolean execute(Entity entity, Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+    public OutputType execute(Entity entity, Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
         boolean result = false;
         if (conditions.isEmpty()) {
             result = true;
@@ -175,17 +176,17 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
 
         ActionExecutor executor = new ActionExecutor("conditional");
         executor.addActions(result ? ifActions : elseActions);
-        executor.setParent(oldExecutor);
-        return executor.execute(entity, player, house, event) == OutputType.SUCCESS;
+        executor.setLimits(oldExecutor.getLimits());
+        return executor.execute(entity, player, house, event);
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
         return execute(player, player, house, event, oldExecutor);
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         execute(npc.getEntity(), player, house, event, executor);
     }
 

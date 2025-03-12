@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -89,10 +90,10 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value)) {
-            return true;
+            return OutputType.ERROR;
         }
         double result = Double.parseDouble(value);
 
@@ -123,7 +124,7 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
         }
 
         player.setHealth(result);
-        return true;
+        return OutputType.SUCCESS;
     }
 
 
@@ -170,7 +171,7 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value)) {
             return;

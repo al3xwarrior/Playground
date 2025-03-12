@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Gamemodes;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
@@ -65,10 +66,10 @@ public class InteractionTypeCondition extends CHTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
-        if (event instanceof EntityDamageByEntityEvent) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+        if (event.cancellable() instanceof EntityDamageByEntityEvent) {
             return attack;
-        } else if (event instanceof PlayerInteractEntityEvent) {
+        } else if (event.cancellable() instanceof PlayerInteractEntityEvent) {
             return !attack;
         } else {
             return false;

@@ -1,10 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.NPCAction;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.NavigationType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingData.LocationData;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -264,16 +262,16 @@ public class NpcPathAction extends Action implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; //Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; //Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         return execute(house.getNPC(npcId), player, house, event, executor);
     }
 
-    public boolean execute(HousingNPC npc, Player player, HousingWorld house, Cancellable cancellable, ActionExecutor actionExecutor) {
+    public OutputType execute(HousingNPC npc, Player player, HousingWorld house, CancellableEvent cancellable, ActionExecutor actionExecutor) {
         npc.setNavigationType(mode);
         if (mode == NavigationType.WANDER) {
             npc.setSpeed(speed);
@@ -340,14 +338,16 @@ public class NpcPathAction extends Action implements NPCAction {
             if (!path.isEmpty()) {
                 if (pauseUntilComplete) {
                     actionExecutor.setPaused(true);
+
+                    return OutputType.PAUSE;
                 }
             }
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         execute(house.getNPC(npc.getId()), player, house, event, executor);
     }
 

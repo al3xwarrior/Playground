@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -178,8 +179,8 @@ public class DropItemAction extends Action {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        if (item == null || location == null) return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        if (item == null || location == null) return OutputType.ERROR;
 
         Location loc = null;
         switch (location) {
@@ -190,7 +191,7 @@ public class DropItemAction extends Action {
             case CUSTOM, PLAYER_LOCATION -> {
                 loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
-                    return true;
+                    return OutputType.ERROR;
                 }
 
                 if (loc.getX() > 255) {
@@ -221,14 +222,14 @@ public class DropItemAction extends Action {
         });
 
         if (executed.get()) {
-            return true;
+            return OutputType.ERROR;
         }
 
         if (dropppedItems.get() > 200) {
             if (player.getInventory().firstEmpty() != -1) {
                 player.getInventory().addItem(item);
             }
-            return true;
+            return OutputType.ERROR;
         }
 
         Item itemEntity = null;
@@ -240,7 +241,7 @@ public class DropItemAction extends Action {
         itemEntity.setPickupDelay(pickupDelay);
         itemEntity.setCustomNameVisible(showName);
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

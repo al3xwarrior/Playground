@@ -7,6 +7,7 @@ import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -103,7 +104,7 @@ public class HealthRequirementCondition extends CHTSLImpl implements NPCConditio
     }
 
     @Override
-    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc.getEntity() instanceof LivingEntity le) {
             return Comparator.compare(comparator, le.getHealth(), compareValue);
         } else {
