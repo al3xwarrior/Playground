@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static com.al3x.housing2.Action.OutputType.*;
 
@@ -31,14 +32,11 @@ public class ActionExecutor {
     private HashMap<String, Integer> limits = new HashMap<>();
     private String context;
     private List<Action> queue = new ArrayList<>();
-
-    private List<Stat> localStats = new ArrayList<>();
-
     double pause = 0;
     boolean isPaused = false;
-    boolean isComplete = false;
 
-    int workingIndex = 0;
+    private Consumer<ActionExecutor> onComplete = null;
+    private Consumer<ActionExecutor> onBreak = null;
 
     public ActionExecutor(String context) {
         this.context = context;
@@ -51,45 +49,6 @@ public class ActionExecutor {
 
     public void setLimits(HashMap<String, Integer> limits) {
         this.limits = limits;
-    }
-
-    public Stat getLocalStat(String name) {
-        for (Stat stat : localStats) {
-            if (stat.getStatName().equals(name)) {
-                return stat;
-            }
-        }
-        return null;
-    }
-
-    public boolean hasLocalStat(String name) {
-        for (Stat stat : localStats) {
-            if (stat.getStatName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void removeLocalStat(String name) {
-        for (Stat stat : localStats) {
-            if (stat.getStatName().equals(name)) {
-                localStats.remove(stat);
-                return;
-            }
-        }
-    }
-
-    public void addLocalStat(Stat stat) {
-        localStats.add(stat);
-    }
-
-    public void setComplete(boolean complete) {
-        isComplete = complete;
-    }
-
-    public boolean isComplete() {
-        return isComplete;
     }
 
     public void setPaused(boolean paused) {
@@ -112,6 +71,14 @@ public class ActionExecutor {
         return queue;
     }
 
+    public void onComplete(Consumer<ActionExecutor> onComplete) {
+        this.onComplete = onComplete;
+    }
+
+    public void onBreak(Consumer<ActionExecutor> onBreak) {
+        this.onBreak = onBreak;
+    }
+
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
         return execute(player, player, house, event);
     }
@@ -126,13 +93,17 @@ public class ActionExecutor {
         }
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+
+        if (pause > 0) {
+            scheduler.runTaskLater(Main.getInstance(), () -> {
+                execute(entity, player, house, event);
+            }, (long) pause);
+            pause = 0;
+            return RUNNING;
+        }
         while (!queue.isEmpty()) {
             if (isPaused) {
                 break;
-            }
-
-            if (isComplete) {
-                return SUCCESS;
             }
 
             Action action = queue.removeFirst();
@@ -160,11 +131,17 @@ public class ActionExecutor {
                 return EXIT;
             }
 
-            if (action instanceof ContinueAction) {
+            if (action instanceof ContinueAction && context.equals("repeat")) {
+                if (onComplete != null) {
+                    onComplete.accept(this);
+                }
                 return CONTINUE;
             }
 
-            if (action instanceof BreakAction) {
+            if (action instanceof BreakAction && context.equals("repeat")) {
+                if (onBreak != null) {
+                    onBreak.accept(this);
+                }
                 return BREAK;
             }
 
@@ -177,13 +154,15 @@ public class ActionExecutor {
                         break;
                     } else if (ot == EXIT) {
                         return EXIT;
+                    }  else if (ot == RUNNING) {
+                        return RUNNING;
                     }
                 } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
                     NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
             } catch (Exception e) {
-                player.sendMessage("An error occurred while executing the action: " + action.name);
+                player.sendMessage("An error occurred while executing the action: " + action.name + " in the context: " + context);
                 player.sendMessage(e.getMessage());
             }
 
@@ -198,15 +177,14 @@ public class ActionExecutor {
             }, 0, 1);
         }
 
-        return (queue.isEmpty()) ? SUCCESS : RUNNING;
-    }
+        if (queue.isEmpty()) {
+            if (onComplete != null) {
+                onComplete.accept(this);
+            }
+            return SUCCESS;
+        }
 
-    public OutputType execute(Entity entity, Player player, HousingWorld house, Cancellable event) {
-        return execute(entity, player, house, new CancellableEvent(null, event));
-    }
-
-    public OutputType execute(Entity entity, Player player, HousingWorld house, Event event) {
-        return execute(entity, player, house, new CancellableEvent(event, null));
+        return RUNNING;
     }
 
     @Override
@@ -216,12 +194,14 @@ public class ActionExecutor {
                 ", queue=" + queue +
                 ", pause=" + pause +
                 ", isPaused=" + isPaused +
-                ", isComplete=" + isComplete +
-                ", workingIndex=" + workingIndex +
                 '}';
     }
 
     public HashMap<String, Integer> getLimits() {
         return limits;
+    }
+
+    public Consumer<ActionExecutor> getOnBreak() {
+        return onBreak;
     }
 }

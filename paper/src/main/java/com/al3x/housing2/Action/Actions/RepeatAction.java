@@ -122,12 +122,27 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
             timesInt = 20;
         }
 
+
+        ActionExecutor last = null;
         for (int i = 0; i < timesInt; i++) {
             ActionExecutor executor = new ActionExecutor("repeat");
             executor.addActions(subActions);
             executor.setLimits(oldExecutor.getLimits());
-            executor.execute(player, house, event);
+            if (last != null) {
+                last.onComplete((ActionExecutor e) -> {
+                    executor.execute(player, house, event);
+                });
+            } else {
+                executor.execute(player, house, event);
+            }
+            last = executor;
         }
+
+        last.onComplete((ActionExecutor e) -> {
+            if (oldExecutor != null) {
+                oldExecutor.execute(player, house, event);
+            }
+        });
 
         return OutputType.RUNNING;
     }
@@ -139,7 +154,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
 
     @Override
     public int limit() {
-        return 1;
+        return 5;
     }
 
     public List<Action> getSubActions() {

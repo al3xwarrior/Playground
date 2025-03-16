@@ -260,7 +260,7 @@ public class HasItemCondition extends Condition {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("item", Serialization.itemStackToBase64(item));
+        data.put("item", item == null ? null : Serialization.itemStackToBase64(item));
         data.put("whatToCheck", whatToCheck);
         data.put("whereToCheck", whereToCheck);
         data.put("customSlot", customSlot);

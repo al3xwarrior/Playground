@@ -26,7 +26,6 @@ public enum ActionEnum {
     PLAYER_STAT("Player Stat Action", PlayerStatAction.class),
     NPC_STAT("NPC Stat Action", NPCStatAction.class),
     GLOBAL_STAT("Global Stat Action", GlobalStatAction.class),
-    LOCAL_STAT("Local Stat Action", LocalStatAction.class),
     TELEPORT("Teleport Action", TeleportAction.class),
     CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
     PLAY_SOUND("Play Sound Action", PlaySoundAction.class),

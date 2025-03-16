@@ -33,6 +33,7 @@ repositories {
     maven { url "https://repo.nexomc.com/releases" }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
 
+
 }
 
 dependencies {
@@ -48,9 +49,9 @@ dependencies {
         transitive = false
     }
     implementation "com.google.code.gson:gson:2.11.0"
-    compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
+    compileOnly 'com.infernalsuite.asp:api:4.0.0-SNAPSHOT'
+    implementation 'com.infernalsuite.asp:file-loader:4.0.0-SNAPSHOT'
     compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
-    implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation ("com.github.max1mde:HologramLib:1.6.4-Test") {
@@ -105,6 +106,10 @@ tasks.register('copyJarToLocation', Copy) {
 
 kotlin {
     jvmToolchain(21)
+}
+
+test {
+    useJUnitPlatform()
 }
 
 java {

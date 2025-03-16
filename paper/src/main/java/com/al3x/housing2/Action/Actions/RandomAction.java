@@ -92,7 +92,13 @@ public class RandomAction extends HTSLImpl implements NPCAction {
 
         ActionExecutor executor1 = new ActionExecutor("random", new ArrayList<>(Collections.singletonList(subActions.get((int) (house.getRandom().nextDouble() * subActions.size())))));
         executor1.setLimits(executor.getLimits());
-        return executor1.execute(player, house, event);
+        executor1.onComplete((ActionExecutor e) -> {
+            if (executor != null) {
+                executor.execute(player, house, event);
+            }
+        });
+        executor1.execute(player, house, event);
+        return OutputType.RUNNING;
     }
 
     @Override

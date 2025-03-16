@@ -26,6 +26,7 @@ import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
@@ -177,7 +178,14 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
         ActionExecutor executor = new ActionExecutor("conditional");
         executor.addActions(result ? ifActions : elseActions);
         executor.setLimits(oldExecutor.getLimits());
-        return executor.execute(entity, player, house, event);
+        executor.onBreak(oldExecutor.getOnBreak());
+        executor.onComplete((ActionExecutor e) -> {
+            if (oldExecutor != null) {
+                oldExecutor.execute(player, house, event);
+            }
+        });
+        executor.execute(player, house, event);
+        return OutputType.RUNNING;
     }
 
     @Override

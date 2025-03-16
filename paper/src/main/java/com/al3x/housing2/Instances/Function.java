@@ -64,7 +64,7 @@ public class Function {
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(new ArrayList<>(actions));
-            executor.execute(p, p, house, (Cancellable) null);
+            executor.execute(p, p, house, null);
         }
 
         return OutputType.SUCCESS;

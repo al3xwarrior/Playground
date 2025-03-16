@@ -80,6 +80,10 @@ public class FunctionAction extends HTSLImpl {
         return 10;
     }
 
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         return OutputType.SUCCESS; // Not used

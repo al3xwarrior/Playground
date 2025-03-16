@@ -1,5 +1,6 @@
 package com.al3x.housing2.Instances;
 
+import com.al3x.housing2.Commands.Test;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.xism4.sternalboard.SternalBoardHandler;
@@ -32,6 +33,20 @@ public class HousingScoreboard {
             board.updateTitle(StringUtilsKt.housingStringFormatter("<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ"));
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
             LocalDateTime now = LocalDateTime.now();
+            if (Test.memory.getOrDefault(player.getUniqueId(), false)) {
+                board.updateLines(
+                        Component.text("§7" + dtf.format(now) + " mega1A"),
+                        Component.text(""),
+                        Component.text("§fWelcome to the playground!"),
+                        Component.empty(),
+                        Component.text("§fYou are in the"),
+                        Component.text("§flobby!"),
+                        Component.text(""),
+                        Component.text("§dMemory:"),
+                        Component.text("§d" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB")
+                );
+                return;
+            }
             board.updateLines(
                     Component.text("§7" + dtf.format(now) + " mega1A"),
                     Component.text(""),
