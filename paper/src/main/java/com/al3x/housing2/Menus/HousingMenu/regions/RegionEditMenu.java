@@ -61,7 +61,7 @@ public class RegionEditMenu extends Menu {
                 .description("Toggle stuff, tbd.")
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .build(), () -> {
-            player.sendMessage("&cComing one day...");
+            player.sendMessage(colorize("&cComing one day..."));
 //            new PvPSettingsMenu(main, player, house, region).open();
         });
 

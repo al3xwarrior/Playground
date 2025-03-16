@@ -43,6 +43,9 @@ public class MenuManager {
     }
 
     public static Menu getWindowOpen(Player player) {
+        if (!hasWindowOpen.containsKey(player)) {
+            return null;
+        }
         return hasWindowOpen.get(player);
     }
 
