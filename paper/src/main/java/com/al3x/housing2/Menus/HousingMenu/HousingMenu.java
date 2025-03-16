@@ -11,7 +11,6 @@ import com.al3x.housing2.Menus.HousingMenu.groupsAndPermissions.GroupsMenu;
 import com.al3x.housing2.Menus.ItemsMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.example.customitems.NeighborhoodItems;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -77,13 +76,14 @@ public class HousingMenu extends Menu {
             });
         }
 
-        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("example")) {
-            ItemStack stack = NeighborhoodItems.INSTANCE.getRUBY_LARGE().createItemStack(1);
+        if (house.hasPermission(player, ITEMS) && Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")) {
+            CustomStack stack = CustomStack.getInstance("ruby_large");
             if (stack != null) {
-                ItemMeta itemsMeta = stack.getItemMeta();
+                ItemStack items = stack.getItemStack();
+                ItemMeta itemsMeta = items.getItemMeta();
                 itemsMeta.setDisplayName(colorize("&cCustom Items"));
-                stack.setItemMeta(itemsMeta);
-                addItem(24, stack, () -> {
+                items.setItemMeta(itemsMeta);
+                addItem(24, items, () -> {
                     new CustomItemBrowserMenu(main, player, house).open();
                 });
             }

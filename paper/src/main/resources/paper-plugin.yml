@@ -27,6 +27,3 @@ dependencies:
     voicechat:
       required: true
       load: BEFORE
-    Example:
-      required: true
-      load: BEFORE
