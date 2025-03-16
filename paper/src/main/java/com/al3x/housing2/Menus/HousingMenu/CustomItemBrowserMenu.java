@@ -6,6 +6,8 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
+import com.example.ExamplePlugin;
+import com.example.customitems.NeighborhoodItems;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.al3x.housing2.Utils.Color.removeColor;
 
 public class CustomItemBrowserMenu extends Menu {
 
@@ -39,8 +43,8 @@ public class CustomItemBrowserMenu extends Menu {
     @Override
     public void initItems() {
 
-        PaginationList<CustomItem> paginationList = getItems();
-        List<CustomItem> itemList = paginationList.getPage(page);
+        PaginationList<ItemStack> paginationList = getItems();
+        List<ItemStack> itemList = paginationList.getPage(page);
 
         addItem(49,
                 ItemBuilder.create(Material.ARROW)
@@ -91,59 +95,26 @@ public class CustomItemBrowserMenu extends Menu {
         }
 
         for (int i = 0; i < itemList.size(); i++) {
-            CustomItem item = itemList.get(i);
-            ItemStack itemStack = item.getItem();
-            addItem(i, itemStack, e -> {
-                player.getInventory().addItem(itemStack);
+            ItemStack item = itemList.get(i);
+            addItem(i, item, e -> {
+                player.getInventory().addItem(item);
             });
         }
 
     }
 
-    private PaginationList<CustomItem> getItems() {
-        List<CustomItem> itemsArray = new ArrayList<>();
+    private PaginationList<ItemStack> getItems() {
+        ExamplePlugin plugin = (ExamplePlugin) Bukkit.getPluginManager().getPlugin("example");
+        if (plugin == null) return new PaginationList<>(new ArrayList<>(), 45);
+        List<ItemStack> itemsArray = new ArrayList<>(plugin.neighborhoodItems());
 
-        Plugin itemsAdder = Bukkit.getPluginManager().getPlugin("ItemsAdder");
-        File[] files = new File(itemsAdder.getDataFolder() + "/contents/neighborhood/textures/items").listFiles();
-        if (files == null) return new PaginationList<>(itemsArray, 45);
-        List<File> filesList = new ArrayList<>(List.of(files));
-        filesList.sort(Comparator.comparing(File::getName));
-        for (int i = 0; i < filesList.size(); i++) {
-            if (filesList.get(i) == null) break;
-
-            File file = filesList.get(i);
-            String name = file.getName().replace(".png", "");
-
-            CustomStack customStack = CustomStack.getInstance(name);
-            if (customStack == null) continue;
-            ItemStack item = customStack.getItemStack();
-
-            itemsArray.add(new CustomItem(name, item));
-        }
-
-        if (search != null) {
-            itemsArray = itemsArray.stream().filter(i -> Color.removeColor(i.getName().toLowerCase()).contains(search.toLowerCase())).collect(Collectors.toList());
+        if (search != null && !search.isEmpty()) {
+            itemsArray = itemsArray.stream()
+                    .filter(item -> removeColor(item.getItemMeta().getDisplayName().toLowerCase()).contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
         }
 
         return new PaginationList<>(itemsArray, 45);
-    }
-
-    private class CustomItem {
-        private String name;
-        private ItemStack item;
-
-        public CustomItem(String name, ItemStack item) {
-            this.name = name;
-            this.item = item;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public ItemStack getItem() {
-            return item;
-        }
     }
 
 }
