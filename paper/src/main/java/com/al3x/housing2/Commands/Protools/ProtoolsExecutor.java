@@ -101,4 +101,18 @@ public interface ProtoolsExecutor {
 
         return 1;
     }
+
+    default int pos1(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().setPos1(player, player.getLocation());
+        player.sendMessage(Color.colorize("&aPosition 1 set to " + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()));
+        return 1;
+    }
+
+    default int pos2(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().setPos2(player, player.getLocation());
+        player.sendMessage(Color.colorize("&aPosition 2 set to " + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()));
+        return 1;
+    }
 }

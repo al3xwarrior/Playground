@@ -49,6 +49,9 @@ public class JoinLeaveHouse implements Listener {
 
     // Actions that modify the player's "profile" need to be reset.
     public static void resetPlayer(Player player) {
+        MenuManager.setListener(player, null);
+        MenuManager.setWindowOpen(player, null);
+
         player.setMaximumAir(300); // 300 is the default
         player.setMaxHealth(20);
         player.setHealth(20);
