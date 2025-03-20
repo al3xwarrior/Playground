@@ -522,6 +522,7 @@ public class HousingWorld {
             if (!file.exists()) file.createNewFile();
             String json = GSON.toJson(houseData);
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+            main.getHousesManager().updateCache(houseData);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
