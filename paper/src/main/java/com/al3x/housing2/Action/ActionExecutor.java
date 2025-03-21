@@ -242,9 +242,9 @@ public class ActionExecutor {
             }
 
             if (pause == 0) {
-//                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-//                    return ERROR;
-//                }
+                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+                    return ERROR;
+                }
 
                 try {
                     if (player == entity) {
@@ -401,9 +401,9 @@ public class ActionExecutor {
             }
 
             if (pause == 0) {
-//                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-//                    return ERROR;
-//                }
+                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
+                    return ERROR;
+                }
 
                 if (player == entity) {
                     action.execute(player, house, event, this);
