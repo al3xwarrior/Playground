@@ -81,13 +81,13 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
         commandRegistrar.register(Commands.literal("pos1")
                 .requires(this::canUseProtoolsIS)
                 .executes(this::pos1)
-                .build()
+                .build(), List.of("/pos1")
         );
 
         commandRegistrar.register(Commands.literal("pos2")
                 .requires(this::canUseProtoolsIS)
                 .executes(this::pos2)
-                .build()
+                .build(), List.of("/pos2")
         );
 
     }
