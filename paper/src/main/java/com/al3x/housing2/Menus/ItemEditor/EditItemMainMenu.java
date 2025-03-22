@@ -108,12 +108,14 @@ public class EditItemMainMenu extends Menu {
                 .description("Edit the material of the item.")
                 .lClick(EDIT_YELLOW)
                 .build(), () -> {
+            ItemMeta oldMeta = item.getItemMeta();
+            if (oldMeta.hasCustomModelData()) {
+//                    meta.setItemModel(new NamespacedKey("minecraft", "stick"));
+                player.sendMessage(colorize("&6Warning: This item has custom model data, which may no longer work after changing the type."));
+            }
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
                 ItemStack i = item.withType(m);
                 ItemMeta meta = i.getItemMeta();
-                if (meta.hasCustomModelData()) {
-                    meta.setItemModel(new NamespacedKey("minecraft", "stick"));
-                }
                 i.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(i);
                 setupItems();
@@ -128,9 +130,13 @@ public class EditItemMainMenu extends Menu {
             player.sendMessage(colorize("&eEnter the custom model data for the item."));
             ItemMeta meta = item.getItemMeta();
             openChat(Main.getInstance(), String.valueOf(meta.hasCustomModelData() ? meta.getCustomModelData() : 0), (newValue) -> {
-                meta.setCustomModelData(Integer.valueOf(newValue));
-                item.setItemMeta(meta);
-                player.getInventory().setItemInMainHand(item);
+                try {
+                    meta.setCustomModelData(Integer.valueOf(newValue));
+                    item.setItemMeta(meta);
+                    player.getInventory().setItemInMainHand(item);
+                } catch (NumberFormatException ex) {
+                    player.sendMessage(colorize("&cYou must provide a number, the new format is not supported."));
+                }
             });
         });
 
