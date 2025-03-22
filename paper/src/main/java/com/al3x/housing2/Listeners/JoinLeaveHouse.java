@@ -230,7 +230,7 @@ public class JoinLeaveHouse implements Listener {
             resetPlayer(player);
         }
 
-        Main.getInstance().getPlaygroundBot().updateHousings();
+        if (Main.getInstance().getPlaygroundBot() != null) Main.getInstance().getPlaygroundBot().updateHousings();
     }
 
     @EventHandler
@@ -252,7 +252,7 @@ public class JoinLeaveHouse implements Listener {
 
         e.setQuitMessage(colorize("&7&o" + player.getName() + " left the server."));
 
-        Main.getInstance().getPlaygroundBot().updateHousings();
+        if (Main.getInstance().getPlaygroundBot() != null) Main.getInstance().getPlaygroundBot().updateHousings();
     }
 
     @EventHandler
