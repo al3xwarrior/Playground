@@ -58,7 +58,7 @@ public class Runnables {
 
                         if (!holdUpWaitAMinute) {
                             main.getHousesManager().saveHouseAndUnload(house);
-                            main.getPlaygroundBot().updateHousings();
+                            if (Main.getInstance().getPlaygroundBot() != null) main.getPlaygroundBot().updateHousings();
                         }
                     }
                 }
