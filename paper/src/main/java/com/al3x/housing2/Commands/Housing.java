@@ -242,7 +242,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
             return Command.SINGLE_SUCCESS;
         }
         randomCooldown.put(player.getUniqueId(), System.currentTimeMillis());
-        HousingWorld house = housesManager.getRandomPublicHouse();
+        HousingWorld house = housesManager.getRandomPublicHouse(player);
         if (house != null) {
             house.sendPlayerToHouse(player);
         } else {

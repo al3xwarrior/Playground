@@ -50,7 +50,6 @@ import java.util.logging.Level;
 
 import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.mongodb.client.model.Filters.eq;
 
 public class HousingWorld {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
@@ -429,6 +428,7 @@ public class HousingWorld {
     private void setupWorldBorder() {
         this.houseWorld.getWorldBorder().setCenter(new Location(houseWorld, 0, 61, 0));
         this.houseWorld.getWorldBorder().setSize(this.size % 2 == 0 ? this.size : this.size + 1);
+        this.houseWorld.getWorldBorder().setWarningDistance(0);
     }
 
     private void setupDefaultScoreboard() {
@@ -516,6 +516,7 @@ public class HousingWorld {
             if (!file.exists()) file.createNewFile();
             String json = GSON.toJson(houseData);
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+            main.getHousesManager().updateCache(houseData);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
@@ -1309,4 +1310,13 @@ public class HousingWorld {
     public Main getPlugin() {
         return this.main;
     }
+    public void setSize(HouseSize size) {
+        this.size = determineHouseSize(size);
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public Main getPlugin() { return this.main; }
 }

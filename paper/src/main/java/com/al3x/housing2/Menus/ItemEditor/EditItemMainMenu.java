@@ -83,7 +83,7 @@ public class EditItemMainMenu extends Menu {
         });
 
         // Toggle Unbreakable
-        addItem(38, ItemBuilder.create(item.getItemMeta().isUnbreakable() ? Material.LIME_DYE : Material.GRAY_DYE)
+        addItem(37, ItemBuilder.create(item.getItemMeta().isUnbreakable() ? Material.LIME_DYE : Material.GRAY_DYE)
                 .name("&aUnbreakable")
                 .description("Toggle if the item is unbreakable or not.")
                 .lClick(EDIT_YELLOW)
@@ -95,7 +95,7 @@ public class EditItemMainMenu extends Menu {
             new EditItemMainMenu(player).open();
         });
 
-        addItem(40, ItemBuilder.create(Material.BLACK_BANNER)
+        addItem(39, ItemBuilder.create(Material.BLACK_BANNER)
                 .name("&aEdit Item Flags")
                 .description("Toggle which flags are shown on the tooltip of the item.")
                 .lClick(EDIT_YELLOW)
@@ -103,21 +103,41 @@ public class EditItemMainMenu extends Menu {
             new EditFlagMenu(player).open();
         });
 
-        addItem(42, ItemBuilder.create(Material.GRASS_BLOCK)
+        addItem(41, ItemBuilder.create(Material.GRASS_BLOCK)
                 .name("&aSet Item Type")
                 .description("Edit the material of the item.")
                 .lClick(EDIT_YELLOW)
                 .build(), () -> {
+            ItemMeta oldMeta = item.getItemMeta();
+            if (oldMeta.hasCustomModelData()) {
+//                    meta.setItemModel(new NamespacedKey("minecraft", "stick"));
+                player.sendMessage(colorize("&6Warning: This item has custom model data, which may no longer work after changing the type."));
+            }
             new EnumMenu<>(Main.getInstance(), "Select Material", Material.values(), Material.HOPPER, player, house, this, (m) -> {
                 ItemStack i = item.withType(m);
                 ItemMeta meta = i.getItemMeta();
-                if (meta.hasCustomModelData()) {
-                    meta.setItemModel(new NamespacedKey("minecraft", "stick"));
-                }
                 i.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(i);
                 setupItems();
             }).open();
+        });
+
+        addItem(43, ItemBuilder.create(Material.ANVIL)
+                .name("&aSet Custom Model Data")
+                .description("Edit the custom model data attribute on the item.")
+                .lClick(EDIT_YELLOW)
+                .build(), () -> {
+            player.sendMessage(colorize("&eEnter the custom model data for the item."));
+            ItemMeta meta = item.getItemMeta();
+            openChat(Main.getInstance(), String.valueOf(meta.hasCustomModelData() ? meta.getCustomModelData() : 0), (newValue) -> {
+                try {
+                    meta.setCustomModelData(Integer.valueOf(newValue));
+                    item.setItemMeta(meta);
+                    player.getInventory().setItemInMainHand(item);
+                } catch (NumberFormatException ex) {
+                    player.sendMessage(colorize("&cYou must provide a number, the new format is not supported."));
+                }
+            });
         });
 
 

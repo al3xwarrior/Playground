@@ -19,10 +19,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -31,6 +28,8 @@ import static com.mongodb.client.model.Filters.*;
 public class HousesManager {
     public static final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
     private Main main;
+
+    private final Map<String, HouseData> houseCache = new ConcurrentHashMap<>();
 
     // All the loaded houses
     private ConcurrentHashMap<String, HousingWorld> concurrentLoadedHouses = new ConcurrentHashMap<>();
@@ -82,7 +81,6 @@ public class HousesManager {
 
         return house;
     }
-
 
     public List<HousingWorld> getLoadedHouses() {
         return concurrentLoadedHouses.values().stream().toList();
@@ -191,16 +189,27 @@ public class HousesManager {
     }
 
     public HouseData getHouseData(String houseID) {
+        if (houseCache.containsKey(houseID)) {
+            return houseCache.get(houseID);
+        }
+
         File houseFile = new File(main.getDataFolder(), "houses/" + houseID + ".json");
         if (!houseFile.exists()) {
             return null;
         }
+
         try {
-            return gson.fromJson(Files.readString(houseFile.toPath()), HouseData.class);
+            HouseData houseData = gson.fromJson(Files.readString(houseFile.toPath()), HouseData.class);
+            houseCache.put(houseID, houseData);  // cash it (money money money)
+            return houseData;
         } catch (Exception e) {
             main.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
         return null;
+    }
+
+    public void updateCache(HouseData houseData) {
+        houseCache.put(houseData.getHouseID(), houseData);
     }
 
     public boolean hasPermissionInHouse(Player player, Permissions permission) {
@@ -266,9 +275,10 @@ public class HousesManager {
     }
 
     //Updated to allow for houses that haven't been loaded yet tom be added to the list
-    public HousingWorld getRandomPublicHouse() {
+    public HousingWorld getRandomPublicHouse(Player player) {
         ArrayList<HouseData> publicHouses = new ArrayList<>(getAllHouseData().stream()
                 .filter(houseData -> houseData.getPrivacy().equals("PUBLIC"))
+                .filter(houseData -> getHouse(player.getWorld()) == null || houseData != getHouse(player.getWorld()).houseData)
                 .toList());
 
         if (publicHouses.isEmpty()) return null;

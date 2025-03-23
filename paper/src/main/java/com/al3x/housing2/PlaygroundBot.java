@@ -1,5 +1,6 @@
 package com.al3x.housing2;
 
+import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
 import net.dv8tion.jda.api.JDA;
@@ -58,6 +59,7 @@ public class PlaygroundBot {
         List<HousingWorld> housingWorlds = new ArrayList<>(houseManager.getLoadedHouses());
 
         housingWorlds.sort(Comparator.comparingInt((HousingWorld h) -> h.getWorld().getPlayerCount()));
+        housingWorlds = housingWorlds.stream().filter(n -> n.getPrivacy() == HousePrivacy.PUBLIC).toList();
 
         List<HousingWorld> top5 = housingWorlds.subList(0, Math.min(5, housingWorlds.size()));
 
@@ -65,7 +67,7 @@ public class PlaygroundBot {
         List<VoiceChannel> top5Channels = new ArrayList<>();
 
         for (HousingWorld house : top5) {
-            String houseName = "\uD83D\uDEAA" + MiniMessage.miniMessage().stripTags(house.getName());
+            String houseName = "\uD83D\uDEAA" + MiniMessage.miniMessage().stripTags(house.getName()).replaceAll("&[a-f0-9lmorkn]]", "");
             // Check if the channel already exists
             Optional<VoiceChannel> existingChannelOpt = existingChannels.stream()
                     .filter(vc -> vc.getName().equals(houseName))

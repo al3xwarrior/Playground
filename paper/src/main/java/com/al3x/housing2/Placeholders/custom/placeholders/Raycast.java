@@ -5,12 +5,9 @@ import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Runnables;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
-import com.al3x.housing2.Utils.StringUtilsKt;
 import com.al3x.housing2.Utils.Truple;
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -30,11 +27,8 @@ public class Raycast {
     private static class Block extends Placeholder {
         public Block() {
             new X();
-            //new ExactX(); not done. Ill come back to it eventually !
             new Y();
-            //new ExactY();
             new Z();
-            //new ExactZ();
             new Coords();
         }
 
@@ -103,37 +97,6 @@ public class Raycast {
             }
         }
 
-        private static class ExactX extends Placeholder {
-            @Override
-            public String getPlaceholder() {
-                return "%raycast.block.exactx/[range]%";
-            }
-
-            @Override
-            public boolean hasArgs() {
-                return true;
-            }
-
-            @Override
-            public String handlePlaceholder(String input, HousingWorld house, Player player) {
-                if (player == null) {
-                    return "null";
-                }
-                if (!input.contains("/")) {
-                    return "null";
-                }
-                String[] a = input.split("/");
-                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
-                try {
-                    Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getX());
-                } catch (NumberFormatException e) {
-                    return "null";
-                }
-            }
-        }
-
         private static class Y extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -165,37 +128,6 @@ public class Raycast {
             }
         }
 
-        private static class ExactY extends Placeholder {
-            @Override
-            public String getPlaceholder() {
-                return "%raycast.block.exacty/[range]%";
-            }
-
-            @Override
-            public boolean hasArgs() {
-                return true;
-            }
-
-            @Override
-            public String handlePlaceholder(String input, HousingWorld house, Player player) {
-                if (player == null) {
-                    return "null";
-                }
-                if (!input.contains("/")) {
-                    return "null";
-                }
-                String[] a = input.split("/");
-                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
-                try {
-                    Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getY());
-                } catch (NumberFormatException e) {
-                    return "null";
-                }
-            }
-        }
-
         private static class Z extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -221,37 +153,6 @@ public class Raycast {
                 try {
                     Double range = argsHandled.getFirst();
                     return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockZ());
-                } catch (NumberFormatException e) {
-                    return "null";
-                }
-            }
-        }
-
-        private static class ExactZ extends Placeholder {
-            @Override
-            public String getPlaceholder() {
-                return "%raycast.block.exactz/[range]%";
-            }
-
-            @Override
-            public boolean hasArgs() {
-                return true;
-            }
-
-            @Override
-            public String handlePlaceholder(String input, HousingWorld house, Player player) {
-                if (player == null) {
-                    return "null";
-                }
-                if (!input.contains("/")) {
-                    return "null";
-                }
-                String[] a = input.split("/");
-                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
-                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
-                try {
-                    Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -345,8 +246,11 @@ public class Raycast {
             new Name();
             new Type();
             new X();
+            new ExactX();
             new Y();
+            new ExactY();
             new Z();
+            new ExactZ();
             new Coords();
         }
 
@@ -460,6 +364,41 @@ public class Raycast {
             }
         }
 
+        private static class ExactX extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.entity.exactx/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (entity != null) {
+                        return String.valueOf(entity.getFirst().getX());
+                    }
+                    return "null";
+                } catch (Exception e) {
+                    return "null";
+                }
+            }
+        }
+
         private static class Y extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -495,6 +434,41 @@ public class Raycast {
             }
         }
 
+        private static class ExactY extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.entity.exacty/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (entity != null) {
+                        return String.valueOf(entity.getFirst().getY());
+                    }
+                    return "null";
+                } catch (Exception e) {
+                    return "null";
+                }
+            }
+        }
+
         private static class Z extends Placeholder {
             @Override
             public String getPlaceholder() {
@@ -522,6 +496,41 @@ public class Raycast {
                     Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
                     if (entity != null) {
                         return String.valueOf(entity.getSecond().getZ());
+                    }
+                    return "null";
+                } catch (Exception e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class ExactZ extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.entity.exactz/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    Duple<Entity, Vector> entity = getEntityLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (entity != null) {
+                        return String.valueOf(entity.getFirst().getZ());
                     }
                     return "null";
                 } catch (Exception e) {
