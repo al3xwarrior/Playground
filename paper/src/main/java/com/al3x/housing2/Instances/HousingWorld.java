@@ -238,6 +238,19 @@ public class HousingWorld {
         this.groups = houseData.getGroups() != null ? GroupData.Companion.toList(houseData.getGroups()) : new ArrayList<>();
         this.teams = houseData.getTeams() != null ? TeamData.Companion.toList(houseData.getTeams()) : new ArrayList<>();
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
+
+        // Remove null entries because I'm not going to find the cause of it rn
+        List<String> keysToRemove = new ArrayList<>();
+        for (String id : playersData.keySet()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(id));
+            if (player.getPlayer() == null) {
+                keysToRemove.add(id);
+            }
+        }
+        for (String id : keysToRemove) {
+            playersData.remove(id);
+        }
+
         for (PlayerData playerData : playersData.values()) {
             if (playerData.getStats() != null) playerData.setCacheStats(StatData.Companion.toList(playerData.getStats()));
         }

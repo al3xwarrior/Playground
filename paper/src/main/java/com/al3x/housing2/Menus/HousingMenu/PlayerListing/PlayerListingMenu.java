@@ -45,11 +45,11 @@ public class PlayerListingMenu extends Menu {
                 PlayerData data = entry.getValue();
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey()));
                 if (offlinePlayer.getName() == null) {
-                    playersData.remove(entry);
+                    playersData.remove(entry.getKey());
                     continue;
                 }
                 if (!offlinePlayer.getName().toLowerCase().contains(search.toLowerCase())) {
-                    playersData.remove(entry);
+                    playersData.remove(entry.getKey());
                 }
             }
         }

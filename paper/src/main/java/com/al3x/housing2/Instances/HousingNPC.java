@@ -314,6 +314,7 @@ public class HousingNPC {
         this.entityType = entityType;
         citizensNPC.getEntity().setMetadata("NPC", new FixedMetadataValue(main, true));
         citizensNPC.setBukkitEntityType(entityType);
+        configureEntitySettings();
     }
 
     public void sendExecuteActions(HousingWorld house, Player player, Cancellable event) {
