@@ -18,13 +18,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.infernalsuite.asp.api.loaders.SlimeLoader;
 import com.infernalsuite.asp.loaders.file.FileLoader;
-import com.infernalsuite.asp.loaders.mongo.MongoLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import io.jooby.ExecutionMode;
 import io.jooby.Jooby;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import lombok.Getter;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
@@ -38,25 +38,41 @@ import java.util.Objects;
 public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
 
+    @Getter
     private static DatabaseManager databaseManager;
 
+    @Getter
     private SlimeLoader loader;
-    private MongoLoader mongoLoader;
+//    private MongoLoader mongoLoader;
+    @Getter
     private HousesManager housesManager;
     private CommandManager commandManager;
+    @Getter
     private HousingCommandFramework commandFramework;
+    @Getter
     private ProtoolsManager protoolsManager;
+    @Getter
     private ProtocolManager protocolManager;
+    @Getter
     private CookieManager cookieManager;
+    @Getter
     private ClipboardManager clipboardManager;
+    @Getter
     private LobbyDisplays lobbyDisplays;
+    @Getter
     private HologramManager hologramManager;
+    @Getter
     private PlayerSpeedManager playerSpeedManager;
+    @Getter
     private NetworkManager networkManager;
+    @Getter
     private HeadDatabaseAPI headDatabaseAPI;
     private VoiceChat voiceChat;
+    @Getter
     private PlaygroundWeb playgroundWeb;
+    @Getter
     private ResourcePackManager resourcePackManager;
+    @Getter
     private PlaygroundBot playgroundBot;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -77,12 +93,12 @@ public final class Main extends JavaPlugin implements Listener {
         String mongoDatabase = getConfig().getString("mongo_database", "playground");
         databaseManager = new DatabaseManager(mongoURI, mongoDatabase);
 
-        mongoLoader = new MongoLoader(databaseManager.getMongoClient(), mongoDatabase, "slime_worlds");
+//        mongoLoader = new MongoLoader(databaseManager.getMongoClient(), mongoDatabase, "slime_worlds");
         loader = new FileLoader(new File("./slime_worlds"));
 
-        if (getConfig().getString("loader", "file").equalsIgnoreCase("mongo")) {
-            loader = mongoLoader;
-        }
+//        if (getConfig().getString("loader", "file").equalsIgnoreCase("mongo")) {
+//            loader = mongoLoader;
+//        }
 
         if (getConfig().contains("bot_key") && !Objects.equals(getConfig().getString("bot_key"), "") && getConfig().contains("guild_id") && !Objects.equals(getConfig().getString("guild_id"), "")) {
             try {
@@ -191,49 +207,9 @@ public final class Main extends JavaPlugin implements Listener {
         headDatabaseAPI = new HeadDatabaseAPI();
     }
 
-    public static DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    public HousesManager getHousesManager() {
-        return housesManager;
-    }
-
-    public ProtoolsManager getProtoolsManager() {
-        return protoolsManager;
-    }
-
-    public SlimeLoader getLoader() {
-        return loader;
-    }
-
-    public MongoLoader getMongoLoader() {
-        return mongoLoader;
-    }
-
-    public HousingCommandFramework getCommandFramework() {
-        return commandFramework;
-    }
-
-    public NetworkManager getNetworkManager() {
-        return networkManager;
-    }
-
-    public HologramManager getHologramManager() {
-        return hologramManager;
-    }
-
-    public ProtocolManager getProtocolManager() {
-        return protocolManager;
-    }
-
-    public ClipboardManager getClipboardManager() {
-        return clipboardManager;
-    }
-
-    public PlayerSpeedManager getPlayerSpeedManager() {
-        return playerSpeedManager;
-    }
+    //    public MongoLoader getMongoLoader() {
+//        return mongoLoader;
+//    }
 
     @Override
     public void onDisable() {
@@ -251,31 +227,8 @@ public final class Main extends JavaPlugin implements Listener {
         return INSTANCE;
     }
 
-    public CookieManager getCookieManager() {
-        return this.cookieManager;
-    }
-
-    public LobbyDisplays getLobbyDisplays() {
-        return this.lobbyDisplays;
-    }
-
     public Gson getGson() {
         return GSON;
     }
 
-    public HeadDatabaseAPI getHeadDatabaseAPI() {
-        return headDatabaseAPI;
-    }
-
-    public PlaygroundWeb getPlaygroundWeb() {
-        return playgroundWeb;
-    }
-
-    public ResourcePackManager getResourcePackManager() {
-        return resourcePackManager;
-    }
-
-    public PlaygroundBot getPlaygroundBot() {
-        return playgroundBot;
-    }
 }
