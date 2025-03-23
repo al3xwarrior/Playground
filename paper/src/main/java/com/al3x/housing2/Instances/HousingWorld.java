@@ -397,12 +397,6 @@ public class HousingWorld {
         createCommand("spawn").setActions(List.of(new TeleportAction(true)));
     }
 
-    private void ensureUniqueHouseUUID() {
-        if (main.getHousesManager().getHouseData(houseUUID.toString()) != null) {
-            this.houseUUID = UUID.randomUUID();
-        }
-    }
-
     private int determineHouseSize(HouseSize size) {
         return switch (size) {
             case MEDIUM -> 50;
