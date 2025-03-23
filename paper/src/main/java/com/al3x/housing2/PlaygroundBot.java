@@ -70,9 +70,11 @@ public class PlaygroundBot {
             String houseName = "\uD83D\uDEAA" + MiniMessage.miniMessage().stripTags(house.getName())
                     .replaceAll("&[A-Fa-f0-9lmorknLMORKN]", "")
                     .replaceAll("&#[A-Fa-f0-9]{6}", "");
+            if (houseName.length() > 100) houseName = houseName.substring(0, 99);
             // Check if the channel already exists
+            String finalHouseName = houseName;
             Optional<VoiceChannel> existingChannelOpt = existingChannels.stream()
-                    .filter(vc -> vc.getName().equals(houseName))
+                    .filter(vc -> vc.getName().equals(finalHouseName))
                     .findFirst();
 
             if (existingChannelOpt.isPresent()) {

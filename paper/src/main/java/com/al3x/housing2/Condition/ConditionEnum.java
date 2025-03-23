@@ -34,6 +34,7 @@ public enum ConditionEnum {
     IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
     IS_VOICE_CONNECTED("Is Voice Connected", IsVoiceConnected.class),
     IS_EATING("Is Eating", IsEating.class),
+    IS_SPRINTING("Is Sprinting Condition", IsSprintingCondition.class),
     ;
     
     private String name;
