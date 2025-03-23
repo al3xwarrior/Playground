@@ -1303,5 +1303,13 @@ public class HousingWorld {
         this.randomTicks = randomTicks;
     }
 
+    public void setSize(HouseSize size) {
+        this.size = determineHouseSize(size);
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     public Main getPlugin() { return this.main; }
 }
