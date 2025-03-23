@@ -79,7 +79,7 @@ public class EditLoreMenu extends Menu {
                             meta.lore(newLore);
                             item.setItemMeta(meta);
                             player.getInventory().setItemInMainHand(item);
-                            setupItems();
+                            Bukkit.getScheduler().callSyncMethod(Main.getInstance(), () -> { new EditLoreMenu(player).open(); return 0; });
                         });
                     }
                 });
@@ -116,7 +116,7 @@ public class EditLoreMenu extends Menu {
                 meta.lore(newLore);
                 item.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(item);
-                setupItems();
+                Bukkit.getScheduler().callSyncMethod(Main.getInstance(), () -> { new EditLoreMenu(player).open(); return 0; });
             });
         });
 

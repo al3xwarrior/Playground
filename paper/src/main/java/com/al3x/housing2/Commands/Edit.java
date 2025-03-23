@@ -8,6 +8,8 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static com.al3x.housing2.Utils.Color.colorize;
 import static org.bukkit.Material.AIR;
 
@@ -18,7 +20,7 @@ public class Edit extends AbstractHousingCommand {
         commandRegistrar.register(Commands.literal("edit")
                 .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.ITEM_EDITOR))
                 .executes(this::execute)
-                .build()
+                .build(), List.of("item")
         );
     }
 
