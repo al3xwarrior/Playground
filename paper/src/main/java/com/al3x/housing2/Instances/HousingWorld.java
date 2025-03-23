@@ -1317,6 +1317,4 @@ public class HousingWorld {
     public void setSize(int size) {
         this.size = size;
     }
-
-    public Main getPlugin() { return this.main; }
 }
