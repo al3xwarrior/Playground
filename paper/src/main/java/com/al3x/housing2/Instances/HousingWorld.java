@@ -397,16 +397,6 @@ public class HousingWorld {
         createCommand("spawn").setActions(List.of(new TeleportAction(true)));
     }
 
-    private int determineHouseSize(HouseSize size) {
-        return switch (size) {
-            case MEDIUM -> 50;
-            case LARGE -> 75;
-            case XLARGE -> 150;
-            case MASSIVE -> 255;
-            default -> 30;
-        };
-    }
-
     private void addDefaultGroups(OfflinePlayer owner) {
         Group defaultGroup = new Group("default");
         defaultGroup.setPrefix("&7");
