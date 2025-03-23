@@ -73,8 +73,6 @@ public class PlayerListingMenu extends Menu {
                 item.name(colorize("&f" + listedPlayer.getName() + ((!online || player.canSee(listedPlayer.getPlayer())) ? "" : " &7(hidden)")));
                 boolean higherPriority = playerData.getGroupInstance(house).getPriority() <= listedPlayerData.getGroupInstance(house).getPriority() && !player.getUniqueId().equals(listedPlayer.getUniqueId());
                 item.info("Online", (online) ? "&aYes" : "&cNo");
-                if (online)
-                    item.info("Visible to you", player.canSee(listedPlayer.getPlayer()) ? "&aYes" : "&cNo");
                 if (house.hasPermission(player, MUTE))
                     item.info("Muted", (listedPlayerData.getMuted()) ? "&aYes" : "&cNo");
                 if (house.hasPermission(player, BAN))
