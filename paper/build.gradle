@@ -53,9 +53,11 @@ dependencies {
     implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    implementation ("com.github.max1mde:HologramLib:1.6.4-Test") {
-        exclude group: 'me.tofaa.entitylib', module: 'spigot'
-    }
+    implementation 'com.github.maximjsx:HologramLib:1.7.1'
+
+//    implementation ("com.github.max1mde:HologramLib:1.6.4-Test") {
+//        exclude group: 'me.tofaa.entitylib', module: 'spigot'
+//    }
     implementation 'com.github.Tofaa2.EntityLib:api:2.4.11'
     implementation files('../libs/PacketWrapper.jar')
     compileOnly files('../libs/AxiomPaper.jar')
