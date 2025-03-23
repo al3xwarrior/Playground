@@ -4,11 +4,11 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
-import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.EditVisibilityEnum;
 import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Instances.HousingData.ConditionData;
+import com.al3x.housing2.Data.ActionData;
+import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -19,13 +19,9 @@ import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 import java.util.*;
 
@@ -191,7 +187,7 @@ public class EditVisibilityAction extends HTSLImpl {
         data.put("range", range);
         data.put("value", value);
         data.put("limit", limit);
-        data.put("conditions", ConditionData.Companion.fromList(conditions));
+        data.put("conditions", ConditionalData.fromList(conditions));
         return data;
     }
 
@@ -209,10 +205,10 @@ public class EditVisibilityAction extends HTSLImpl {
         if (!data.containsKey("conditions")) return;
         Object subActions = data.get("conditions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        ArrayList<ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            ActionData action = gson.fromJson(jsonObject, ActionData.class);
             actions.add(action);
         }
     }
@@ -276,7 +272,7 @@ public class EditVisibilityAction extends HTSLImpl {
             }
         }
 
-        actionData.put("conditions", ConditionData.Companion.fromList(conditions));
+        actionData.put("conditions", ConditionalData.fromList(conditions));
 
         this.conditions = conditions;
         return nextLines;

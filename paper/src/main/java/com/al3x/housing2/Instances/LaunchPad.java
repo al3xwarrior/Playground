@@ -1,7 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Enums.PushDirection;
-import com.al3x.housing2.Instances.HousingData.LocationData;
+import com.al3x.housing2.Data.LocationData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -19,7 +19,7 @@ public class LaunchPad {
     private double horizontalVelocity;
 
     public LaunchPad(Location location) {
-        this.location = LocationData.Companion.fromLocation(location);
+        this.location = LocationData.fromLocation(location);
         this.pushDirection = PushDirection.FORWARD;
         this.verticalVelocity = 1.0;
         this.horizontalVelocity = 2.0;
@@ -57,7 +57,7 @@ public class LaunchPad {
     }
 
     public void setLocation(Location location) {
-        this.location = LocationData.Companion.fromLocation(location);
+        this.location = LocationData.fromLocation(location);
     }
 
     public void setPushDirection(PushDirection pushDirection) {

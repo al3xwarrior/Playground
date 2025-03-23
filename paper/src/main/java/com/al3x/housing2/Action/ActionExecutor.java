@@ -13,6 +13,9 @@ import com.al3x.housing2.Utils.NumberUtilsKt;
 import de.maxhenkel.voicechat.api.events.Event;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.Style;
 import net.minecraft.util.parsing.packrat.Atom;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -20,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +122,7 @@ public class ActionExecutor {
             if (action instanceof PauseAction pauseAction) {
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
                 if (!NumberUtilsKt.isInt(dur)) {
-                    return ERROR;
+                    continue;
                 }
                 double duration = Integer.parseInt(dur);
                 scheduler.runTaskLater(Main.getInstance(), () -> {
@@ -147,6 +151,9 @@ public class ActionExecutor {
 
             try {
                 if (player == entity) {
+                    if (player.getWorld() != house.getWorld()) {
+                        return ERROR;
+                    }
                     OutputType ot = action.execute(player, house, event, this);
 
                     if (ot == PAUSE) {
@@ -158,12 +165,16 @@ public class ActionExecutor {
                         return RUNNING;
                     }
                 } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
+                    if (entity.getWorld() != house.getWorld()) {
+                        return ERROR;
+                    }
                     NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
             } catch (Exception e) {
                 player.sendMessage("An error occurred while executing the action: " + action.name + " in the context: " + context);
-                player.sendMessage(e.getMessage());
+                //take error and put it in the hover event
+                e.printStackTrace();
             }
 
         }

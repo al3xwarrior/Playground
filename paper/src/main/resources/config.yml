@@ -1,4 +1,3 @@
-mineskin_key: "4c29f0cf3aac439c9fcde63dd52aa90e"
 bot_key: ""
 guild_id: ""
 globalLimits: 2000
@@ -8,3 +7,8 @@ actionLimits:
 # web
 api_port: 8080
 web_base: http://localhost:8080
+
+# loader for slimeworld (mongo or file)
+loader: file
+mongo_uri: mongodb://localhost:27017
+mongo_db: playground

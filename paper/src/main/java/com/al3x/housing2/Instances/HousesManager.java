@@ -1,13 +1,14 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.HousingData.HouseData;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Mongo.Collection.HousesCollection;
 import com.al3x.housing2.Utils.InstantTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+
+import static com.mongodb.client.model.Filters.*;
 
 public class HousesManager {
     public static final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
@@ -43,7 +46,7 @@ public class HousesManager {
         loadPlayerHouses();
     }
 
-    private void loadPlayerHouses() {
+    public void loadPlayerHouses() {
         File houses = new File(main.getDataFolder(), "houses/");
         if (!houses.exists()) {
             houses.mkdirs();
@@ -111,7 +114,7 @@ public class HousesManager {
 
         if (playerHouses.containsKey(owner.getUniqueId())) {
             for (String houseID : playerHouses.get(owner.getUniqueId())) {
-                HousingWorld house = new HousingWorld(main, owner, houseID);
+                HousingWorld house = new HousingWorld(main, houseID);
                 house.runOnLoadOrNow((h) -> concurrentLoadedHouses.put(house.getHouseUUID().toString(), h));
                 return house;
             }
@@ -221,28 +224,6 @@ public class HousesManager {
         return false;
     }
 
-    public void deleteHouse(Player owner) {
-        for (HousingWorld house : getLoadedHouses()) {
-            if (house.getOwnerUUID().equals(owner.getUniqueId())) {
-                concurrentLoadedHouses.remove(house.getHouseUUID().toString());
-                house.delete();
-                housesById.remove(house.getHouseUUID().toString());
-                playerHouses.get(owner.getUniqueId()).remove(house.getHouseUUID().toString());
-            }
-        }
-
-        if (playerHouses.containsKey(owner.getUniqueId())) {
-            for (String houseID : playerHouses.get(owner.getUniqueId())) {
-                playerHouses.get(owner.getUniqueId()).remove(houseID);
-                HousingWorld house = new HousingWorld(main, owner, houseID);
-                house.delete();
-                housesById.remove(houseID);
-                concurrentLoadedHouses.remove(house.getHouseUUID().toString());
-                return;
-            }
-        }
-    }
-
     public void deleteHouse(UUID houseUUID) {
         HousingWorld house = getHouse(houseUUID);
         if (house != null) {
@@ -254,7 +235,7 @@ public class HousesManager {
             HouseData houseData = getHouseData(houseUUID.toString());
             if (houseData != null) {
                 playerHouses.get(UUID.fromString(houseData.getOwnerID())).remove(houseUUID.toString());
-                HousingWorld h2 = new HousingWorld(main, Bukkit.getOfflinePlayer(houseData.getOwnerID()), houseUUID.toString());
+                HousingWorld h2 = new HousingWorld(main, houseUUID.toString());
                 h2.delete();
                 housesById.remove(houseUUID.toString());
                 concurrentLoadedHouses.remove(houseUUID.toString());
@@ -265,6 +246,7 @@ public class HousesManager {
     public void addSongToHouse(HousingWorld house, Song song) {
         house.addSong(song);
     }
+
     public void removeSongFromHouse(HousingWorld house, Song song) {
         house.removeSong(song);
     }
@@ -277,8 +259,8 @@ public class HousesManager {
         }
     }
 
-    public HousingWorld loadHouse(OfflinePlayer player, String houseID) {
-        HousingWorld house = new HousingWorld(main, player, houseID);
+    public HousingWorld loadHouse(String houseID) {
+        HousingWorld house = new HousingWorld(main, houseID);
         house.runOnLoadOrNow((h) -> concurrentLoadedHouses.put(house.getHouseUUID().toString(), h));
         return house;
     }
@@ -295,11 +277,21 @@ public class HousesManager {
         if (concurrentLoadedHouses.containsKey(houseData.getHouseID())) {
             return concurrentLoadedHouses.get(houseData.getHouseID());
         }
-        return loadHouse(main.getServer().getOfflinePlayer(UUID.fromString(houseData.getOwnerID())), houseData.getHouseID());
+        return loadHouse(houseData.getHouseID());
     }
 
     public HousingWorld getRandomHouse() {
         if (getLoadedHouses().isEmpty()) return null;
         return getLoadedHouses().get((int) (Math.random() * getLoadedHouses().size()));
+    }
+
+    public void clear() {
+        for (HousingWorld house : getLoadedHouses()) {
+            house.save();
+            house.unload();
+        }
+        housesById.clear();
+        playerHouses.clear();
+        concurrentLoadedHouses.clear();
     }
 }

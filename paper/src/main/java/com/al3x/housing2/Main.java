@@ -5,6 +5,7 @@ import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
+import com.al3x.housing2.Mongo.DatabaseManager;
 import com.al3x.housing2.Network.NetworkManager;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
@@ -17,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.infernalsuite.asp.api.loaders.SlimeLoader;
 import com.infernalsuite.asp.loaders.file.FileLoader;
+import com.infernalsuite.asp.loaders.mongo.MongoLoader;
 import com.maximde.hologramlib.HologramLib;
 import com.maximde.hologramlib.hologram.HologramManager;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
@@ -35,7 +37,11 @@ import java.util.Objects;
 
 public final class Main extends JavaPlugin implements Listener {
     private static Main INSTANCE;
+
+    private static DatabaseManager databaseManager;
+
     private SlimeLoader loader;
+    private MongoLoader mongoLoader;
     private HousesManager housesManager;
     private CommandManager commandManager;
     private HousingCommandFramework commandFramework;
@@ -55,8 +61,6 @@ public final class Main extends JavaPlugin implements Listener {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private String mineSkinKey;
-
     @Override
     public void onLoad() {
         HologramLib.onLoad(this);
@@ -66,9 +70,19 @@ public final class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         INSTANCE = this;
         // The location of the worlds folder is relative to the server's root directory
-        loader = new FileLoader(new File("./slime_worlds"));
 
         saveDefaultConfig();
+
+        String mongoURI = getConfig().getString("mongo_uri", "mongodb://localhost:27017/");
+        String mongoDatabase = getConfig().getString("mongo_database", "playground");
+        databaseManager = new DatabaseManager(mongoURI, mongoDatabase);
+
+        mongoLoader = new MongoLoader(databaseManager.getMongoClient(), mongoDatabase, "slime_worlds");
+        loader = new FileLoader(new File("./slime_worlds"));
+
+        if (getConfig().getString("loader", "file").equalsIgnoreCase("mongo")) {
+            loader = mongoLoader;
+        }
 
         if (getConfig().contains("bot_key") && !Objects.equals(getConfig().getString("bot_key"), "") && getConfig().contains("guild_id") && !Objects.equals(getConfig().getString("guild_id"), "")) {
             try {
@@ -79,12 +93,6 @@ public final class Main extends JavaPlugin implements Listener {
             }
         } else {
             getLogger().warning("Discord bot key and/or guild id not found in config.yml. Discord bot will not be loaded.");
-        }
-
-        if (getConfig().contains("mineskin_key") && !Objects.equals(getConfig().getString("mineskin_key"), "your-mineskin-key")) {
-            mineSkinKey = getConfig().getString("mineskin_key");
-        } else {
-            getLogger().warning("No MineSkin key found in config.yml. Skins will not be able to be loaded.");
         }
 
         this.housesManager = new HousesManager(this);
@@ -183,6 +191,10 @@ public final class Main extends JavaPlugin implements Listener {
         headDatabaseAPI = new HeadDatabaseAPI();
     }
 
+    public static DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
     public HousesManager getHousesManager() {
         return housesManager;
     }
@@ -195,6 +207,10 @@ public final class Main extends JavaPlugin implements Listener {
         return loader;
     }
 
+    public MongoLoader getMongoLoader() {
+        return mongoLoader;
+    }
+
     public HousingCommandFramework getCommandFramework() {
         return commandFramework;
     }
@@ -205,10 +221,6 @@ public final class Main extends JavaPlugin implements Listener {
 
     public HologramManager getHologramManager() {
         return hologramManager;
-    }
-
-    public String getMineSkinKey() {
-        return mineSkinKey;
     }
 
     public ProtocolManager getProtocolManager() {

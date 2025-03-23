@@ -3,7 +3,7 @@ package com.al3x.housing2.Listeners.HouseEvents;
 import com.al3x.housing2.Commands.GlobalChat;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -58,11 +58,11 @@ public class ChatEvent implements Listener {
         }
 
         PlayerData playerData = housesManager.getHouse(world).getPlayersData().get(player.getUniqueId().toString());
-        if (playerData.getMuted() && playerData.getMuteExpiration().isAfter(Instant.now())) {
+        if (playerData.isMuted() && playerData.getMuteExpiration().isAfter(Instant.now())) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou are muted in this house!"));
             return;
-        } else if (playerData.getMuted()) {
+        } else if (playerData.isMuted()) {
             playerData.setMuted(false);
         }
 

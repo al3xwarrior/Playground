@@ -4,7 +4,7 @@ import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.LuckpermsHandler;
 import com.al3x.housing2.Utils.Serialization;
@@ -230,7 +230,7 @@ public class JoinLeaveHouse implements Listener {
             resetPlayer(player);
         }
 
-        Main.getInstance().getPlaygroundBot().updateHousings();
+        if (Main.getInstance().getPlaygroundBot() != null) Main.getInstance().getPlaygroundBot().updateHousings();
     }
 
     @EventHandler
@@ -252,7 +252,7 @@ public class JoinLeaveHouse implements Listener {
 
         e.setQuitMessage(colorize("&7&o" + player.getName() + " left the server."));
 
-        Main.getInstance().getPlaygroundBot().updateHousings();
+        if (Main.getInstance().getPlaygroundBot() != null) Main.getInstance().getPlaygroundBot().updateHousings();
     }
 
     @EventHandler

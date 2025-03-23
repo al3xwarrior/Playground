@@ -1,7 +1,7 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Instances.HousingData.PlayerData;
-import com.al3x.housing2.Instances.HousingData.StatData;
+import com.al3x.housing2.Data.PlayerData;
+import com.al3x.housing2.Data.StatData;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class StatManager {
     }
 
     public Stat getPlayerStatByName(PlayerData player, String name) {
-        List<Stat> playerStats = StatData.Companion.toList(player.getStats());
+        List<Stat> playerStats = StatData.toList(player.getStats());
 
         for (Stat stat : playerStats) {
             if (stat.getStatName().equals(name)) {

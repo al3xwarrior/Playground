@@ -132,7 +132,12 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        customLocation = (String) data.get("customLocation");
+        if (data.get("customLocation") == null) {
+            customLocation = null;
+            location = INVOKERS_LOCATION;
+            return;
+        }
+        customLocation = data.get("customLocation").toString();
         try {
             location = Locations.valueOf((String) data.get("location"));
         } catch (IllegalArgumentException e) {
@@ -178,6 +183,9 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             case HOUSE_SPAWN ->
                     npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             case CUSTOM, PLAYER_LOCATION -> {
+                if (customLocation == null) {
+                    return;
+                }
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
                     return;

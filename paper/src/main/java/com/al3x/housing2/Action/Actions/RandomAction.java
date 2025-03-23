@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -11,13 +12,9 @@ import com.google.gson.JsonObject;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class RandomAction extends HTSLImpl implements NPCAction {
@@ -118,7 +115,7 @@ public class RandomAction extends HTSLImpl implements NPCAction {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", Companion.fromList(subActions));
+        data.put("subActions", ActionData.fromList(subActions));
         return data;
     }
 
@@ -134,14 +131,14 @@ public class RandomAction extends HTSLImpl implements NPCAction {
         // I don't know how this works lol
         Object subActions = data.get("subActions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        ArrayList<ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            ActionData action = gson.fromJson(jsonObject, ActionData.class);
             actions.add(action);
         }
 
-        this.subActions = Companion.toList(actions);
+        this.subActions = ActionData.toList(actions);
     }
 
     @Override

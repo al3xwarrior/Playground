@@ -1,9 +1,9 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Data.StatActionData;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -20,7 +20,6 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.*;
@@ -256,7 +255,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
             statInstances = new ArrayList<>();
             StatInstance statInstance = new StatInstance("npc");
             mode = StatOperation.valueOf((String) data.get("mode"));
-            value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
+            value = gson.fromJson(gson.toJson(data.get("value")), StatActionData.MoreStatData.class).toStatValue();
 
             statInstance.value = value;
             statInstance.mode = mode;

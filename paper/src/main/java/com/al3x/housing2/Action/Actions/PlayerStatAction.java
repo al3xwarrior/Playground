@@ -1,15 +1,12 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Data.StatActionData;
 import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.ActionData;
-import com.al3x.housing2.Instances.HousingData.MoreStatData;
-import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Color;
@@ -17,18 +14,13 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlayerStatAction extends HTSLImpl {
@@ -220,8 +212,12 @@ public class PlayerStatAction extends HTSLImpl {
 
         for (StatInstance instance : statInstances) {
             if (stat.modifyStat(instance.mode, HandlePlaceholders.parsePlaceholders(player, house, instance.value.calculate(player, house))) == null) {
-                player.sendMessage(colorize("&cFailed to modify stat: " + name + " with mode: " + instance.mode + " and value: " + instance.value));
+                return OutputType.ERROR;
             }
+        }
+
+        if (stat.getValue() == null) {
+            stat = new Stat(name, "0.0");
         }
 
         if (stat.getValue().equals("0") || stat.getValue().equals("0.0") || stat.getValue().equals("&r") || stat.getValue().equals("§r")) {
@@ -281,7 +277,7 @@ public class PlayerStatAction extends HTSLImpl {
             statInstances = new ArrayList<>();
             StatInstance statInstance = new StatInstance("player");
             mode = StatOperation.valueOf((String) data.get("mode"));
-            value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
+            value = gson.fromJson(gson.toJson(data.get("value")), StatActionData.MoreStatData.class).toStatValue();
 
             statInstance.value = value;
             statInstance.mode = mode;

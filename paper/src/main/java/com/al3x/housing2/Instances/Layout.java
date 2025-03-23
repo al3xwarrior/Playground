@@ -1,6 +1,6 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Instances.HousingData.LayoutData;
+import com.al3x.housing2.Data.LayoutData;
 import com.al3x.housing2.Utils.Serialization;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

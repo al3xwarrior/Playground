@@ -7,10 +7,9 @@ import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HTSLHandler;
-import com.al3x.housing2.Instances.HousingData.ActionData;
-import com.al3x.housing2.Instances.HousingData.ConditionData;
+import com.al3x.housing2.Data.ActionData;
+import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
@@ -18,17 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
 public class ConditionalAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
@@ -141,36 +135,26 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
     }
 
     public OutputType execute(Entity entity, Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
-        boolean result = false;
-        if (conditions.isEmpty()) {
-            result = true;
-        } else {
-            for (Condition condition : conditions) {
-                if (condition.requiresPlayer() && !(entity instanceof Player)) {
+        boolean result = conditions.isEmpty();
+
+        for (Condition condition : conditions) {
+            if (condition.requiresPlayer() && !(entity instanceof Player)) {
+                result = false;
+                continue;
+            }
+
+            boolean conditionResult = (entity == player)
+                ? condition.execute(player, house, event, oldExecutor) != not
+                : (condition instanceof NPCCondition npcCondition) &&
+                  npcCondition.npcExecute(player, CitizensAPI.getNPCRegistry().getNPC(entity), house, event, oldExecutor) != not;
+
+            if (conditionResult) {
+                result = true;
+                if (matchAnyCondition) break;
+            } else {
+                if (!matchAnyCondition) {
                     result = false;
-                    continue;
-                }
-                if (entity == player) {
-                    if (condition.execute(player, house, event, oldExecutor) != not) {
-                        result = true;
-                        if (matchAnyCondition) break;
-                    } else {
-                        if (!matchAnyCondition) {
-                            result = false;
-                            break;
-                        }
-                    }
-                } else if (condition instanceof NPCCondition npcCondition) {
-                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-                    if (npcCondition.npcExecute(player, npc, house, event, oldExecutor) != not) {
-                        result = true;
-                        if (matchAnyCondition) break;
-                    } else {
-                        if (!matchAnyCondition) {
-                            result = false;
-                            break;
-                        }
-                    }
+                    break;
                 }
             }
         }
@@ -179,11 +163,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
         executor.addActions(result ? ifActions : elseActions);
         executor.setLimits(oldExecutor.getLimits());
         executor.onBreak(oldExecutor.getOnBreak());
-        executor.onComplete((ActionExecutor e) -> {
-            if (oldExecutor != null) {
-                oldExecutor.execute(player, house, event);
-            }
-        });
+        executor.onComplete((ActionExecutor e) -> oldExecutor.execute(player, house, event));
         executor.execute(player, house, event);
         return OutputType.RUNNING;
     }
@@ -225,11 +205,11 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("conditions", ConditionData.Companion.fromList(conditions));
+        data.put("conditions", ConditionalData.fromList(conditions));
         data.put("matchAnyCondition", matchAnyCondition);
         data.put("not", not);
-        data.put("ifActions", Companion.fromList(ifActions));
-        data.put("elseActions", Companion.fromList(elseActions));
+        data.put("ifActions", ActionData.fromList(ifActions));
+        data.put("elseActions", ActionData.fromList(elseActions));
         return data;
     }
 
@@ -271,12 +251,12 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
     }
 
     private List<Condition> conditionDataToList(JsonArray jsonArray) {
-        ArrayList<ConditionData> conditions = new ArrayList<>();
+        ArrayList<ConditionalData> conditions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            conditions.add(gson.fromJson(jsonObject, ConditionData.class));
+            conditions.add(gson.fromJson(jsonObject, ConditionalData.class));
         }
-        return ConditionData.Companion.toList(conditions);
+        return ConditionalData.toList(conditions);
     }
 
     private List<Action> dataToList(JsonArray jsonArray) {
@@ -285,7 +265,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
             actions.add(gson.fromJson(jsonObject, ActionData.class));
         }
-        return Companion.toList(actions);
+        return ActionData.toList(actions);
     }
 
     @Override
@@ -371,7 +351,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        actionData.put("conditions", ConditionData.Companion.fromList(conditions));
+        actionData.put("conditions", ConditionalData.fromList(conditions));
 
         ArrayList<String> ifLines = new ArrayList<>();
         ArrayList<String> elseLines = new ArrayList<>();
@@ -403,8 +383,8 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
             elseActions = HTSLHandler.importActions(String.join("\n", elseLines), indent + " ".repeat(4));
         }
 
-        actionData.put("ifActions", Companion.fromList(ifActions));
-        actionData.put("elseActions", Companion.fromList(elseActions));
+        actionData.put("ifActions", ActionData.fromList(ifActions));
+        actionData.put("elseActions", ActionData.fromList(elseActions));
 
         fromData(actionData, ConditionalAction.class);
 

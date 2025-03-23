@@ -10,9 +10,10 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.WeatherTypes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Instances.HousingData.*;
+import com.al3x.housing2.Data.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Mongo.Collection.HousesCollection;
 import com.al3x.housing2.Utils.*;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
@@ -29,14 +30,12 @@ import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
-import de.maxhenkel.voicechat.api.events.Event;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,6 +50,7 @@ import java.util.logging.Level;
 
 import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
+import static com.mongodb.client.model.Filters.eq;
 
 public class HousingWorld {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
@@ -100,7 +100,7 @@ public class HousingWorld {
     private String seed;
     private Random random;
     private Integer version;
-    private ArrayList<Player> adminModeUsers = new ArrayList<>();
+    private transient ArrayList<Player> adminModeUsers = new ArrayList<>();
     private boolean joinLeaveMessages;
     private boolean deathMessages;
     private boolean keepInventory;
@@ -108,27 +108,27 @@ public class HousingWorld {
     private ResourcePackData resourcePack;
     private boolean randomTicks;
 
-    public HouseData houseData;
+    public transient HouseData houseData;
 
     // Jukebox
-    private Playlist playlist;
-    private RadioSongPlayer radioSongPlayer;
+    private transient Playlist playlist;
+    private transient RadioSongPlayer radioSongPlayer;
 
-    private boolean loaded = false;
-    private boolean unloaded = false;
-    private List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
-    public HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
-    private HousingScoreboard scoreboardInstance;
+    private transient boolean loaded = false;
+    private transient boolean unloaded = false;
+    private transient List<Consumer<HousingWorld>> onLoad = new ArrayList<>();
+    public transient HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
+    private transient HousingScoreboard scoreboardInstance;
 
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
-    public HousingWorld(Main main, OfflinePlayer owner, String houseID) {
+    public HousingWorld(Main main, String houseID) {
         // long start = System.currentTimeMillis();
 
         main.getServer().getAsyncScheduler().runNow(main, (t) -> {
             long asyncStart = System.currentTimeMillis();
-            initialize(main, owner, null);
-            loadHouseData(owner, houseID);
-            setupHouseData(owner);
+            initialize(main, null);
+            loadHouseData(houseID);
+            setupHouseData();
             loadCommands();
 
             main.getLogger().info("Loaded Async Part of house " + name + " in " + (System.currentTimeMillis() - asyncStart) + "ms!");
@@ -136,12 +136,12 @@ public class HousingWorld {
             main.getServer().getScheduler().runTask(main, () -> {
                 try {
                     long syncStart = System.currentTimeMillis();
-                    loadWorld(owner);
-                    setupDataAfterLoad(owner);
-                    loadNPCs(owner);
+                    loadWorld();
+                    setupDataAfterLoad();
+                    loadNPCs();
                     setupWorldBorder();
                     if (groups.isEmpty()) {
-                        addDefaultGroups(owner);
+                        addDefaultGroups(null);
                     }
                     loaded = true;
                     main.getLogger().info("Loaded Sync Part of house " + name + " in " + (System.currentTimeMillis() - syncStart) + "ms!");
@@ -157,7 +157,7 @@ public class HousingWorld {
     }
 
     public HousingWorld(Main main, Player owner, HouseSize size) {
-        initialize(main, owner, owner.getName() + "'s House");
+        initialize(main, owner.getName() + "'s House");
         setupNewHouse(owner, size);
         createTemplatePlatform();
         setupWorldBorder();
@@ -168,10 +168,9 @@ public class HousingWorld {
         onLoad.forEach(consumer -> consumer.accept(this));
     }
 
-    private void initialize(Main main, OfflinePlayer owner, String name) {
+    private void initialize(Main main, String name) {
         this.main = main;
         this.name = name;
-        this.ownerUUID = owner.getUniqueId();
         this.housingNPCS = ConcurrentHashMultiset.create();
         this.eventActions = new HashMap<>();
         for (EventType type : EventType.values()) {
@@ -208,45 +207,43 @@ public class HousingWorld {
         this.version = Updater.LATEST_VERSION;
     }
 
-    private void loadHouseData(OfflinePlayer owner, String name) {
+    private void loadHouseData(String name) {
         File file = new File(main.getDataFolder(), "houses/" + name + ".json");
         if (!file.exists()) {
-            notifyOwnerOfFailure(owner);
             return;
         }
         try {
             JsonObject json = Updater.update(JsonParser.parseString(Files.readString(file.toPath(), StandardCharsets.UTF_8)).getAsJsonObject());
             houseData = GSON.fromJson(json, HouseData.class);
-
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            notifyOwnerOfFailure(owner);
         }
     }
 
-    private void setupHouseData(OfflinePlayer owner) {
+    private void setupHouseData() {
         this.houseUUID = UUID.fromString(houseData.getHouseID());
+        this.ownerUUID = UUID.fromString(houseData.getOwnerID());
         this.name = houseData.getHouseName();
         this.cookies = (int) houseData.getCookies();
         this.cookieGivers = new ArrayList<>();
         this.description = houseData.getDescription();
         this.timeCreated = houseData.getTimeCreated();
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
-        this.statManager.setGlobalStats(StatData.Companion.toList(houseData.getGlobalStats()));
-        this.commands = houseData.getCommands() != null ? CommandData.Companion.toList(houseData.getCommands()) : new ArrayList<>();
-        this.layouts = houseData.getLayouts() != null ? LayoutData.Companion.toList(houseData.getLayouts()) : new ArrayList<>();
-        this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.Companion.toList(houseData.getCustomMenus()) : new ArrayList<>();
-        this.groups = houseData.getGroups() != null ? GroupData.Companion.toList(houseData.getGroups()) : new ArrayList<>();
-        this.teams = houseData.getTeams() != null ? TeamData.Companion.toList(houseData.getTeams()) : new ArrayList<>();
+        this.statManager.setGlobalStats(StatData.toList(houseData.getGlobalStats()));
+        this.commands = houseData.getCommands() != null ? CommandData.toList(houseData.getCommands()) : new ArrayList<>();
+        this.layouts = houseData.getLayouts() != null ? LayoutData.toList(houseData.getLayouts()) : new ArrayList<>();
+        this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.toList(houseData.getCustomMenus()) : new ArrayList<>();
+        this.groups = houseData.getGroups() != null ? GroupData.toList(houseData.getGroups()) : new ArrayList<>();
+        this.teams = houseData.getTeams() != null ? TeamData.toList(houseData.getTeams()) : new ArrayList<>();
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
         for (PlayerData playerData : playersData.values()) {
-            if (playerData.getStats() != null) playerData.setCacheStats(StatData.Companion.toList(playerData.getStats()));
+            if (playerData.getStats() != null) playerData.setCacheStats(StatData.toList(playerData.getStats()));
         }
         this.defaultGroup = houseData.getDefaultGroup() != null ? houseData.getDefaultGroup() : "default";
         this.scoreboard = houseData.getScoreboard();
         this.scoreboardTitle = houseData.getScoreboardTitle() != null ? houseData.getScoreboardTitle() : "<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ";
         loadEventActions();
-        this.functions = houseData.getFunctions() != null ? FunctionData.Companion.toList(houseData.getFunctions()) : new ArrayList<>();
+        this.functions = houseData.getFunctions() != null ? FunctionData.toList(houseData.getFunctions()) : new ArrayList<>();
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
@@ -273,9 +270,9 @@ public class HousingWorld {
         this.randomTicks = Boolean.TRUE.equals(houseData.getRandomTicks());
     }
 
-    private void setupDataAfterLoad(OfflinePlayer owner) {
-        this.regions = houseData.getRegions() != null ? RegionData.Companion.toList(houseData.getRegions()) : new ArrayList<>();
-        this.holograms = houseData.getHolograms() != null ? HologramData.Companion.toList(houseData.getHolograms(), this) : new ArrayList<>();
+    private void setupDataAfterLoad() {
+        this.regions = houseData.getRegions() != null ? RegionData.toList(houseData.getRegions()) : new ArrayList<>();
+        this.holograms = houseData.getHolograms() != null ? HologramData.toList(houseData.getHolograms(), this) : new ArrayList<>();
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
         this.launchPads = houseData.getLaunchPads() != null ? houseData.getLaunchPads() : new ArrayList<>(); //Used a new method for this :)
@@ -300,7 +297,7 @@ public class HousingWorld {
     private void loadEventActions() {
         for (EventType type : EventType.values()) {
             eventActions.put(type, new ArrayList<>());
-            List<ActionData> actions = houseData.getEventActions().get(type);
+            List<ActionData> actions = houseData.getEventActions().get(type.name());
             if (actions != null) {
                 for (ActionData action : actions) {
                     eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData(), action.getComment()));
@@ -309,10 +306,9 @@ public class HousingWorld {
         }
     }
 
-    private void loadWorld(OfflinePlayer owner) {
+    private void loadWorld() {
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
-            notifyOwnerOfFailure(owner);
             return;
         }
         slimeWorld = world;
@@ -345,10 +341,10 @@ public class HousingWorld {
         TrashCanListener.initTrashCans(trashCans);
     }
 
-    private void loadNPCs(OfflinePlayer owner) {
+    private void loadNPCs() {
         for (NPCData npc : houseData.getHouseNPCs()) {
             Location location = npc.getNpcLocation().toLocation();
-            loadNPC(owner, location, npc);
+            loadNPC(location, npc);
         }
     }
 
@@ -357,15 +353,11 @@ public class HousingWorld {
             Bukkit.reloadData();
         });
 
-//        for (Command command : commands) {
-//            CommandRegistry r = command.getCommand();
-//            r.setPermission("housing.world." + houseUUID.toString());
-//            main.getCommandFramework().registerCommand(houseUUID.toString(), r);
-//        }
     }
 
     private void setupNewHouse(Player owner, HouseSize size) {
         this.houseUUID = UUID.randomUUID();
+        this.ownerUUID = owner.getUniqueId();
         ensureUniqueHouseUUID();
         this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
@@ -506,18 +498,19 @@ public class HousingWorld {
     public void save() {
         for (Player player : houseWorld.getPlayers()) {
             //They have a window open so we shouldnt save their inventory
-            if (MenuManager.getWindowOpen(player) != null && MenuManager.getWindowOpen(player) == MenuManager.getPlayerMenu(player)) continue;
+            if (MenuManager.getWindowOpen(player) != null && MenuManager.getWindowOpen(player) == MenuManager.getPlayerMenu(player))
+                continue;
             PlayerData data = loadOrCreatePlayerData(player);
             data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
             data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
         }
 
         for (PlayerData playerData : playersData.values()) {
-            if (playerData.getStats() != null) playerData.setStats(StatData.Companion.fromList(playerData.getCacheStats()));
+            if (playerData.getStats() != null) playerData.setStats(StatData.fromList(playerData.getCacheStats()));
         }
 
         try {
-            houseData = HouseData.Companion.fromHousingWorld(this);
+            houseData = HouseData.fromHousingWorld(this);
             File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
             if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
             if (!file.exists()) file.createNewFile();
@@ -559,13 +552,17 @@ public class HousingWorld {
     }
 
     public void delete() {
-        radioSongPlayer.setPlaying(false);
-        houseWorld.getPlayers().forEach(player -> {
-            kickPlayerFromHouse(player);
-            player.sendMessage(colorize("&e&lThis house has been deleted!"));
+        runOnLoadOrNow((h) -> {
+            if (radioSongPlayer != null) radioSongPlayer.setPlaying(false);
+            if (houseWorld != null) {
+                houseWorld.getPlayers().forEach(player -> {
+                    kickPlayerFromHouse(player);
+                    player.sendMessage(colorize("&e&lThis house has been deleted!"));
+                });
+                Bukkit.unloadWorld(houseWorld, false);
+            }
+            deleteWorld();
         });
-        Bukkit.unloadWorld(houseWorld, false);
-        deleteWorld();
     }
 
     private void killAllEntities() {
@@ -581,11 +578,10 @@ public class HousingWorld {
         if (file.exists()) file.delete();
         try {
             loader.deleteWorld(houseUUID.toString());
-            return true;
         } catch (UnknownWorldException | IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
+        return false;
     }
 
     public void broadcast(String message) {
@@ -705,13 +701,14 @@ public class HousingWorld {
     public void sendPlayerToHouse(Player player) {
         try {
             PlayerData playerData = houseData.getPlayerData().get(player.getUniqueId().toString());
-            if (playerData.getBanned() && playerData.getBanExpiration().isAfter(Instant.now())) {
+            if (playerData.isBanned() && playerData.getBanExpiration().isAfter(Instant.now())) {
                 player.sendMessage(colorize("&cYou are banned from " + name + "!"));
                 return;
-            } else if (playerData.getBanned()) {
+            } else if (playerData.isBanned()) {
                 playerData.setBanned(false);
             }
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
 
         if (privacy == HousePrivacy.LOCKED && !ownerUUID.equals(player.getUniqueId())) {
             player.sendMessage(colorize("&cThis house has been locked by a Staff Member! Let the owner know they need to make some changes!"));
@@ -820,21 +817,37 @@ public class HousingWorld {
         return cookies;
     }
 
-    public boolean getDaylightCycle() {return dayLightCycle;}
+    public boolean getDaylightCycle() {
+        return dayLightCycle;
+    }
 
-    public void setDayLightCycle(boolean value) { this.dayLightCycle = value; }
+    public void setDayLightCycle(boolean value) {
+        this.dayLightCycle = value;
+    }
 
-    public long getIngameTime() {return ingameTime;}
+    public long getIngameTime() {
+        return ingameTime;
+    }
 
-    public void setIngameTime(long value) { this.ingameTime = value; }
+    public void setIngameTime(long value) {
+        this.ingameTime = value;
+    }
 
-    public WeatherTypes getWeather() {return weather;}
+    public WeatherTypes getWeather() {
+        return weather;
+    }
 
-    public void setWeather(WeatherTypes value) {this.weather = value;}
+    public void setWeather(WeatherTypes value) {
+        this.weather = value;
+    }
 
-    public boolean getWeatherCycle() {return weatherCycle;}
+    public boolean getWeatherCycle() {
+        return weatherCycle;
+    }
 
-    public void setWeatherCycle(boolean value) {this.weatherCycle = value;}
+    public void setWeatherCycle(boolean value) {
+        this.weatherCycle = value;
+    }
 
     public boolean getJoinLeaveMessages() {
         return joinLeaveMessages;
@@ -1012,8 +1025,8 @@ public class HousingWorld {
         housingNPCS.add(npc);
     }
 
-    public void loadNPC(OfflinePlayer player, Location location, NPCData data) {
-        HousingNPC npc = new HousingNPC(main, player, location, this, data);
+    public void loadNPC(Location location, NPCData data) {
+        HousingNPC npc = new HousingNPC(main, location, this, data);
         housingNPCS.add(npc);
     }
 
@@ -1065,13 +1078,13 @@ public class HousingWorld {
     }
 
     public void addActionButton(Location location) {
-        actionButtons.put(LocationData.Companion.fromLocation(location), new ArrayList<>());
+        actionButtons.put(LocationData.fromLocation(location), new ArrayList<>());
     }
 
     public List<Action> getActionButton(Location location) {
         for (LocationData loc : actionButtons.keySet()) {
             if (loc.toLocation().distance(location) < 1) {
-                return ActionData.Companion.toList(actionButtons.get(loc));
+                return ActionData.toList(actionButtons.get(loc));
             }
         }
         return new ArrayList<>();
@@ -1080,7 +1093,7 @@ public class HousingWorld {
     public void setActionButton(Location location, List<Action> actions) {
         for (LocationData loc : actionButtons.keySet()) {
             if (loc.toLocation().distance(location) < 1) {
-                actionButtons.put(loc, ActionData.Companion.fromList(actions));
+                actionButtons.put(loc, ActionData.fromList(actions));
                 return;
             }
         }
@@ -1147,7 +1160,7 @@ public class HousingWorld {
     public PlayerData loadOrCreatePlayerData(Player player) {
         PlayerData data = playersData.get(player.getUniqueId().toString());
         if (data == null) {
-            data = new PlayerData(null, null, null, null, null, false, Instant.now(), false, Instant.now(), new ArrayList<>(), new ArrayList<>());
+            data = new PlayerData(null, null, null, null, null, false, Instant.now(), false, Instant.now(), new ArrayList<>(), player.getName());
             data.setGroup(defaultGroup);
             playersData.put(player.getUniqueId().toString(), data);
         }
@@ -1276,9 +1289,13 @@ public class HousingWorld {
         this.lockedReason = lockedReason;
     }
 
-    public ResourcePackData getResourcePack() { return resourcePack; }
+    public ResourcePackData getResourcePack() {
+        return resourcePack;
+    }
 
-    public void setResourcePack(ResourcePackData resourcePack) { this.resourcePack = resourcePack; }
+    public void setResourcePack(ResourcePackData resourcePack) {
+        this.resourcePack = resourcePack;
+    }
 
     public boolean getRandomTicks() {
         return randomTicks;
@@ -1289,5 +1306,7 @@ public class HousingWorld {
         this.randomTicks = randomTicks;
     }
 
-    public Main getPlugin() { return this.main; }
+    public Main getPlugin() {
+        return this.main;
+    }
 }

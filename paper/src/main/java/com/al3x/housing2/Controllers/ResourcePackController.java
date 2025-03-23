@@ -1,6 +1,6 @@
 package com.al3x.housing2.Controllers;
 
-import com.al3x.housing2.Instances.HousingData.ResourcePackData;
+import com.al3x.housing2.Data.ResourcePackData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.PlaygroundWeb;
