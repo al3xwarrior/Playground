@@ -175,6 +175,7 @@ public final class Main extends JavaPlugin implements Listener {
             new CookiesPlaceholder(this).register();
         }
 
+        playgroundBot.updateHousings();
         getServer().getLogger().info("[Housing2] Enabled just fine!");
     }
 

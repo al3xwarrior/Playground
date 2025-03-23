@@ -56,7 +56,10 @@ public class Runnables {
                             }
                         }
 
-                        if (!holdUpWaitAMinute) main.getHousesManager().saveHouseAndUnload(house);
+                        if (!holdUpWaitAMinute) {
+                            main.getHousesManager().saveHouseAndUnload(house);
+                            main.getPlaygroundBot().updateHousings();
+                        }
                     }
                 }
             }
