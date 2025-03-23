@@ -116,7 +116,7 @@ public class HousingItems implements Listener {
                 return;
             }
             if (name.equals("§aRandom House §7(Right-Click)")) {
-                HousingWorld randomHouse = housesManager.getRandomPublicHouse();
+                HousingWorld randomHouse = housesManager.getRandomPublicHouse(player);
                 if (randomHouse != null) {
                     randomHouse.sendPlayerToHouse(player);
                 } else {

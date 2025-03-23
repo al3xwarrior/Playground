@@ -292,9 +292,10 @@ public class HousesManager {
     }
 
     //Updated to allow for houses that haven't been loaded yet tom be added to the list
-    public HousingWorld getRandomPublicHouse() {
+    public HousingWorld getRandomPublicHouse(Player player) {
         ArrayList<HouseData> publicHouses = new ArrayList<>(getAllHouseData().stream()
                 .filter(houseData -> houseData.getPrivacy().equals("PUBLIC"))
+                .filter(houseData -> getHouse(player.getWorld()) == null || houseData != getHouse(player.getWorld()).houseData)
                 .toList());
 
         if (publicHouses.isEmpty()) return null;
