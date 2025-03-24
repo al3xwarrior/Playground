@@ -22,6 +22,7 @@ public class ProtoolsListener
         if (e.getItem() == null) return;
         ItemStack item = e.getItem();
         Player player = e.getPlayer();
+        if (item.getItemMeta() == null) return;
         if (item.getItemMeta().getDisplayName().equals("§bRegion Selection Tool")) {
             e.setCancelled(true);
             if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
