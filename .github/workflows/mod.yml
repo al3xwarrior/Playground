@@ -30,6 +30,8 @@ jobs:
       with:
          gradle-version: '8.12'
 
+    - run: chmod +x ./gradlew
+
     - name: Build with Gradle Wrapper
       run: ./gradlew :fabric:remapJar
 
