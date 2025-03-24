@@ -33,7 +33,10 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -134,7 +137,7 @@ public class JoinLeaveHouse implements Listener {
         }
         // Normal player joins
         else {
-            if (house.getPermission(player, Permissions.GAMEMODE) instanceof LinkedTreeMap<?,?> gamemodeMap) {
+            if (house.getPermission(player, Permissions.GAMEMODE) instanceof LinkedTreeMap<?, ?> gamemodeMap) {
                 Gamemodes value = Gamemodes.valueOf((String) gamemodeMap.get("name"));
                 player.setGameMode(value.getGameMode());
             } else {
@@ -210,25 +213,17 @@ public class JoinLeaveHouse implements Listener {
         }
 
         for (Player onlinePlayer : player.getWorld().getPlayers()) {
-            if (!player.canSee(onlinePlayer)) {
-                player.showPlayer(Main.getInstance(), onlinePlayer);
-            }
-            if (!onlinePlayer.canSee(player)) {
-                onlinePlayer.showPlayer(Main.getInstance(), player);
-            }
+            player.showPlayer(Main.getInstance(), onlinePlayer);
+            onlinePlayer.showPlayer(Main.getInstance(), player);
         }
 
-        // They are not leaving the hub so that means they are leaving another house
-        if (!from.getName().equals("world")) {
-            leaveHouse(player, housesManager.getHouse(UUID.fromString(from.getName())));
-        }
+        boolean isLeavingHouse = !from.getName().equals("world");
+        boolean isJoiningHouse = !to.getName().equals("world");
 
-        // They are entering a house, not the hub
-        if (!to.getName().equals("world") && from.getName().equals("world")) {
-            joinHouse(player);
-        } else {
-            resetPlayer(player);
-        }
+        if (isLeavingHouse) leaveHouse(player, housesManager.getHouse(from.getUID()));
+        if (isJoiningHouse) joinHouse(player);
+
+        resetPlayer(player);
 
         if (Main.getInstance().getPlaygroundBot() != null) Main.getInstance().getPlaygroundBot().updateHousings();
     }

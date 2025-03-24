@@ -1,94 +1,93 @@
 package com.al3x.housing2.Listeners;
 
-import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.jetbrains.annotations.NotNull;
+import com.al3x.housing2.Commands.StaffAlerts.isStaffAlerts
+import com.al3x.housing2.Main
+import com.al3x.housing2.Utils.Color.colorize
+import org.bukkit.Bukkit
+import org.bukkit.World
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.entity.EntitySpawnEvent
+import java.util.*
 
-import java.util.HashMap;
-import java.util.UUID;
+class EntityLimitListener : Listener {
 
-import static com.al3x.housing2.Commands.StaffAlerts.isStaffAlerts;
-import static com.al3x.housing2.Utils.Color.colorize;
+    private val staffAlerts = mutableMapOf<UUID, Boolean>()
+    private val limit = Main.getInstance().config.getInt("entityLimit")
 
-public class EntityLimitListener implements Listener {
-
-    HashMap<UUID, Boolean> staffAlerts = new HashMap<>();
-
-    private final int limit = 150;
-
-    private void alertStaff(World world) {
-        if (world.getEntities().size() > limit + 5) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                HousingWorld house = Main.getInstance().getHousesManager().getHouse(world);
+    private fun alertStaff(world: World) {
+        if (world.entities.size > limit) {
+            Bukkit.getOnlinePlayers().forEach { player ->
+                val house = Main.getInstance().getHousesManager().getHouse(world)
                 if (player.hasPermission("housing2.admin") && isStaffAlerts(player)) {
-                    player.sendMessage(colorize("&cEntity limit reached in " + house.getName() + " &7(" + house.getOwnerName() + ")"));
+                    player.sendMessage(colorize("&cEntity limit reached in ${house.name} &7(${house.ownerName})"))
                 }
             }
         }
     }
 
     @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent e) {
-        CreatureSpawnEvent.SpawnReason reason = e.getSpawnReason();
-        if (reason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            e.setCancelled(true); // I dont "THINK" natural spawns are needed
-            return;
-        }
-
-        World world = e.getEntity().getWorld();
-
-        if (world.getEntities().size() >= limit) {
-            // Events that are either small and shouldnt be denied or part of Housing2 or another plugin
-            // CURED, CUSTOM, ENDER_PEARL
-            if (
-                    reason == CreatureSpawnEvent.SpawnReason.SPAWNER ||
-                    reason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG ||
-                    reason == CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER ||
-                    reason == CreatureSpawnEvent.SpawnReason.SILVERFISH_BLOCK ||
-                    reason == CreatureSpawnEvent.SpawnReason.TRAP
-            ) {
-                e.setCancelled(true);
-            }
-
-            alertStaff(world);
-        }
+    fun onCreatureSpawn(e: CreatureSpawnEvent) {
+//        val reason = e.spawnReason;
+////        if (reason == CreatureSpawnEvent.SpawnReason.NATURAL) {
+////            e.setCancelled(true); // I dont "THINK" natural spawns are needed
+////            return;
+////        }
+//
+//        val world = e.entity.world
+//
+//        if (world.entities.size >= limit) {
+//            // Events that are either small and shouldnt be denied or part of Housing2 or another plugin
+//            // CURED, CUSTOM, ENDER_PEARL
+//            if (reason in listOf(
+//                    CreatureSpawnEvent.SpawnReason.SPAWNER,
+//                    CreatureSpawnEvent.SpawnReason.SPAWNER_EGG,
+//                    CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER,
+//                    CreatureSpawnEvent.SpawnReason.SILVERFISH_BLOCK,
+//                    CreatureSpawnEvent.SpawnReason.TRAP
+//                )
+//            ) {
+//                e.isCancelled = true
+//            }
+//
+//            alertStaff(world);
+//        }
     }
 
     @EventHandler
-    public void dropItem(PlayerDropItemEvent e) {
-        World world = e.getPlayer().getWorld();
-        if (world.getEntities().size() >= limit) {
-            e.setCancelled(true);
-            alertStaff(world);
+    fun onEntitySpawn(e: EntitySpawnEvent) {
+        val world = e.entity.world
+        if (world.entities.size >= limit) {
+            e.isCancelled = true
+            alertStaff(world)
         }
     }
-
-    @EventHandler
-    public void blockDrop(BlockBreakEvent e) {
-        World world = e.getPlayer().getWorld();
-        if (world.getEntities().size() >= limit) {
-            e.setDropItems(false);
-            alertStaff(world);
-        }
-    }
-    @EventHandler
-    public void blockDispenseItem(BlockDispenseEvent e) {
-        World world = e.getBlock().getWorld();
-        if (world.getEntities().size() >= limit) {
-            e.setCancelled(true);
-            alertStaff(world);
-        }
-    }
+//
+//    @EventHandler
+//    fun dropItem(e: PlayerDropItemEvent) {
+//        val world = e.player.world
+//        if (world.entities.size >= limit) {
+//            e.isCancelled = true
+//            alertStaff(world)
+//        }
+//    }
+//
+//    @EventHandler
+//    fun blockDrop(e: BlockBreakEvent) {
+//        val world = e.player.world
+//        if (world.entities.size >= limit) {
+//            e.isDropItems = false
+//            alertStaff(world)
+//        }
+//    }
+//
+//    @EventHandler
+//    fun blockDispenseItem(e: BlockDispenseEvent) {
+//        val world = e.block.world
+//        if (world.entities.size >= limit) {
+//            e.isCancelled = true
+//            alertStaff(world)
+//        }
+//    }
 }

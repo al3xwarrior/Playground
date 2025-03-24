@@ -5,7 +5,6 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
-import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -19,15 +18,11 @@ import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
-import static com.al3x.housing2.Utils.Color.colorize;
 
 public class PlaySoundAction extends HTSLImpl {
     private Double volume;
@@ -158,7 +153,8 @@ public class PlaySoundAction extends HTSLImpl {
             case CUSTOM -> {
                 if (customLocation == null) return OutputType.ERROR;
                 Location loc = getLocationFromString(player, house, customLocation);
-                if (loc != null) player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                if (loc != null)
+                    player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
             }
         }
         return OutputType.SUCCESS;
@@ -191,7 +187,7 @@ public class PlaySoundAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\"" : location.name();
         return " ".repeat(indent) + keyword() + " " + sound.name() + " " + volume + " " + pitch + " " + loc;
     }
 
@@ -211,8 +207,8 @@ public class PlaySoundAction extends HTSLImpl {
         sound = Sound.valueOf(parts[0]);
         volume = Double.parseDouble(parts[1]);
         pitch = Double.parseDouble(parts[2]);
-        if (Locations.fromString(parts[3]) != null) {
-            location = Locations.fromString(parts[3]);
+        if (Locations.valueOf(parts[3].toUpperCase()) != null) {
+            location = Locations.valueOf(parts[3].toUpperCase());
         } else {
             location = CUSTOM;
             Duple<String[], String> locationArg = handleArg(parts, 3);

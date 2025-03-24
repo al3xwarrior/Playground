@@ -5,7 +5,6 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
-import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Duple;
@@ -197,11 +196,11 @@ public class ExplosionAction extends HTSLImpl {
         if (args.length < 2) return nextLines;
 
         Duple<String[], String> locationArg = handleArg(args, 0);
-        if (Locations.fromString(locationArg.getSecond()) == null) {
+        if (Locations.valueOf(locationArg.getSecond().toUpperCase()) == null) {
             location = CUSTOM;
             customLocation = locationArg.getSecond();
         } else {
-            location = Locations.fromString(locationArg.getSecond());
+            location = Locations.valueOf(locationArg.getSecond().toUpperCase());
         }
         args = locationArg.getFirst();
 

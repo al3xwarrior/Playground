@@ -1,6 +1,6 @@
 package com.al3x.housing2.Enums;
 
-public enum PvpSettings {
+enum class PvpSettings(val display: String) {
     DAMAGE("PvP/Damage"),
     DOUBLE_JUMP("Double Jump"),
     FIRE_DAMAGE("Fire Damage"),
@@ -10,14 +10,5 @@ public enum PvpSettings {
     HUNGER("Hunger"),
     KILL_DEATH_MESSAGES("Kill/Death Messages"),
     INSTANT_RESPAWN("Instant Respawn"),
-    KEEP_INVENTORY("Keep Inventory")
-    ;
-
-    private final String name;
-
-    PvpSettings(String name) {
-        this.name = name;
-    }
-
-
+    KEEP_INVENTORY("Keep Inventory"),
 }

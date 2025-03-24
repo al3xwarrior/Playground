@@ -14,7 +14,7 @@ public class HousingTabList {
         String tps = Bukkit.getServer().getTPS()[0] > 18 ? "&a" : Bukkit.getServer().getTPS()[0] > 15 ? "&e" : "&c";
         tps += Math.round(Bukkit.getServer().getTPS()[0] * 10.0) / 10.0;
         String footer = "\n&fYou are in &a" + world.getName() + "&f, by &b" + world.getOwnerName() + "\n\n" +
-                "&fVisiting Rules: " + world.getPrivacy().asString() + "\n\n" +
+                "&fVisiting Rules: " + world.getPrivacy().getDisplay() + "\n\n" +
                 "&fGuests: &7" + world.getGuests() + " | &fCookies: &a" + world.getCookies() + "\n" +
                 "&cTPS: &f" + tps + " &7| &cPing: &f" + player.getPing() +
                 "\n" +

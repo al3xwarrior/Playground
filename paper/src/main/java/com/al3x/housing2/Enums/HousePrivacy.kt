@@ -1,17 +1,7 @@
 package com.al3x.housing2.Enums;
 
-public enum HousePrivacy {
+enum class HousePrivacy(val display: String) {
     PUBLIC("&aPUBLIC"),
     PRIVATE("&cPRIVATE"), //Eventually also add others if we add friends/party systems
     LOCKED("&4LOCKED")
-    ;
-
-    final String display;
-    HousePrivacy(String display) {
-        this.display = display;
-    }
-
-    public String asString() {
-        return display;
-    }
 }

@@ -1,28 +1,9 @@
-package com.al3x.housing2.Enums;
-import org.bukkit.Material;
+package com.al3x.housing2.Enums
 
-public enum EditVisibilityEnum implements EnumMaterial{
+import org.bukkit.Material
+
+enum class EditVisibilityEnum(override val material: Material) : EnumMaterial {
     NEAREST(Material.IRON_SWORD),
     CONDITION(Material.REDSTONE),
     ALL(Material.BARRIER);
-
-    private final Material material;
-    EditVisibilityEnum(Material material) {
-        this.material = material;
-    }
-
-    public static EditVisibilityEnum fromString(String string) {
-        for (EditVisibilityEnum editVisibilityEnum : values()) {
-            if (editVisibilityEnum.name().equalsIgnoreCase(string)) {
-                return editVisibilityEnum;
-            }
-        }
-        return null;
-    }
-
-
-    @Override
-    public Material getMaterial() {
-        return material;
-    }
 }

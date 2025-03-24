@@ -7,17 +7,18 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NumberUtilsKt;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import static com.al3x.housing2.Enums.Locations.*;
 
@@ -95,10 +96,8 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         switch (location) {
-            case INVOKERS_LOCATION ->
-                    player.teleport(player.getLocation());
-            case HOUSE_SPAWN ->
-                    player.teleport(house.getSpawn());
+            case INVOKERS_LOCATION -> player.teleport(player.getLocation());
+            case HOUSE_SPAWN -> player.teleport(house.getSpawn());
             case CUSTOM, PLAYER_LOCATION -> {
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
@@ -147,7 +146,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\"" : location.name();
         return " ".repeat(indent) + keyword() + " " + loc;
     }
 
@@ -163,8 +162,8 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (Locations.fromString(action) != null) {
-            location = Locations.fromString(action);
+        if (Locations.valueOf(action.toUpperCase()) != null) {
+            location = Locations.valueOf(action.toUpperCase());
             if (location == PLAYER_LOCATION) {
                 customLocation = "0,0,0";
             }
@@ -178,10 +177,8 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         switch (location) {
-            case INVOKERS_LOCATION ->
-                    npc.teleport(player.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-            case HOUSE_SPAWN ->
-                    npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            case INVOKERS_LOCATION -> npc.teleport(player.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            case HOUSE_SPAWN -> npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             case CUSTOM, PLAYER_LOCATION -> {
                 if (customLocation == null) {
                     return;

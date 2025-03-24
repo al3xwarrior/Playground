@@ -1,6 +1,5 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -13,7 +12,6 @@ import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -21,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import static com.al3x.housing2.Utils.Color.colorize;
 
 public class LaunchProjectileAction extends HTSLImpl {
     private Projectile projectile;
@@ -195,7 +191,7 @@ public class LaunchProjectileAction extends HTSLImpl {
         try {
             projectile = Projectile.getProjectile(split[0]);
             amount = Double.parseDouble(split[1]);
-            direction = PushDirection.fromString(split[2]);
+            direction = PushDirection.valueOf(split[2].toUpperCase());
         } catch (IllegalArgumentException e) {
             return nextLines;
         }

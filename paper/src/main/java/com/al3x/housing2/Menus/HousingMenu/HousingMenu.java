@@ -28,7 +28,7 @@ public class HousingMenu extends Menu {
     private HousingWorld house;
 
     public HousingMenu(Main main, Player player, HousingWorld house) {
-        super(player, colorize("&7Housing Menu"), 5*9);
+        super(player, colorize("&7Housing Menu"), 5 * 9);
         this.main = main;
         this.player = player;
         this.house = house;
@@ -120,7 +120,7 @@ public class HousingMenu extends Menu {
         if (house.hasPermission(player, HOUSE_SETTINGS)) {
             ItemBuilder visitingRules = ItemBuilder.create(Material.PLAYER_HEAD);
             visitingRules.name("&aVisiting Rules");
-            visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().asString());
+            visitingRules.info("&7Current Privacy", "&a" + house.getPrivacy().getDisplay());
             visitingRules.lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
             addItem(0, visitingRules.build(), () -> {
 
@@ -131,7 +131,7 @@ public class HousingMenu extends Menu {
                     house.setPrivacy(HousePrivacy.PRIVATE);
                 }
 
-                player.sendMessage(colorize("&7Privacy set to " + house.getPrivacy().asString()));
+                player.sendMessage(colorize("&7Privacy set to " + house.getPrivacy().getDisplay()));
                 setupItems();
             });
 

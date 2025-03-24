@@ -1,8 +1,8 @@
 package com.al3x.housing2;
 
 import com.al3x.housing2.Instances.*;
-import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Mongo.DatabaseManager;
@@ -143,7 +143,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
-        Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
+        Bukkit.getPluginManager().registerEvents(TrashCanListener.INSTANCE, this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
         Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);

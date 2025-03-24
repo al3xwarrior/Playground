@@ -15,6 +15,10 @@ import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Mongo.Collection.HousesCollection;
 import com.al3x.housing2.Utils.*;
+import com.al3x.housing2.Utils.InstantTypeAdapter;
+import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.Updater;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -323,8 +327,7 @@ public class HousingWorld {
         if (world == null) {
             return;
         }
-        slimeWorld = world;
-        this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
+        this.houseWorld = world;
         houseWorld.setTime(this.ingameTime);
         houseWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, this.dayLightCycle);
         switch (this.weather) {
@@ -350,7 +353,7 @@ public class HousingWorld {
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, this.weatherCycle);
         houseWorld.setGameRule(GameRule.RANDOM_TICK_SPEED, this.getRandomTicks() ? 0 : 3);
         this.spawn = spawn == null ? new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5) : spawn;
-        TrashCanListener.initTrashCans(trashCans);
+        TrashCanListener.INSTANCE.initTrashCans(trashCans);
     }
 
     private void loadNPCs() {
@@ -369,15 +372,13 @@ public class HousingWorld {
 
     private void setupNewHouse(Player owner, HouseSize size) {
         this.houseUUID = UUID.randomUUID();
-        this.ownerUUID = owner.getUniqueId();
-        ensureUniqueHouseUUID();
         this.description = "&7This is a default description!";
         this.timeCreated = System.currentTimeMillis();
         this.privacy = HousePrivacy.PRIVATE;
         this.iconItem = new ItemStack(Material.OAK_DOOR);
         this.seed = UUID.randomUUID().toString();
         this.random = new Random(seed.hashCode());
-        this.size = determineHouseSize(size);
+        this.size = size.getSize();
         this.ingameTime = 6000L;
         this.dayLightCycle = false;
         this.weather = WeatherTypes.SUNNY;
@@ -385,17 +386,19 @@ public class HousingWorld {
         this.joinLeaveMessages = true;
         this.deathMessages = true;
         this.keepInventory = false;
-        SlimeWorld world = createOrReadWorld();
+        World world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
             return;
         }
-        slimeWorld = world;
-        this.houseWorld = Bukkit.getWorld(this.houseUUID.toString());
+        this.houseWorld = world;
+
+        main.getLogger().info("Created new world for house: " + houseUUID);
+        main.getLogger().info("World UID: " + houseWorld.getUID());
         houseWorld.setTime(ingameTime);
         houseWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, dayLightCycle);
         houseWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, weatherCycle);
-        this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5);
+        this.spawn = new Location(houseWorld, 0.5, 61, 0.5);
 
         // Default Commands
         createCommand("stuck").setActions(List.of(new TeleportAction(true)));
@@ -437,7 +440,6 @@ public class HousingWorld {
         this.scoreboard.add("&7Edit the scoreboard in the");
         this.scoreboard.add("&7systems menu!");
 
-
         scoreboardInstance = new HousingScoreboard(this);
     }
 
@@ -476,19 +478,28 @@ public class HousingWorld {
         return properties;
     }
 
-    private SlimeWorld createOrReadWorld() {
-        SlimeWorld world = null;
+    private World createOrReadWorld() {
         try {
             if (!loader.worldExists(houseUUID.toString())) {
-                world = asp.createEmptyWorld(houseUUID.toString(), false, getProperties(), loader);
-                asp.saveWorld(world);
+                slimeWorld = asp.createEmptyWorld(houseUUID.toString(), false, getProperties(), loader);
+                main.getLogger().info("Created new world for house: " + houseUUID);
+                asp.saveWorld(slimeWorld);
             } else {
-                world = asp.readWorld(loader, houseUUID.toString(), false, getProperties());
+                slimeWorld = asp.readWorld(loader, houseUUID.toString(), false, getProperties());
             }
-            world = asp.loadWorld(world, true);
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
+
+        if (slimeWorld == null) {
+            Bukkit.getLogger().severe("Failed to create or read world for house: " + houseUUID);
+            return null;
+        }
+
+        SlimeWorldInstance worldInstance = asp.loadWorld(slimeWorld, false);
+
+        World world = worldInstance.getBukkitWorld();
+
         return world;
     }
 
@@ -926,7 +937,7 @@ public class HousingWorld {
         trashCans.remove(location);
     }
 
-    public boolean trashCanAtLocation(Location location) {
+    public boolean isTrashCanAtLocation(Location location) {
         return trashCans.stream().anyMatch(trashCan -> trashCan.equals(location));
     }
 

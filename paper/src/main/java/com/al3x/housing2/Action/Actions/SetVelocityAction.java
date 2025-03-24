@@ -266,11 +266,11 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
         operation = VelocityOperation.fromString(split[0]);
         Duple<String[], String> directionArg = handleArg(split, 1);
-        if (PushDirection.fromString(directionArg.getSecond()) == null) {
+        if (PushDirection.valueOf(directionArg.getSecond().toUpperCase()) == null) {
             customDirection = directionArg.getSecond();
             direction = PushDirection.CUSTOM;
         } else {
-            direction = PushDirection.fromString(directionArg.getSecond());
+            direction = PushDirection.valueOf(directionArg.getSecond().toUpperCase());
         }
         split = directionArg.getFirst();
 

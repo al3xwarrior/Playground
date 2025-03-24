@@ -3,8 +3,8 @@ package com.al3x.housing2.Menus.HousingMenu.PlayerListing;
 import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.*;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.Utils.SkinCache;
@@ -13,7 +13,10 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -33,7 +36,6 @@ public class PlayerListingMenu extends Menu {
         this.house = house;
         setupItems();
     }
-
 
     @Override
     public void initItems() {
@@ -86,7 +88,8 @@ public class PlayerListingMenu extends Menu {
 
                 item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
 
-                if (online) item.rClick(ItemBuilder.ActionType.TOGGLE_VISIBILITY);
+                boolean isSelf = player.getUniqueId().equals(listedPlayer.getUniqueId());
+                if (online && !isSelf) item.rClick(ItemBuilder.ActionType.TOGGLE_VISIBILITY);
 
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {

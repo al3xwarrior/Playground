@@ -141,7 +141,7 @@ public class HousingItems implements Listener {
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 
             // Trash Can
-            if (house.trashCanAtLocation(e.getClickedBlock().getLocation()) && e.getClickedBlock().getType().equals(Material.BARRIER)) {
+            if (house.isTrashCanAtLocation(e.getClickedBlock().getLocation()) && e.getClickedBlock().getType().equals(Material.BARRIER)) {
                 player.openInventory(Bukkit.createInventory(player, 27, colorize("&cTrash Can")));
                 return;
             }

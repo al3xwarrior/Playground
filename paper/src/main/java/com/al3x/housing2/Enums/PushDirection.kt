@@ -1,6 +1,6 @@
 package com.al3x.housing2.Enums;
 
-public enum PushDirection {
+enum class PushDirection {
     FORWARD,
     BACKWARD,
     UP,
@@ -12,13 +12,4 @@ public enum PushDirection {
     EAST,
     WEST,
     CUSTOM;
-
-    public static PushDirection fromString(String string) {
-        for (PushDirection direction : values()) {
-            if (direction.name().equalsIgnoreCase(string)) {
-                return direction;
-            }
-        }
-        return null;
-    }
 }

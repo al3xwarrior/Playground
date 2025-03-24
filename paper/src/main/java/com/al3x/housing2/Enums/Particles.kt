@@ -1,18 +1,10 @@
 package com.al3x.housing2.Enums;
 
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Utils.ItemBuilder;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Vibration;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material
+import org.bukkit.Particle
 
-import java.util.Arrays;
-import java.util.List;
-
-public enum Particles implements EnumMaterial{
+enum class Particles(override val material: Material, val particle: Particle, val data: ParticleData? = null) :
+    EnumMaterial {
     POOF(Material.GUNPOWDER, Particle.POOF),
     EXPLOSION(Material.TNT, Particle.EXPLOSION),
     EXPLOSION_EMITTER(Material.TNT, Particle.EXPLOSION_EMITTER),
@@ -113,44 +105,9 @@ public enum Particles implements EnumMaterial{
     ITEM_COBWEB(Material.COBWEB, Particle.ITEM_COBWEB),
     OMINOUS_SPAWNING(Material.SPAWNER, Particle.OMINOUS_SPAWNING),
     RAID_OMEN(Material.BLACK_BANNER, Particle.RAID_OMEN),
-    TRIAL_OMEN(Material.BLACK_BANNER, Particle.TRIAL_OMEN),
-    ;
+    TRIAL_OMEN(Material.BLACK_BANNER, Particle.TRIAL_OMEN);
 
-    Material material;
-    Particle particle;
-
-    ParticleData data;
-
-    Particles() {
-        this.material = null;
-        this.particle = null;
-    }
-
-    Particles(Material material, Particle particle) {
-        this.material = material;
-        this.particle = particle;
-    }
-
-    Particles(Material material, Particle particle, ParticleData data) {
-        this.material = material;
-        this.particle = particle;
-
-        this.data = data;
-    }
-    @Override
-    public Material getMaterial() {
-        return material;
-    }
-
-    public Particle getParticle() {
-        return particle;
-    }
-
-    public ParticleData getData() {
-        return data;
-    }
-
-    public static enum ParticleData {
+    enum class ParticleData {
         COLOR, DUST, DUST_TRANSITION, VIBRATION, FLOAT, INT
     }
 }

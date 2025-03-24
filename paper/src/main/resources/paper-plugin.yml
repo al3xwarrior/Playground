@@ -27,3 +27,5 @@ dependencies:
     voicechat:
       required: true
       load: BEFORE
+    LuckPerms:
+      required: true

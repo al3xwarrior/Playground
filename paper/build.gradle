@@ -17,7 +17,6 @@ repositories {
     maven { url 'https://repo.onarandombox.com/content/groups/public/' }
     maven { url 'https://maven.citizensnpcs.co/repo' }
     maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
-    maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
     maven { url "https://repo.dmulloy2.net/repository/public/" }
     maven { url 'https://maven.evokegames.gg/snapshots' }
     maven { url "https://jitpack.io" }

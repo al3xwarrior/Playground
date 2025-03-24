@@ -8,14 +8,16 @@ import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
-import com.al3x.housing2.Utils.*;
-import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerWorldParticles;
-import com.comphenix.protocol.wrappers.WrappedParticle;
-import com.google.gson.internal.LinkedTreeMap;
-import org.bukkit.*;
+import com.al3x.housing2.Utils.Duple;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.util.Vector;
@@ -23,7 +25,6 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.*;
-import static com.al3x.housing2.Enums.Particles.ParticleData.COLOR;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.SELECT_YELLOW;
 
@@ -751,8 +752,8 @@ public class ParticleAction extends HTSLImpl {
         amount = Double.parseDouble(parts[3]);
 
         Duple<String[], String> locationArg = handleArg(parts, 4);
-        if (Locations.fromString(locationArg.getSecond()) != null) {
-            location = Locations.fromString(locationArg.getSecond());
+        if (Locations.valueOf(locationArg.getSecond().toUpperCase()) != null) {
+            location = Locations.valueOf(locationArg.getSecond().toUpperCase());
         } else {
             location = CUSTOM;
             customLocation = locationArg.getSecond();
@@ -764,8 +765,8 @@ public class ParticleAction extends HTSLImpl {
         }
 
         Duple<String[], String> location2Arg = handleArg(parts, 0);
-        if (Locations.fromString(location2Arg.getSecond()) != null) {
-            location2 = Locations.fromString(location2Arg.getSecond());
+        if (Locations.valueOf(location2Arg.getSecond().toUpperCase()) != null) {
+            location2 = Locations.valueOf(location2Arg.getSecond().toUpperCase());
         } else {
             location2 = CUSTOM;
             customLocation2 = location2Arg.getSecond();
