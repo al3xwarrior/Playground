@@ -3,7 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Enums.HousePrivacy;
 import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingData.HouseData;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.HypixelLoreFormatter;
@@ -14,7 +14,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -22,11 +21,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.ItemBuilder.order;
 
 public class MyHousesMenu extends Menu {
 
@@ -179,21 +176,21 @@ public class MyHousesMenu extends Menu {
                 if (world[0] != null) {
                     world[0].sendPlayerToHouse(player);
                 } else {
-                    world[0] = housesManager.loadHouse(target, house.getHouseID());
+                    world[0] = housesManager.loadHouse(house.getHouseID());
                     world[0].sendPlayerToHouse(player);
                 }
             }, () -> {
                 if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
                     return;
                 }
-                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player), house).open();
+                new EditHouseMenu(main, player, main.getHousesManager().getHouse(player.getWorld()), house).open();
             }, () -> {
                 if (player.hasPermission("housing.admin")) {
                     player.sendMessage(colorize("&cEntering house in &4Admin Mode&c!"));
                     if (world[0] != null) {
                         world[0].sendPlayerToHouse(player, true);
                     } else {
-                        world[0] = housesManager.loadHouse(target, house.getHouseID());
+                        world[0] = housesManager.loadHouse(house.getHouseID());
                         world[0].sendPlayerToHouse(player, true);
                     }
                     return;

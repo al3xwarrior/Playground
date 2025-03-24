@@ -1,9 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -77,27 +75,24 @@ public class ChangePlayerGroupAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; //does nothing
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; //does nothing
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        if (executor != null && executor.findHighestParentWithContext("item") != null) {
-            return true;
-        }
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (group == null) {
-            return true;
+            return OutputType.ERROR;
         }
         if (house.getOwnerUUID() == player.getUniqueId()) {
-            return false;
+            return OutputType.ERROR;
         }
         Group group = house.getGroup(this.group);
         if (house.loadOrCreatePlayerData(player).getGroupInstance(house).getPriority() > group.getPriority() && demotionProtection) {
-            return true;
+            return OutputType.ERROR;
         }
         house.loadOrCreatePlayerData(player).setGroup(group.getName());
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

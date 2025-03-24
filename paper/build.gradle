@@ -32,6 +32,11 @@ repositories {
     maven { url 'https://catcoder.pl.ua/snapshots' }
     maven { url "https://repo.nexomc.com/releases" }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
+    maven {
+        name "redstoneReleases"
+        url "https://repo.redstone.llc/releases"
+    }
+    maven {url = "https://repo.xenondevs.xyz/releases" }
 
 }
 
@@ -48,9 +53,9 @@ dependencies {
         transitive = false
     }
     implementation "com.google.code.gson:gson:2.11.0"
-    compileOnly 'com.infernalsuite.aswm:api:3.0.0-SNAPSHOT'
+    compileOnly 'com.infernalsuite.asp:api:4.0.0-SNAPSHOT'
+    implementation 'com.infernalsuite.asp:file-loader:4.0.0-SNAPSHOT'
     compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
-    implementation 'com.infernalsuite.aswm:loaders:3.0.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation 'com.github.maximjsx:HologramLib:1.7.1'
@@ -88,6 +93,11 @@ dependencies {
 
     // LuckPerms
     compileOnly("net.luckperms:api:5.4")
+
+    //Mongo !!?!?!?!?!
+    implementation 'org.mongodb:mongodb-driver-sync:5.3.0'
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
 }
 
 tasks.withType(JavaCompile) {
@@ -107,6 +117,10 @@ tasks.register('copyJarToLocation', Copy) {
 
 kotlin {
     jvmToolchain(21)
+}
+
+test {
+    useJUnitPlatform()
 }
 
 java {

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.CustomMenu;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -65,7 +66,7 @@ public class CustomMenuViewer extends Menu {
             meta.lore(lore);
             item.setItemMeta(meta);
             addItem(i, item, (e) -> {
-                new ActionExecutor("menu", customMenu.getItems().get(finalI).getSecond()).execute(player, house, e);
+                new ActionExecutor("menu", customMenu.getItems().get(finalI).getSecond()).execute(player, house, new CancellableEvent(null, e));
             });
         }
     }

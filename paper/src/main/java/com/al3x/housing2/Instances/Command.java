@@ -57,7 +57,7 @@ public class Command {
     public void execute(Player player, HousingWorld world) {
         ActionExecutor executor = new ActionExecutor("command");
         executor.addActions(actions);
-        executor.execute(player, world, (Cancellable) null);
+        executor.execute(player, world, null);
     }
 
 

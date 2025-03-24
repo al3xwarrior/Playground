@@ -1,6 +1,7 @@
 package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -29,7 +30,7 @@ public class NPCInteractListener implements Listener {
         this.housesManager = main.getHousesManager();
     }
 
-    private void npcInteract(Player player, Entity entity, boolean rightClick, Cancellable event) {
+    private void npcInteract(Player player, Entity entity, boolean rightClick, CancellableEvent event) {
         if (!entity.hasMetadata("NPC")) return;
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
@@ -56,14 +57,14 @@ public class NPCInteractListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void leftClickNPC(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
-        npcInteract((Player) e.getDamager(), e.getEntity(), false, e);
+        npcInteract((Player) e.getDamager(), e.getEntity(), false, new CancellableEvent(null, e));
     }
 
 
     @EventHandler
     public void rightClickNPC(PlayerInteractEntityEvent e) {
         if(e.getHand() != EquipmentSlot.HAND) return;
-        npcInteract(e.getPlayer(), e.getRightClicked(), true, e);
+        npcInteract(e.getPlayer(), e.getRightClicked(), true, new CancellableEvent(null, e));
     }
 
 }

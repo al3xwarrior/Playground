@@ -2,12 +2,10 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Data.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.NavigationType;
-import com.al3x.housing2.Instances.HousingData.HologramData;
-import com.al3x.housing2.Instances.HousingData.LocationData;
-import com.al3x.housing2.Instances.HousingData.NPCData;
-import com.al3x.housing2.Instances.HousingData.StatData;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.npc.FollowTrait;
 import com.al3x.housing2.Instances.npc.RespawnTrait;
 import com.al3x.housing2.Main;
@@ -19,19 +17,14 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
 import net.citizensnpcs.trait.*;
-import net.citizensnpcs.trait.versioned.DisplayTrait;
-import net.citizensnpcs.trait.versioned.TextDisplayTrait;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
 import net.citizensnpcs.trait.waypoint.Waypoint;
 import net.citizensnpcs.trait.waypoint.Waypoints;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,7 +34,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.MineSkin.MineskinHandler.getSkinData;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.SkullTextures.getCustomSkull;
@@ -101,44 +93,43 @@ public class HousingNPC {
     private Hologram hologram;
 
     private List<Action> actions;
-    private HashMap<EventType, List<Action>> eventActions = new HashMap<>();
+    private HashMap<String, List<Action>> eventActions = new HashMap<>();
 
     private List<Stat> stats = new ArrayList<>();
 
     private static final String[] NPC_NAMES = {"&aAlex", "&2Baldrick", "&cD&6i&ed&ad&by", "&5Ben Dover", "&7Loading...", "&eUpdog", "&cConnorLinfoot", "&bCookie Monster", "&c❤"};
     private static final EventType[] NPC_EVENTS = {EventType.NPC_DEATH, EventType.NPC_DAMAGE};
-    public HousingNPC(Main main, OfflinePlayer player, Location location, HousingWorld house, NPCData data) {
+    public HousingNPC(Main main, Location location, HousingWorld house, NPCData data) {
         this.main = main;
         this.house = house;
         this.name = data.getNpcName();
-        this.lookAtPlayer = data.getLookAtPlayer();
+        this.lookAtPlayer = data.isLookAtPlayer();
         this.location = location;
         this.entityType = EntityType.valueOf(data.getNpcType());
-        this.creatorUUID = player.getUniqueId();
-        this.actions = Companion.toList(data.getActions());
-        this.stats = StatData.Companion.toList(data.getStats() == null ? new ArrayList<>() : data.getStats());
+        this.actions = ActionData.toList(data.getActions());
+        this.stats = StatData.toList(data.getStats() == null ? new ArrayList<>() : data.getStats());
         this.internalID = data.getNpcID();
         this.eventActions = new HashMap<>();
         if (data.getEventActions() == null) {
             for (EventType type : NPC_EVENTS) {
-                this.eventActions.put(type, new ArrayList<>());
+                this.eventActions.put(type.name(), new ArrayList<>());
             }
         } else {
             for (EventType type : NPC_EVENTS) {
                 if (data.getEventActions().get(type.name()) == null) {
-                    this.eventActions.put(type, new ArrayList<>());
+                    this.eventActions.put(type.name(), new ArrayList<>());
                     continue;
                 }
-                this.eventActions.put(type, Companion.toList(data.getEventActions().get(type.name())));
+                this.eventActions.put(type.name(), ActionData.toList(data.getEventActions().get(type.name())));
             }
         }
 
-        this.hologram = data.getHologramData() != null ? HologramData.Companion.toData(data.getHologramData()) : new Hologram(
+        this.hologram = data.getHologramData() != null ? HologramData.toData(data.getHologramData()) : new Hologram(
                 main, null, house, location.clone().add(0, 2.5, 0)
         );
-        this.canBeDamaged = data.getCanBeDamaged();
+        this.canBeDamaged = data.isCanBeDamaged();
         this.maxHealth = data.getMaxHealth();
-        this.minecraftAI = data.getMinecraftAI();
+        this.minecraftAI = data.isMinecraftAI();
         this.respawnTime = data.getRespawnTime();
         this.isBaby = data.isBaby();
         this.hologram.setHouse(house);
@@ -157,7 +148,6 @@ public class HousingNPC {
         citizensNPC.setProtected(!isCanBeDamaged());
         citizensNPC.spawn(location);
         startFollowTask();
-
     }
 
     public HousingNPC(Main main, Player player, Location location, HousingWorld house) {
@@ -174,7 +164,7 @@ public class HousingNPC {
 
         this.eventActions = new HashMap<>();
         for (EventType type : NPC_EVENTS) {
-            this.eventActions.put(type, new ArrayList<>());
+            this.eventActions.put(type.name(), new ArrayList<>());
         }
         this.stats = new ArrayList<>();
 
@@ -314,9 +304,10 @@ public class HousingNPC {
         this.entityType = entityType;
         citizensNPC.getEntity().setMetadata("NPC", new FixedMetadataValue(main, true));
         citizensNPC.setBukkitEntityType(entityType);
+        configureEntitySettings();
     }
 
-    public void sendExecuteActions(HousingWorld house, Player player, Cancellable event) {
+    public void sendExecuteActions(HousingWorld house, Player player, CancellableEvent event) {
         if (actions != null) {
             ActionExecutor executor = new ActionExecutor("npc");
             executor.addActions(actions);
@@ -332,7 +323,7 @@ public class HousingNPC {
         return citizensNPC;
     }
 
-    public HashMap<EventType, List<Action>> getEventActions() {
+    public HashMap<String, List<Action>> getEventActions() {
         return eventActions;
     }
 
@@ -353,10 +344,10 @@ public class HousingNPC {
     }
 
     public List<Action> getActions(EventType type) {
-        if (!eventActions.containsKey(type)) {
-            eventActions.put(type, new ArrayList<>());
+        if (!eventActions.containsKey(type.name())) {
+            eventActions.put(type.name(), new ArrayList<>());
         }
-        return eventActions.get(type);
+        return eventActions.get(type.name());
     }
 
     public HousingWorld getHouse() {
@@ -390,7 +381,7 @@ public class HousingNPC {
         this.citizensNPC.spawn(location);
     }
 
-    public boolean executeEventActions(HousingWorld house, EventType eventType, Player player, Cancellable event) {
+    public boolean executeEventActions(HousingWorld house, EventType eventType, Player player, CancellableEvent event) {
         if (house.isAdminMode(player)) return false;
 
         List<Action> actions = eventActions.get(eventType);

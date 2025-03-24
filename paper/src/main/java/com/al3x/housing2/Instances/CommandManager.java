@@ -54,6 +54,8 @@ public class CommandManager {
         new EditGlobalStats(registrar, housesManager);
         new EditPlayerStats(registrar, housesManager);
         new Function(registrar, housesManager);
+        new Test(registrar);
+        new SetHouseSize(registrar, housesManager);
 
         //Register the commands inside each house.
         HouseCommands.register(registrar);

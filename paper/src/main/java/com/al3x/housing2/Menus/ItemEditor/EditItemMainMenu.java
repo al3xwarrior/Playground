@@ -54,7 +54,7 @@ public class EditItemMainMenu extends Menu {
                 meta.displayName(StringUtilsKt.housingStringFormatter(newName));
                 item.setItemMeta(meta);
                 player.getInventory().setItemInMainHand(item);
-                setupItems();
+                Bukkit.getScheduler().callSyncMethod(Main.getInstance(), () -> { new EditItemMainMenu(player).open(); return 0; });
             });
         });
 

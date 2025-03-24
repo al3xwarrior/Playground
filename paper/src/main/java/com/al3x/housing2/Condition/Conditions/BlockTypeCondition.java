@@ -3,6 +3,7 @@ package com.al3x.housing2.Condition.Conditions;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
@@ -67,11 +68,11 @@ public class BlockTypeCondition extends CHTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
-        if (event instanceof BlockBreakEvent e) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+        if (event.cancellable() instanceof BlockBreakEvent e) {
             return e.getBlock().getType() == type;
         }
-        if (event instanceof BlockPlaceEvent e) {
+        if (event.cancellable() instanceof BlockPlaceEvent e) {
             return e.getBlock().getType() == type;
         }
         return false;

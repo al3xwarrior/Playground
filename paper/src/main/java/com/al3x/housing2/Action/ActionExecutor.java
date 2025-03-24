@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Actions.BreakAction;
 import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
@@ -12,7 +13,6 @@ import com.al3x.housing2.Utils.NumberUtilsKt;
 import de.maxhenkel.voicechat.api.events.Event;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.minecraft.util.parsing.packrat.Atom;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static com.al3x.housing2.Action.OutputType.*;
 
@@ -30,16 +31,11 @@ public class ActionExecutor {
     private HashMap<String, Integer> limits = new HashMap<>();
     private String context;
     private List<Action> queue = new ArrayList<>();
-    private ActionExecutor parent;
-    private List<ActionExecutor> children = new ArrayList<>();
-
-    private List<Stat> localStats = new ArrayList<>();
-
     double pause = 0;
     boolean isPaused = false;
-    boolean isComplete = false;
 
-    int workingIndex = 0;
+    private Consumer<ActionExecutor> onComplete = null;
+    private Consumer<ActionExecutor> onBreak = null;
 
     public ActionExecutor(String context) {
         this.context = context;
@@ -52,74 +48,6 @@ public class ActionExecutor {
 
     public void setLimits(HashMap<String, Integer> limits) {
         this.limits = limits;
-    }
-
-    public void addChild(ActionExecutor executor) {
-        children.add(executor);
-    }
-
-    public Stat getLocalStat(String name) {
-        if (parent != null) {
-            return parent.getLocalStat(name);
-        } else {
-            for (Stat stat : localStats) {
-                if (stat.getStatName().equals(name)) {
-                    return stat;
-                }
-            }
-            return null;
-        }
-    }
-
-    public boolean hasLocalStat(String name) {
-        if (parent != null) {
-            return parent.hasLocalStat(name);
-        } else {
-            for (Stat stat : localStats) {
-                if (stat.getStatName().equals(name)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public void removeLocalStat(String name) {
-        if (parent != null) {
-            parent.removeLocalStat(name);
-        } else {
-            for (Stat stat : localStats) {
-                if (stat.getStatName().equals(name)) {
-                    localStats.remove(stat);
-                    return;
-                }
-            }
-        }
-    }
-
-    public void addLocalStat(Stat stat) {
-        localStats.add(stat);
-    }
-
-    public List<ActionExecutor> getChildren() {
-        return children;
-    }
-
-    public void setParent(ActionExecutor parent) {
-        this.parent = parent;
-        this.limits = parent.limits;
-    }
-
-    public ActionExecutor getParent() {
-        return parent;
-    }
-
-    public void setComplete(boolean complete) {
-        isComplete = complete;
-    }
-
-    public boolean isComplete() {
-        return isComplete;
     }
 
     public void setPaused(boolean paused) {
@@ -142,353 +70,127 @@ public class ActionExecutor {
         return queue;
     }
 
-    private boolean isAllComplete() {
-        for (ActionExecutor executor : children) {
-            if (!executor.isComplete()) {
-                return false;
-            }
-        }
-        return true;
+    public void onComplete(Consumer<ActionExecutor> onComplete) {
+        this.onComplete = onComplete;
     }
 
-    public ActionExecutor findHighestParentWithContext(String context) {
-        if (this.context.equals(context)) {
-            return this;
-        }
-        if (parent == null) {
-            return null;
-        }
-
-        if (parent.getContext().equals(context)) {
-            return parent;
-        }
-
-        return parent.findHighestParentWithContext(context);
+    public void onBreak(Consumer<ActionExecutor> onBreak) {
+        this.onBreak = onBreak;
     }
 
-    public OutputType execute(Player player, HousingWorld house, Cancellable event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
         return execute(player, player, house, event);
     }
 
-    public OutputType execute(Player player, HousingWorld house, Event event) {
-        return execute(player, player, house, event);
-    }
-
-    public OutputType execute(NPC npc, Player player, HousingWorld house, Cancellable event) {
+    public OutputType execute(NPC npc, Player player, HousingWorld house, CancellableEvent event) {
         return execute(npc.getEntity(), player, house, event);
     }
 
-    public OutputType execute(Entity entity, Player player, HousingWorld house, Cancellable event) {
+    public OutputType execute(Entity entity, Player player, HousingWorld house, CancellableEvent event) {
         if (limits == null) {
             limits = new HashMap<>();
         }
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        Action action;
-        int index = 0;
-        while (index < queue.size()) {
-            if (isPaused || !isAllComplete()) {
+
+        if (pause > 0) {
+            scheduler.runTaskLater(Main.getInstance(), () -> {
+                execute(entity, player, house, event);
+            }, (long) pause);
+            pause = 0;
+            return RUNNING;
+        }
+        while (!queue.isEmpty()) {
+            if (isPaused) {
                 break;
             }
 
-            if (isComplete) {
-                return SUCCESS;
-            }
-
-            action = queue.get(index);
-            index++;
+            Action action = queue.removeFirst();
 
             int global = Main.getInstance().getConfig().getInt("globalLimits", 2000);
             int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.name.replace(" ", "_").toLowerCase(), global);
             if (limits.containsKey(action.name) && limits.get(action.name) >= actionLimit) {
-                exitAllTheWay(this);
                 return EXIT;
             }
             limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
 
-            if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
+            if (action instanceof PauseAction pauseAction) {
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
-                if (!NumberUtilsKt.isDouble(dur)) {
-                    return ERROR;
+                if (!NumberUtilsKt.isInt(dur)) {
+                    continue;
                 }
-                double duration = Double.parseDouble(dur);
-                pause += duration;
-                continue;
-            }
-
-            if (action instanceof ExitAction) {
-                exitAllTheWay(this);
-                return EXIT;
-            }
-
-            if (action instanceof ContinueAction) {
-                isComplete = true;
-                ActionExecutor parent = findHighestParentWithContext("repeat");
-                if (parent != null) {
-                    parent.isComplete = true;
-                }
-                return CONTINUE;
-            }
-
-            if (action instanceof BreakAction) {
-                isComplete = true;
-                ActionExecutor parent = findHighestParentWithContext("repeat");
-                if (parent != null && parent.parent != null) {
-                    parent.isComplete = true;
-                    parent.parent.children.forEach(executor -> executor.setComplete(true));
-                }
-                workingIndex = 0;
-                return SUCCESS;
-            }
-
-            if (pause == 0) {
-                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                    return ERROR;
-                }
-
-                try {
-                    if (player == entity) {
-                        action.execute(player, house, event, this);
-                    } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
-                        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-                        npcAction.npcExecute(player, npc, house, event, this);
-                    }
-
-                    executeChildren(entity, player, house, event); //Look for children to execute. >:)
-
-                } catch (Exception e) {
-                    player.sendMessage("An error occurred while executing the action: " + action.name);
-                    player.sendMessage(e.getMessage());
-                }
-                if (index >= queue.size()) {
-                    isComplete = true;
-                }
-                continue;
-            }
-
-            if (action.requiresPlayer() && player == null) {
-                return ERROR;
-            }
-
-            Action finalAction = action;
-            int finalIndex = index;
-
-            scheduler.runTaskLater(Main.getInstance(), () -> {
-                if (isComplete || isPaused) {
-                    return;
-                }
-                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                    return;
-                }
-
-                try {
-                    if (player == entity) {
-                        finalAction.execute(player, house, event, this);
-                    } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && finalAction instanceof NPCAction npcAction) {
-                        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-                        npcAction.npcExecute(player, npc, house, event, this);
-                    }
-
-                    executeChildren(entity, player, house, event);
-
-                } catch (Exception e) {
-                    player.sendMessage("An error occurred while executing the action: " + finalAction.name);
-                    player.sendMessage(e.getMessage());
-                }
-
-                if (finalIndex >= queue.size()) {
-                    isComplete = true;
-                }
-            }, (long) pause);
-        }
-
-        if (isPaused || !isAllComplete()) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
-            scheduler.runTaskTimer(Main.getInstance(), (t) -> {
-                if (!isPaused && isAllComplete()) {
-                    execute(player, house, event);
-                    t.cancel();
-                }
-            }, 0, 1);
-        }
-
-        return queue.isEmpty() ? SUCCESS : RUNNING;
-    }
-
-    private void executeChildren(Entity entity, Player player, HousingWorld house, Cancellable event) {
-        if (isAllComplete() || children.isEmpty()) {
-            return;
-        }
-
-        if (workingIndex >= children.size()) {
-            workingIndex = 0;
-        }
-        AtomicReference<ActionExecutor> executor = new AtomicReference<>(children.get(workingIndex));
-        if (executor.get().isComplete()) {
-            workingIndex++;
-            executeChildren(entity, player, house, event);
-            return;
-        }
-        AtomicReference<OutputType> output = new AtomicReference<>(executor.get().execute(entity, player, house, event));
-        workingIndex++;
-
-        Bukkit.getScheduler().runTaskTimer(Main.getInstance(), (t) -> {
-            if (executor.get().isComplete() && (output.get() != EXIT)) { //Move on to the next child
-                executeChildren(entity, player, house, event);
-                t.cancel();
-            }
-        }, 0, 1);
-    }
-
-    public OutputType execute(Entity entity, Player player, HousingWorld house, Event event) {
-        if (limits == null) {
-            limits = new HashMap<>();
-        }
-
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        Action action;
-        int index = 0;
-        while (index < queue.size()) {
-            if (isPaused || !isAllComplete()) {
+                double duration = Integer.parseInt(dur);
+                scheduler.runTaskLater(Main.getInstance(), () -> {
+                    execute(entity, player, house, event);
+                }, (long) duration);
                 break;
             }
 
-            if (isComplete) {
-                return SUCCESS;
-            }
-
-            action = queue.get(index);
-            index++;
-
-            if (limits.containsKey(action.name) && limits.get(action.name) >= (Main.getInstance().getConfig().contains("executorLimits") ? Main.getInstance().getConfig().getInt("executorLimits") : 2000)) {
-                exitAllTheWay(this);
-                return EXIT;
-            }
-            limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
-
-            if (action instanceof PauseAction pauseAction) { //Add time every time a new one comes in
-                String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
-                if (!NumberUtilsKt.isDouble(dur)) {
-                    return ERROR;
-                }
-                double duration = Double.parseDouble(dur);
-                pause += duration;
-                continue;
-            }
-
             if (action instanceof ExitAction) {
-                exitAllTheWay(this);
                 return EXIT;
             }
 
-            if (action instanceof ContinueAction) {
-                isComplete = true;
-                ActionExecutor parent = findHighestParentWithContext("repeat");
-                if (parent != null) {
-                    parent.isComplete = true;
+            if (action instanceof ContinueAction && context.equals("repeat")) {
+                if (onComplete != null) {
+                    onComplete.accept(this);
                 }
                 return CONTINUE;
             }
 
-            if (action instanceof BreakAction) {
-                isComplete = true;
-                ActionExecutor parent = findHighestParentWithContext("repeat");
-                if (parent != null && parent.parent != null) {
-                    parent.isComplete = true;
-                    parent.parent.children.forEach(executor -> executor.setComplete(true));
+            if (action instanceof BreakAction && context.equals("repeat")) {
+                if (onBreak != null) {
+                    onBreak.accept(this);
                 }
-                workingIndex = 0;
-                return SUCCESS;
+                return BREAK;
             }
 
-            if (pause == 0) {
-                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                    return ERROR;
-                }
-
+            try {
                 if (player == entity) {
-                    action.execute(player, house, event, this);
-                }
+                    if (player.getWorld() != house.getWorld()) {
+                        return ERROR;
+                    }
+                    OutputType ot = action.execute(player, house, event, this);
 
-                executeChildren(entity, player, house, event); //Look for children to execute. >:)
-
-                if (index >= queue.size()) {
-                    isComplete = true;
+                    if (ot == PAUSE) {
+                        isPaused = true;
+                        break;
+                    } else if (ot == EXIT) {
+                        return EXIT;
+                    }  else if (ot == RUNNING) {
+                        return RUNNING;
+                    }
+                } else if (entity != null && CitizensAPI.getNPCRegistry().isNPC(entity) && action instanceof NPCAction npcAction) {
+                    if (entity.getWorld() != house.getWorld()) {
+                        return ERROR;
+                    }
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                    npcAction.npcExecute(player, npc, house, event, this);
                 }
-                continue;
+            } catch (Exception e) {
+                player.sendMessage("An error occurred while executing the action: " + action.name + " in the context: " + context);
+                //take error and put it in the hover event
+                e.printStackTrace();
             }
 
-            if (action.requiresPlayer() && player == null) {
-                return ERROR;
-            }
-
-            Action finalAction = action;
-            int finalIndex = index;
-
-            scheduler.runTaskLater(Main.getInstance(), () -> {
-                if (isComplete || isPaused) {
-                    return;
-                }
-                if (player != null && !player.getWorld().getName().equals(house.getHouseUUID().toString())) {
-                    return;
-                }
-                if (player == entity) {
-                    finalAction.execute(player, house, event, this);
-                }
-
-                executeChildren(entity, player, house, event);
-
-                if (finalIndex >= queue.size()) {
-                    isComplete = true;
-                }
-            }, (long) pause);
         }
 
-        if (isPaused || !isAllComplete()) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
+        if (isPaused) { //Start a timer to check if it's unpaused every tick when it gets unpaused, then it will execute any remaining actions
             scheduler.runTaskTimer(Main.getInstance(), (t) -> {
-                if (!isPaused && isAllComplete()) {
-                    execute(player, house, event);
+                if (!isPaused) {
+                    execute(entity, player, house, event);
                     t.cancel();
                 }
             }, 0, 1);
         }
 
-        return queue.isEmpty() ? SUCCESS : RUNNING;
-    }
-
-    private void executeChildren(Entity entity, Player player, HousingWorld house, Event event) {
-        if (isAllComplete() || children.isEmpty()) {
-            return;
-        }
-
-        if (workingIndex >= children.size()) {
-            workingIndex = 0;
-        }
-        AtomicReference<ActionExecutor> executor = new AtomicReference<>(children.get(workingIndex));
-        if (executor.get().isComplete()) {
-            workingIndex++;
-            executeChildren(entity, player, house, event);
-            return;
-        }
-        AtomicReference<OutputType> output = new AtomicReference<>(executor.get().execute(entity, player, house, event));
-        workingIndex++;
-
-        Bukkit.getScheduler().runTaskTimer(Main.getInstance(), (t) -> {
-            if (executor.get().isComplete() && (output.get() != EXIT)) { //Move on to the next child
-                executeChildren(entity, player, house, event);
-                t.cancel();
+        if (queue.isEmpty()) {
+            if (onComplete != null) {
+                onComplete.accept(this);
             }
-        }, 0, 1);
-    }
+            return SUCCESS;
+        }
 
-    private void exitAllTheWay(ActionExecutor parent) {
-        if (parent == null) {
-            return;
-        }
-        parent.isComplete = true;
-        parent.children.forEach((executor) -> executor.setComplete(true));
-        if (parent.parent != null) {
-            exitAllTheWay(parent.parent);
-        }
+        return RUNNING;
     }
 
     @Override
@@ -498,12 +200,14 @@ public class ActionExecutor {
                 ", queue=" + queue +
                 ", pause=" + pause +
                 ", isPaused=" + isPaused +
-                ", isComplete=" + isComplete +
-                ", workingIndex=" + workingIndex +
                 '}';
     }
 
     public HashMap<String, Integer> getLimits() {
         return limits;
+    }
+
+    public Consumer<ActionExecutor> getOnBreak() {
+        return onBreak;
     }
 }

@@ -1,6 +1,6 @@
 package com.al3x.housing2.Menus.HousingMenu.PlayerListing;
 
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.*;
@@ -45,11 +45,11 @@ public class PlayerListingMenu extends Menu {
                 PlayerData data = entry.getValue();
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey()));
                 if (offlinePlayer.getName() == null) {
-                    playersData.remove(entry);
+                    playersData.remove(entry.getKey());
                     continue;
                 }
                 if (!offlinePlayer.getName().toLowerCase().contains(search.toLowerCase())) {
-                    playersData.remove(entry);
+                    playersData.remove(entry.getKey());
                 }
             }
         }
@@ -74,9 +74,9 @@ public class PlayerListingMenu extends Menu {
                 boolean higherPriority = playerData.getGroupInstance(house).getPriority() <= listedPlayerData.getGroupInstance(house).getPriority() && !player.getUniqueId().equals(listedPlayer.getUniqueId());
                 item.info("Online", (online) ? "&aYes" : "&cNo");
                 if (house.hasPermission(player, MUTE))
-                    item.info("Muted", (listedPlayerData.getMuted()) ? "&aYes" : "&cNo");
+                    item.info("Muted", (listedPlayerData.isMuted()) ? "&aYes" : "&cNo");
                 if (house.hasPermission(player, BAN))
-                    item.info("Banned", (listedPlayerData.getBanned()) ? "&aYes" : "&cNo");
+                    item.info("Banned", (listedPlayerData.isBanned()) ? "&aYes" : "&cNo");
                 if (house.hasPermission(player, GAMEMODE) && online)
                     item.info("Gamemode", listedPlayer.getPlayer().getGameMode().toString());
                 if (house.hasPermission(player, CHANGE_PLAYER_GROUP) || house.hasPermission(player, EDIT_PERMISSIONS_AND_GROUP))

@@ -3,6 +3,8 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import net.citizensnpcs.api.npc.NPC;
@@ -41,8 +43,8 @@ public class KillNPCAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class KillNPCAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc.getEntity() instanceof LivingEntity le) {
             le.setHealth(0.1);
         }

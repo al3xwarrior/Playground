@@ -1,6 +1,6 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Instances.HousingData.ResourcePackData;
+import com.al3x.housing2.Data.ResourcePackData;
 import com.al3x.housing2.Main;
 import org.bukkit.entity.Player;
 
@@ -21,7 +21,7 @@ public class ResourcePackManager {
 
         // i can't figure out how to calculate the hash so it's null for now -pixel
         // this just means the client will download the pack everytime they join but meh
-        player.addResourcePack(UUID.fromString(resourcePack.getId()), packUrl, null, resourcePack.getPrompt(), resourcePack.getForce());
+        player.addResourcePack(UUID.fromString(resourcePack.getId()), packUrl, null, resourcePack.getPrompt(), resourcePack.isForce());
     }
 
     public void removeResourcePack(Player player, HousingWorld house) {

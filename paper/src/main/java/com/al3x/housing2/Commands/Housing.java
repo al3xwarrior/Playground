@@ -25,6 +25,7 @@ import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolve
 import io.papermc.paper.math.FinePosition;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -116,11 +117,30 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                         .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_TP))
                         .executes(this::tpall)
                 )
-
+                .then(Commands.literal("migrate")
+                        .requires(this::isAdmin)
+                        .executes(this::migrate)
+                )
+                .then(Commands.literal("reload")
+                        .requires(this::isAdmin)
+                        .executes(this::reload)
+                )
                 .then(Commands.literal("help").executes(this::help))
                 .executes(this::help)
                 .build(), List.of("h")
         );
+    }
+
+    private int reload(CommandContext<CommandSourceStack> context) {
+        housesManager.clear();
+        housesManager.loadPlayerHouses();
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int migrate(CommandContext<CommandSourceStack> context) {
+//        housesManager.migrateHouses();
+        return Command.SINGLE_SUCCESS;
     }
 
     private int tpall(CommandContext<CommandSourceStack> context) {
@@ -222,7 +242,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
             return Command.SINGLE_SUCCESS;
         }
         randomCooldown.put(player.getUniqueId(), System.currentTimeMillis());
-        HousingWorld house = housesManager.getRandomPublicHouse();
+        HousingWorld house = housesManager.getRandomPublicHouse(player);
         if (house != null) {
             house.sendPlayerToHouse(player);
         } else {

@@ -5,6 +5,7 @@ import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -46,7 +47,7 @@ public class IsAttackCooldownCondition extends CHTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
         return player.getAttackCooldown() != 1.0f;
     }
 

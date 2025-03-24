@@ -1,7 +1,7 @@
 package com.al3x.housing2.Menus.HousingMenu.PlayerListing;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -62,26 +62,26 @@ public class EditPlayerMenu extends Menu {
         }
 
         if (house.hasPermission(player, MUTE) && !isSamePlayer) {
-            addItem(slots[i], new ItemBuilder().material(Material.CHAIN).name(colorize((targetPlayerData.getMuted()) ? "&aUnmute Player" : "&cMute Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
+            addItem(slots[i], new ItemBuilder().material(Material.CHAIN).name(colorize((targetPlayerData.isMuted()) ? "&aUnmute Player" : "&cMute Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
                 if (targetPlayer.getPlayer().equals(player)) {
                     player.sendMessage(colorize("&cYou can't mute yourself silly!"));
                     return;
                 }
-                targetPlayerData.setMuted(!targetPlayerData.getMuted());
+                targetPlayerData.setMuted(!targetPlayerData.isMuted());
                 open();
             });
             i++;
         }
 
         if (house.hasPermission(player, BAN) && !isSamePlayer) {
-            addItem(slots[i], new ItemBuilder().material(Material.BARRIER).name(colorize((targetPlayerData.getBanned()) ? "&aUnban Player" : "&cBan Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
+            addItem(slots[i], new ItemBuilder().material(Material.BARRIER).name(colorize((targetPlayerData.isBanned()) ? "&aUnban Player" : "&cBan Player")).lClick(TOGGLE_YELLOW).build(), (e) -> {
                 if (!e.isLeftClick()) return;
                 if (targetPlayer.getPlayer().equals(player)) {
                     player.sendMessage(colorize("&cYou can't ban yourself silly!"));
                     return;
                 }
-                targetPlayerData.setBanned(!targetPlayerData.getBanned());
+                targetPlayerData.setBanned(!targetPlayerData.isBanned());
                 if (online) house.kickPlayerFromHouse(targetPlayer.getPlayer());
                 open();
             });

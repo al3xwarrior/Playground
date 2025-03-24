@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.VelocityOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -120,7 +121,7 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc.getEntity() instanceof LivingEntity le) {
             npc.getEntity().setVelocity(execute(npc.getEntity().getVelocity(), le.getEyeLocation(), player, house));
             return;
@@ -196,10 +197,10 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         Vector playerVelocity = execute(player.getVelocity(), player.getEyeLocation(), player, house);
         player.setVelocity(playerVelocity);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

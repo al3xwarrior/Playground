@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -148,19 +149,19 @@ public class PlaySoundAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         switch (location) {
             case INVOKERS_LOCATION ->
                     player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
             case HOUSE_SPAWN ->
                     player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
             case CUSTOM -> {
-                if (customLocation == null) return true;
+                if (customLocation == null) return OutputType.ERROR;
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc != null) player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
             }
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

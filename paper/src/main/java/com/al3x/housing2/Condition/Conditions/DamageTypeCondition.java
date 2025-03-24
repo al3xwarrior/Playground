@@ -7,6 +7,7 @@ import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.DamageTypes;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -70,8 +71,8 @@ public class DamageTypeCondition extends CHTSLImpl implements NPCCondition {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
-        if (event instanceof EntityDamageEvent e) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+        if (event.cancellable() instanceof EntityDamageEvent e) {
             return e.getDamageSource().getDamageType() == damageType.getDamageType();
         }
         return false;
@@ -105,8 +106,8 @@ public class DamageTypeCondition extends CHTSLImpl implements NPCCondition {
     }
 
     @Override
-    public boolean npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
-        if (event instanceof EntityDamageEvent e) {
+    public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        if (event.cancellable() instanceof EntityDamageEvent e) {
             return e.getDamageSource().getDamageType() == damageType.getDamageType();
         }
         return false;

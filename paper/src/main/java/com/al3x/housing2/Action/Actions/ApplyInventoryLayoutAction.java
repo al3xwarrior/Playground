@@ -1,17 +1,14 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Instances.Function;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Layout;
-import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -64,16 +61,16 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (layout == null) {
-            return false;
+            return OutputType.SUCCESS;
         }
         Layout layout = house.getLayout(this.layout);
         if (layout == null) {
-            return false;
+            return OutputType.SUCCESS;
         }
         layout.apply(player);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

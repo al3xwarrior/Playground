@@ -26,7 +26,7 @@ public class ChangeHeldItem implements Listener {
 
     @EventHandler
     public void onSwapToOffHand(PlayerSwapHandItemsEvent e) {
-        sendEventExecution(housesManager, EventType.PLAYER_CHANGE_HELD_ITEM, e.getPlayer(), e);
+        sendEventExecution(housesManager, EventType.PLAYER_SWAP_TO_OFFHAND, e.getPlayer(), e);
     }
 
     @EventHandler

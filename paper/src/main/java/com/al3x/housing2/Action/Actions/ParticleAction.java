@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.Actions.Utils.ParticleUtils;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -18,7 +19,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.util.Vector;
-import reactor.util.function.Tuple3;
 
 import java.util.*;
 
@@ -490,13 +490,13 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
         if (location == null) {
-            return true;
+            return OutputType.ERROR;
         }
         summonParticles(player, house, location);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     private Location locationFromLocations(Player player, HousingWorld house, Location base, Locations location, String customLocation) {
@@ -686,9 +686,9 @@ public class ParticleAction extends HTSLImpl {
                     continue;
                 }
                 switch (key) {
-                    case "size" -> size = NumberUtilsKt.isDouble(data.get("size").toString()) ? Float.parseFloat(data.get("size").toString()) : 1F;
-                    case "color" -> color1 = (String) data.get("color");
-                    case "color2" -> color2 = (String) data.get("color2");
+                    case "size" -> size = data.get("size") == null ? 1F : NumberUtilsKt.toFloaT(data.get("size").toString());
+                    case "color" -> color1 = (String) data.getOrDefault("color", "255,255,255");
+                    case "color2" -> color2 = (String) data.getOrDefault("color2", "255,255,255");
                 }
             }
         }

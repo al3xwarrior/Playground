@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -99,7 +100,7 @@ public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (player != null) {
             double currentMax = player.getMaxHealth();
 
@@ -122,7 +123,7 @@ public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
                 player.setHealth(currentMax);
             }
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
@@ -145,7 +146,7 @@ public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc != null) {
             double currentMax = npc.getOrAddTrait(ScaledMaxHealthTrait.class).getMaxHealth();
 

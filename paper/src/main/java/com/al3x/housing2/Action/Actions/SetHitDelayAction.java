@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Enums.StatOperation;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
@@ -72,14 +73,14 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
 
         player.setMaximumNoDamageTicks(NumberUtilsKt.toInt(delay));
 
         //This is not super simple to use lol :)
         player.setNoDamageTicks(NumberUtilsKt.toInt(delay));
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc.getEntity() instanceof LivingEntity le) {
             le.setMaximumNoDamageTicks(NumberUtilsKt.toInt(delay));
             le.setNoDamageTicks(NumberUtilsKt.toInt(delay));

@@ -3,21 +3,13 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.MoreStatData;
-import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
-import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.*;
-import com.google.gson.Gson;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,14 +81,14 @@ public class ChangeHungerAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value)) {
-            return false;
+            return OutputType.ERROR;
         }
         int val = Integer.parseInt(value);
         player.setFoodLevel(val);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public StatOperation getMode() {

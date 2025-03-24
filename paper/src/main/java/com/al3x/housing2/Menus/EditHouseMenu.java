@@ -1,6 +1,6 @@
 package com.al3x.housing2.Menus;
 
-import com.al3x.housing2.Instances.HousingData.HouseData;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.ItemBuilder;

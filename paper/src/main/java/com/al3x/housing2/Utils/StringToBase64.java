@@ -1,7 +1,7 @@
 package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Instances.HousingData.ActionData;
+import com.al3x.housing2.Data.ActionData;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -18,7 +18,7 @@ public class StringToBase64 {
     private static final Gson gson = new Gson();
 
     public static String actionsToBase64(List<Action> action) {
-        String actionString = gson.toJson(ActionData.Companion.fromList(action));
+        String actionString = gson.toJson(ActionData.fromList(action));
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
@@ -46,7 +46,7 @@ public class StringToBase64 {
                 JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
                 actions.add(gson.fromJson(jsonObject, ActionData.class));
             }
-            return new ArrayList<>(ActionData.Companion.toList(actions));
+            return new ArrayList<>(ActionData.toList(actions));
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load action.", e);
         }
@@ -59,14 +59,14 @@ public class StringToBase64 {
             String item;
             item = (String) dataInput.readObject();
             dataInput.close();
-            return ActionData.Companion.fromData(gson.fromJson(item, ActionData.class));
+            return ActionData.fromData(gson.fromJson(item, ActionData.class));
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load action.", e);
         }
     }
 
     public static String actionToBase64(Action action) {
-        String actionString = gson.toJson(ActionData.Companion.toData(action));
+        String actionString = gson.toJson(ActionData.toData(action));
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);

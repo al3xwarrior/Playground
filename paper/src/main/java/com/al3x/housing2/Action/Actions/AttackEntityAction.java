@@ -6,8 +6,9 @@ import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.AttackEntityEnum;
-import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.ConditionData;
+import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Data.ActionData;
+import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.*;
@@ -20,7 +21,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 import java.util.*;
 
@@ -109,16 +109,16 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.ERROR; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {
-            return true;
+            return OutputType.ERROR;
         }
         double rangeValue = Double.parseDouble(range);
         double damageValue = Double.parseDouble(value);
@@ -154,7 +154,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
                         }
                     }
                 }
-                return true;
+                return OutputType.SUCCESS;
         }
 
         for (Entity entity : entities) {
@@ -163,11 +163,12 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+
         String range = HandlePlaceholders.parsePlaceholders(player, house, this.range);
         String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
         if (!NumberUtilsKt.isDouble(value) || !NumberUtilsKt.isDouble(range)) {
@@ -245,7 +246,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
         data.put("mode", mode.name());
         data.put("range", range);
         data.put("value", value);
-        data.put("conditions", ConditionData.Companion.fromList(conditions));
+        data.put("conditions", ConditionalData.fromList(conditions));
         return data;
     }
 
@@ -263,10 +264,10 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
         // I don't know how this works lol
         Object subActions = data.get("conditions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        ArrayList<ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            ActionData action = gson.fromJson(jsonObject, ActionData.class);
             actions.add(action);
         }
     }
@@ -326,7 +327,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        actionData.put("conditions", ConditionData.Companion.fromList(conditions));
+        actionData.put("conditions", ConditionalData.fromList(conditions));
 
         this.conditions = conditions;
         return nextLines;
