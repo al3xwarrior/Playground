@@ -44,19 +44,19 @@ public class Stat {
         return this.value;
     }
 
-    public static Integer modifyDoubleIfInt(StatOperation operation, String numStr, String valueStr) {
+    public static Double modifyDoubleIfInt(StatOperation operation, String numStr, String valueStr) {
         if (NumberUtilsKt.isInt(numStr) && NumberUtilsKt.isDouble(valueStr)) {
             double value = Double.parseDouble(valueStr);
-            int num = Integer.parseInt(numStr);
+            double num = Integer.parseInt(numStr);
             return switch (operation) {
-                case SET -> num = (int) value;
+                case SET -> num = value;
                 case INCREASE -> num += value;
                 case DECREASE -> num -= value;
                 case MULTIPLY -> num *= value;
                 case DIVIDE -> num /= value;
                 case MOD -> num %= value;
-                case FLOOR -> (int) Math.floor(num);
-                case ROUND -> Math.round(num);
+                case FLOOR -> Math.floor(num);
+                case ROUND -> (double) Math.round(num);
                 default -> null;
             };
         }

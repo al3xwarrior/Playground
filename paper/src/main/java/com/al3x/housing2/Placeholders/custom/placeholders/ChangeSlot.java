@@ -9,7 +9,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class ChangeSlot {
     public ChangeSlot() {
-
+        new PreviousSlot();
+        new NewSlot();
+        new PreviousItem();
+        new NewItem();
+        new PreviousItemType();
+        new NewItemType();
     }
 
     private static class PreviousSlot extends Placeholder {
