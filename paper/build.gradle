@@ -19,7 +19,6 @@ repositories {
     maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
     maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
     maven { url "https://repo.dmulloy2.net/repository/public/" }
-    maven { url 'https://maven.evokegames.gg/snapshots' }
     maven { url "https://jitpack.io" }
     maven {
         name = "papermc"
@@ -58,7 +57,7 @@ dependencies {
     compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    implementation ("com.github.max1mde:HologramLib:1.6.4-Test") {
+    implementation ('com.github.maximjsx:HologramLib:1.7.1') {
         exclude group: 'me.tofaa.entitylib', module: 'spigot'
     }
     implementation 'com.github.Tofaa2.EntityLib:api:2.4.11'
