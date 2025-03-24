@@ -1,11 +1,6 @@
 package com.al3x.housing2.Instances;
 
-import com.al3x.housing2.Enums.permissions.ChatSettings;
-import com.al3x.housing2.Enums.permissions.Gamemodes;
-import com.al3x.housing2.Instances.HousingData.GroupData;
-import com.al3x.housing2.Instances.HousingData.TeamData;
-
-import java.util.HashMap;
+import com.al3x.housing2.Data.TeamData;
 
 public class Team {
     private String name;
@@ -30,7 +25,7 @@ public class Team {
         this.color = data.getColor();
         this.displayName = data.getDisplayName();
         this.suffix = data.getSuffix();
-        this.friendlyFire = data.getFriendlyFire();
+        this.friendlyFire = data.isFriendlyFire();
     }
 
     public String getName() {

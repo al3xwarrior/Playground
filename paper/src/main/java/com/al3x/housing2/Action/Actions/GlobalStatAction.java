@@ -1,18 +1,12 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Data.StatActionData;
 import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.ActionData;
-import com.al3x.housing2.Instances.HousingData.MoreStatData;
-import com.al3x.housing2.Instances.HousingData.StatActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Color;
@@ -20,19 +14,13 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import org.bson.json.JsonReader;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class GlobalStatAction extends HTSLImpl {
@@ -224,12 +212,12 @@ public class GlobalStatAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String name = HandlePlaceholders.parsePlaceholders(player, house, statName);
 
         if (name.contains(" ")) {
             player.sendMessage(colorize("&cStat name cannot contain spaces!"));
-            return false;
+            return OutputType.ERROR;
         }
 
         Stat stat = house.getStatManager().getGlobalStatByName(name);
@@ -244,14 +232,14 @@ public class GlobalStatAction extends HTSLImpl {
             if (house.getStatManager().hasGlobalStat(name)) {
                 house.getStatManager().getGlobalStats().remove(stat);
             }
-            return true;
+            return OutputType.SUCCESS;
         }
 
         if (!house.getStatManager().hasGlobalStat(name)) {
             house.getStatManager().getGlobalStats().add(stat);
         }
 
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public String getStatName() {
@@ -297,7 +285,7 @@ public class GlobalStatAction extends HTSLImpl {
             statInstances = new ArrayList<>();
             StatInstance statInstance = new StatInstance("global");
             mode = StatOperation.valueOf((String) data.get("mode"));
-            value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
+            value = gson.fromJson(gson.toJson(data.get("value")), StatActionData.MoreStatData.class).toStatValue();
 
             statInstance.value = value;
             statInstance.mode = mode;

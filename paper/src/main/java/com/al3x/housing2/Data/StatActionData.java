@@ -1,0 +1,62 @@
+package com.al3x.housing2.Data;
+
+import com.al3x.housing2.Action.Actions.StatValue;
+import com.al3x.housing2.Action.StatInstance;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+public class StatActionData {
+    public static MoreStatData fromStatValue(StatValue statValue) {
+        return new MoreStatData(
+            statValue.getLiteralValue(),
+            statValue.getStatInstances(),
+            statValue.getValue() != null ? fromStatValue(statValue.getValue()) : null,
+            statValue.isExpression(),
+            statValue.getStatType()
+        );
+    }
+
+    @Getter
+    @Setter
+    public static class MoreStatData {
+        private String literal;
+        private List<StatInstance> statInstances;
+        private MoreStatData value;
+        private boolean isExpression;
+        private String statType;
+        private Boolean isGlobal;
+
+        public MoreStatData() {
+        }
+
+        public MoreStatData(String literal, List<StatInstance> statInstances, MoreStatData value, boolean isExpression, String statType) {
+            this.literal = literal;
+            this.statInstances = statInstances;
+            this.value = value;
+            this.isExpression = isExpression;
+            this.statType = statType;
+            this.isGlobal = false;
+        }
+
+        public StatValue toStatValue() {
+            if (isGlobal != null) { // Convert from old format
+                return new StatValue(
+                        isGlobal,
+                        isExpression,
+                        literal,
+                        value != null ? value.toStatValue() : null,
+                        statInstances
+                );
+            }
+            return new StatValue(
+                    statType,
+                    isExpression,
+                    literal,
+                    value != null ? value.toStatValue() : null,
+                    statInstances
+            );
+        }
+    }
+}

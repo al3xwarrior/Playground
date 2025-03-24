@@ -1,8 +1,8 @@
 package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.StatValue;
+import com.al3x.housing2.Data.StatActionData;
 import com.al3x.housing2.Enums.StatOperation;
-import com.al3x.housing2.Instances.HousingData.MoreStatData;
 import com.google.gson.Gson;
 
 import java.util.LinkedHashMap;
@@ -19,7 +19,7 @@ public class StatInstance {
 
     public void fromData(LinkedHashMap<String, Object> data, Class<? extends StatInstance> actionClass) {
         mode = StatOperation.valueOf((String) data.get("mode"));
-        value = gson.fromJson(gson.toJson(data.get("value")), MoreStatData.class).toStatValue();
+        value = gson.fromJson(gson.toJson(data.get("value")), StatActionData.MoreStatData.class).toStatValue();
     }
 
 

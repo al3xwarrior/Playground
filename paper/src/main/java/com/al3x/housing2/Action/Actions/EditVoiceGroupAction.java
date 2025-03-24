@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Enums.VoiceGroupTypes;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -83,7 +80,7 @@ public class EditVoiceGroupAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         String groupName = HandlePlaceholders.parsePlaceholders(player, house, this.groupName);
         Group group = VoiceChat.getGroup(house.getWorld(), groupName);
 
@@ -92,7 +89,7 @@ public class EditVoiceGroupAction extends HTSLImpl {
             case VoiceGroupTypes.NORMAL -> VoiceChat.setGroupType(group, Group.Type.NORMAL);
             case VoiceGroupTypes.OPEN -> VoiceChat.setGroupType(group, Group.Type.OPEN);
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
 

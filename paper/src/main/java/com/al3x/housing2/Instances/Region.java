@@ -15,7 +15,7 @@ public class Region extends Duple<Location, Location> {
     private String name;
     private List<Action> exitActions;
     private List<Action> enterActions;
-    private HashMap<PvpSettings, Boolean> pvpSettings;
+    private HashMap<String, Boolean> pvpSettings;
 
     private List<UUID> playersInRegion = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class Region extends Duple<Location, Location> {
         this.pvpSettings = new HashMap<>();
     }
 
-    public Region(boolean loaded, Location posA, Location posB, String name, List<Action> exitActions, List<Action> enterActions, HashMap<PvpSettings, Boolean> pvpSettings) {
+    public Region(boolean loaded, Location posA, Location posB, String name, List<Action> exitActions, List<Action> enterActions, HashMap<String, Boolean> pvpSettings) {
         super(posA, posB);
         this.loaded = loaded;
         this.name = name;
@@ -62,7 +62,7 @@ public class Region extends Duple<Location, Location> {
         return enterActions;
     }
 
-    public HashMap<PvpSettings, Boolean> getPvpSettings() {
+    public HashMap<String, Boolean> getPvpSettings() {
         return pvpSettings;
     }
 

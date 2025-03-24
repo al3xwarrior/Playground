@@ -3,7 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Enums.permissions.ChatSettings;
 import com.al3x.housing2.Enums.permissions.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
-import com.al3x.housing2.Instances.HousingData.GroupData;
+import com.al3x.housing2.Data.GroupData;
 
 import java.util.HashMap;
 
@@ -14,7 +14,7 @@ public class Group {
     private String displayName;
     private String suffix;
     private int priority;
-    private HashMap<Permissions, Object> permissions; //90% of the time this will be a boolean
+    private HashMap<String, Object> permissions; //90% of the time this will be a boolean
 
     public Group(String name) {
         this.name = name;
@@ -37,7 +37,7 @@ public class Group {
 
         for (Permissions permission : Permissions.values()) {
             if (!permissions.containsKey(permission)) {
-                permissions.put(permission, false);
+                permissions.put(permission.name(), false);
             }
         }
     }
@@ -101,10 +101,10 @@ public class Group {
     }
 
     public HashMap<Permissions, Object> getPermissions() {
-        return permissions;
+        return permissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(Permissions.valueOf(e.getKey()), e.getValue()), HashMap::putAll);
     }
 
-    private HashMap<Permissions, Object> getDefaultPermissions() {
+    private HashMap<String, Object> getDefaultPermissions() {
         HashMap<Permissions, Object> defaultPermissions = new HashMap<>();
         for (Permissions permission : Permissions.values()) {
             defaultPermissions.put(permission, false);
@@ -123,7 +123,7 @@ public class Group {
         defaultPermissions.put(Permissions.USE_ENDER_CHESTS, true);
         defaultPermissions.put(Permissions.GAMEMODE, Gamemodes.ADVENTURE);
         defaultPermissions.put(Permissions.HOUSING_MENU, true);
-        return defaultPermissions;
+        return defaultPermissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(e.getKey().name(), e.getValue()), HashMap::putAll);
     }
 
     public GroupData toData() {

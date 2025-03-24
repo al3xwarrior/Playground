@@ -1,6 +1,7 @@
 package com.al3x.housing2.Listeners.HouseEvents;
 
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -32,7 +33,7 @@ public class SwimEvent implements Listener {
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getEntity());
             HousingNPC housingNPC = house.getNPCByCitizensID(npc.getId());
             if (housingNPC != null) {
-                housingNPC.executeEventActions(house, EventType.NPC_DEATH, null, e);
+                housingNPC.executeEventActions(house, EventType.NPC_DEATH, null, new CancellableEvent(null, e));
             }
         } else {
             if (e.getEntity() instanceof Player player) {

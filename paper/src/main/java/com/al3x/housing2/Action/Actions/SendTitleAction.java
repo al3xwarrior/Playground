@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -136,11 +137,11 @@ public class SendTitleAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         Component title = StringUtilsKt.housingStringFormatter(this.title, house, player);
         Component subtitle = StringUtilsKt.housingStringFormatter(this.subtitle, house, player);
         player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis((long) fadeIn * 50), Duration.ofMillis((long) stay * 50), Duration.ofMillis((long) fadeOut * 50))));
-        return true;
+        return OutputType.SUCCESS;
     }
 
     public String getTitle() {

@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners.HouseEvents;
 
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.Item;
 import org.bukkit.event.EventHandler;
@@ -26,7 +27,7 @@ public class PlayerDropItem implements Listener {
         Item customItem = Item.fromItemStack(item);
         if (customItem != null && customItem.hasActions()) {
             ClickType type = (item.getAmount() > 1 ? ClickType.CONTROL_DROP : ClickType.DROP);
-            new ActionExecutor("event", customItem.getActions().get(type)).execute(e.getPlayer(), housesManager.getHouse(e.getPlayer().getWorld()), e);
+            new ActionExecutor("event", customItem.getActions().get(type)).execute(e.getPlayer(), housesManager.getHouse(e.getPlayer().getWorld()), new CancellableEvent(null, e));
             if (e.isCancelled()) {
                 return;
             }

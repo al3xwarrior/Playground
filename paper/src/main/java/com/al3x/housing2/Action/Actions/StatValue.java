@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.StatInstance;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -353,8 +354,8 @@ public class StatValue extends Action {
     public void createAddDisplayItem(ItemBuilder builder) {
     } // never created
 
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     } // never "executed"
 
     @Override

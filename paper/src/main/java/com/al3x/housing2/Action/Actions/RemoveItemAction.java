@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -115,8 +116,8 @@ public class RemoveItemAction extends Action {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        if (item == null) return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        if (item == null) return OutputType.ERROR;
 
         if (slot == -1) {
             player.getInventory().removeItemAnySlot(item);
@@ -127,7 +128,7 @@ public class RemoveItemAction extends Action {
         } else {
             player.getInventory().setItem((int) slot, null);
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

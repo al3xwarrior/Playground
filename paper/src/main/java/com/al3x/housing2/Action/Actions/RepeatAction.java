@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Duple;
@@ -12,16 +14,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
 public class RepeatAction extends HTSLImpl implements NPCAction{
     private static final Gson gson = new Gson();
@@ -96,49 +95,64 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor oldExecutor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
         if (subActions.isEmpty()) {
-            return true;
+            return OutputType.SUCCESS;
         }
 
         String times = HandlePlaceholders.parsePlaceholders(player, house, this.times);
 
         if (!NumberUtilsKt.isInt(times)) {
-            return true;
+            return OutputType.ERROR;
         }
 
         int timesInt = Integer.parseInt(times);
         if (timesInt < 1) {
-            return true;
+            return OutputType.ERROR;
         }
         if (timesInt > 20) {
             timesInt = 20;
         }
 
+
+        ActionExecutor last = null;
         for (int i = 0; i < timesInt; i++) {
             ActionExecutor executor = new ActionExecutor("repeat");
             executor.addActions(subActions);
-            executor.setParent(oldExecutor);
-            oldExecutor.addChild(executor);
+            executor.setLimits(oldExecutor.getLimits());
+            if (last != null) {
+                last.onComplete((ActionExecutor e) -> {
+                    executor.execute(player, house, event);
+                });
+            } else {
+                executor.execute(player, house, event);
+            }
+            last = executor;
         }
 
-        return true;
+        last.onComplete((ActionExecutor e) -> {
+            if (oldExecutor != null) {
+                oldExecutor.execute(player, house, event);
+            }
+        });
+
+        return OutputType.RUNNING;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         execute(player, house, event, executor);
     }
 
     @Override
     public int limit() {
-        return 1;
+        return 5;
     }
 
     public List<Action> getSubActions() {
@@ -152,7 +166,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", Companion.fromList(subActions));
+        data.put("subActions", ActionData.fromList(subActions));
         data.put("times", times);
         return data;
     }
@@ -169,14 +183,14 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
         // I don't know how this works lol
         Object subActions = data.get("subActions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        ArrayList<ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            ActionData action = gson.fromJson(jsonObject, ActionData.class);
             actions.add(action);
         }
 
-        this.subActions = Companion.toList(actions);
+        this.subActions = ActionData.toList(actions);
         this.times = data.get("times").toString();
     }
 

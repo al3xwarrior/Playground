@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -107,7 +108,7 @@ public class ShowBossbarAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         try {
             float progressFixed = Float.parseFloat(Placeholder.handlePlaceholders(progress, house, player));
             if (progressFixed > 1) {
@@ -124,9 +125,9 @@ public class ShowBossbarAction extends HTSLImpl {
                 house.bossBars.get(player.getUniqueId()).add(bossBar);
             }
         } catch (Exception e) {
-            return false;
+            return OutputType.ERROR;
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

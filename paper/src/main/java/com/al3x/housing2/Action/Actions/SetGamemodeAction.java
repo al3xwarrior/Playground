@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.Projectile;
@@ -74,11 +75,11 @@ public class SetGamemodeAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (player != null) {
             player.setGameMode(gamemode.getGameMode());
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

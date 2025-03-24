@@ -2,9 +2,7 @@ package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Condition.CHTSLImpl;
-import com.al3x.housing2.Condition.Condition;
-import com.al3x.housing2.Enums.Gamemodes;
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;

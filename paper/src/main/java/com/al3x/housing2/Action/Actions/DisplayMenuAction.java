@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Layout;
@@ -73,16 +74,16 @@ public class DisplayMenuAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (menu == null) {
-            return false;
+            return OutputType.ERROR;
         }
         house.getCustomMenus().stream().filter(customMenu -> customMenu.getTitle().equals(menu)).findFirst().ifPresent(customMenu -> {
             Bukkit.getScheduler().runTask(Main.getInstance(), () -> { //Make sure it runs on the main thread
                 new CustomMenuViewer(player, customMenu).open();
             });
         });
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

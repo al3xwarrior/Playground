@@ -105,7 +105,7 @@ public class StopSoundAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (clearAll) {
             for (Sound sound : Sound.values()) { //I don't love this, but its the same implementation as the clear potion effect action
                 if (sound == this.sound) continue;
@@ -114,7 +114,7 @@ public class StopSoundAction extends HTSLImpl {
         } else {
             player.stopSound(sound);
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

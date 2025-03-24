@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -107,7 +108,7 @@ public class LaunchProjectileAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         org.bukkit.entity.Projectile proj = player.launchProjectile(projectile.getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), true));
         Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
@@ -144,7 +145,7 @@ public class LaunchProjectileAction extends HTSLImpl {
             case CUSTOM:
                 String[] split = customDirection.split(",");
                 if (split.length != 2) {
-                    return true;
+                    return OutputType.ERROR;
                 }
 
                 try {
@@ -156,13 +157,13 @@ public class LaunchProjectileAction extends HTSLImpl {
                     custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
                     velocity = custom;
                 } catch (NumberFormatException e) {
-                    return true;
+                    return OutputType.ERROR;
                 }
                 break;
         }
         proj.setVelocity(velocity);
         proj.setShooter(player);
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

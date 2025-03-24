@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.AttributeType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -84,8 +85,8 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return true;
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS;
     }
 
     public AttributeType getAttribute() {
@@ -130,7 +131,7 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         try {
             if (attribute.getAttribute().equals(Attribute.FLYING_SPEED)) {
                 npc.getNavigator().getDefaultParameters().baseSpeed(Float.parseFloat(Placeholder.handlePlaceholders(value, house, player)));

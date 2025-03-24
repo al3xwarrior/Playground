@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.CancelAction;
 import com.al3x.housing2.Enums.EventType;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -52,11 +53,11 @@ public abstract class Condition {
         return editorMenu(house, backMenu);
     }
 
-    public boolean execute(Player player, HousingWorld house, Cancellable event) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
         return execute(player, house);
     }
 
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public boolean execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         return execute(player, house, event);
     }
 

@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
@@ -51,6 +52,6 @@ public class ActionButtonListener implements Listener {
         }
 
         ActionExecutor executor = new ActionExecutor("button", actions);
-        executor.execute(player, house, event);
+        executor.execute(player, house, new CancellableEvent(null, event));
     }
 }

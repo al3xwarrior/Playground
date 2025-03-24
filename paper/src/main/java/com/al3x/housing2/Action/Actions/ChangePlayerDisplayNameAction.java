@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
@@ -72,16 +73,16 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (house.getWorld().getPlayers().contains(player)) {
             MiniMessage miniMessage = MiniMessage.miniMessage();
             if (miniMessage.stripTags(miniMessage.serialize(StringUtilsKt.housingStringFormatter(name, house, player))).length() > 64) {
-                return true;
+                return OutputType.ERROR;
             }
             player.playerListName(StringUtilsKt.housingStringFormatter(name, house, player));
             player.displayName(StringUtilsKt.housingStringFormatter(name, house, player));
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override

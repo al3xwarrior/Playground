@@ -2,6 +2,7 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.GlobalItemManager;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -68,7 +69,7 @@ public class HousingItems implements Listener {
         Item customItem = Item.fromItemStack(item);
         if (customItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
-            new ActionExecutor("event", customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            new ActionExecutor("event", customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), new CancellableEvent(null, event));
             if (event.isCancelled()) {
                 return;
             }
@@ -78,7 +79,7 @@ public class HousingItems implements Listener {
         Item customMainHandItem = Item.fromItemStack(mainHandItem);
         if (customMainHandItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
-            new ActionExecutor("event", customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), event);
+            new ActionExecutor("event", customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), new CancellableEvent(null, event));
             if (event.isCancelled()) {
                 return;
             }
@@ -232,7 +233,7 @@ public class HousingItems implements Listener {
         if (customItem.hasActions() && customItem.getActions().containsKey(clickType)) {
             ActionExecutor executor = new ActionExecutor("item");
             executor.addActions(customItem.getActions().get(clickType));
-            executor.execute(player, house, (Cancellable) null);
+            executor.execute(player, house, new CancellableEvent(null, event));
         }
     }
 

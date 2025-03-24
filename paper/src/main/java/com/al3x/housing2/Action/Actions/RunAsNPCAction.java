@@ -1,9 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -14,14 +13,11 @@ import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 import java.util.*;
 
-import static com.al3x.housing2.Instances.HousingData.ActionData.Companion;
 
 public class RunAsNPCAction extends HTSLImpl {
     private static final Gson gson = new Gson();
@@ -107,28 +103,28 @@ public class RunAsNPCAction extends HTSLImpl {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false; // Not used
+    public OutputType execute(Player player, HousingWorld house) {
+        return OutputType.SUCCESS; // Not used
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (subActions.isEmpty()) {
-            return true;
+            return OutputType.SUCCESS;
         }
         String parsed = Placeholder.handlePlaceholders(npcId, house, player);
         String npcId;
         if (NumberUtilsKt.isInt(parsed)) {
             npcId = parsed;
         } else {
-            return true;
+            return OutputType.ERROR;
         }
 
         HousingNPC npc = house.getNPC(Integer.parseInt(npcId));
 
         ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
-        executor1.execute(npc.getCitizensNPC(), player, house, event);
-        return true;
+        executor1.setLimits(executor.getLimits());
+        return executor1.execute(npc.getCitizensNPC(), player, house, event);
     }
 
     public List<Action> getSubActions() {
@@ -142,7 +138,7 @@ public class RunAsNPCAction extends HTSLImpl {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", Companion.fromList(subActions));
+        data.put("subActions", ActionData.fromList(subActions));
         data.put("npcId", npcId);
         return data;
     }
@@ -159,14 +155,14 @@ public class RunAsNPCAction extends HTSLImpl {
         // I don't know how this works lol
         Object subActions = data.get("subActions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<com.al3x.housing2.Instances.HousingData.ActionData> actions = new ArrayList<>();
+        ArrayList<ActionData> actions = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            com.al3x.housing2.Instances.HousingData.ActionData action = gson.fromJson(jsonObject, com.al3x.housing2.Instances.HousingData.ActionData.class);
+            ActionData action = gson.fromJson(jsonObject, ActionData.class);
             actions.add(action);
         }
 
-        this.subActions = Companion.toList(actions);
+        this.subActions = ActionData.toList(actions);
         this.npcId = String.valueOf(data.get("npcId"));
     }
 

@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
@@ -105,7 +106,7 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         if (clearAll) {
             player.getActivePotionEffects().forEach(potionEffect -> {
                 if (potionEffect.getType() != potionEffectType) {
@@ -115,11 +116,11 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
         } else {
             player.removePotionEffect(potionEffectType);
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (!(npc.getEntity() instanceof LivingEntity le)) return;
         if (clearAll) {
             le.getActivePotionEffects().forEach(potionEffect -> {

@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.Locations;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -92,7 +93,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house) {
         switch (location) {
             case INVOKERS_LOCATION ->
                     player.teleport(player.getLocation());
@@ -101,7 +102,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             case CUSTOM, PLAYER_LOCATION -> {
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
-                    return true;
+                    return OutputType.SUCCESS;
                 }
 
                 loc.setX(Math.max(-255, Math.min(255, loc.getX())));
@@ -113,7 +114,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                 player.teleport(loc);
             }
         }
-        return true;
+        return OutputType.SUCCESS;
     }
 
     @Override
@@ -131,7 +132,12 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        customLocation = (String) data.get("customLocation");
+        if (data.get("customLocation") == null) {
+            customLocation = null;
+            location = INVOKERS_LOCATION;
+            return;
+        }
+        customLocation = data.get("customLocation").toString();
         try {
             location = Locations.valueOf((String) data.get("location"));
         } catch (IllegalArgumentException e) {
@@ -170,13 +176,16 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void npcExecute(Player player, NPC npc, HousingWorld house, Cancellable event, ActionExecutor executor) {
+    public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         switch (location) {
             case INVOKERS_LOCATION ->
                     npc.teleport(player.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             case HOUSE_SPAWN ->
                     npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             case CUSTOM, PLAYER_LOCATION -> {
+                if (customLocation == null) {
+                    return;
+                }
                 Location loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
                     return;

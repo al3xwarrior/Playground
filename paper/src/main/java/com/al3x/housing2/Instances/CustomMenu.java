@@ -1,9 +1,8 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Instances.HousingData.ActionData;
-import com.al3x.housing2.Instances.HousingData.CustomMenuData;
-import com.al3x.housing2.Instances.HousingData.CustomMenuItem;
+import com.al3x.housing2.Data.ActionData;
+import com.al3x.housing2.Data.CustomMenuData;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.Serialization;
 import org.bukkit.Material;
@@ -39,7 +38,7 @@ public class CustomMenu {
         this.items = new ArrayList<>(data.getItems().stream().map(item -> {
             if (item == null) return null;
             try {
-                return new Duple<>(Serialization.itemStackFromBase64(item.getItem()), ActionData.Companion.toList(item.getActions()));
+                return new Duple<>(Serialization.itemStackFromBase64(item.getItem()), ActionData.toList(item.getActions()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -93,7 +92,7 @@ public class CustomMenu {
     public CustomMenuData toData() {
         return new CustomMenuData(title, rows, refreshRate, items.stream().map(item -> {
             if (item == null) return null;
-            return new CustomMenuItem(Serialization.itemStackToBase64(item.getFirst()), ActionData.Companion.fromList(item.getSecond()));
+            return new CustomMenuData.CustomMenuItem(Serialization.itemStackToBase64(item.getFirst()), ActionData.fromList(item.getSecond()));
         }).toList());
     }
 }

@@ -4,7 +4,7 @@ import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.*;
-import com.al3x.housing2.Instances.HousingData.PlayerData;
+import com.al3x.housing2.Data.PlayerData;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.LuckpermsHandler;
 import com.al3x.housing2.Utils.Serialization;

@@ -1,14 +1,11 @@
 package com.al3x.housing2.Menus;
 
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingData.HouseData;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
-import com.xxmicloxx.NoteBlockAPI.model.Song;
-import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -17,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -107,8 +103,7 @@ public class HouseBrowserMenu extends Menu {
                 if (housingWorld != null) {
                     housingWorld.sendPlayerToHouse(player);
                 } else {
-                    OfflinePlayer target = Main.getInstance().getServer().getOfflinePlayer(UUID.fromString(house.getOwnerID()));
-                    HousingWorld world = housesManager.loadHouse(target, house.getHouseID());
+                    HousingWorld world = housesManager.loadHouse(house.getHouseID());
                     if (world != null) {
                         world.sendPlayerToHouse(player);
                     } else {
