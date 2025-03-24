@@ -168,7 +168,7 @@ public class MyHousesMenu extends Menu {
 
             addItem(slots[i], item, () -> {
                 if (HousePrivacy.valueOf(house.getPrivacy()) != HousePrivacy.PUBLIC) {
-                    if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
+                    if (!house.getOwnerID().equals(player.getUniqueId().toString()) && !world[0].getInvitedPlayer().equals(player)) {
                         player.sendMessage(colorize("&cThis house is private!"));
                         return;
                     }

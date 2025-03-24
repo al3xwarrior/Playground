@@ -119,6 +119,8 @@ public class HousingWorld {
     public transient HashMap<UUID, List<BossBar>> bossBars = new HashMap<>();
     private transient HousingScoreboard scoreboardInstance;
 
+    private Player invitedPlayer;
+
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, String houseID) {
         // long start = System.currentTimeMillis();
@@ -1329,5 +1331,12 @@ public class HousingWorld {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public Player getInvitedPlayer() {
+        return invitedPlayer;
+    }
+    public void setInvitedPlayer(Player player) {
+        this.invitedPlayer = player;
     }
 }
