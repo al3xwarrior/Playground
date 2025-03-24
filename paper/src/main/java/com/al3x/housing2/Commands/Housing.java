@@ -117,6 +117,12 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                         .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.COMMAND_TP))
                         .executes(this::tpall)
                 )
+                .then(Commands.literal("invite")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.HOUSE_SETTINGS))
+                        .then(Commands.argument("player", StringArgumentType.word())
+                                .executes(this::invite)
+                        )
+                )
                 .then(Commands.literal("migrate")
                         .requires(this::isAdmin)
                         .executes(this::migrate)
@@ -279,6 +285,24 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
         String name = StringArgumentType.getString(context, "name");
         house.setName(name);
         player.sendMessage(colorize("&aThe name of your house was set to " + name + "&a!"));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int invite(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) {
+            player.sendMessage(colorize("&cYou are not in a house!"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        Player invitedPlayer = Bukkit.getPlayer(StringArgumentType.getString(context, "player"));
+        if (invitedPlayer == null) {
+            player.sendMessage(colorize("&cInvalid player!"));
+            return Command.SINGLE_SUCCESS;
+        }
+        house.setInvitedPlayer(invitedPlayer);
+        invitedPlayer.sendMessage(colorize("&eYou were invited by &b" + player.getName() + " &eto visit the house &b" + house.getName()));
         return Command.SINGLE_SUCCESS;
     }
 
