@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 
-public class RepeatAction extends HTSLImpl implements NPCAction{
+public class RepeatAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
     private List<Action> subActions;
     private String times;
@@ -120,27 +120,26 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
             timesInt = 20;
         }
 
-
+        ActionExecutor first = null;
         ActionExecutor last = null;
         for (int i = 0; i < timesInt; i++) {
             ActionExecutor executor = new ActionExecutor("repeat");
             executor.addActions(subActions);
             executor.setLimits(oldExecutor.getLimits());
+            executor.onBreak((ActionExecutor e) -> oldExecutor.execute(player, house, event));
             if (last != null) {
-                last.onComplete((ActionExecutor e) -> {
-                    executor.execute(player, house, event);
-                });
-            } else {
-                executor.execute(player, house, event);
+                last.onComplete((ActionExecutor e) -> executor.execute(player, house, event));
+            }
+            if (first == null) {
+                first = executor;
             }
             last = executor;
         }
-
-        last.onComplete((ActionExecutor e) -> {
-            if (oldExecutor != null) {
-                oldExecutor.execute(player, house, event);
-            }
-        });
+        if (first == null) {
+            return OutputType.ERROR;
+        }
+        last.onComplete((ActionExecutor e) -> oldExecutor.execute(player, house, event));
+        first.execute(player, house, event);
 
         return OutputType.RUNNING;
     }
@@ -217,7 +216,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction{
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (indent.length() > 4*3) {
+        if (indent.length() > 4 * 3) {
             throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
         }
         if (action.contains(" ")) {
