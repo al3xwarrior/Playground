@@ -126,6 +126,10 @@ public class Group {
         return defaultPermissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(e.getKey().name(), e.getValue()), HashMap::putAll);
     }
 
+    public void setPermissions(HashMap<Permissions, Object> permissions) {
+        this.permissions = permissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(e.getKey().name(), e.getValue()), HashMap::putAll);;
+    }
+
     public GroupData toData() {
         return new GroupData(name, prefix, color, displayName, suffix, priority, permissions);
     }

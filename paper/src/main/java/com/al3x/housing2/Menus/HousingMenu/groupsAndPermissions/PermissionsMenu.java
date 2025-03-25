@@ -7,6 +7,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -53,9 +54,11 @@ public class PermissionsMenu extends Menu {
 
             addItem(slots[i], item.build(), () -> {
                 permissions.put(perm, perm.cycle(value, true));
+                group.setPermissions(permissions);
                 setupItems();
             }, () -> {
                 permissions.put(perm, perm.cycle(value, false));
+                group.setPermissions(permissions);
                 setupItems();
             });
         }

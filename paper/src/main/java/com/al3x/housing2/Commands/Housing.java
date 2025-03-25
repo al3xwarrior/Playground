@@ -303,6 +303,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
         }
         house.setInvitedPlayer(invitedPlayer);
         invitedPlayer.sendMessage(colorize("&eYou were invited by &b" + player.getName() + " &eto visit the house &b" + house.getName()));
+        player.sendMessage(colorize("&eSent &b" + invitedPlayer.getName() + "&e an invite!"));
         return Command.SINGLE_SUCCESS;
     }
 
