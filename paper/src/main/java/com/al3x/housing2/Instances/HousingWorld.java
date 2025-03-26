@@ -242,7 +242,7 @@ public class HousingWorld {
         List<String> keysToRemove = new ArrayList<>();
         for (String id : playersData.keySet()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(id));
-            if (player.getPlayer() == null) {
+            if (!player.hasPlayedBefore()) {
                 keysToRemove.add(id);
             }
         }
