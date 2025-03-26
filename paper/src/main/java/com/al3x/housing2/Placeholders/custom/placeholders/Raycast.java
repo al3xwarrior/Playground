@@ -6,16 +6,29 @@ import com.al3x.housing2.Runnables;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.Truple;
+import io.papermc.paper.util.MCUtil;
 import net.citizensnpcs.api.CitizensAPI;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.CraftFluidCollisionMode;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.util.CraftRayTraceResult;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static net.minecraft.world.level.ClipContext.Block.OUTLINE;
 
 public class Raycast {
     public Raycast() {
@@ -29,7 +42,11 @@ public class Raycast {
             new X();
             new Y();
             new Z();
+            new ExactX();
+            new ExactY();
+            new ExactZ();
             new Coords();
+            new ExactCoords();
         }
 
         @Override
@@ -60,9 +77,40 @@ public class Raycast {
             Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
             try {
                 Double range = argsHandled.getFirst();
-                return getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getType().name();
+                return getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getType().name();
             } catch (NumberFormatException e) {
                 return "null";
+            }
+        }
+
+        private static class ExactX extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exactx/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getX());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
             }
         }
 
@@ -90,7 +138,38 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockX());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockX());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class ExactY extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exacty/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getY());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -121,7 +200,38 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockY());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockY());
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class ExactZ extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exactz/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -152,13 +262,45 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getLocation().getBlockZ());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
             }
         }
 
+
+        private static class ExactCoords extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.exactcoords/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    @NotNull Vector pos = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition();
+                    return pos.getX() + "," + pos.getY() + "," + pos.getZ();
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
         //coords
         private static class Coords extends Placeholder {
             @Override
@@ -184,7 +326,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    org.bukkit.block.Block block = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    org.bukkit.block.Block block = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock();
                     return block.getLocation().getBlockX() + "," + block.getLocation().getBlockY() + "," + block.getLocation().getBlockZ();
                 } catch (NumberFormatException e) {
                     return "null";
@@ -576,7 +718,7 @@ public class Raycast {
         }
     }
 
-    private static org.bukkit.block.Block getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+    private static RayTraceResult getBlockLookingAt(Player player, double range, String yaw, String pitch) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
@@ -618,19 +760,11 @@ public class Raycast {
                 direction.setX(-xz * Math.sin(Math.toRadians(rotX)));
                 direction.setZ(xz * Math.cos(Math.toRadians(rotX)));
             }
-
-            org.bukkit.block.Block lastBlock = null;
-            for (double i = 0; i <= range; i += 0.5) {
-                Location loc = eye.clone().add(direction.clone().multiply(i));
-                org.bukkit.block.Block block = loc.getBlock();
-
-                if (block.getType().isSolid()) {
-                    lastBlock = block;
-                    break;
-                }
-                lastBlock = block;
-            }
-            return lastBlock;
+            Vector dir = direction.clone().normalize().multiply(range);
+            Vec3 startPos = MCUtil.toVec3(player.getEyeLocation());
+            Vec3 endPos = startPos.add(dir.getX(), dir.getY(), dir.getZ());
+            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
+            return CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

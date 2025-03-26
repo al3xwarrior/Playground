@@ -1,5 +1,6 @@
 package com.al3x.housing2;
 
+import com.al3x.housing2.Axiom.PlaygroundIntegration;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
@@ -175,9 +176,14 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new OpenSomething(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new FishBucket(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new PotionSplash(housesManager), this);
         Bukkit.getPluginManager().registerEvents(this, this);
 
         EntityInteraction.registerInteraction(housesManager);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("AxiomPaper")) {
+            PlaygroundIntegration.init();
+        }
 
         Runnables.startRunnables(this);
 

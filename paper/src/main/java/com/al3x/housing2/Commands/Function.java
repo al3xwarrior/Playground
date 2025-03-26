@@ -81,7 +81,7 @@ public class Function extends AbstractHousingCommand {
                     return Command.SINGLE_SUCCESS;
                 }
                 player.sendMessage(colorize(String.format("&aRunning function %s...", name)));
-                runFunction.execute(main, player, player, house, false, null);
+                runFunction.execute(main, player, player, house, false, false, null);
                 return Command.SINGLE_SUCCESS;
         }
 

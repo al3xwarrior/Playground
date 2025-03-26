@@ -67,7 +67,7 @@ public class HologramEditorMenu extends Menu {
             addItem(31 + add, ItemBuilder.create(Material.ARROW).name("&aBack").build(), () -> menu.open());
         }
         addItem(35 + add, ItemBuilder.create(Material.TNT).name("&aRemove Hologram").lClick(REMOVE_YELLOW).build(), () -> {
-            hologram.remove();
+            hologram.destroy();
             player.closeInventory();
         });
         addItem(34 + add, ItemBuilder.create(Material.END_ROD).name("&aLine Spacing").info("&eCurrent Value", "").info(null, hologram.getSpacing()).lClick(EDIT_ACTIONS).build(), () -> {

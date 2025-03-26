@@ -132,17 +132,17 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (data.get("customLocation") == null) {
-            customLocation = null;
-            location = INVOKERS_LOCATION;
-            return;
-        }
-        customLocation = data.get("customLocation").toString();
         try {
             location = Locations.valueOf((String) data.get("location"));
         } catch (IllegalArgumentException e) {
             location = INVOKERS_LOCATION;
         }
+        if (data.get("customLocation") == null && location == CUSTOM) {
+            customLocation = null;
+            location = INVOKERS_LOCATION;
+            return;
+        }
+        customLocation = (String) data.get("customLocation");
     }
 
     @Override

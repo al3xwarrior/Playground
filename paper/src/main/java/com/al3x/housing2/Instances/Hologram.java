@@ -16,7 +16,6 @@ import me.tofaa.entitylib.meta.display.BlockDisplayMeta;
 import me.tofaa.entitylib.meta.other.InteractionMeta;
 import me.tofaa.entitylib.wrapper.WrapperEntity;
 import net.kyori.adventure.text.Component;
-import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -140,8 +139,8 @@ public class Hologram {
                             .setTeleportDuration(0)
                             .setScale(getScaleInternal())
                             .setText(getComponent(player, i));
-                    main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
                     hologram.addViewer(player);
+                    main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
                     holograms.add(hologram);
                 }
 
@@ -281,6 +280,15 @@ public class Hologram {
 
     // Used when the house is deleted, might not actually be needed sense they are entities.
     public void remove() {
+        entitys.forEach((player, hologram) -> {
+            hologram.forEach(holo -> holo.removeViewer(player));
+        });
+        interaction.forEach((player, hologram) -> {
+            hologram.removeViewer(player.getUniqueId());
+        });
+    }
+
+    public void destroy() {
         destroyed = true;
         entitys.forEach((player, hologram) -> {
             hologram.forEach(holo -> holo.removeViewer(player));

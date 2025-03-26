@@ -29,6 +29,7 @@ public abstract class Placeholder {
         new ChatEvent();
         new AttackEvent();
         new ChangeSlot();
+        new SplashPotionEvent();
 
         new Raycast();
 

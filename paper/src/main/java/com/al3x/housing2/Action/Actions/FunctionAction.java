@@ -13,6 +13,7 @@ import java.util.*;
 
 public class FunctionAction extends HTSLImpl {
     String function;
+    boolean await;
     boolean runForAllPlayers;
     public FunctionAction() {
         super("Function Action");
@@ -36,6 +37,7 @@ public class FunctionAction extends HTSLImpl {
         builder.info("&eSettings", "");
         builder.info("Function", (function == null ? "&cNone" : "&6" + function));
         builder.info("Run for all players", runForAllPlayers ? "&aYes" : "&cNo");
+        builder.info("Await", await ? "&aYes" : "&cNo");
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -64,6 +66,13 @@ public class FunctionAction extends HTSLImpl {
                         .description("Run the function for all players in the world")
                         .info("&7Current Value", "")
                         .info(null, runForAllPlayers ? "&aYes" : "&cNo"),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
+                ),
+                new ActionEditor.ActionItem("await", ItemBuilder.create((await ? Material.LIME_DYE : Material.RED_DYE))
+                        .name("&aAwait")
+                        .description("Wait for the function to finish before continuing")
+                        .info("&7Current Value", "")
+                        .info(null, await ? "&aYes" : "&cNo"),
                         ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
@@ -94,9 +103,9 @@ public class FunctionAction extends HTSLImpl {
             return OutputType.ERROR;
         }
         if (runForAllPlayers) {
-            return functionData.execute(Main.getInstance(), null, null, house, false, executor);
+            return functionData.execute(Main.getInstance(), null, null, house, false, await, executor);
         } else {
-            return functionData.execute(Main.getInstance(), player, player, house, false, executor);
+            return functionData.execute(Main.getInstance(), player, player, house, false, await, executor);
         }
     }
 

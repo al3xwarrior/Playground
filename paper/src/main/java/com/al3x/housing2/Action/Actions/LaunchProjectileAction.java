@@ -11,16 +11,17 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Serialization;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -29,6 +30,9 @@ public class LaunchProjectileAction extends HTSLImpl {
     private PushDirection direction;
     private String customDirection;
     private double amount;
+
+    //Custom Data
+    private ItemStack item = null;
 
     public LaunchProjectileAction() {
         super("Launch Projectile Action");
@@ -58,6 +62,10 @@ public class LaunchProjectileAction extends HTSLImpl {
         builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
         builder.info("Velocity", "&a" + amount);
 
+        if (item != null) {
+            builder.info("Item", item.displayName());
+        }
+
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -73,7 +81,8 @@ public class LaunchProjectileAction extends HTSLImpl {
 
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
+        List<ActionEditor.ActionItem> items = new ArrayList<>();
+        items.addAll(Arrays.asList(
                 new ActionEditor.ActionItem("projectile",
                         ItemBuilder.create(Material.ARROW)
                                 .name("&eProjectile")
@@ -102,7 +111,18 @@ public class LaunchProjectileAction extends HTSLImpl {
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
                         ActionEditor.ActionItem.ActionType.DOUBLE, 0.1, 100.0 //Pretty easy to change the max value
                 )
-        );
+        ));
+
+        if (projectile.getProjectile() == ThrownPotion.class) {
+            items.add(new ActionEditor.ActionItem("item",
+                    ItemBuilder.create(Material.POTION)
+                            .name("&eItem")
+                            .info("&7Current Value", "")
+                            .info(null, (item == null ? Component.text("§cNone") : item.displayName()))
+                            .lClick(ItemBuilder.ActionType.SELECT_YELLOW),
+                    ActionEditor.ActionItem.ActionType.ITEM
+            ));
+        }
 
         return new ActionEditor(4, "&eLaunch Projectile Settings", items);
     }
@@ -110,7 +130,12 @@ public class LaunchProjectileAction extends HTSLImpl {
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         org.bukkit.entity.Projectile proj = player.launchProjectile(projectile.getProjectile());
-        proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), true));
+        proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), 10));
+
+        if (amount > 10) {
+            amount = 10;
+        }
+
         Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
         switch (direction) {
             case UP:
@@ -161,6 +186,16 @@ public class LaunchProjectileAction extends HTSLImpl {
                 }
                 break;
         }
+        if (proj instanceof ThrownPotion) {
+            ThrownPotion potion = (ThrownPotion) proj;
+            if (item != null) {
+                potion.setItem(item);
+            }
+            potion.setVelocity(velocity);
+            potion.setShooter(player);
+
+            return OutputType.SUCCESS;
+        }
         proj.setVelocity(velocity);
         proj.setShooter(player);
         return OutputType.SUCCESS;
@@ -182,7 +217,26 @@ public class LaunchProjectileAction extends HTSLImpl {
         data.put("projectile", projectile);
         data.put("amount", amount);
         data.put("direction", direction);
+        if (projectile == Projectile.SPLASH_POTION) {
+            data.put("item", Serialization.itemStackToBase64(item));
+        }
         return data;
+    }
+
+    @Override
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
+        projectile = (data.get("projectile") instanceof String) ? Projectile.valueOf((String) data.get("projectile")) : (Projectile) data.get("projectile");
+        amount = (double) data.get("amount");
+        direction = (data.get("direction") instanceof String) ? PushDirection.valueOf((String) data.get("direction")) : (PushDirection) data.get("direction");
+        if (projectile == Projectile.SPLASH_POTION) {
+            try {
+                item = Serialization.itemStackFromBase64((String) data.get("item"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Main.getInstance().getLogger().warning("Failed to load item from base64 string");
+            }
+        }
+
     }
 
     @Override

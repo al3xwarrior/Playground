@@ -3,6 +3,7 @@ package com.al3x.housing2.Enums;
 import org.bukkit.Material;
 
 public enum ParticleType implements EnumMaterial{
+    DOT(Material.REDSTONE),
     LINE(Material.STICK),
     CIRCLE(Material.SNOWBALL),
     CURVE(Material.EGG),

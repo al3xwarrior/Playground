@@ -4,8 +4,10 @@ import com.al3x.housing2.Enums.permissions.ChatSettings;
 import com.al3x.housing2.Enums.permissions.Gamemodes;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Data.GroupData;
+import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Group {
     private String name;
@@ -14,7 +16,8 @@ public class Group {
     private String displayName;
     private String suffix;
     private int priority;
-    private HashMap<String, Object> permissions; //90% of the time this will be a boolean
+    @Setter
+    private HashMap<Permissions, Object> permissions; //90% of the time this will be a boolean
 
     public Group(String name) {
         this.name = name;
@@ -33,12 +36,10 @@ public class Group {
         this.displayName = data.getDisplayName();
         this.suffix = data.getSuffix();
         this.priority = data.getPriority();
-        this.permissions = data.getPermissions();
+        this.permissions = new HashMap<>();
 
         for (Permissions permission : Permissions.values()) {
-            if (!permissions.containsKey(permission)) {
-                permissions.put(permission.name(), false);
-            }
+            permissions.put(permission, data.getPermissions().getOrDefault(permission.name(), false));
         }
     }
 
@@ -101,10 +102,10 @@ public class Group {
     }
 
     public HashMap<Permissions, Object> getPermissions() {
-        return permissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(Permissions.valueOf(e.getKey()), e.getValue()), HashMap::putAll);
+        return permissions;
     }
 
-    private HashMap<String, Object> getDefaultPermissions() {
+    private HashMap<Permissions, Object> getDefaultPermissions() {
         HashMap<Permissions, Object> defaultPermissions = new HashMap<>();
         for (Permissions permission : Permissions.values()) {
             defaultPermissions.put(permission, false);
@@ -123,14 +124,14 @@ public class Group {
         defaultPermissions.put(Permissions.USE_ENDER_CHESTS, true);
         defaultPermissions.put(Permissions.GAMEMODE, Gamemodes.ADVENTURE);
         defaultPermissions.put(Permissions.HOUSING_MENU, true);
-        return defaultPermissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(e.getKey().name(), e.getValue()), HashMap::putAll);
-    }
-
-    public void setPermissions(HashMap<Permissions, Object> permissions) {
-        this.permissions = permissions.entrySet().stream().collect(HashMap::new, (m, e) -> m.put(e.getKey().name(), e.getValue()), HashMap::putAll);;
+        return defaultPermissions;
     }
 
     public GroupData toData() {
+        HashMap<String, Object> permissions = new HashMap<>();
+        for (Map.Entry<Permissions, Object> entry : this.permissions.entrySet()) {
+            permissions.put(entry.getKey().name(), entry.getValue());
+        }
         return new GroupData(name, prefix, color, displayName, suffix, priority, permissions);
     }
 }

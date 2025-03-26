@@ -83,6 +83,9 @@ public class ParticleUtils {
                 keys.add("color2");
                 keys.add("size");
             }
+            default -> {
+                keys.add("speed");
+            }
         }
         return keys;
     }

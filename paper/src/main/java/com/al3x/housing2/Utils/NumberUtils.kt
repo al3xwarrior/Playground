@@ -21,6 +21,15 @@ fun String?.toFloaT(): Float {
     }
 }
 
+fun String?.toDoublE(): Double {
+    if (this == null) return 0.0
+    try {
+        return this.toDouble()
+    } catch (e: NumberFormatException) {
+        return 0.0
+    }
+}
+
 fun String?.isDouble(): Boolean {
     if (this == null) return false
     try {

@@ -4,7 +4,6 @@ import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.Actions.ExplosionAction;
 import com.al3x.housing2.Action.Actions.ParticleAction;
 import com.al3x.housing2.Instances.*;
-import com.al3x.housing2.Listeners.HouseEvents.PlayerDeath;
 import com.al3x.housing2.Listeners.LobbyListener;
 import com.al3x.housing2.MineSkin.SkinData;
 import com.al3x.housing2.Utils.Duple;
@@ -15,17 +14,17 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.al3x.housing2.Instances.Hologram.rainbow;
 import static com.al3x.housing2.Instances.Hologram.rainbowIndex;
-import static com.al3x.housing2.Instances.PlayerSpeedManager.playerSpeeds;
 import static com.al3x.housing2.MineSkin.MineskinHandler.sendRequestForSkins;
 
 public class Runnables {
@@ -87,14 +86,29 @@ public class Runnables {
             public void run() {
                 Collection<HousingWorld> houses = main.getHousesManager().getConcurrentLoadedHouses().values();
                 for (HousingWorld house : houses) {
+                    AtomicInteger count = new AtomicInteger();
                     house.getWorld().getEntities().forEach(entity -> {
                         if (entity.hasMetadata("projectile")) {
-                            entity.remove();
+                            count.addAndGet(1);
+                            if (entity.getMetadata("projectile").getFirst().asInt() <= 0) {
+                                entity.remove();
+                            } else {
+                                entity.setMetadata("projectile", new FixedMetadataValue(main, entity.getMetadata("projectile").getFirst().asInt() - 1));
+                            }
                         }
                     });
+
+                    //Custom Projectile Limit, separate from above and from minecraft limit
+                    if (count.get() > 200) {
+                        house.getWorld().getEntities().forEach(entity -> {
+                            if (entity.hasMetadata("projectile")) {
+                                entity.remove();
+                            }
+                        });
+                    }
                 }
             }
-        }.runTaskTimer(main, 0, 20 * 5L));
+        }.runTaskTimer(main, 0, 20L));
 
         runnables.put("updateThings", new BukkitRunnable() {
             @Override
@@ -140,7 +154,7 @@ public class Runnables {
                     if (house == null || house.getFunctions() == null) continue;
                     house.getFunctions().forEach(function -> {
                         if (function.getTicks() != null && TICKS % function.getTicks() == 0) {
-                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, null, house, true, null));
+                            Bukkit.getScheduler().runTask(main, () -> function.execute(main, null, null, house, true, false, null));
                         }
                     });
                 }

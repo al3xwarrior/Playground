@@ -46,7 +46,7 @@ public class Function {
         this.global = global;
     }
 
-    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, ActionExecutor oldExecutor) {
+    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor) {
         if (!loaded) return OutputType.ERROR;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
@@ -64,10 +64,13 @@ public class Function {
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(actions);
+            if (await && oldExecutor != null) {
+                executor.onComplete((e) -> oldExecutor.execute(p, p, house, null));
+            }
             executor.execute(p, p, house, null);
         }
 
-        return OutputType.SUCCESS;
+        return (await) ? OutputType.RUNNING : OutputType.SUCCESS;
     }
 
     public String getName() {
