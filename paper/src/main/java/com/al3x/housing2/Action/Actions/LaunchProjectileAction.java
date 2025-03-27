@@ -12,6 +12,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StackUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -63,7 +64,7 @@ public class LaunchProjectileAction extends HTSLImpl {
         builder.info("Velocity", "&a" + amount);
 
         if (item != null) {
-            builder.info("Item", item.displayName());
+            builder.info("Item", "&6" + item.getType());
         }
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
@@ -118,7 +119,7 @@ public class LaunchProjectileAction extends HTSLImpl {
                     ItemBuilder.create(Material.POTION)
                             .name("&eItem")
                             .info("&7Current Value", "")
-                            .info(null, (item == null ? Component.text("§cNone") : item.displayName()))
+                            .info(null, (item == null ? "§cNone" : "&6" + StackUtils.getDisplayName(item)))
                             .lClick(ItemBuilder.ActionType.SELECT_YELLOW),
                     ActionEditor.ActionItem.ActionType.ITEM
             ));

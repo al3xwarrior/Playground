@@ -77,7 +77,9 @@ public class Raycast {
             Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
             try {
                 Double range = argsHandled.getFirst();
-                return getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getType().name();
+                @NotNull Vector result = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+
+                return player.getWorld().getBlockAt(result.getBlockX(), result.getBlockY(), result.getBlockZ()).getType().name();
             } catch (NumberFormatException e) {
                 return "null";
             }
@@ -107,7 +109,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getX());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getX());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -138,7 +140,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockX());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getBlockX());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -169,7 +171,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getY());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getY());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -200,7 +202,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockY());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getBlockY());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -231,7 +233,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition().getZ());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -262,7 +264,7 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock().getLocation().getBlockZ());
+                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getBlockZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -294,13 +296,14 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    @NotNull Vector pos = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitPosition();
+                    @NotNull Vector pos = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
                     return pos.getX() + "," + pos.getY() + "," + pos.getZ();
                 } catch (NumberFormatException e) {
                     return "null";
                 }
             }
         }
+
         //coords
         private static class Coords extends Placeholder {
             @Override
@@ -326,8 +329,8 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    org.bukkit.block.Block block = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getHitBlock();
-                    return block.getLocation().getBlockX() + "," + block.getLocation().getBlockY() + "," + block.getLocation().getBlockZ();
+                    @NotNull Vector block = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    return block.getBlockX() + "," + block.getBlockY() + "," + block.getBlockZ();
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -718,7 +721,7 @@ public class Raycast {
         }
     }
 
-    private static RayTraceResult getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+    private static @NotNull Vector getBlockLookingAt(Player player, double range, String yaw, String pitch) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
@@ -764,7 +767,12 @@ public class Raycast {
             Vec3 startPos = MCUtil.toVec3(player.getEyeLocation());
             Vec3 endPos = startPos.add(dir.getX(), dir.getY(), dir.getZ());
             HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
-            return CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
+            RayTraceResult hitResult = CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
+
+            if (hitResult == null || hitResult.getHitBlock() == null) {
+                return new Vector(endPos.x, endPos.y, endPos.z);
+            }
+            return hitResult.getHitPosition();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
