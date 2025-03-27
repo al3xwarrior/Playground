@@ -8,8 +8,10 @@
 name: Gradle Package
 
 on:
-  release:
-    types: [created]
+  push:
+     branches: [ "*" ]
+     paths-ignore:
+       - "fabric/**"
 
 jobs:
   build:
