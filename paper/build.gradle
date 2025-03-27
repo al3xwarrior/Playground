@@ -127,8 +127,8 @@ java {
 publishing {
     repositories {
         maven {
-            name = "releasesRepo"
-            url = "https://repo.redstone.llc/releases"
+            name = "playgroundRepo"
+            url = "https://repo.redstone.llc/playground"
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)
@@ -139,7 +139,7 @@ publishing {
         maven(MavenPublication) {
             groupId = "com.al3x"
             artifactId = "Playground"
-            version = "1.0.2"
+            version = project.findProperty("commit") ?: System.getenv("COMMIT")
             from components.java
         }
     }
