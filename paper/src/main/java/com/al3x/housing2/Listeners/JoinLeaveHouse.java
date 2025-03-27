@@ -193,6 +193,14 @@ public class JoinLeaveHouse implements Listener {
         data.setInventory(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getInventory().getContents()).toList())));
         data.setEnderchest(Serialization.itemStacksToBase64(new ArrayList<>(Arrays.stream(player.getEnderChest().getContents()).toList())));
 
+        for (Hologram hologram : from.getHolograms()) {
+            hologram.removeViewer(player);
+        }
+
+        for (HousingNPC npc : from.getNPCs()) {
+            npc.getHologram().removeViewer(player);
+        }
+
         HousingTabList.lobbyTabList(player);
         resourcePackManager.removeResourcePack(player, from);
     }

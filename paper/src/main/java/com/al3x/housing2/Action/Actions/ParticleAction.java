@@ -295,140 +295,138 @@ public class ParticleAction extends HTSLImpl {
                 }
         ));
 
-        if (particle.getData() != null) {
-            for (String key : ParticleUtils.keys(particle)) {
-                switch (key) {
-                    case "size" -> {
-                        if (size == null) {
-                            size = 1F;
-                        }
-                        items.add(new ActionEditor.ActionItem("size",
-                                ItemBuilder.create(Material.PAPER)
-                                        .name("&eSize")
-                                        .info("&7Current Value", "")
-                                        .info(null, "&a" + size)
-                                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                                (event, o) -> {
-                                    player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
-                                    editMenu.openChat(Main.getInstance(), "" + size, (s) -> {
-                                        if (NumberUtilsKt.isDouble(s)) {
-                                            size = Float.parseFloat(s);
-                                            if (size < 0) {
-                                                size = 0F;
-                                            }
-                                            if (size > 10) {
-                                                size = 10F;
-                                            }
-                                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                        }
-                                    });
-                                    return true;
-                                }
-                        ));
+        for (String key : ParticleUtils.keys(particle)) {
+            switch (key) {
+                case "size" -> {
+                    if (size == null) {
+                        size = 1F;
                     }
-                    case "color" -> {
-                        if (color1 == null) {
-                            color1 = "255,255,255";
-                        }
-                        items.add(new ActionEditor.ActionItem("color1",
-                                ItemBuilder.create(Material.PINK_DYE)
-                                        .name("&eColor 1")
-                                        .info("&7Current Value", "")
-                                        .info(null, "&a" + color1)
-                                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                                (event, o) -> {
-                                    player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
-                                    editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
-                                        String[] split = s.split(",");
-                                        if (split.length != 3) {
+                    items.add(new ActionEditor.ActionItem("size",
+                            ItemBuilder.create(Material.PAPER)
+                                    .name("&eSize")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + size)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
+                                editMenu.openChat(Main.getInstance(), "" + size, (s) -> {
+                                    if (NumberUtilsKt.isDouble(s)) {
+                                        size = Float.parseFloat(s);
+                                        if (size < 0) {
+                                            size = 0F;
+                                        }
+                                        if (size > 10) {
+                                            size = 10F;
+                                        }
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    }
+                                });
+                                return true;
+                            }
+                    ));
+                }
+                case "color" -> {
+                    if (color1 == null) {
+                        color1 = "255,255,255";
+                    }
+                    items.add(new ActionEditor.ActionItem("color1",
+                            ItemBuilder.create(Material.PINK_DYE)
+                                    .name("&eColor 1")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + color1)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
+                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
+                                    String[] split = s.split(",");
+                                    if (split.length != 3) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                        return;
+                                    }
+                                    try {
+                                        int r = Integer.parseInt(split[0]);
+                                        int g = Integer.parseInt(split[1]);
+                                        int b = Integer.parseInt(split[2]);
+                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
                                             player.sendMessage(colorize("&cInvalid color format!"));
                                             return;
                                         }
-                                        try {
-                                            int r = Integer.parseInt(split[0]);
-                                            int g = Integer.parseInt(split[1]);
-                                            int b = Integer.parseInt(split[2]);
-                                            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                                                player.sendMessage(colorize("&cInvalid color format!"));
-                                                return;
-                                            }
-                                            color1 = s;
-                                            player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
-                                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                        } catch (NumberFormatException e) {
-                                            player.sendMessage(colorize("&cInvalid color format!"));
-                                        }
-                                    });
-                                    return true;
-                                })
-                        );
+                                        color1 = s;
+                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    } catch (NumberFormatException e) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                    }
+                                });
+                                return true;
+                            })
+                    );
+                }
+                case "color2" -> {
+                    if (color2 == null) {
+                        color2 = "255,255,255";
                     }
-                    case "color2" -> {
-                        if (color2 == null) {
-                            color2 = "255,255,255";
-                        }
-                        items.add(new ActionEditor.ActionItem("color2",
-                                ItemBuilder.create(Material.PURPLE_DYE)
-                                        .name("&eColor 2")
-                                        .info("&7Current Value", "")
-                                        .info(null, "&a" + color2)
-                                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                                (event, o) -> {
-                                    player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
-                                    editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
-                                        String[] split = s.split(",");
-                                        if (split.length != 3) {
+                    items.add(new ActionEditor.ActionItem("color2",
+                            ItemBuilder.create(Material.PURPLE_DYE)
+                                    .name("&eColor 2")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + color2)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
+                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
+                                    String[] split = s.split(",");
+                                    if (split.length != 3) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                        return;
+                                    }
+                                    try {
+                                        int r = Integer.parseInt(split[0]);
+                                        int g = Integer.parseInt(split[1]);
+                                        int b = Integer.parseInt(split[2]);
+                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
                                             player.sendMessage(colorize("&cInvalid color format!"));
                                             return;
                                         }
-                                        try {
-                                            int r = Integer.parseInt(split[0]);
-                                            int g = Integer.parseInt(split[1]);
-                                            int b = Integer.parseInt(split[2]);
-                                            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                                                player.sendMessage(colorize("&cInvalid color format!"));
-                                                return;
-                                            }
-                                            color2 = s;
-                                            player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
-                                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                        } catch (NumberFormatException e) {
-                                            player.sendMessage(colorize("&cInvalid color format!"));
-                                        }
-                                    });
-                                    return true;
-                                })
-                        );
+                                        color2 = s;
+                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    } catch (NumberFormatException e) {
+                                        player.sendMessage(colorize("&cInvalid color format!"));
+                                    }
+                                });
+                                return true;
+                            })
+                    );
+                }
+                case "speed" -> {
+                    if (speed == null) {
+                        speed = 1D;
                     }
-                    case "speed" -> {
-                        if (speed == null) {
-                            speed = 1D;
-                        }
-                        items.add(new ActionEditor.ActionItem("speed",
-                                ItemBuilder.create(Material.FEATHER)
-                                        .name("&eExtra")
-                                        .description("This controls some odd properties for some particles, sometimes it controls the speed, other times it controls how they're colored.")
-                                        .info("&7Current Value", "")
-                                        .info(null, "&a" + speed)
-                                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                                (event, o) -> {
-                                    player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
-                                    editMenu.openChat(Main.getInstance(), "" + speed, (s) -> {
-                                        if (NumberUtilsKt.isDouble(s)) {
-                                            speed = Double.parseDouble(s);
-                                            if (speed < 0) {
-                                                speed = 0D;
-                                            }
-                                            if (speed > 10) {
-                                                speed = 10D;
-                                            }
-                                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                    items.add(new ActionEditor.ActionItem("speed",
+                            ItemBuilder.create(Material.FEATHER)
+                                    .name("&eExtra")
+                                    .description("This controls some odd properties for some particles, sometimes it controls the speed, other times it controls how they're colored.")
+                                    .info("&7Current Value", "")
+                                    .info(null, "&a" + speed)
+                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
+                            (event, o) -> {
+                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
+                                editMenu.openChat(Main.getInstance(), "" + speed, (s) -> {
+                                    if (NumberUtilsKt.isDouble(s)) {
+                                        speed = Double.parseDouble(s);
+                                        if (speed < 0) {
+                                            speed = 0D;
                                         }
-                                    });
-                                    return true;
-                                }
-                        ));
-                    }
+                                        if (speed > 10) {
+                                            speed = 10D;
+                                        }
+                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
+                                    }
+                                });
+                                return true;
+                            }
+                    ));
                 }
             }
         }
@@ -661,7 +659,7 @@ public class ParticleAction extends HTSLImpl {
             for (Player p : house.getWorld().getPlayers()) {
                 for (Location loc : locations) {
                     if (speed == null) {
-                        p.spawnParticle(particle.getParticle(), loc, 1,  data);
+                        p.spawnParticle(particle.getParticle(), loc, 1, data);
                     } else {
                         p.spawnParticle(particle.getParticle(), loc, 1, 0, 0, 0, speed, data);
                     }

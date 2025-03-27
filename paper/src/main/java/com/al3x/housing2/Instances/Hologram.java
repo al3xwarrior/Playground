@@ -288,6 +288,11 @@ public class Hologram {
         });
     }
 
+    public void removeViewer(Player player) {
+        entitys.get(player).forEach(holo -> holo.removeViewer(player));
+        interaction.get(player).removeViewer(player.getUniqueId());
+    }
+
     public void destroy() {
         destroyed = true;
         entitys.forEach((player, hologram) -> {

@@ -71,26 +71,28 @@ public abstract class Menu {
 
     // Opens the menu for the player
     public void open() {
-        OpenMenuEvent event = new OpenMenuEvent(this, player, Main.getInstance());
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            OpenMenuEvent event = new OpenMenuEvent(this, player, Main.getInstance());
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                    AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+                }
+                MenuManager.setWindowOpen(player, this);
+                MenuManager.setMenu(player, this);
+                return;
+            }
+
+            this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
+
+            setupItems();
+
             if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
                 AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
             }
-            MenuManager.setWindowOpen(player, this);
             MenuManager.setMenu(player, this);
-            return;
-        }
-
-        this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
-
-        setupItems();
-
-        if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
-                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
-        }
-        MenuManager.setMenu(player, this);
-        player.openInventory(inventory);
+            player.openInventory(inventory);
+        });
     }
 
     protected boolean isCancelled() {
@@ -105,23 +107,23 @@ public abstract class Menu {
     }
 
     public void handleExternalClick(InventoryClickEvent event) {
-            event.setCancelled(isCancelled());
+        event.setCancelled(isCancelled());
 
-            int slot = event.getSlot();
-            Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
-            Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
-            Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
-            Consumer<InventoryClickEvent> anyAction = anyClickActions.get(slot);
+        int slot = event.getSlot();
+        Consumer<InventoryClickEvent> leftAction = leftClickActions.get(slot);
+        Consumer<InventoryClickEvent> rightAction = rightClickActions.get(slot);
+        Consumer<InventoryClickEvent> shiftLeftAction = shiftLeftClickActions.get(slot);
+        Consumer<InventoryClickEvent> anyAction = anyClickActions.get(slot);
 
-            if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
-                leftAction.accept(event); // Run the left-click action
-            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
-                rightAction.accept(event); // Run the right-click action
-            } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
-                shiftLeftAction.accept(event); // Run the shift-left-click action
-            } else if (anyClickActions.get(slot) != null) {
-                anyAction.accept(event);
-            }
+        if (event.getClick() == org.bukkit.event.inventory.ClickType.LEFT && leftAction != null) {
+            leftAction.accept(event); // Run the left-click action
+        } else if (event.getClick() == org.bukkit.event.inventory.ClickType.RIGHT && rightAction != null) {
+            rightAction.accept(event); // Run the right-click action
+        } else if (event.getClick() == org.bukkit.event.inventory.ClickType.SHIFT_LEFT && shiftLeftClickActions.get(slot) != null) {
+            shiftLeftAction.accept(event); // Run the shift-left-click action
+        } else if (anyClickActions.get(slot) != null) {
+            anyAction.accept(event);
+        }
     }
 
     public String getTitle() {
@@ -152,7 +154,8 @@ public abstract class Menu {
     }
 
     public void addItem(int slot, ItemStack item) {
-        addItem(slot, item, () -> {});
+        addItem(slot, item, () -> {
+        });
     }
 
     public void addItem(int slot, ItemStack item, Runnable leftClickAction, Runnable rightClickAction) {

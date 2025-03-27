@@ -9,10 +9,7 @@ import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Utils.StackUtils;
+import com.al3x.housing2.Utils.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,7 +27,7 @@ public class LaunchProjectileAction extends HTSLImpl {
     private Projectile projectile;
     private PushDirection direction;
     private String customDirection;
-    private double amount;
+    private String amount;
 
     //Custom Data
     private ItemStack item = null;
@@ -39,10 +36,10 @@ public class LaunchProjectileAction extends HTSLImpl {
         super("Launch Projectile Action");
         this.projectile = Projectile.ARROW;
         this.direction = PushDirection.FORWARD;
-        this.amount = 1.5;
+        this.amount = "1.5";
     }
 
-    public LaunchProjectileAction(Projectile projectile, Double amount, PushDirection direction) {
+    public LaunchProjectileAction(Projectile projectile, String amount, PushDirection direction) {
         super("Launch Projectile Action");
         this.projectile = projectile;
         this.direction = direction;
@@ -110,7 +107,7 @@ public class LaunchProjectileAction extends HTSLImpl {
                                 .info("&7Current Value", "")
                                 .info(null, "&a" + amount)
                                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.DOUBLE, 0.1, 100.0 //Pretty easy to change the max value
+                        ActionEditor.ActionItem.ActionType.STRING
                 )
         ));
 
@@ -132,6 +129,17 @@ public class LaunchProjectileAction extends HTSLImpl {
     public OutputType execute(Player player, HousingWorld house) {
         org.bukkit.entity.Projectile proj = player.launchProjectile(projectile.getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), 10));
+
+        String amountParsed = HandlePlaceholders.parsePlaceholders(player, house, this.amount);
+
+        if (!NumberUtilsKt.isDouble(amountParsed)) {
+            return OutputType.ERROR;
+        }
+        double amount = Double.parseDouble(amountParsed);
+
+        if (amount < 0) {
+            return OutputType.ERROR;
+        }
 
         if (amount > 10) {
             amount = 10;
@@ -227,7 +235,7 @@ public class LaunchProjectileAction extends HTSLImpl {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         projectile = (data.get("projectile") instanceof String) ? Projectile.valueOf((String) data.get("projectile")) : (Projectile) data.get("projectile");
-        amount = (double) data.get("amount");
+        amount = data.get("amount").toString();
         direction = (data.get("direction") instanceof String) ? PushDirection.valueOf((String) data.get("direction")) : (PushDirection) data.get("direction");
         if (projectile == Projectile.SPLASH_POTION) {
             try {
@@ -249,8 +257,16 @@ public class LaunchProjectileAction extends HTSLImpl {
 
         try {
             projectile = Projectile.getProjectile(split[0]);
-            amount = Double.parseDouble(split[1]);
-            direction = PushDirection.fromString(split[2]);
+            Duple<String[], String> arg = handleArg(split, 1);
+            if (arg == null) {
+                return nextLines;
+            }
+            amount = arg.getSecond();
+            split = arg.getFirst();
+            if (split.length < 1) {
+                return nextLines;
+            }
+            direction = PushDirection.valueOf(split[0]);
         } catch (IllegalArgumentException e) {
             return nextLines;
         }

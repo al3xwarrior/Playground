@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Function {
+    public static HashMap<UUID, HashMap<String, String>> functionArguments = new HashMap<>();
+
     private String name;
     private UUID id;//probably not needed?
     private Integer ticks; //Null is not active, 2-100?
@@ -47,6 +49,10 @@ public class Function {
     }
 
     public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor) {
+        return execute(main, entity, player, house, automatic, await, oldExecutor, new HashMap<>());
+    }
+
+    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor, HashMap<String, String> arguments) {
         if (!loaded) return OutputType.ERROR;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
@@ -61,6 +67,9 @@ public class Function {
         }
 
         for (Player p : players) {
+            HashMap<String, String> args = functionArguments.getOrDefault(p.getUniqueId(), new HashMap<>());
+            args.putAll(arguments);
+            functionArguments.put(p.getUniqueId(), args);
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
             executor.addActions(actions);
