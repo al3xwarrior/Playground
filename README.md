@@ -36,10 +36,50 @@ cd Playground/
 ```
 You can find the output plugin JAR in the `paper/build/libs` directory and the output mod JAR in the `fabric/build/libs` directory.
 
-### Running on a server
-You must use [AdvancedSlimePaper 1.21.4](https://ci.infernalsuite.com/repository/download/AdvancedSlimePaper_Build/2762:id/output/asp-server.jar) as your server software.
-Move the output plugin JAR to the server's `plugins` directory, along with these dependencies as a minimum:
-- [Citizens](https://ci.citizensnpcs.co/job/citizens2/)
-- [NoteBlockAPI](https://modrinth.com/plugin/noteblockapi)
-- [packetevents](https://modrinth.com/plugin/packetevents)
-- [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases)
+## Server Setup Guide
+
+This guide explains how to configure your server environment using **AdvancedSlimePaper 1.21.4** and the required plugins.
+
+### Server Software
+
+- **Required:**
+  Use [AdvancedSlimePaper 1.21.4](https://ci.infernalsuite.com/repository/download/AdvancedSlimePaper_Build/2762:id/output/asp-server.jar) as your server software.
+
+### Plugin Installation
+
+1. **Place the Plugin:**
+   Copy the output plugin JAR file into your server’s `plugins` directory.
+
+2. **Add Minimum Dependencies:**
+   Ensure the following plugins are also in the `plugins` directory:
+   - [Citizens](https://ci.citizensnpcs.co/job/citizens2/)
+   - [NoteBlockAPI](https://modrinth.com/plugin/noteblockapi)
+   - [packetevents](https://modrinth.com/plugin/packetevents)
+   - [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases)
+   - [Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat)
+
+### Recommended Plugins
+
+For an enhanced server experience, consider adding these:
+- [LuckPerms](https://luckperms.net/download)
+- [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)
+- [HeadDatabase](https://www.spigotmc.org/resources/head-database.14280/) **(Paid)**
+
+### Optional Plugins
+
+- [Axiom](https://modrinth.com/plugin/axiom-paper-plugin)
+
+### Housing Plugin Setup
+
+To ensure the housing plugin loads correctly, perform the following:
+- **Move the Songs Folder:**
+  Copy the `libs/songs` folder into the housing plugin’s directory at:
+  `plugins/Housing2/songs`
+
+### Additional Configuration
+
+- **LuckPerms Chat Prefixes:**
+  If you want to display LuckPerms prefixes in chat, run the command below:
+  ```
+  /papi ecloud download LuckPerms
+  ```
