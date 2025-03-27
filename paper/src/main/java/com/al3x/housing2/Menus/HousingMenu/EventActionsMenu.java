@@ -66,7 +66,7 @@ public class EventActionsMenu extends Menu {
             addEventActionItem(14, Material.CHERRY_TRAPDOOR, "&aPlayer Swim/Crawl", "&7Executes when the Player swims or crawls.", EventType.ENTITY_SWIM_CRAWL);
             addEventActionItem(15, Material.SPLASH_POTION, "&aPlayer Splash Potion", "&7Executes when a player's splash potion lands.", EventType.SPLASH_POTION);
             addEventActionItem(16, Material.JUKEBOX, "&aPlayer Create Voice Group", "&7Executes when a player attempts to create a voice chat group.", EventType.PLAYER_CREATE_VOICE_GROUP);
-            addEventActionItem(17, Material.MUSIC_DISC_CAT, "&aPlayer Join Voice Group", "&7Executes when a player attempts to join a voice chat group.", EventType.PLAYER_JOIN_VOICE_GROUP);
+            addEventActionItem(19, Material.MUSIC_DISC_CAT, "&aPlayer Join Voice Group", "&7Executes when a player attempts to join a voice chat group.", EventType.PLAYER_JOIN_VOICE_GROUP);
             addItem(45, new ItemBuilder().material(Material.ARROW).name("&aPrevious Page").build(), () -> {
                 page = 1;
                 open();

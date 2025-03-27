@@ -14,6 +14,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -68,7 +69,7 @@ public class ParticleUtils {
     }
 
     public static List<String> keys(Particles particle) {
-        if (particle.getData() == null) return null;
+        if (particle.getData() == null) return List.of("speed");
         List<String> keys = new ArrayList<>();
         switch (particle.getData()) {
             case COLOR -> {
@@ -82,9 +83,6 @@ public class ParticleUtils {
                 keys.add("color");
                 keys.add("color2");
                 keys.add("size");
-            }
-            default -> {
-                keys.add("speed");
             }
         }
         return keys;
