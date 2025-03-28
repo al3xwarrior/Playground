@@ -766,8 +766,8 @@ public class Raycast {
             Vector dir = direction.clone().normalize().multiply(range);
             Vec3 startPos = MCUtil.toVec3(player.getEyeLocation());
             Vec3 endPos = startPos.add(dir.getX(), dir.getY(), dir.getZ());
-            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
-            RayTraceResult hitResult = CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
+            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toFluid(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
+            RayTraceResult hitResult = CraftRayTraceResult.convertFromInternal(((CraftWorld) player.getWorld()).getHandle(), nmsHitResult);
 
             if (hitResult == null || hitResult.getHitBlock() == null) {
                 return new Duple<>(new Vector(endPos.x, endPos.y, endPos.z),

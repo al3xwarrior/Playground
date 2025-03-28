@@ -44,7 +44,7 @@ dependencies {
     implementation ("wtf.choco:networking-bukkit:0.1.1") {
         exclude group: 'org.spigotmc', module: 'spigot-api'
     }
-    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.5-no-moonrise-SNAPSHOT")
     compileOnly('net.citizensnpcs:citizensapi:2.0.37-SNAPSHOT') {
         transitive = false
     }
