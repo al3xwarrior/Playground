@@ -272,7 +272,7 @@ public class GlobalStatAction extends HTSLImpl {
 
     @Override
     public boolean requiresPlayer() {
-        return true;
+        return false;
     }
 
     @Override
