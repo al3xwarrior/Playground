@@ -86,12 +86,17 @@ public class PlayerListingMenu extends Menu {
                 if (house.hasPermission(player, CHANGE_PLAYER_TEAM) || house.hasPermission(player, EDIT_TEAMS))
                     item.info("Team", listedPlayerData.getTeamInstance(house).getName());
 
-                item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+                if (house.hasPlayerEdit(player)) {
+                    item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+                }
 
                 if (online) item.rClick(ItemBuilder.ActionType.TOGGLE_VISIBILITY);
 
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {
+                        if (!house.hasPlayerEdit(player)) {
+                            return;
+                        }
                         if (higherPriority) {
                             player.sendMessage(colorize("&cYou can't edit this player, they have a higher priority than you!"));
                             return;
