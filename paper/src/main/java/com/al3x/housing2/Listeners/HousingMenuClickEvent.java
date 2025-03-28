@@ -63,8 +63,7 @@ public class HousingMenuClickEvent implements Listener {
             PlayerData targetPlayerData = house.getPlayersData().get(target.getUniqueId().toString());
 
             // Determine if the target has a higher priority than the player.
-            boolean higherPriority = playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority() &&
-                                     !player.getUniqueId().equals(target.getUniqueId());
+            boolean higherPriority = playerData.getGroupInstance(house).getPriority() <= targetPlayerData.getGroupInstance(house).getPriority();
 
             if (higherPriority) {
                 player.sendMessage(colorize("&cYou can't edit this player, they have a higher priority than you!"));
