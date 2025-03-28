@@ -1233,7 +1233,7 @@ public class HousingWorld {
         return hasAnyPermission(player, permission);
     }
 
-    public boolean hasPlayerListing(Player player) {
+    public boolean hasPlayerEdit(Player player) {
         Permissions[] permission = {
                 KICK,
                 BAN,

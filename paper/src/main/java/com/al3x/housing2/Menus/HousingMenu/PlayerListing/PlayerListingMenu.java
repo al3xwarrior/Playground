@@ -86,14 +86,15 @@ public class PlayerListingMenu extends Menu {
                 if (house.hasPermission(player, CHANGE_PLAYER_TEAM) || house.hasPermission(player, EDIT_TEAMS))
                     item.info("Team", listedPlayerData.getTeamInstance(house).getName());
 
-                item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+                if (house.hasPlayerEdit(player)) {
+                    item.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+                }
 
                 if (online) item.rClick(ItemBuilder.ActionType.TOGGLE_VISIBILITY);
 
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {
-                        if (!house.hasPlayerListing(player)) {
-                            player.sendMessage(colorize("&cNo permissions to edit a player!"));
+                        if (!house.hasPlayerEdit(player)) {
                             return;
                         }
                         if (higherPriority) {

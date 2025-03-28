@@ -55,7 +55,7 @@ public class HousingMenuClickEvent implements Listener {
             entity -> entity instanceof Player && !entity.equals(player)
         );
 
-        if (house.hasPlayerListing(player) && result != null && result.getHitEntity() != null) {
+        if (house.hasPlayerEdit(player) && result != null && result.getHitEntity() != null) {
             // A player is being targeted.
             Player target = (Player) result.getHitEntity();
 
