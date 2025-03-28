@@ -92,6 +92,10 @@ public class PlayerListingMenu extends Menu {
 
                 addItem(slots[i], item.build(), (e) -> {
                     if (e.getClick().isLeftClick()) {
+                        if (!house.hasPlayerListing(player)) {
+                            player.sendMessage(colorize("&cNo permissions to edit a player!"));
+                            return;
+                        }
                         if (higherPriority) {
                             player.sendMessage(colorize("&cYou can't edit this player, they have a higher priority than you!"));
                             return;
