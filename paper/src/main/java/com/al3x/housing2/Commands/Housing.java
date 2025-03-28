@@ -120,6 +120,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                 .then(Commands.literal("invite")
                         .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.HOUSE_SETTINGS))
                         .then(Commands.argument("player", StringArgumentType.word())
+                                .suggests(Housing::getPlayerOnlineSuggestions)
                                 .executes(this::invite)
                         )
                 )
