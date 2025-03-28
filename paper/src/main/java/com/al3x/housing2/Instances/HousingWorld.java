@@ -1207,6 +1207,17 @@ public class HousingWorld {
         return data.getGroupInstance(this).getPermissions().get(permission);
     }
 
+    private boolean hasAnyPermission(Player player, Permissions[] permission) {
+        if (player.getUniqueId().equals(ownerUUID) || isAdminMode(player)) return true;
+        PlayerData data = playersData.get(player.getUniqueId().toString());
+        if (data == null) return false;
+        for (Permissions permissions : permission) {
+            Object permissionValue = data.getGroupInstance(this).getPermissions().get(permissions);
+            if (permissionValue instanceof Boolean && permissionValue.equals(true)) return true;
+        }
+        return false; //Other permission types will be checked by itself
+    }
+
     public boolean hasSystem(Player player) {
         Permissions[] permission = {
                 EDIT_ACTIONS,
@@ -1219,14 +1230,21 @@ public class HousingWorld {
                 EDIT_TEAMS,
                 EDIT_CUSTOM_MENUS
         };
-        if (player.getUniqueId().equals(ownerUUID) || isAdminMode(player)) return true;
-        PlayerData data = playersData.get(player.getUniqueId().toString());
-        if (data == null) return false;
-        for (Permissions permissions : permission) {
-            Object permissionValue = data.getGroupInstance(this).getPermissions().get(permissions);
-            if (permissionValue instanceof Boolean && permissionValue.equals(true)) return true;
-        }
-        return false; //Other permission types will be checked by itself
+        return hasAnyPermission(player, permission);
+    }
+
+    public boolean hasPlayerListing(Player player) {
+        Permissions[] permission = {
+                KICK,
+                BAN,
+                MUTE,
+                GAMEMODE,
+                CHANGE_PLAYER_GROUP,
+                EDIT_PERMISSIONS_AND_GROUP,
+                CHANGE_PLAYER_TEAM,
+                EDIT_TEAMS,
+        };
+        return hasAnyPermission(player, permission);
     }
 
     public boolean executeEventActions(EventType eventType, Player player, CancellableEvent event) {

@@ -38,13 +38,15 @@ public class HousingMenu extends Menu {
     @Override
     public void initItems() {
 
-        ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
-        ItemMeta playerListingMeta = playerListing.getItemMeta();
-        playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
-        playerListing.setItemMeta(playerListingMeta);
-        addItem(8, playerListing, () -> {
-            new PlayerListingMenu(main, player, house).open();
-        });
+        if (house.hasPlayerListing(player)) {
+            ItemStack playerListing = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta playerListingMeta = playerListing.getItemMeta();
+            playerListingMeta.setDisplayName(colorize("&aPlayer Listing"));
+            playerListing.setItemMeta(playerListingMeta);
+            addItem(8, playerListing, () -> {
+                new PlayerListingMenu(main, player, house).open();
+            });
+        }
 
         if (house.hasPermission(player, Permissions.PRO_TOOLS)) {
             ItemStack protools = new ItemStack(Material.STICK);
