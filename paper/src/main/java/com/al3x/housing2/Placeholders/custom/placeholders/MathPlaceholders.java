@@ -21,6 +21,12 @@ public class MathPlaceholders {
         new SQRT();
         new ABS();
         new Floor();
+        new Sin();
+        new Cos();
+        new Tan();
+        new ASin();
+        new ACos();
+        new ATan();
     }
 
     private static class Round extends Placeholder {
@@ -377,6 +383,162 @@ public class MathPlaceholders {
             try {
                 double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
                 return String.valueOf(Math.floor(num));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class Sin extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.sin/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.sin(Math.toRadians(num)));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class Cos extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.cos/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.cos(Math.toRadians(num)));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class Tan extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.tan/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.tan(Math.toRadians(num)));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class ASin extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.asin/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.asin(Math.toRadians(num)));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class ACos extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.acos/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.acos(Math.toRadians(num)));
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+    }
+
+    private class ATan extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%math.atan/[number]%";
+        }
+
+        @Override
+        public boolean hasArgs() {
+            return true;
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (input.split("/").length < 1) {
+                return "0";
+            }
+            String number = StringUtilsKt.substringAfter(input, "/");
+            try {
+                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
+                return String.valueOf(Math.atan(Math.toRadians(num)));
             } catch (Exception e) {
                 return "0";
             }
