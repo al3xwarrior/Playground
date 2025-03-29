@@ -97,12 +97,7 @@ public class House {
             if (!input.contains("/")) {
                 return "0";
             }
-            String statName = input.substring(input.indexOf("/") + 1).replace("%", "");
-
-            if (statName.contains("[") && statName.contains("]")) {
-                statName = statName.substring(statName.indexOf("[") + 1, statName.indexOf("]"));
-                statName = Placeholder.handlePlaceholders("%" + statName + "%", house, player);
-            }
+            String statName = Placeholder.handlePlaceholders(input.substring(input.indexOf("/") + 1).replace("%", ""), house, player, true);
             return house.getStatManager().getGlobalStatByName(statName).formatValue();
         }
     }
