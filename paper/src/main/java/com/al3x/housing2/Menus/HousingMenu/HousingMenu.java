@@ -127,6 +127,8 @@ public class HousingMenu extends Menu {
 
                 // Needs to be updated if more privacy options are added
                 if (house.getPrivacy() == HousePrivacy.PRIVATE) {
+                    house.setPrivacy(HousePrivacy.WHITELISTED);
+                } else if (house.getPrivacy() == HousePrivacy.WHITELISTED) {
                     house.setPrivacy(HousePrivacy.PUBLIC);
                 } else {
                     house.setPrivacy(HousePrivacy.PRIVATE);

@@ -11,6 +11,7 @@ import org.bson.BsonType;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonRepresentation;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,13 +65,14 @@ public class HouseData {
     private String lockedMessage;
     private ResourcePackData resourcePack;
     private Boolean randomTicks;
+    private List<String> whitelistedPlayers;
 
     //For pojo
     public HouseData() {
 
     }
 
-    public HouseData(String ownerID, String houseID, String ownerName, String houseName, String description, int size, int cookies, int cookieWeek, String privacy, String icon, long timeCreated, HashMap<String, List<ActionData>> eventActions, LocationData spawnLocation, List<String> scoreboard, String scoreboardTitle, List<NPCData> houseNPCs, List<StatData> globalStats, List<CommandData> commands, List<RegionData> regions, List<LayoutData> layouts, List<HologramData> holograms, List<CustomMenuData> customMenus, List<GroupData> groups, List<TeamData> teams, String defaultGroup, HashMap<String, PlayerData> playerData, List<LocationData> trashCans, List<LaunchPad> launchPads, HashMap<String, List<ActionData>> actionButtons, String seed, List<FunctionData> functions, Integer version, Long ingameTime, Boolean dayLightCycle, WeatherTypes weather, Boolean weatherCycle, Boolean joinLeaveMessages, Boolean deathMessages, Boolean jukeboxPlaying, Boolean keepInventory, String lockedMessage, ResourcePackData resourcePack, Boolean randomTicks) {
+    public HouseData(String ownerID, String houseID, String ownerName, String houseName, String description, int size, int cookies, int cookieWeek, String privacy, String icon, long timeCreated, HashMap<String, List<ActionData>> eventActions, LocationData spawnLocation, List<String> scoreboard, String scoreboardTitle, List<NPCData> houseNPCs, List<StatData> globalStats, List<CommandData> commands, List<RegionData> regions, List<LayoutData> layouts, List<HologramData> holograms, List<CustomMenuData> customMenus, List<GroupData> groups, List<TeamData> teams, String defaultGroup, HashMap<String, PlayerData> playerData, List<LocationData> trashCans, List<LaunchPad> launchPads, HashMap<String, List<ActionData>> actionButtons, String seed, List<FunctionData> functions, Integer version, Long ingameTime, Boolean dayLightCycle, WeatherTypes weather, Boolean weatherCycle, Boolean joinLeaveMessages, Boolean deathMessages, Boolean jukeboxPlaying, Boolean keepInventory, String lockedMessage, ResourcePackData resourcePack, Boolean randomTicks, List<String> whitelistedPlayers) {
         this.ownerID = ownerID;
         this.houseID = houseID;
         this.ownerName = ownerName;
@@ -114,6 +116,7 @@ public class HouseData {
         this.lockedMessage = lockedMessage;
         this.resourcePack = resourcePack;
         this.randomTicks = randomTicks;
+        this.whitelistedPlayers = whitelistedPlayers;
     }
 
     public static HouseData fromHousingWorld(HousingWorld world) {
@@ -160,7 +163,8 @@ public class HouseData {
                 world.getKeepInventory(),
                 world.getLockedReason(),
                 world.getResourcePack(),
-                world.getRandomTicks()
+                world.getRandomTicks(),
+                world.getWhitelistedPlayers().stream().map(player -> player.getUniqueId().toString()).toList()
         );
     }
 }

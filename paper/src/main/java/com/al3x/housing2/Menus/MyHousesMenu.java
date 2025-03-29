@@ -167,12 +167,36 @@ public class MyHousesMenu extends Menu {
             item.setItemMeta(meta);
 
             addItem(slots[i], item, () -> {
-                if (HousePrivacy.valueOf(house.getPrivacy()) != HousePrivacy.PUBLIC) {
-                    if (!house.getOwnerID().equals(player.getUniqueId().toString()) && !world[0].getInvitedPlayer().equals(player)) {
-                        player.sendMessage(colorize("&cThis house is private!"));
-                        return;
+
+                if (!house.getOwnerID().equals(player.getUniqueId().toString())) {
+                    switch (HousePrivacy.valueOf(house.getPrivacy())) {
+                        case HousePrivacy.LOCKED:
+                            player.sendMessage(colorize("&cThis house has been locked by a Staff Member! Let the owner know they need to make some changes!"));
+                            return;
+                        case HousePrivacy.PRIVATE:
+                            if (world[0] == null) {
+                                player.sendMessage(colorize("&cThis house is private!"));
+                                return;
+                            }
+                            if (!player.equals(world[0].getInvitedPlayer())) {
+                                player.sendMessage(colorize("&cThis house is private!"));
+                                return;
+                            }
+                            break;
+                        case HousePrivacy.WHITELISTED:
+                            if (!house.getWhitelistedPlayers().contains(player.getUniqueId().toString())) {
+                                if (world[0] == null) {
+                                    player.sendMessage(colorize("&cThis house is currently whitelisted. If you should be whitelisted, tell the owner to run &e/h whitelist &b" + player.getName()));
+                                    return;
+                                } else if (!player.equals(world[0].getInvitedPlayer())) {
+                                    player.sendMessage(colorize("&cThis house is currently whitelisted. If you should be whitelisted, tell the owner to run &e/h whitelist &b" + player.getName()));
+                                    return;
+                                }
+                            }
+                            break;
                     }
                 }
+
                 if (world[0] != null) {
                     world[0].sendPlayerToHouse(player);
                 } else {

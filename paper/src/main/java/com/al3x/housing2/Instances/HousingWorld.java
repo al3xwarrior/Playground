@@ -47,6 +47,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
@@ -120,6 +121,7 @@ public class HousingWorld {
     private transient HousingScoreboard scoreboardInstance;
 
     private Player invitedPlayer;
+    private List<OfflinePlayer> whitelistedPlayers;
 
     //A problem I just thought off was that we will need to remove the owner from the house if we want to ever use this on more than one server.
     public HousingWorld(Main main, String houseID) {
@@ -191,6 +193,7 @@ public class HousingWorld {
         this.teams = new ArrayList<>();
         this.playersData = new HashMap<>();
         this.statManager = new StatManager(this);
+        this.whitelistedPlayers = new ArrayList<>();
         this.scoreboardTitle = "<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ";
 
         try {
@@ -272,6 +275,7 @@ public class HousingWorld {
         this.deathMessages = houseData.getDeathMessages() != null ? houseData.getDeathMessages() : true;
         this.keepInventory = houseData.getKeepInventory() != null ? houseData.getKeepInventory() : false;
         this.lockedReason = houseData.getLockedMessage() != null ? houseData.getLockedMessage() : "";
+        this.whitelistedPlayers = houseData.getWhitelistedPlayers() != null ? houseData.getWhitelistedPlayers().stream().map(string -> Bukkit.getOfflinePlayer(UUID.fromString(string))).collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>();
 
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
@@ -724,11 +728,6 @@ public class HousingWorld {
                 playerData.setBanned(false);
             }
         } catch (NullPointerException ignored) {
-        }
-
-        if (privacy == HousePrivacy.LOCKED && !ownerUUID.equals(player.getUniqueId())) {
-            player.sendMessage(colorize("&cThis house has been locked by a Staff Member! Let the owner know they need to make some changes!"));
-            return;
         }
 
         if (loaded) {
@@ -1357,4 +1356,8 @@ public class HousingWorld {
     public void setInvitedPlayer(Player player) {
         this.invitedPlayer = player;
     }
+
+    public List<OfflinePlayer> getWhitelistedPlayers() { return whitelistedPlayers; }
+    public void addWhitelistedPlayer(OfflinePlayer player) { whitelistedPlayers.add(player); }
+    public void removeWhitelistedPlayer (OfflinePlayer player) { whitelistedPlayers.remove(player); }
 }

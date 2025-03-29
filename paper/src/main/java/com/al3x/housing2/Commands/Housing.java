@@ -24,6 +24,7 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver;
 import io.papermc.paper.math.FinePosition;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -122,6 +123,20 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                         .then(Commands.argument("player", StringArgumentType.word())
                                 .suggests(Housing::getPlayerOnlineSuggestions)
                                 .executes(this::invite)
+                        )
+                )
+                .then(Commands.literal("whitelist")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.HOUSE_SETTINGS))
+                        .then(Commands.argument("player", StringArgumentType.word())
+                                .suggests(Housing::getPlayerOnlineSuggestions)
+                                .executes(this::whitelist)
+                        )
+                )
+                .then(Commands.literal("unwhitelist")
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.HOUSE_SETTINGS))
+                        .then(Commands.argument("player", StringArgumentType.word())
+                                .suggests(Housing::getPlayerOnlineSuggestions)
+                                .executes(this::unwhitelist)
                         )
                 )
                 .then(Commands.literal("migrate")
@@ -305,6 +320,32 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
         house.setInvitedPlayer(invitedPlayer);
         invitedPlayer.sendMessage(colorize("&eYou were invited by &b" + player.getName() + " &eto visit the house &b" + house.getName()));
         player.sendMessage(colorize("&eSent &b" + invitedPlayer.getName() + "&e an invite!"));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int whitelist(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) {
+            player.sendMessage(colorize("&cYou are not in a house!"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        house.addWhitelistedPlayer(Bukkit.getOfflinePlayer(StringArgumentType.getString(context, "player")));
+        player.sendMessage(colorize("&eAdded to the whitelist!"));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int unwhitelist(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) {
+            player.sendMessage(colorize("&cYou are not in a house!"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        house.removeWhitelistedPlayer(Bukkit.getOfflinePlayer(StringArgumentType.getString(context, "player")));
+        player.sendMessage(colorize("&eRemoved from the whitelist!"));
         return Command.SINGLE_SUCCESS;
     }
 
