@@ -29,7 +29,7 @@ public class StatPlayer extends Placeholder {
         if (player == null) {
             return "0";
         }
-        if (input.split("/").length < 2) {
+        if (!input.contains("/")) {
             return "0";
         }
         String statName = StringUtilsKt.substringAfter(input, "/");

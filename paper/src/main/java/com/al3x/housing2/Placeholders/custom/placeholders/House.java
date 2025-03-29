@@ -94,10 +94,10 @@ public class House {
 
         @Override
         public String handlePlaceholder(String input, HousingWorld house, Player player) {
-            if (input.split("/").length < 2) {
+            if (!input.contains("/")) {
                 return "0";
             }
-            String statName = input.split("/")[1].replace("%", "");
+            String statName = input.substring(input.indexOf("/")).replace("%", "");
 
             if (statName.contains("[") && statName.contains("]")) {
                 statName = statName.substring(statName.indexOf("[") + 1, statName.indexOf("]"));
