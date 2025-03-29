@@ -42,7 +42,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                 .requires(context -> context.getSender() instanceof Player)
                 .then(Commands.literal("create").executes(this::create))
                 .then(Commands.literal("name")
-                        .requires(context -> context.getSender() instanceof Player p && housesManager.playerHasHouse(p))
+                        .requires(context -> context.getSender() instanceof Player p && housesManager.hasPermissionInHouse(p, Permissions.HOUSE_SETTINGS))
                         .then(Commands.argument("name", StringArgumentType.greedyString())
                                 .executes(this::name)
                         )
