@@ -1,82 +1,26 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.al3x.housing2.Utils.Color.colorize;
-import static com.al3x.housing2.Utils.HandlePlaceholders.parsePlaceholders;
-
 public class ChatAction extends HTSLImpl {
-
-    private String message;
+    private String message = "&eHello World!";
 
     public ChatAction() {
-        super("Chat Action");
-        this.message = "&eHello World!";
-    }
-
-    public ChatAction(String message) {
-        super("Chat Action");
-        this.message = message;
-    }
-
-    @Override
-    public String keyword() {
-        return "chat";
-    }
-
-    @Override
-    public String toString() {
-        return "ChatAction (Message: " + message + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PAPER);
-        builder.name("&eDisplay Chat Message");
-        builder.info("&eSettings", "");
-        builder.info("Message", message);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PAPER);
-        builder.name("&aDisplay Chat Message");
-        builder.description("Sends a chat message to the player.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionItem> items = List.of(
-                new ActionItem("message",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&aMessage")
-                                .info("&7Current Value", "")
-                                .info(null, message)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.STRING
-                )
-        );
-        return new ActionEditor(4, "&eChat Action Settings", items);
+        super("chat_action");
+        displayName("Display Chat Message");
+        displayIcon(Material.PAPER);
+        description("Sends a chat message to the player.");
     }
 
     @Override
@@ -88,25 +32,13 @@ public class ChatAction extends HTSLImpl {
     public String getMessage() {
         return message;
     }
+
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("message", message);
-        return data;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
     }
-
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("message")) return;
-//        message = (String) data.get("message");
-//    }
 }

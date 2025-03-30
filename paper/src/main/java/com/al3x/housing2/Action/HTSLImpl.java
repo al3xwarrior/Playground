@@ -13,8 +13,6 @@ public abstract class HTSLImpl extends Action {
         super(name);
     }
 
-    public abstract String keyword();
-
     public String syntax() {
         HashMap<String, Object> actionData = data();
         StringBuilder builder = new StringBuilder();
@@ -23,7 +21,7 @@ public abstract class HTSLImpl extends Action {
             builder.append("<").append(key).append(">");
             if (actionData.get(key) != keys.getLast()) builder.append(" ");
         }
-        return keyword() + (!builder.isEmpty() ? " " + builder : "");
+        return id + (!builder.isEmpty() ? " " + builder : "");
     }
 
     public String export() {
@@ -60,7 +58,7 @@ public abstract class HTSLImpl extends Action {
         }
         String output = builder.toString();
         if (output.endsWith(" ")) output = output.substring(0, output.length() - 1);
-        return " ".repeat(indent) + keyword() + (!output.isEmpty() ? " " + output: "");
+        return " ".repeat(indent) + id + (!output.isEmpty() ? " " + output: "");
     }
 
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {

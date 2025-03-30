@@ -49,9 +49,9 @@ public class ItemBuilder {
     private String name;
     private String description;
     private List<String> extraLore;
-    private HashMap<ClickType, ActionType> actions;
+    private final HashMap<ClickType, ActionType> actions;
     //Key: String, Value: Object (String, Int or Double)
-    private List<Duple<String, Object>> info;
+    private final List<Duple<String, Object>> info;
     private boolean glow;
     private boolean changeOrderLore;
     private boolean punctuation;

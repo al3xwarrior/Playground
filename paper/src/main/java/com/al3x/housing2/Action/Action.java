@@ -15,7 +15,9 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
@@ -31,29 +33,65 @@ import static com.al3x.housing2.Utils.Color.colorize;
  */
 public abstract class Action {
     private static final Gson gson = new Gson();
-    protected String name;
-    private String comment = "";
+    @Getter protected String id;
+    @Getter protected Material displayIcon = Material.PAPER;
+    @Getter protected String displayName;
+    @Getter protected String description;
+    @Getter protected Set<ActionProperty> properties = new HashSet<>();
 
-    public Action(String name) {
-        this.name = name;
+    Action(String id) {
+        this.id = id;
+        this.displayName = id;
     }
 
-    public String getName() {
-        return name;
+    public void displayIcon(Material displayIcon) {
+        this.displayIcon = displayIcon;
     }
 
-    public abstract String toString();
-
-    public abstract void createDisplayItem(ItemBuilder builder);
-
-    public void createDisplayItem(ItemBuilder builder, HousingWorld house) {
-        createDisplayItem(builder);
+    public void displayName(String displayName) {
+        this.displayName = displayName;
     }
 
-    public abstract void createAddDisplayItem(ItemBuilder builder);
+    public void description(String description) {
+        this.description = description;
+    }
+
+    public void addProperty(ActionProperty property) {
+        properties.add(property);
+    }
+    public void removeProperty(ActionProperty property) {
+        properties.remove(property);
+    }
+
+    public String toString() {
+        return id + "{" + properties.toString() + "}";
+    }
+
+    public void createDisplayItem(ItemBuilder builder) {
+        builder.material(displayIcon);
+        builder.name("<yellow>" + displayName);
+        builder.info("&eSettings", "");
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
+        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
+        builder.shiftClick();
+    }
+
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(displayIcon);
+        builder.name("<yellow>" + displayName);
+        builder.description(description);
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    }
 
     public ActionEditor editorMenu(HousingWorld house) {
-        return null;
+        List<ActionEditor.ActionItem> items = properties.stream().map(property -> {
+            ItemBuilder itemBuilder = new ItemBuilder()
+                    .material(displayIcon)
+                    .name("<yellow>" + displayName)
+                    .info("<gray>Current Value", property.getValue().toString());
+            return new ActionEditor.ActionItem(id, itemBuilder, property.getType());
+        }).toList();
+        return new ActionEditor(4, "<yellow>" + displayName + " Settings", items);
     }
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
@@ -74,14 +112,16 @@ public abstract class Action {
         return execute(player, house, event);
     }
 
-    public abstract LinkedHashMap<String, Object> data();
-
-    public String getComment() {
-        return this.comment;
-    }
-
-    public void setComment(String value) {
-        this.comment = value;
+    public LinkedHashMap<String, Object> data() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        properties.forEach(property -> {
+            if (property.getValue() instanceof Enum<?> e) {
+                data.put(property.getId(), e.name());
+            } else {
+                data.put(property.getId(), property.getValue());
+            }
+        });
+        return data;
     }
 
     public abstract boolean requiresPlayer();
