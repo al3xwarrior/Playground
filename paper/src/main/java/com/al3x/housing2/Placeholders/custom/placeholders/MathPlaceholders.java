@@ -486,7 +486,7 @@ public class MathPlaceholders {
             String number = StringUtilsKt.substringAfter(input, "/");
             try {
                 double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
-                return String.valueOf(Math.asin(Math.toRadians(num)));
+                return String.valueOf(Math.toDegrees(Math.asin(num)));
             } catch (Exception e) {
                 return "0";
             }
@@ -512,7 +512,7 @@ public class MathPlaceholders {
             String number = StringUtilsKt.substringAfter(input, "/");
             try {
                 double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
-                return String.valueOf(Math.acos(Math.toRadians(num)));
+                return String.valueOf(Math.toDegrees(Math.acos(num)));
             } catch (Exception e) {
                 return "0";
             }
@@ -522,7 +522,7 @@ public class MathPlaceholders {
     private class ATan extends Placeholder {
         @Override
         public String getPlaceholder() {
-            return "%math.atan/[number]%";
+            return "%math.atan/[num1] [num2]%";
         }
 
         @Override
@@ -535,10 +535,12 @@ public class MathPlaceholders {
             if (input.split("/").length < 1) {
                 return "0";
             }
-            String number = StringUtilsKt.substringAfter(input, "/");
+            String split = StringUtilsKt.substringAfter(input, "/");
+            String[] numbers = split.split(" ");
             try {
-                double num = Double.parseDouble(Placeholder.handlePlaceholders(number, house, player, true));
-                return String.valueOf(Math.atan(Math.toRadians(num)));
+                double num1 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[0], house, player, true));
+                double num2 = Double.parseDouble(Placeholder.handlePlaceholders(numbers[1], house, player, true));
+                return String.valueOf(Math.toDegrees(Math.atan2(num1, num2)));
             } catch (Exception e) {
                 return "0";
             }
