@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Arrays;
 
@@ -30,6 +31,8 @@ public class OpenSomething implements Listener {
 
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         if (!e.hasBlock() || e.getClickedBlock() == null) return;
 
