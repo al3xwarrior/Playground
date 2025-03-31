@@ -1,9 +1,10 @@
 package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Main;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -20,7 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static org.bukkit.ChatColor.*;
+import static com.al3x.housing2.Utils.HypixelLoreFormatter.loreSplitter;
+import static com.al3x.housing2.Utils.HypixelLoreFormatter.splitComponent;
+import static com.al3x.housing2.Utils.StringUtilsKt.housingStringFormatter;
+import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
 
 
 /**
@@ -40,6 +44,7 @@ import static org.bukkit.ChatColor.*;
  *     return builder.build();
  * </pre>
  */
+@Getter
 public class ItemBuilder {
     private ItemStack stack;
     private Material material;
@@ -261,10 +266,10 @@ public class ItemBuilder {
         }
 
         //Set the item name and lore
-        itemMeta.displayName(StringUtilsKt.housingStringFormatter(name));
+        itemMeta.displayName(housingStringFormatter(name));
         itemMeta.lore(getLore());
 
-        // Hide all item flags cause they are annoying and useless
+        // Hide all item flags because they are annoying and useless
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         itemMeta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey(Main.getInstance(), "dummy"), 0, AttributeModifier.Operation.ADD_NUMBER)); // needed to correctly hide attributes
 
@@ -295,7 +300,7 @@ public class ItemBuilder {
             }
         }
         //Lore formatting
-        List<Component> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation, textWidth);
+        List<Component> lore = loreSplitter(description, info, labels, punctuation, textWidth);
 
         //Action menu label
         if (changeOrderLore) {
@@ -304,7 +309,9 @@ public class ItemBuilder {
 
         //Extra lore
         if (extraLore != null) {
-            lore.addAll(extraLore.stream().map(StringUtilsKt::housingStringFormatter).toList());
+            lore.addAll(extraLore.stream()
+                    .flatMap(str -> splitComponent(housingStringFormatter("<gray>" + str), HypixelLoreFormatter.MAX_LENGTH).stream())
+                    .toList());
         }
 
         return new ArrayList<>(lore);
@@ -314,53 +321,10 @@ public class ItemBuilder {
         return new ItemBuilder().material(material);
     }
 
-    public ItemStack getStack() {
-        return stack;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public short getData() {
-        return data;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<String> getExtraLore() {
-        return extraLore;
-    }
-
-    public HashMap<ClickType, ActionType> getActions() {
-        return actions;
-    }
-
-    public List<Duple<String, Object>> getInfo() {
-        return info;
-    }
-
-    public boolean isGlow() {
-        return glow;
-    }
-
-    public boolean isChangeOrderLore() {
-        return changeOrderLore;
-    }
-
     /**
      * Enum representing different types of actions with associated colors.
      */
+    @Getter
     public static enum ActionType {
         EDIT_YELLOW("edit", YELLOW),
         VIEW_YELLOW("view", YELLOW),
@@ -399,10 +363,10 @@ public class ItemBuilder {
         RESTORE("restore", YELLOW),
         ;
 
-        private String action;
-        private ChatColor color;
+        private final String action;
+        private final NamedTextColor color;
 
-        ActionType(String action, ChatColor color) {
+        ActionType(String action, NamedTextColor color) {
             this.action = action;
             this.color = color;
         }
@@ -411,12 +375,5 @@ public class ItemBuilder {
             return action;
         }
 
-        public ChatColor getColor() {
-            return color;
-        }
-
-        public String getAction() {
-            return action;
-        }
     }
 }

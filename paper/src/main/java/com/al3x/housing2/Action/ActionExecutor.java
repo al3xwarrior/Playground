@@ -109,11 +109,11 @@ public class ActionExecutor {
             Action action = queue.removeFirst();
 
             int global = Main.getInstance().getConfig().getInt("globalLimits", 2000);
-            int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.name.replace(" ", "_").toLowerCase(), global);
-            if (limits.containsKey(action.name) && limits.get(action.name) >= actionLimit) {
+            int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.getId().replace(" ", "_").toLowerCase(), global);
+            if (limits.containsKey(action.getName()) && limits.get(action.getName()) >= actionLimit) {
                 return EXIT;
             }
-            limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
+            limits.put(action.getId(), limits.getOrDefault(action.getId(), 0) + 1);
 
             if (action instanceof PauseAction pauseAction) {
                 String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
@@ -168,7 +168,7 @@ public class ActionExecutor {
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
             } catch (Exception e) {
-                player.sendMessage("An error occurred while executing the action: " + action.name + " in the context: " + context);
+                player.sendMessage("An error occurred while executing the action: " + action.getName() + " in the context: " + context);
                 //take error and put it in the hover event
                 e.printStackTrace();
             }

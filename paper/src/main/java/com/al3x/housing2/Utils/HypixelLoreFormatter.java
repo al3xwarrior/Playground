@@ -2,23 +2,18 @@ package com.al3x.housing2.Utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
 //Thanks IxNoah and ChatGippity
 public class HypixelLoreFormatter {
     private static final Pattern HYPX_LORE_PUNCTUATION = Pattern.compile("(.*)[!.?]");
-    private static final int MAX_LENGTH = 28;
+    public static final int MAX_LENGTH = 28;
 
     public static final int LINE_LENGTH = 28;
     private static final Style nullStyle = Style.style()
@@ -83,7 +78,7 @@ public class HypixelLoreFormatter {
         return orphanedComponents;
     }
 
-    public static List<Component> hypixelLore(String root, List<Duple<String, Object>> info, List<String> labels, boolean punctuation, int maxLength) {
+    public static List<Component> loreSplitter(String root, List<Duple<String, Object>> info, List<String> labels, boolean punctuation, int maxLength) {
         List<Component> lines = new ArrayList<>();
 
         if (root != null && !root.isEmpty()) {

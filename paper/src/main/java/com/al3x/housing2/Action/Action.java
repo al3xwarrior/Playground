@@ -15,7 +15,7 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.Getter;
+import lombok.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,85 +31,61 @@ import static com.al3x.housing2.Utils.Color.colorize;
 /**
  * Represents an action that can be executed by a player.
  */
+@Getter
+@ToString
+@RequiredArgsConstructor
 public abstract class Action {
     private static final Gson gson = new Gson();
-    @Getter protected String id;
-    @Getter protected Material displayIcon = Material.PAPER;
-    @Getter protected String displayName;
-    @Getter protected String description;
-    @Getter protected Set<ActionProperty> properties = new HashSet<>();
 
-    Action(String id) {
-        this.id = id;
-        this.displayName = id;
-    }
+    private final String id;
+    private final String name;
+    private final String description;
+    private final Material icon;
 
-    public void displayIcon(Material displayIcon) {
-        this.displayIcon = displayIcon;
-    }
+    @Setter
+    private String comment;
 
-    public void displayName(String displayName) {
-        this.displayName = displayName;
-    }
+    private final List<ActionProperty> properties = new ArrayList<>();
 
-    public void description(String description) {
-        this.description = description;
-    }
+    // --- Methods ---
 
-    public void addProperty(ActionProperty property) {
-        properties.add(property);
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        return execute(player, house, event);
     }
-    public void removeProperty(ActionProperty property) {
-        properties.remove(property);
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
+        return execute(player, house);
     }
-
-    public String toString() {
-        return id + "{" + properties.toString() + "}";
-    }
-
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(displayIcon);
-        builder.name("<yellow>" + displayName);
-        builder.info("&eSettings", "");
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(displayIcon);
-        builder.name("<yellow>" + displayName);
-        builder.description(description);
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = properties.stream().map(property -> {
-            ItemBuilder itemBuilder = new ItemBuilder()
-                    .material(displayIcon)
-                    .name("<yellow>" + displayName)
-                    .info("<gray>Current Value", property.getValue().toString());
-            return new ActionEditor.ActionItem(id, itemBuilder, property.getType());
-        }).toList();
-        return new ActionEditor(4, "<yellow>" + displayName + " Settings", items);
-    }
+    public abstract OutputType execute(Player player, HousingWorld house);
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
         return editorMenu(house, backMenu);
     }
-
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
         return editorMenu(house);
     }
-
-    public abstract OutputType execute(Player player, HousingWorld house);
-
-    public OutputType execute(Player player, HousingWorld house, CancellableEvent event) {
-        return execute(player, house);
+    public ActionEditor editorMenu(HousingWorld house) {
+        return new ActionEditor(4, "<yellow>" + name + " Settings", properties);
     }
 
-    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        return execute(player, house, event);
+    public void createDisplayItem() {
+        ItemBuilder builder = new ItemBuilder()
+                .material(icon)
+                .name("<yellow>" + name)
+                .info("&eSettings", "")
+
+                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
+                .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
+                .shiftClick();
+        properties.forEach(property -> builder.info(property.getName(), property.getValue().toString()));
+
+        if (!comment.isEmpty()) builder.extraLore(comment);
+    }
+
+    public void createAddDisplayItem(ItemBuilder builder) {
+        builder.material(icon);
+        builder.name("<yellow>" + name);
+        builder.description(description);
+        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     public LinkedHashMap<String, Object> data() {
@@ -380,3 +356,5 @@ public abstract class Action {
 //        );
 //    }
 }
+
+

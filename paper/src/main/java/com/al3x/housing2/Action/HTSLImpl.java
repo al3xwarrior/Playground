@@ -3,14 +3,15 @@ package com.al3x.housing2.Action;
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class HTSLImpl extends Action {
-    public HTSLImpl(String name) {
-        super(name);
+    public HTSLImpl(String id, String name, String description, Material icon) {
+        super(id, name, description, icon);
     }
 
     public String syntax() {
@@ -21,7 +22,7 @@ public abstract class HTSLImpl extends Action {
             builder.append("<").append(key).append(">");
             if (actionData.get(key) != keys.getLast()) builder.append(" ");
         }
-        return id + (!builder.isEmpty() ? " " + builder : "");
+        return getId() + (!builder.isEmpty() ? " " + builder : "");
     }
 
     public String export() {
@@ -58,7 +59,7 @@ public abstract class HTSLImpl extends Action {
         }
         String output = builder.toString();
         if (output.endsWith(" ")) output = output.substring(0, output.length() - 1);
-        return " ".repeat(indent) + id + (!output.isEmpty() ? " " + output: "");
+        return " ".repeat(indent) + getId() + (!output.isEmpty() ? " " + output: "");
     }
 
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
