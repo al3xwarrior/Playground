@@ -136,7 +136,21 @@ public class HouseSettingsMenu extends Menu {
             }
         });
 
-        addItem(21, ItemBuilder.create(Material.BOOK)
+        addItem(21, ItemBuilder.create(Material.BARRIER)
+                .name(colorize("&aPlayer Collision"))
+                .description("Click to toggle whether players can collide in your house.")
+                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
+                .build(), () -> {
+            if (house.getPlayerCollisions()) {
+                house.setPlayerCollisions(false);
+                player.sendMessage(colorize("&eDisabled &cPlayer Collision"));
+            } else {
+                house.setPlayerCollisions(true);
+                player.sendMessage(colorize("&eEnabled &aPlayer Collision"));
+            }
+        });
+
+        addItem(22, ItemBuilder.create(Material.BOOK)
                 .name(colorize("&aResource Pack"))
                 .description(colorize("Manage the custom resource pack in your house.")) // \n\n&cWarning: Your pack needs to be approved by a moderator before it can be used!"))
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
