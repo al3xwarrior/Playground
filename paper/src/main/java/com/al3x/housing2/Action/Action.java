@@ -1,8 +1,5 @@
 package com.al3x.housing2.Action;
 
-import com.al3x.housing2.Action.Actions.CancelAction;
-import com.al3x.housing2.Condition.Condition;
-import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
@@ -12,14 +9,18 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -32,7 +33,6 @@ import static com.al3x.housing2.Utils.Color.colorize;
  * Represents an action that can be executed by a player.
  */
 @Getter
-@ToString
 @RequiredArgsConstructor
 public abstract class Action {
     private static final Gson gson = new Gson();
@@ -90,13 +90,16 @@ public abstract class Action {
 
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("id", id);
+        LinkedHashMap<String, Object> propertiesData = new LinkedHashMap<>();
         properties.forEach(property -> {
-            if (property.getValue() instanceof Enum<?> e) {
-                data.put(property.getId(), e.name());
-            } else {
-                data.put(property.getId(), property.getValue());
+            switch (property.getValue()) {
+                case Enum<?> e -> propertiesData.put(property.getId(), e.name());
+                case ItemStack i -> propertiesData.put(property.getId(), Serialization.itemStackToBase64(i));
+                default -> propertiesData.put(property.getId(), property.getValue());
             }
         });
+        data.put("properties", propertiesData);
         return data;
     }
 
@@ -343,18 +346,5 @@ public abstract class Action {
         action = actionEnum.getActionInstance(data, this.comment);
         return action;
     }
-
-    // I couldnt figure this out :(
-//    private static final Gson exportGson = new GsonBuilder().setPrettyPrinting().create();
-//
-//    public void export(Player player) {
-//        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-//        out.writeUTF("export");
-//        out.writeUTF(exportGson.toJson(ActionData.Companion.toData(this)));
-//        player.sendPluginMessage(Main.getInstance(), "housing:export",
-//                out.toByteArray()
-//        );
-//    }
 }
-
 

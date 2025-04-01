@@ -1,63 +1,33 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Layout;
-import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
+@ToString
 public class ApplyInventoryLayoutAction extends HTSLImpl {
     String layout;
     public ApplyInventoryLayoutAction() {
-        super("Apply Inventory Layout Action");
-    }
-
-    public ApplyInventoryLayoutAction(String layout, boolean runForAllPlayers) {
-        super("Apply Inventory Layout Action");
-        this.layout = layout;
-    }
-
-    @Override
-    public String toString() {
-        return "ApplyInventoryLayoutAction (function: " + (layout == null ? "&cNone" : "&6" + layout) + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_AXE);
-        builder.name("&eApply Inventory Layout");
-        builder.info("&eSettings", "");
-        builder.info("Inventory Layout", (layout == null ? "&cNone" : "&6" + layout));
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_AXE);
-        builder.name("&aApply Inventory Layout");
-        builder.description("Applies an inventory layout to the player.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items =  List.of(
-                new ActionEditor.ActionItem("layout", ItemBuilder.create(Material.FILLED_MAP)
-                        .name("&aLayout")
-                        .info("&7Current Value", "")
-                        .info(null, (layout == null ? "&cNone" : "&6" + layout)),
-                        ActionEditor.ActionItem.ActionType.LAYOUT
-                )
+        super(
+                "apply_inventory_layout_action",
+                "Apply Inventory Layout",
+                "Applies an inventory layout to the player.",
+                Material.IRON_AXE
         );
-        return new ActionEditor(4, "&eInv Layout Action Settings", items);
+
+        getProperties().add(new ActionProperty(
+                "layout",
+                "Layout",
+                "The layout to apply.",
+                ActionProperty.PropertyType.LAYOUT
+        ));
     }
 
     @Override
@@ -83,10 +53,5 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "applyLayout";
     }
 }

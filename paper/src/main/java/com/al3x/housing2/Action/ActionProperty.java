@@ -1,11 +1,16 @@
 package com.al3x.housing2.Action;
 
+import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.TriFunction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +29,7 @@ public class ActionProperty {
     private double min = 0;
     private double max = Double.MAX_VALUE;
     private Class<? extends Enum<?>> enumClass;
-    private BiFunction<InventoryClickEvent, Object, Boolean> customRunnable;
+    private ActionPropertyConsumer consumer;
 
     private Object value;
 
@@ -39,25 +44,25 @@ public class ActionProperty {
         }
     }
 
-    public ActionProperty(String id, String name, String description, PropertyType type, BiFunction<InventoryClickEvent, Object, Boolean> runnable) {
+    public ActionProperty(String id, String name, String description, PropertyType type, ActionPropertyConsumer consumer) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.type = type;
-        this.customRunnable = runnable;
+        this.consumer = consumer;
 
         if (type == PropertyType.ENUM) {
             throw new IllegalArgumentException("Enum class must be provided for ENUM type");
         }
     }
 
-    public ActionProperty(String id, String name, String description, PropertyType type, int slot, BiFunction<InventoryClickEvent, Object, Boolean> runnable) {
+    public ActionProperty(String id, String name, String description, PropertyType type, int slot, ActionPropertyConsumer consumer) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.type = type;
         this.slot = slot;
-        this.customRunnable = runnable;
+        this.consumer = consumer;
 
         if (type != PropertyType.CUSTOM) {
             throw new IllegalArgumentException("Enum class must be provided for ENUM type");
@@ -85,13 +90,13 @@ public class ActionProperty {
         this.enumClass = enumClass;
     }
 
-    public ActionProperty(String id, String name, String description, PropertyType type, Class<? extends Enum<?>> enumClass, BiFunction<InventoryClickEvent, Object, Boolean> runnable) {
+    public ActionProperty(String id, String name, String description, PropertyType type, Class<? extends Enum<?>> enumClass, ActionPropertyConsumer consumer) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.type = type;
         this.enumClass = enumClass;
-        this.customRunnable = runnable;
+        this.consumer = consumer;
     }
 
     public ActionProperty setValue(Object value) {
@@ -161,7 +166,7 @@ public class ActionProperty {
         private final Material icon;
     }
 
-    public ItemBuilder displayItem() {
+    public ItemBuilder getDisplayItem() {
         return new ItemBuilder()
                 .material(type.icon)
                 .name("<yellow>" + name)

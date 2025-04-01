@@ -1,16 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Utils.StackUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,14 +16,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
@@ -55,24 +53,25 @@ public class DropItemAction extends Action {
 
         getProperties().addAll(List.of(
                 new ActionProperty(
-                            "item",
-                            "Item",
-                            "The item to drop",
-                            ActionProperty.PropertyType.ITEM
-                ),
+                        "item",
+                        "Item",
+                        "The item to drop",
+                        ActionProperty.PropertyType.ITEM
+                ).setValue(item),
                 new ActionProperty(
                         "location",
                         "Location",
                         "The location to drop the item at",
                         ActionProperty.PropertyType.ENUM,
-                        Locations.class
-                ),
+                        Locations.class,
+                        this::locationConsumer
+                ).setValue(location),
                 new ActionProperty(
                         "drop_naturally",
                         "Drop Naturally",
                         "When enabled, the item will be dropped naturally in the world, having some slight randomness to its location",
                         ActionProperty.PropertyType.BOOLEAN
-                ).setValue(itemMerging),
+                ).setValue(dropNaturally),
                 new ActionProperty(
                         "item_merging",
                         "Item Merging",
@@ -103,26 +102,24 @@ public class DropItemAction extends Action {
                         "The delay in ticks before the item can be picked up by players",
                         ActionProperty.PropertyType.INT
                 ).setValue(pickupDelay)
-            ));
+        ));
     }
 
-    public void setReferences(HousingWorld house, Menu backMenu, Player player) {
-        getProperties().stream()
-                .filter(property -> "location".equals(property.getName()))
-                .forEach(property -> property.setCustomRunnable((event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
-                        (coords, location) -> {
-                            if (location == CUSTOM) {
-                                customLocation = coords;
-                            } else {
-                                customLocation = null;
-                            }
-                            this.location = location;
-                            if (location == PLAYER_LOCATION) {
-                                customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
-                            }
-                            backMenu.open();
-                        }
-                )));
+    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
+                (coords, location) -> {
+                    if (location == CUSTOM) {
+                        customLocation = coords;
+                    } else {
+                        customLocation = null;
+                    }
+                    this.location = location;
+                    if (location == PLAYER_LOCATION) {
+                        customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
+                    }
+                    backMenu.open();
+                }
+        );
     }
 
     @Override
@@ -131,10 +128,8 @@ public class DropItemAction extends Action {
 
         Location loc = null;
         switch (location) {
-            case INVOKERS_LOCATION ->
-                    loc = player.getLocation();
-            case HOUSE_SPAWN ->
-                    loc = house.getSpawn();
+            case INVOKERS_LOCATION -> loc = player.getLocation();
+            case HOUSE_SPAWN -> loc = house.getSpawn();
             case CUSTOM, PLAYER_LOCATION -> {
                 loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
@@ -189,21 +184,6 @@ public class DropItemAction extends Action {
         itemEntity.setCustomNameVisible(showName);
 
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("item", Serialization.itemStackToBase64(item));
-        data.put("customLocation", customLocation);
-        data.put("location", location.name());
-        data.put("dropNaturally", dropNaturally);
-        data.put("itemMerging", itemMerging);
-        data.put("prioritizePlayer", prioritizePlayer);
-        data.put("fallbackToInventory", fallbackToInventory);
-        data.put("showName", showName);
-        data.put("pickupDelay", pickupDelay);
-        return data;
     }
 
     @Override

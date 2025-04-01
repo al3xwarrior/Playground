@@ -10,11 +10,11 @@ import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.ToString;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
@@ -24,88 +24,49 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+@ToString
 public class AttackEntityAction extends HTSLImpl implements NPCAction {
+    private static final Gson gson = new Gson();
+
     private AttackEntityEnum mode;
     private String range;
     private List<Condition> conditions;
     private String value;
-    private static Gson gson = new Gson();
-
 
     public AttackEntityAction() {
-        super("Attack Entity Action");
+        super(
+                "attackNpc",
+                "Attack Entity",
+                "Attacks an entity.",
+                Material.IRON_SWORD
+        );
+
         mode = AttackEntityEnum.NEAREST;
         range = "10";
         conditions = new ArrayList<>();
         value = "2";
-    }
 
-    @Override
-    public String toString() {
-        return "AttackEntityAction (mode: " + mode + ", range: " + range + ", value: " + value + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_SWORD);
-        builder.name("&eAttack Entity");
-        builder.info("&eSettings", "");
-        builder.info("Mode", mode.name());
-        builder.info("Range", range);
-        builder.info("Value", value);
-        builder.info("Conditions", conditions.size());
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_SWORD);
-        builder.name("&eAttack Entity");
-        builder.description("Attack the nearest entity within the specified range.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        if (backMenu == null) {
-            return new ActionEditor(6, "&eAttack Entity Action Settings", new ArrayList<>());
-        }
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-
-        items.add(new ActionEditor.ActionItem("mode",
-                ItemBuilder.create(Material.IRON_SWORD)
-                        .name("&eMode")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + mode.name())
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, AttackEntityEnum.values(), null));
-        items.add(new ActionEditor.ActionItem("range",
-                ItemBuilder.create(Material.SNOWBALL)
-                        .name("&eRange")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + range)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING));
-        items.add(new ActionEditor.ActionItem("value",
-                ItemBuilder.create(Material.NETHERITE_SWORD)
-                        .name("&eDamage")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + value)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING));
-        if (mode == AttackEntityEnum.CONDITION) {
-            items.add(new ActionEditor.ActionItem("conditions",
-                    ItemBuilder.create(Material.REDSTONE)
-                            .name("&eConditions")
-                            .info("&7Current Value", "")
-                            .info(null, (conditions.isEmpty() ? "&cNo Conditions" : "&a" + conditions.size() + " Conditions"))
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.CONDITION));
-        }
-        return new ActionEditor(6, "&eAttack Entity Settings", items);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "mode",
+                        "Mode",
+                        "The mode of the attack.",
+                        ActionProperty.PropertyType.ENUM,
+                        AttackEntityEnum.class
+                ),
+                new ActionProperty(
+                        "range",
+                        "Range",
+                        "The range of the attack.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "value",
+                        "Value",
+                        "The value of the attack.",
+                        ActionProperty.PropertyType.STRING
+                )
+        ));
     }
 
     @Override
@@ -284,7 +245,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
         if (!conditionString.isEmpty()) {
             conditionString = conditionString.substring(0, conditionString.length() - 2);
         }
-        return " ".repeat(indent) + keyword() + " " + mode + " " + range + " " + value + "(" + conditionString + ")";
+        return " ".repeat(indent) + getId() + " " + mode + " " + range + " " + value + "(" + conditionString + ")";
     }
 
     @Override
@@ -331,10 +292,5 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
 
         this.conditions = conditions;
         return nextLines;
-    }
-
-    @Override
-    public String keyword() {
-        return "attackEntity";
     }
 }

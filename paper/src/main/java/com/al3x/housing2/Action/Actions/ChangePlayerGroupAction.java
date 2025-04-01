@@ -4,74 +4,41 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Menus.SlotSelectMenu;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.Serialization;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@ToString
 public class ChangePlayerGroupAction extends HTSLImpl {
     String group = null;
     boolean demotionProtection = false;
+
     public ChangePlayerGroupAction() {
-        super("Change Player Group");
-    }
-
-    @Override
-    public String toString() {
-        return "ChangePlayerGroup{" +
-                "group=" + group +
-                ", demotionProtection=" + demotionProtection +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&eChange Player Group");
-        builder.info("&eSettings", "");
-        builder.info("Group", (group == null ? "&aNot Set" : "&6" + group));
-        builder.info("Demotion Protection", (demotionProtection ? "&aEnabled" : "&cDisabled"));
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&eChange Player Group");
-        builder.description("Change the player's group.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        List<ActionEditor.ActionItem> items =  List.of(
-                new ActionEditor.ActionItem("group", ItemBuilder.create(Material.PLAYER_HEAD)
-                        .name("&aGroup")
-                        .description("The group to change the player to.")
-                        .info("&7Current Value", "")
-                        .info(null, (group == null ? "&aNot Set" : "&6" + group)),
-                        ActionEditor.ActionItem.ActionType.GROUP
-                ),
-                new ActionEditor.ActionItem("demotionProtection", ItemBuilder.create((demotionProtection ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aDemotion Protection")
-                        .info("&7Current Value", "")
-                        .info(null, demotionProtection ? "&aEnabled" : "&cDisabled"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
+        super(
+                "group",
+                "Change Player Group",
+                "Changes the player's group.",
+                Material.PLAYER_HEAD
         );
-        return new ActionEditor(4, "&eChange Player Group", items);
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "group",
+                        "Group",
+                        "The group to change the player to.",
+                        ActionProperty.PropertyType.GROUP
+                ),
+                new ActionProperty(
+                        "demotionProtection",
+                        "Demotion Protection",
+                        "If enabled, the player cannot be demoted.",
+                        ActionProperty.PropertyType.BOOLEAN
+                )
+        ));
     }
 
     @Override
@@ -98,7 +65,7 @@ public class ChangePlayerGroupAction extends HTSLImpl {
     @Override
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("group", group);
+        data.put(getId(), group);
         data.put("demotionProtection", demotionProtection);
         return data;
     }
@@ -112,10 +79,5 @@ public class ChangePlayerGroupAction extends HTSLImpl {
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "changePlayerGroup";
     }
 }

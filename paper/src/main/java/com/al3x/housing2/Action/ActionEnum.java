@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.*;
+import com.al3x.housing2.Action.Actions.AttackEntityAction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

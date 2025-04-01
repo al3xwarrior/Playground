@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -24,6 +25,13 @@ public class ChatAction extends HTSLImpl {
                 "Displays a chat message to the player.",
                 Material.PAPER
         );
+
+        getProperties().add(new ActionProperty(
+                "message",
+                "Message",
+                "The message to display.",
+                ActionProperty.PropertyType.STRING
+        ));
     }
 
     @Override
