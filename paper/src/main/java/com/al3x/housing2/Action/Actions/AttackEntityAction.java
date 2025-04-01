@@ -14,6 +14,8 @@ import com.al3x.housing2.Utils.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -28,17 +30,21 @@ import java.util.*;
 public class AttackEntityAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
 
+    @Setter
+    @Getter
     private AttackEntityEnum mode;
     private String range;
     private List<Condition> conditions;
+    @Getter
     private String value;
 
     public AttackEntityAction() {
         super(
-                "attackNpc",
+                "attack_entity_action",
                 "Attack Entity",
                 "Attacks an entity.",
-                Material.IRON_SWORD
+                Material.IRON_SWORD,
+                List.of("attackEntity")
         );
 
         mode = AttackEntityEnum.NEAREST;
@@ -189,28 +195,6 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
         }
     }
 
-    public AttackEntityEnum getMode() {
-        return mode;
-    }
-
-    public void setMode(AttackEntityEnum mode) {
-        this.mode = mode;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("mode", mode.name());
-        data.put("range", range);
-        data.put("value", value);
-        data.put("conditions", ConditionalData.fromList(conditions));
-        return data;
-    }
-
     @Override
     public boolean requiresPlayer() {
         return false;
@@ -245,7 +229,7 @@ public class AttackEntityAction extends HTSLImpl implements NPCAction {
         if (!conditionString.isEmpty()) {
             conditionString = conditionString.substring(0, conditionString.length() - 2);
         }
-        return " ".repeat(indent) + getId() + " " + mode + " " + range + " " + value + "(" + conditionString + ")";
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode + " " + range + " " + value + "(" + conditionString + ")";
     }
 
     @Override

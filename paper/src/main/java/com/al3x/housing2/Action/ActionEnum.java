@@ -7,31 +7,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public enum ActionEnum {
-    CONDITIONAL("Conditional Action", ConditionalAction.class),
-    CANCEL("Cancel Action", CancelAction.class),
-    CHANGE_PLAYER_GROUP("Change Player Group", ChangePlayerGroupAction.class),
-    CHANGE_PLAYER_TEAM("Change Player Team", ChangePlayerTeamAction.class),
-    KILL_PLAYER("Kill Player Action", KillPlayerAction.class),
-    KILL_NPC("Kill NPC Action", KillNPCAction.class),
-    FULL_HEAL("Full Heal Action", FullHealAction.class),
-    SET_VELOCITY("Set Velocity Action", SetVelocityAction.class),
-    SEND_TITLE("Send Title Action", SendTitleAction.class),
-    ACTIONBAR("Actionbar Action", ActionbarAction.class),
-    RESET_INVENTORY("Reset Inventory Action", ResetInventoryAction.class),
-    CHANGE_MAX_HEALTH("Change Max Health Action", ChangeMaxHealthAction.class),
-    GIVE_ITEM("Give Item Action", GiveItemAction.class),
-    REMOVE_ITEM("Remove Item Action", RemoveItemAction.class),
-    CHAT("Chat Action", ChatAction.class),
-    APPLY_POTION("Apply Potion Effect Action", ApplyPotionEffectAction.class),
-    CLEAR_POTION("Clear Potion Effect Action", ClearPotionEffectAction.class),
-    PLAYER_STAT("Player Stat Action", PlayerStatAction.class),
-    NPC_STAT("NPC Stat Action", NPCStatAction.class),
-    GLOBAL_STAT("Global Stat Action", GlobalStatAction.class),
-    TELEPORT("Teleport Action", TeleportAction.class),
-    CLEAR_ENDERCHEST("Clear Enderchest Action", ClearEnderChestAction.class),
-    PLAY_SOUND("Play Sound Action", PlaySoundAction.class),
-    STOP_SOUND("Stop Sound Action", StopSoundAction.class),
-    SET_GAMEMODE("Set Gamemode Action", SetGamemodeAction.class),
+    CONDITIONAL("conditional", ConditionalAction.class),
+    CANCEL("cancel", CancelAction.class),
+    CHANGE_PLAYER_GROUP("group", ChangePlayerGroupAction.class),
+    CHANGE_PLAYER_TEAM("team", ChangePlayerTeamAction.class),
+    KILL_PLAYER("killPlayer", KillPlayerAction.class),
+    KILL_NPC("killNpc", KillNPCAction.class),
+    FULL_HEAL("fullHeal", FullHealAction.class),
+    SET_VELOCITY("velocity", SetVelocityAction.class),
+    SEND_TITLE("title", SendTitleAction.class),
+    ACTIONBAR("actionbar", ActionbarAction.class),
+    RESET_INVENTORY("resetInventory", ResetInventoryAction.class),
+    CHANGE_MAX_HEALTH("maxHealth", ChangeMaxHealthAction.class),
+    GIVE_ITEM("giveItem", GiveItemAction.class),
+    REMOVE_ITEM("removeItem", RemoveItemAction.class),
+    CHAT("chat", ChatAction.class),
+    APPLY_POTION("effect", ApplyPotionEffectAction.class),
+    CLEAR_POTION("removeEffect", ClearPotionEffectAction.class),
+    PLAYER_STAT("playerstat", PlayerStatAction.class),
+    NPC_STAT("npcstat", NPCStatAction.class),
+    GLOBAL_STAT("globalstat", GlobalStatAction.class),
+    TELEPORT("teleport", TeleportAction.class),
+    CLEAR_ENDERCHEST("clearEnderchest", ClearEnderChestAction.class),
+    PLAY_SOUND("playSound", PlaySoundAction.class),
+    STOP_SOUND("stopSound", StopSoundAction.class),
+    SET_GAMEMODE("setGamemode", SetGamemodeAction.class),
     CHANGE_HEALTH("Change Health Action", ChangeHealthAction.class),
     CHANGE_HUNGER("Change Hunger Action", ChangeHungerAction.class),
     RANDOM_ACTION("Random Action", RandomAction.class),
@@ -49,7 +49,7 @@ public enum ActionEnum {
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
     CLEAR_GLOBALSTATS("Clear Global Stats Action", ClearGlobalStatsAction.class),
     EXIT("Exit Action", ExitAction.class),
-    BREAK("Break Action", BreakAction.class),
+    BREAK("Break Action", BreakBlockAction.class),
     CONTINUE("Continue Action", ContinueAction.class),
     DISPLAY_MENU("Display Menu Action", DisplayMenuAction.class),
     CLOSE_MENU("Close Menu Action", CloseMenuAction.class),
@@ -72,20 +72,20 @@ public enum ActionEnum {
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;
-    private String name;
-    private Class<? extends Action> action;
+    private final String id;
+    private final Class<? extends Action> action;
 
-    ActionEnum(String name, Class<? extends Action> action) {
+    ActionEnum(String id, Class<? extends Action> action) {
+        this.id = id;
         this.action = action;
-        this.name = name;
     }
 
     public Class<? extends Action> getAction() {
         return action;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     public Action getActionInstance(HashMap<String, Object> data, String comment) {
@@ -109,9 +109,9 @@ public enum ActionEnum {
         return null;
     }
 
-    public static ActionEnum getActionByName(String name) {
+    public static ActionEnum getActionById(String id) {
         for (ActionEnum action : ActionEnum.values()) {
-            if (action.name.equals(name)) {
+            if (action.id.equals(id)) {
                 return action;
             }
         }

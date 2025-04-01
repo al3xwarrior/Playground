@@ -250,7 +250,7 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String syntax() {
-        return "velocity <operation> <direction> <amount>";
+        return getScriptingKeywords().getFirst() + " <operation> <direction> <amount>";
     }
 
     @Override

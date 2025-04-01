@@ -48,7 +48,8 @@ public class DropItemAction extends Action {
                 "drop_item_action",
                 "Drop Item",
                 "Drops an item at a specified location.",
-                Material.DROPPER
+                Material.DROPPER,
+                List.of("dropItem")
         );
 
         getProperties().addAll(List.of(

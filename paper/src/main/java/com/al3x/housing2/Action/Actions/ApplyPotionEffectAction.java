@@ -38,7 +38,8 @@ public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
                 "apply_potion_effect_action",
                 "Apply Potion Effect",
                 "Applies a potion effect to the player.",
-                Material.POTION
+                Material.POTION,
+                List.of("applyEffect")
         );
 
         getProperties().addAll(List.of(

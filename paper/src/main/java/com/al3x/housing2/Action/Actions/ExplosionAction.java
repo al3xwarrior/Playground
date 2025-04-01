@@ -1,99 +1,71 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Locations;
-import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.Duple;
-import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static com.al3x.housing2.Enums.Locations.CUSTOM;
 import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ExplosionAction extends HTSLImpl {
-    private String customLocation;
-    private Locations location;
-    private double power; //Ints are not storeable anywhere
+    private String customLocation = null;
+    private Locations location = Locations.INVOKERS_LOCATION;
+    private double power = 4; //Ints are not storeable anywhere
 
     public static HashMap<UUID, Integer> amountDone = new HashMap<>();
 
     public ExplosionAction() {
-        super("Explosion Action");
-        this.customLocation = null;
-        this.location = Locations.INVOKERS_LOCATION;
-        this.power = 4;
-    }
-
-    @Override
-    public String toString() {
-        return "Explosion Action (Location: " + (location == CUSTOM ? customLocation : location) + ", Power: " + power + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.TNT_MINECART);
-        builder.name("&eExplosion");
-        builder.info("&eSettings", "");
-        builder.info("Location", "&a" + (location == CUSTOM ? customLocation : location));
-        builder.info("Power", "&a" + power);
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.TNT_MINECART);
-        builder.name("&aExplosion");
-        builder.description("Create an explosion at a set location.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("location",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eLocation")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (location == CUSTOM ? customLocation : location))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
-                        (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
-                                (coords, location) -> {
-                                    customLocation = coords;
-                                    this.location = location;
-                                    if (location == PLAYER_LOCATION) {
-                                        Location loc = player.getLocation();
-                                        this.customLocation = loc.getX() + " " + loc.getY() + " " + loc.getZ();
-                                    }
-                                    backMenu.open();
-                                }
-                        )
-                ),
-                new ActionEditor.ActionItem("power",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&aPower")
-                                .info("&7Current Value", "")
-                                .info(null, power)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.INT, 0, 20
-                )
+        super(
+                "explosion_action",
+                "Explosion",
+                "Creates an explosion at a set location.",
+                Material.TNT_MINECART,
+                List.of("explosion")
         );
 
-        return new ActionEditor(4, "&eExplosion Action Settings", items);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "location",
+                        "Location",
+                        "The location to create the explosion at.",
+                        ActionProperty.PropertyType.ENUM, Locations.class,
+                        this::locationConsumer
+                ),
+                new ActionProperty(
+                        "power",
+                        "Power",
+                        "The power of the explosion.",
+                        ActionProperty.PropertyType.DOUBLE, 0, 20
+                )
+        ));
+    }
+
+    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
+                (coords, location) -> {
+                    customLocation = coords;
+                    this.location = location;
+                    if (location == PLAYER_LOCATION) {
+                        Location loc = player.getLocation();
+                        this.customLocation = loc.getX() + " " + loc.getY() + " " + loc.getZ();
+                    }
+                    backMenu.open();
+                }
+        );
     }
 
     @Override
@@ -160,15 +132,6 @@ public class ExplosionAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("location", location.name());
-        data.put("customLocation", customLocation);
-        data.put("power", power);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
     }
@@ -183,12 +146,12 @@ public class ExplosionAction extends HTSLImpl {
     @Override
     public String export(int indent) {
         String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name();
-        return " ".repeat(indent) + keyword() + " " + loc + " " + power;
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + loc + " " + power;
     }
 
     @Override
     public String syntax() {
-        return keyword() + " <location> <power>";
+        return getScriptingKeywords().getFirst() + " <location> <power>";
     }
 
     @Override
@@ -214,10 +177,5 @@ public class ExplosionAction extends HTSLImpl {
         }
 
         return nextLines;
-    }
-
-    @Override
-    public String keyword() {
-        return "explosion";
     }
 }

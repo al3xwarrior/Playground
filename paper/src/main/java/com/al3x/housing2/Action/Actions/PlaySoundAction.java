@@ -197,7 +197,7 @@ public class PlaySoundAction extends HTSLImpl {
 
     @Override
     public String syntax() {
-        return "sound <sound> <volume> <pitch> <location>";
+        return getScriptingKeywords().getFirst() + " <sound> <volume> <pitch> <location>";
     }
 
     @Override

@@ -212,7 +212,7 @@ public class AddActionMenu extends Menu {
                     RepeatAction repeatAction = findRepeatMenu();
                     if (repeatAction != null) {
                         System.out.println("Repeat action found");
-                        newActions.add(new BreakAction());
+                        newActions.add(new BreakBlockAction());
                         newActions.add(new ContinueAction());
                     }
                 }
@@ -252,7 +252,7 @@ public class AddActionMenu extends Menu {
                 RepeatAction repeatAction = findRepeatMenu();
                 if (repeatAction != null) {
                     System.out.println("Repeat action found");
-                    newActions.add(new BreakAction());
+                    newActions.add(new BreakBlockAction());
                     newActions.add(new ContinueAction());
                 }
             }

@@ -4,116 +4,86 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Data.ActionData;
+import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.EditVisibilityEnum;
 import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Data.ActionData;
-import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.*;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.StringUtilsKt;
+import com.al3x.housing2.Utils.VoiceChat;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
+@ToString
 public class EditAudibilityAction extends HTSLImpl {
-    private EditVisibilityEnum mode;
-    private String range;
-    private List<Condition> conditions;
-    private String limit;
-    private boolean value;
-    private static Gson gson = new Gson();
+    private static final Gson gson = new Gson();
+    @Setter
+    @Getter
+    private EditVisibilityEnum mode = EditVisibilityEnum.NEAREST;
+    private String range = "10";
+    private List<Condition> conditions = new ArrayList<>();
+    private String limit = "1";
+    private boolean value = false;
 
 
     public EditAudibilityAction() {
-        super("Edit Audibility Action");
-        mode = EditVisibilityEnum.NEAREST;
-        range = "10";
-        conditions = new ArrayList<>();
-        limit = "1";
-        value = false;
-    }
+        super(
+                "edit_audibility_action",
+                "Edit Audibility",
+                "Edit the audibility of players.",
+                Material.SCULK_SENSOR,
+                List.of("audibility")
+        );
 
-    @Override
-    public String toString() {
-        return "EditAudibilityAction (mode: " + mode + ", range: " + range + ", value: " + value + ", limit: " + limit + ")";
-    }
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "mode",
+                        "Mode",
+                        "The mode to use.",
+                        ActionProperty.PropertyType.ENUM,
+                        EditVisibilityEnum.class
+                ),
+                new ActionProperty(
+                        "range",
+                        "Range",
+                        "The range to use.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "value",
+                        "Value",
+                        "The value to use.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "limit",
+                        "Limit",
+                        "The limit to use.",
+                        ActionProperty.PropertyType.STRING
+                )
+        ));
 
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.SCULK_SENSOR);
-        builder.name("&eEdit Audibility");
-        builder.info("&eSettings", "");
-        builder.info("Mode", mode.name());
-        builder.info("Range", range);
-        builder.info("Limit", limit);
-        builder.info("Value", String.valueOf(value));
-        builder.info("Conditions", conditions.size());
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.SCULK_SENSOR);
-        builder.name("&eEdit Audibility");
-        builder.description("Change the Audibility of players.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        if (backMenu == null) {
-            return new ActionEditor(6, "&eEdit Audibility Action Settings", new ArrayList<>());
-        }
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-
-        items.add(new ActionEditor.ActionItem("mode",
-                ItemBuilder.create(Material.IRON_SWORD)
-                        .name("&eMode")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + mode.name())
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, EditVisibilityEnum.values(), null));
-        items.add(new ActionEditor.ActionItem("range",
-                ItemBuilder.create(Material.SNOWBALL)
-                        .name("&eRange")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + range)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING));
-        items.add(new ActionEditor.ActionItem("value",
-                ItemBuilder.create((value ? Material.LIME_DYE : Material.GRAY_DYE))
-                        .name("&eMake player audible")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + value)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.BOOLEAN));
-        items.add(new ActionEditor.ActionItem("limit",
-                ItemBuilder.create(Material.COMMAND_BLOCK)
-                        .name("&eLimit")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + limit)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING));
         if (mode == EditVisibilityEnum.CONDITION) {
-            items.add(new ActionEditor.ActionItem("conditions",
-                    ItemBuilder.create(Material.REDSTONE)
-                            .name("&eConditions")
-                            .info("&7Current Value", "")
-                            .info(null, (conditions.isEmpty() ? "&cNo Conditions" : "&a" + conditions.size() + " Conditions"))
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.CONDITION));
+            getProperties().add(new ActionProperty(
+                    "conditions",
+                    "Conditions",
+                    "The conditions to use.",
+                    ActionProperty.PropertyType.CONDITION
+            ));
         }
-        return new ActionEditor(6, "&eEdit Audibility Settings", items);
     }
 
     @Override
@@ -163,27 +133,8 @@ public class EditAudibilityAction extends HTSLImpl {
         return OutputType.SUCCESS;
     }
 
-    public EditVisibilityEnum getMode() {
-        return mode;
-    }
-
-    public void setMode(EditVisibilityEnum mode) {
-        this.mode = mode;
-    }
-
     public boolean getValue() {
         return value;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("mode", mode.name());
-        data.put("range", range);
-        data.put("value", value);
-        data.put("limit", limit);
-        data.put("conditions", ConditionalData.fromList(conditions));
-        return data;
     }
 
     @Override
@@ -220,7 +171,7 @@ public class EditAudibilityAction extends HTSLImpl {
         if (!conditionString.isEmpty()) {
             conditionString = conditionString.substring(0, conditionString.length() - 2);
         }
-        return " ".repeat(indent) + keyword() + " " + mode + " " + range + " " + value + " " + limit + "(" + conditionString + ")";
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode + " " + range + " " + value + " " + limit + "(" + conditionString + ")";
     }
 
     @Override
@@ -271,10 +222,5 @@ public class EditAudibilityAction extends HTSLImpl {
 
         this.conditions = conditions;
         return nextLines;
-    }
-
-    @Override
-    public String keyword() {
-        return "editAudibility";
     }
 }

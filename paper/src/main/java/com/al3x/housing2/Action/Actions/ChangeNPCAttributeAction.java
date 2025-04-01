@@ -28,10 +28,11 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
 
     public ChangeNPCAttributeAction() {
         super(
-                "npcAttribute",
+                "change_npc_attribute_action",
                 "Change NPC Attribute",
                 "Changes the NPC's attribute.",
-                Material.HOPPER
+                Material.HOPPER,
+                List.of("npcAttribute")
         );
 
         getProperties().addAll(List.of(
@@ -63,7 +64,7 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String export(int indent) {
-        return " ".repeat(indent) + getId() + " " + attribute.name() + " " + Color.removeColor(value);
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + attribute.name() + " " + Color.removeColor(value);
     }
 
     @Override

@@ -1,36 +1,33 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.NPCAction;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
-import de.maxhenkel.voicechat.api.events.Event;
 import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Action.OutputType.SUCCESS;
 import static com.al3x.housing2.Enums.EventType.*;
-import static com.al3x.housing2.Utils.Color.colorize;
 
 @ToString
 public class CancelAction extends HTSLImpl implements NPCAction {
 
     public CancelAction() {
         super(
-                "cancel",
+                "cancel_action",
                 "Cancel",
                 "Cancels the event from running.",
-                Material.TNT
+                Material.TNT,
+                List.of("cancel")
         );
     }
 
@@ -52,11 +49,6 @@ public class CancelAction extends HTSLImpl implements NPCAction {
                 PLAYER_PICKUP_ITEM, PLAYER_TOGGLE_FLIGHT, PLAYER_CHAT, PLAYER_DAMAGE,
                 PLAYER_ATTACK, PLAYER_CHANGE_HELD_ITEM, PLAYER_JUMP, PLAYER_SWAP_TO_OFFHAND,
                 PLAYER_CREATE_VOICE_GROUP, PLAYER_JOIN_VOICE_GROUP, SPLASH_POTION);
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
     }
 
     @Override

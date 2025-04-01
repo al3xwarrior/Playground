@@ -11,6 +11,8 @@ import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -20,10 +22,11 @@ public class ChatAction extends HTSLImpl {
 
     public ChatAction() {
         super(
-                "chat_action",
+                "display_chat_action",
                 "Display Chat Message",
                 "Displays a chat message to the player.",
-                Material.PAPER
+                Material.PAPER,
+                List.of("chat")
         );
 
         getProperties().add(new ActionProperty(

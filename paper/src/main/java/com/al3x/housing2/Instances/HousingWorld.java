@@ -13,7 +13,6 @@ import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Mongo.Collection.HousesCollection;
 import com.al3x.housing2.Utils.*;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
@@ -318,7 +317,7 @@ public class HousingWorld {
             List<ActionData> actions = houseData.getEventActions().get(type.name());
             if (actions != null) {
                 for (ActionData action : actions) {
-                    eventActions.get(type).add(ActionEnum.getActionByName(action.getAction()).getActionInstance(action.getData(), action.getComment()));
+                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getData(), action.getComment()));
                 }
             }
         }

@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @ToString
@@ -19,10 +18,11 @@ public class ChangePlayerGroupAction extends HTSLImpl {
 
     public ChangePlayerGroupAction() {
         super(
-                "group",
+                "change_player_group_action",
                 "Change Player Group",
                 "Changes the player's group.",
-                Material.PLAYER_HEAD
+                Material.PLAYER_HEAD,
+                List.of("group")
         );
 
         getProperties().addAll(List.of(
@@ -60,14 +60,6 @@ public class ChangePlayerGroupAction extends HTSLImpl {
         }
         house.loadOrCreatePlayerData(player).setGroup(group.getName());
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put(getId(), group);
-        data.put("demotionProtection", demotionProtection);
-        return data;
     }
 
     @Override

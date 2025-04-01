@@ -11,6 +11,8 @@ import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 @Setter
 @Getter
 @ToString
@@ -22,7 +24,8 @@ public class ActionbarAction extends HTSLImpl {
                 "actionbar_action",
                 "Display Actionbar",
                 "Displays a message in the action bar.",
-                Material.WRITABLE_BOOK
+                Material.WRITABLE_BOOK,
+                List.of("actionbar")
         );
 
         getProperties().add(

@@ -41,6 +41,7 @@ public abstract class Action {
     private final String name;
     private final String description;
     private final Material icon;
+    private final List<String> scriptingKeywords;
 
     @Setter
     private String comment;
@@ -102,6 +103,16 @@ public abstract class Action {
         data.put("properties", propertiesData);
         return data;
     }
+
+//    public static Action fromData(HashMap<String, Object> data) {
+//        String id = (String) data.get("id");
+//        ActionEnum actionEnum = ActionEnum.getActionById(id);
+//        if (actionEnum == null) {
+//            return null;
+//        }
+//        Action action = actionEnum.getActionInstance();
+//        action.fromData(data, action.getClass());
+//    }
 
     public abstract boolean requiresPlayer();
 
@@ -333,7 +344,7 @@ public abstract class Action {
 
     public Action clone() {
         Action action;
-        ActionEnum actionEnum = ActionEnum.getActionByName(getName());
+        ActionEnum actionEnum = ActionEnum.getActionById(getName());
         if (actionEnum == null) {
             return null;
         }

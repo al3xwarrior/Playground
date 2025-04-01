@@ -4,19 +4,15 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.*;
+import com.al3x.housing2.Utils.Color;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-
-import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ChangeHealthAction extends HTSLImpl implements NPCAction {
     private StatOperation mode = StatOperation.SET;
@@ -27,7 +23,8 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
                 "change_health_action",
                 "Change Health",
                 "Changes the player's health.",
-                Material.APPLE
+                Material.APPLE,
+                List.of("health")
         );
 
         getProperties().addAll(List.of(
@@ -96,7 +93,7 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String export(int indent) {
-        return " ".repeat(indent) + getId() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
     }
 
     @Override

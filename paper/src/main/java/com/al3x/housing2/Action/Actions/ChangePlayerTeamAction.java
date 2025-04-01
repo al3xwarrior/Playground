@@ -11,17 +11,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 
 @ToString
 public class ChangePlayerTeamAction extends HTSLImpl {
     String team = null;
     public ChangePlayerTeamAction() {
         super(
-                "team",
+                "change_player_team_action",
                 "Change Player Team",
                 "Changes the player's team.",
-                Material.PLAYER_HEAD
+                Material.PLAYER_HEAD,
+                List.of("team")
         );
 
         getProperties().add(
@@ -42,13 +43,6 @@ public class ChangePlayerTeamAction extends HTSLImpl {
         Team team = house.getTeam(this.team);
         house.loadOrCreatePlayerData(player).setTeam(team.getName());
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put(getId(), team);
-        return data;
     }
 
     @Override

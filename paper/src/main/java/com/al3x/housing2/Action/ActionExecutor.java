@@ -1,29 +1,24 @@
 package com.al3x.housing2.Action;
 
-import com.al3x.housing2.Action.Actions.BreakAction;
+import com.al3x.housing2.Action.Actions.BreakBlockAction;
 import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
-import de.maxhenkel.voicechat.api.events.Event;
-import lombok.Setter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static com.al3x.housing2.Action.OutputType.*;
@@ -138,7 +133,7 @@ public class ActionExecutor {
                 return CONTINUE;
             }
 
-            if (action instanceof BreakAction && context.equals("repeat")) {
+            if (action instanceof BreakBlockAction && context.equals("repeat")) {
                 if (onBreak != null) {
                     onBreak.accept(this);
                 }

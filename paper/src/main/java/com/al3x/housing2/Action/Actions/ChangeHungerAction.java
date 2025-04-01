@@ -26,10 +26,11 @@ public class ChangeHungerAction extends HTSLImpl {
 
     public ChangeHungerAction() {
         super(
-                "hunger",
+                "change_hunger_action",
                 "Change Hunger Level",
                 "Changes the player's hunger level.",
-                Material.COOKED_BEEF
+                Material.COOKED_BEEF,
+                List.of("hunger")
         );
 
         mode = StatOperation.SET;
@@ -76,6 +77,6 @@ public class ChangeHungerAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        return " ".repeat(indent) + getId() + " " + mode.getAlternative() + " " + Color.removeColor(value);
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value);
     }
 }

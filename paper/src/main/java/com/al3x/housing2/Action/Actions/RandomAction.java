@@ -154,7 +154,7 @@ public class RandomAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String syntax() {
-        return "random {\\n<actions>\\n}";
+        return getScriptingKeywords() + " {\\n<actions>\\n}";
     }
 
     @Override

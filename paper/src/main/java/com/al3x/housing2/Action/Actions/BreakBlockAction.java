@@ -1,29 +1,25 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Action.OutputType;
-import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
 import lombok.ToString;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
-import java.util.LinkedHashMap;
+import java.util.List;
 
 @ToString
-public class BreakAction extends HTSLImpl implements NPCAction {
+public class BreakBlockAction extends HTSLImpl implements NPCAction {
 
-    public BreakAction() {
+    public BreakBlockAction() {
         super(
-                "break_action",
+                "break_block_action",
                 "Break Block",
                 "Breaks a block at the specified location.",
-                Material.STONE_PICKAXE
+                Material.STONE_PICKAXE,
+                List.of("breakBlock")
         );
     }
 

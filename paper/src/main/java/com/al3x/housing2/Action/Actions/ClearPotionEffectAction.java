@@ -1,108 +1,73 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Action.ActionEditor.ActionItem;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.ItemBuilder.ActionType;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 
+@ToString
 public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
 
-    private PotionEffectType potionEffectType;
-    private boolean clearAll;
+    private PotionEffectType potionEffectType = PotionEffectType.SPEED;
+    private boolean clearAll = false;
 
     public ClearPotionEffectAction() {
-        super("Clear Potion Effect Action");
-        this.potionEffectType = PotionEffectType.SPEED;
-        this.clearAll = false;
-    }
-
-    public ClearPotionEffectAction(PotionEffectType potionEffectType, boolean clearAll) {
-        super("Clear Potion Effect Action");
-        this.potionEffectType = potionEffectType;
-        this.clearAll = clearAll;
-    }
-
-    @Override
-    public String toString() {
-        return "ApplyPotionEffectAction{" + "potionEffectType=" + potionEffectType + ", clearAll=" + clearAll + '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GLASS_BOTTLE);
-        builder.name("&eClear Potion Effect");
-        builder.info("&eSettings", "");
-        builder.info("Potion", "&a" + potionEffectType.getName());
-        builder.info("Clear All", ((clearAll) ? "&aYes" : "&cNo"));
-        builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GLASS_BOTTLE);
-        builder.name("&eClear Potion Effect");
-        builder.description("Clears all or a specific potion effect");
-        builder.lClick(ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        List<ActionItem> items = List.of(
-                new ActionItem("potion",
-                        ItemBuilder.create(Material.POTION)
-                                .name("&aPotion")
-                                .info("&7Current Value", "")
-                                .info(null, "&6" + potionEffectType.getName())
-                                .lClick(ActionType.CHANGE_YELLOW),
-                        (event, obj) -> {
-                            //Create a list of all the potion effects
-                            List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
-                            for (PotionEffectType type : PotionEffectType.values()) {
-                                potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
-                            }
-                            //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
-                            new PaginationMenu<>(Main.getInstance(),
-                                    "&eSelect a Potion Effect", potions,
-                                    player, house, backMenu, (potion) -> {
-                                potionEffectType = potion;
-                                backMenu.open();
-                            }).open();
-                            return true;
-                        }
-                ),
-                new ActionItem("clearAll", //Needs to be the exact same as the variable name
-                        ItemBuilder.create(Material.POTION)
-                                .name("&aClear All")
-                                .description("If toggled on, this will clear all potion effects except the one selected")
-                                .info("&7Current Value", "")
-                                .info(null, ((clearAll) ? "&aYes" : "&cNo"))
-                                .lClick(ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.BOOLEAN
-                )
+        super(
+                "clear_potion_effect_action",
+                "Clear Potion Effect",
+                "Clears a potion effect from the player.",
+                Material.GLASS_BOTTLE,
+                List.of("clearEffect")
         );
-        return new ActionEditor(4, "&ePotion Effect Action Settings", items);
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "potion",
+                        "Potion",
+                        "The potion effect to clear.",
+                        ActionProperty.PropertyType.CUSTOM,
+                        this::potionConsumer
+                ),
+                new ActionProperty(
+                        "clearall",
+                        "Clear All",
+                        "If true, this will clear all potion effects except the one selected.",
+                        ActionProperty.PropertyType.BOOLEAN
+                )
+        ));
+    }
+
+    public BiFunction<InventoryClickEvent, Object, Boolean> potionConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, obj) -> {
+            List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
+            for (PotionEffectType type : PotionEffectType.values()) {
+                potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
+            }
+
+            new PaginationMenu<>(Main.getInstance(),
+                    "&eSelect a Potion Effect", potions,
+                    player, house, backMenu, (potion) -> {
+                potionEffectType = potion;
+                backMenu.open();
+            }).open();
+            return true;
+        };
     }
 
     @Override
@@ -134,14 +99,6 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("potion", potionEffectType == null ? PotionEffectType.SPEED.getName() : potionEffectType.getName());
-        data.put("clearall", clearAll);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
     }
@@ -153,10 +110,5 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
         potionEffectType = PotionEffectType.getByName((String) data.get("potion"));
         if (!data.containsKey("clearall")) return;
         clearAll = (boolean) data.get("clearall");
-    }
-
-    @Override
-    public String keyword() {
-        return "clearEffect";
     }
 }

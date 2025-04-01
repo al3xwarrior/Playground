@@ -179,12 +179,7 @@ public class RunAsNPCAction extends HTSLImpl {
 
     @Override
     public String syntax() {
-        return "runAsNPC <npcID> {\\n<actions>\\n}";
-    }
-
-    @Override
-    public String keyword() {
-        return "runAsNPC";
+        return getScriptingKeywords().getFirst() + " <npcID> {\\n<actions>\\n}";
     }
 
     @Override

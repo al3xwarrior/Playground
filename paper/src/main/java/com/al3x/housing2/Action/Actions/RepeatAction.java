@@ -206,7 +206,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String syntax() {
-        return keyword() + " <times> {\\n<actions>\\n}";
+        return getScriptingKeywords().getFirst() + " <times> {\\n<actions>\\n}";
     }
 
     @Override

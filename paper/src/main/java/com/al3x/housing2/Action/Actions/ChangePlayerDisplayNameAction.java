@@ -4,7 +4,6 @@ import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Getter
@@ -25,10 +23,11 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
 
     public ChangePlayerDisplayNameAction() {
         super(
-                "displayName",
+                "change_player_display_name_action",
                 "Change Player Display Name",
                 "Changes the display name of the player.",
-                Material.PLAYER_HEAD
+                Material.PLAYER_HEAD,
+                List.of("displayName")
         );
 
         getProperties().add(

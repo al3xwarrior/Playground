@@ -5,16 +5,18 @@ import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
-import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Data.ConditionalData;
+import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
@@ -23,110 +25,61 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-
+@ToString
 public class ConditionalAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
-    private List<Condition> conditions;
-    private boolean matchAnyCondition;
-    private boolean not;
-    private List<Action> ifActions;
-    private List<Action> elseActions;
-
-    public ConditionalAction(ArrayList<Condition> conditions, boolean matchAnyCondition, ArrayList<Action> ifActions, ArrayList<Action> elseActions) {
-        super("Conditional Action");
-        this.not = false;
-        this.conditions = conditions;
-        this.matchAnyCondition = matchAnyCondition;
-        this.ifActions = ifActions;
-        this.elseActions = elseActions;
-    }
+    @Getter
+    private List<Condition> conditions = new ArrayList<>();
+    private boolean matchAnyCondition = false;
+    private boolean not = false;
+    @Setter
+    @Getter
+    private List<Action> ifActions = new ArrayList<>();
+    @Setter
+    @Getter
+    private List<Action> elseActions = new ArrayList<>();
 
     public ConditionalAction() {
-        super("Conditional Action");
-        this.conditions = new ArrayList<>();
-        this.not = false;
-        this.matchAnyCondition = false;
-        this.ifActions = new ArrayList<>();
-        this.elseActions = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "ConditionalAction(conditions=" + this.conditions + ", matchAnyCondition=" + this.matchAnyCondition + ", ifActions=" + this.ifActions + ", elseActions=" + this.elseActions + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REDSTONE);
-        builder.name("&eConditional");
-        builder.info("&eSettings", "");
-        builder.info("Conditions", conditions.size());
-        builder.info("If Actions", ifActions.size());
-        builder.info("Else Actions", elseActions.size());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REDSTONE);
-        builder.name("&aConditional");
-        builder.description("Executes actions based on certain conditions.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    public List<ActionEditor.ActionItem> getItems(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = List.of(
-                new ActionEditor.ActionItem("conditions",
-                        ItemBuilder.create(Material.COMPARATOR)
-                                .name("&aConditions")
-                                .info("&7Current Value", "")
-                                .info(null, (conditions.isEmpty() ? "&cNo Actions" : "&a" + conditions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.CONDITION
-                ),
-                new ActionEditor.ActionItem("not", ItemBuilder.create((not ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aNot")
-                        .description("When enabled the conditions will be inverted.")
-                        .info("&7Current Value", "")
-                        .info(null, not ? "&aYes" : "&cNo"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                ),
-                new ActionEditor.ActionItem("matchAnyCondition", ItemBuilder.create((matchAnyCondition ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aMatch Any Condition")
-                        .description("When enabled ony one condition needs to match, otherwise all conditions must match.")
-                        .info("&7Current Value", "")
-                        .info(null, matchAnyCondition ? "&aYes" : "&cNo"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                ),
-                new ActionEditor.ActionItem("ifActions",
-                        ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
-                                .name("&aIf Actions")
-                                .description("Actions to execute if the conditions &nare&r&7 met.")
-                                .info("&7Current Value", "")
-                                .info(null, (ifActions.isEmpty() ? "&cNo Actions" : "&a" + ifActions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ACTION
-                ),
-                new ActionEditor.ActionItem("elseActions",
-                        ItemBuilder.create(Material.LIGHT_WEIGHTED_PRESSURE_PLATE)
-                                .name("&aElse Actions")
-                                .description("Actions to execute if the conditions are &nnot&r&7 met.")
-                                .info("&7Current Value", "")
-                                .info(null, (elseActions.isEmpty() ? "&cNo Actions" : "&a" + elseActions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ACTION
-                )
-
+        super(
+                "conditional_action",
+                "Conditional",
+                "Executes actions based on certain conditions.",
+                Material.REDSTONE,
+                List.of("if")
         );
 
-        return items;
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        return new ActionEditor(4, "&eConditional Settings", getItems(house));
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "conditions",
+                        "Conditions",
+                        "The conditions to check.",
+                        ActionProperty.PropertyType.CONDITION
+                ),
+                new ActionProperty(
+                        "matchAnyCondition",
+                        "Match Any Condition",
+                        "When enabled only one condition needs to match, otherwise all conditions must match.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "not",
+                        "Not",
+                        "When enabled the conditions will be inverted.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "ifActions",
+                        "If Actions",
+                        "The actions to execute if the conditions are met.",
+                        ActionProperty.PropertyType.ACTION
+                ),
+                new ActionProperty(
+                        "elseActions",
+                        "Else Actions",
+                        "The actions to execute if the conditions are not met.",
+                        ActionProperty.PropertyType.ACTION
+                )
+        ));
     }
 
     @Override
@@ -178,39 +131,8 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
         execute(npc.getEntity(), player, house, event, executor);
     }
 
-    public List<Condition> getConditions() {
-        return conditions;
-    }
-
     public void setConditions(ArrayList<Condition> conditions) {
         this.conditions = conditions;
-    }
-
-    public List<Action> getIfActions() {
-        return ifActions;
-    }
-
-    public void setIfActions(List<Action> ifActions) {
-        this.ifActions = ifActions;
-    }
-
-    public List<Action> getElseActions() {
-        return elseActions;
-    }
-
-    public void setElseActions(List<Action> elseActions) {
-        this.elseActions = elseActions;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("conditions", ConditionalData.fromList(conditions));
-        data.put("matchAnyCondition", matchAnyCondition);
-        data.put("not", not);
-        data.put("ifActions", ActionData.fromList(ifActions));
-        data.put("elseActions", ActionData.fromList(elseActions));
-        return data;
     }
 
     @Override
@@ -269,13 +191,8 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public String keyword() {
-        return "if";
-    }
-
-    @Override
     public String syntax() {
-        return "if (<conditions>) {\\n<ifActions>\\n} else {\\n<elseActions>\\n}";
+        return getScriptingKeywords().getFirst() + " (<conditions>) {\\n<ifActions>\\n} else {\\n<elseActions>\\n}";
     }
 
     @Override
@@ -298,14 +215,14 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        String elseString = "";
+        StringBuilder elseString = new StringBuilder();
         for (Action action : elseActions) {
             if (action instanceof HTSLImpl impl) {
-                elseString += impl.export(indent + 4) + "\n";
+                elseString.append(impl.export(indent + 4)).append("\n");
             }
         }
 
-        return " ".repeat(indent) + keyword() + " (" + conditionString + ") {\n" + ifString + " ".repeat(indent) + "} else {\n" + elseString + " ".repeat(indent) + "}";
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " (" + conditionString + ") {\n" + ifString + " ".repeat(indent) + "} else {\n" + elseString + " ".repeat(indent) + "}";
     }
 
     @Override

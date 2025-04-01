@@ -61,7 +61,7 @@ public class ActionData {
     public static List<Action> toList(List<ActionData> actionDataList) {
         List<Action> collect = new ArrayList<>();
         for (ActionData data : actionDataList) {
-            ActionEnum actionEnum = ActionEnum.getActionByName(data.getAction());
+            ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
             if (actionEnum == null) {
                 continue; //skip invalid actions, rather than freaking out
             }
@@ -75,7 +75,7 @@ public class ActionData {
     }
 
     public static Action fromData(ActionData data) {
-        ActionEnum actionEnum = ActionEnum.getActionByName(data.getAction());
+        ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
         if (actionEnum == null) {
             throw new IllegalArgumentException("Action " + data.getAction() + " does not exist");
         }

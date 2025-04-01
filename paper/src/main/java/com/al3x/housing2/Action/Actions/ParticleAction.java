@@ -762,7 +762,7 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public String syntax() {
-        return "particle <particle> <type> <radius> <amount> <location> <location2> [customData]";
+        return getScriptingKeywords().getFirst() + " <particle> <type> <radius> <amount> <location> <location2> [customData]";
     }
 
     @Override

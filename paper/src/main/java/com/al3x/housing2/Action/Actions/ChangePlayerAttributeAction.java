@@ -1,12 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionProperty;
+import com.al3x.housing2.Action.HTSLImpl;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Color;
-import com.al3x.housing2.Utils.ItemBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +17,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,10 +31,11 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
 
     public ChangePlayerAttributeAction() {
         super(
-                "attribute",
+                "change_player_attribute_action",
                 "Change Player Attribute",
                 "Changes the player's attribute.",
-                Material.HOPPER
+                Material.HOPPER,
+                List.of("playerAttribute")
         );
 
         attribute = AttributeType.ARMOR;
@@ -96,6 +97,6 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
 
     @Override
     public String export(int indent) {
-        return " ".repeat(indent) + getId() + " " + attribute.name() + " " + Color.removeColor(value);
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + attribute.name() + " " + Color.removeColor(value);
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @ToString
 public class ApplyInventoryLayoutAction extends HTSLImpl {
@@ -19,7 +20,8 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
                 "apply_inventory_layout_action",
                 "Apply Inventory Layout",
                 "Applies an inventory layout to the player.",
-                Material.IRON_AXE
+                Material.IRON_AXE,
+                List.of("layout")
         );
 
         getProperties().add(new ActionProperty(

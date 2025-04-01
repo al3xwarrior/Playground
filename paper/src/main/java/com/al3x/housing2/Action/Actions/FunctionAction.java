@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -8,16 +9,23 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.internal.LinkedTreeMap;
+import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
+import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 import static com.al3x.housing2.Utils.Color.colorize;
 
+@ToString
 public class FunctionAction extends HTSLImpl {
+    @Setter
     String function;
     boolean await;
     boolean runForAllPlayers;
@@ -25,68 +33,67 @@ public class FunctionAction extends HTSLImpl {
     LinkedHashMap<String, String> arguments = new LinkedHashMap<>();
 
     public FunctionAction() {
-        super("Function Action");
+        super(
+                "function_action",
+                "Function Action",
+                "Executes a function.",
+                Material.ACTIVATOR_RAIL,
+                List.of("function")
+        );
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "function",
+                        "Function",
+                        "The function to execute.",
+                        ActionProperty.PropertyType.FUNCTION
+                ),
+                new ActionProperty(
+                        "fun_for_all_players",
+                        "Run for all players",
+                        "Run the function for all players in the sandbox.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "await",
+                        "Await",
+                        "Wait for the function to finish before continuing.",
+                        ActionProperty.PropertyType.BOOLEAN
+                )
+        ));
+
+        for (String argKey : arguments.keySet()) {
+            String argument = arguments.get(argKey);
+            getProperties().add(new ActionProperty(
+                    "arg_" + argKey,
+                    "Argument: " + argKey,
+                    "The argument to pass to the function.",
+                    ActionProperty.PropertyType.STRING,
+                    this::argConsumer
+            ));
+        }
     }
 
-    public FunctionAction(String function, boolean runForAllPlayers) {
-        super("Function Action");
-        this.function = function;
-        this.runForAllPlayers = runForAllPlayers;
-    }
-
-    @Override
-    public String toString() {
-        return "FunctionAction (function: " + (function == null ? "&cNone" : "&6" + function) + ", runForAllPlayers: " + runForAllPlayers + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ACTIVATOR_RAIL);
-        builder.name("&eTrigger Function");
-        builder.info("&eSettings", "");
-        builder.info("Function", (function == null ? "&cNone" : "&6" + function));
-        builder.info("Run for all players", runForAllPlayers ? "&aYes" : "&cNo");
-        builder.info("Await", await ? "&aYes" : "&cNo");
-        builder.info("Arguments", "&e" + arguments.size());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ACTIVATOR_RAIL);
-        builder.name("&aTrigger Function");
-        builder.description("Executes a given function");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+    public BiFunction<InventoryClickEvent, Object, Boolean> argConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, o) -> {
+            if (event.isLeftClick()) {
+                backMenu.getOwner().sendMessage(colorize("&eEnter the new argument value."));
+                backMenu.openChat(Main.getInstance(), (message) -> {
+                    arguments.put((String) o, message);
+                    backMenu.open();
+                });
+                return true;
+            } else if (event.isRightClick()) {
+                arguments.remove(o); // FIXME
+                backMenu.open();
+                return true;
+            }
+            return false;
+        };
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        List<ActionEditor.ActionItem> items = new ArrayList<>(List.of(
-                new ActionEditor.ActionItem("function", ItemBuilder.create(Material.ACTIVATOR_RAIL)
-                        .name("&aFunction")
-                        .description("Select a function to run")
-                        .info("&7Current Value", "")
-                        .info(null, (function == null ? "&cNone" : "&6" + function)),
-                        ActionEditor.ActionItem.ActionType.FUNCTION
-                ),
-                new ActionEditor.ActionItem("runForAllPlayers", ItemBuilder.create((runForAllPlayers ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aRun for all players")
-                        .description("Run the function for all players in the world")
-                        .info("&7Current Value", "")
-                        .info(null, runForAllPlayers ? "&aYes" : "&cNo"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                ),
-                new ActionEditor.ActionItem("await", ItemBuilder.create((await ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aAwait")
-                        .description("Wait for the function to finish before continuing")
-                        .info("&7Current Value", "")
-                        .info(null, await ? "&aYes" : "&cNo"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
-        ));
-
         ArrayList<String> argKeys = new ArrayList<>(arguments.keySet());
         for (String argKey : argKeys) {
             String argument = arguments.get(argKey);
@@ -138,10 +145,6 @@ public class FunctionAction extends HTSLImpl {
     @Override
     public int limit() {
         return 10;
-    }
-
-    public void setFunction(String function) {
-        this.function = function;
     }
 
     @Override

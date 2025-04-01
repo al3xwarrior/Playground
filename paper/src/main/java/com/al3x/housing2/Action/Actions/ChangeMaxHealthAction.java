@@ -15,21 +15,18 @@ import java.util.List;
 
 public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
 
-    private double health;
-    private StatOperation operation;
-    private boolean healOnChange;
+    private double health = 20.0;
+    private StatOperation operation = StatOperation.INCREASE;
+    private boolean healOnChange = true;
 
     public ChangeMaxHealthAction() {
         super(
-                "maxHealth",
+                "change_max_health_action",
                 "Change Max Health",
                 "Adjusts the player's maximum health.",
-                Material.DANDELION
+                Material.DANDELION,
+                List.of("maxHealth")
         );
-
-        this.health = 20.0;
-        this.operation = StatOperation.INCREASE;
-        this.healOnChange = true;
 
         getProperties().addAll(List.of(
                 new ActionProperty(

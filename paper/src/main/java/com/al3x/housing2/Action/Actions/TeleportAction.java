@@ -158,7 +158,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String syntax() {
-        return "teleport <location>";
+        return getScriptingKeywords().getFirst() + " <location>";
     }
 
     @Override

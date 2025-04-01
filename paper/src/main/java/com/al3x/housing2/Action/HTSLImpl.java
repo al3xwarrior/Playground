@@ -4,14 +4,13 @@ import com.al3x.housing2.Enums.EnumHTSLAlternative;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import org.bukkit.Material;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class HTSLImpl extends Action {
-    public HTSLImpl(String id, String name, String description, Material icon) {
-        super(id, name, description, icon);
+    public HTSLImpl(String id, String name, String description, Material icon, List<String> scriptingKeywords) {
+        super(id, name, description, icon, scriptingKeywords);
     }
 
     public String syntax() {
@@ -22,7 +21,7 @@ public abstract class HTSLImpl extends Action {
             builder.append("<").append(key).append(">");
             if (actionData.get(key) != keys.getLast()) builder.append(" ");
         }
-        return getId() + (!builder.isEmpty() ? " " + builder : "");
+        return getScriptingKeywords().getFirst() + (!builder.isEmpty() ? " " + builder : "");
     }
 
     public String export() {
