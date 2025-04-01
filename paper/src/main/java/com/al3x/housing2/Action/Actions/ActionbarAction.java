@@ -1,18 +1,19 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.LinkedHashMap;
-
 @Setter
 @Getter
+@ToString
 public class ActionbarAction extends HTSLImpl {
     private String message = "Hello world!";
 
@@ -23,11 +24,15 @@ public class ActionbarAction extends HTSLImpl {
                 "Displays a message in the action bar.",
                 Material.WRITABLE_BOOK
         );
-    }
 
-    @Override
-    public String toString() {
-        return "ActionBar (Message: " + message + ")";
+        getProperties().add(
+                new ActionProperty(
+                        "message",
+                        "Message",
+                        "The message to display.",
+                        ActionProperty.PropertyType.STRING
+                )
+        );
     }
 
     @Override
@@ -37,22 +42,7 @@ public class ActionbarAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("message", message);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
     }
-
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("message")) {
-//            return;
-//        }
-//        message = (String) data.get("message");
-//    }
 }

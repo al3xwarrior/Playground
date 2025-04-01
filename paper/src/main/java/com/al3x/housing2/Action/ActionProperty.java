@@ -174,4 +174,8 @@ public class ActionProperty {
                 .info("<gray>Current value", value.toString())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
     }
+
+    public interface ActionPropertyConsumer {
+        BiFunction<InventoryClickEvent, Object, Boolean> accept(HousingWorld house, Menu menu, Player player);
+    }
 }

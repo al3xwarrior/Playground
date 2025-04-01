@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 public interface NPCAction {
-    void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor);
+    default void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        // Do nothing
+    }
 
     //Hide from non npc actions
     default boolean hide() {
