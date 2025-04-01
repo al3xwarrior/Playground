@@ -8,6 +8,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import io.papermc.paper.entity.TeleportFlag;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +17,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -24,22 +26,25 @@ import static com.al3x.housing2.Enums.Locations.*;
 public class TeleportAction extends HTSLImpl implements NPCAction {
     private String customLocation;
     private Locations location;
+    boolean keepVelocity;
 
     public TeleportAction() {
         super("Teleport Action");
         this.customLocation = null;
         this.location = Locations.INVOKERS_LOCATION;
+        this.keepVelocity = false;
     }
 
     public TeleportAction(boolean houseSpawn) {
         super("Teleport Action");
         this.customLocation = null;
         this.location = Locations.HOUSE_SPAWN;
+        this.keepVelocity = false;
     }
 
     @Override
     public String toString() {
-        return "Teleport Action (Location: " + (location == CUSTOM ? customLocation : location) + ")";
+        return "Teleport Action (Location: " + (location == CUSTOM ? customLocation : location) + " Keep Velocity: " + (keepVelocity ? "Yes" : "No") + ")";
     }
 
     @Override
@@ -48,6 +53,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
         builder.name("&eTeleport Player");
         builder.info("&eSettings", "");
         builder.info("Location", "&a" + (location == CUSTOM ? customLocation : location));
+        builder.info("Keep Velocity", keepVelocity ? "&aYes" : "&cNo");
 
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
@@ -86,6 +92,12 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                                     Bukkit.getScheduler().runTask(Main.getInstance(), backMenu::open);
                                 }
                         )
+                ),
+                new ActionEditor.ActionItem("keepVelocity", ItemBuilder.create((keepVelocity ? Material.LIME_DYE : Material.RED_DYE))
+                        .name("&aKeep Velocity")
+                        .info("&7Current Value", "")
+                        .info(null, keepVelocity ? "&aYes" : "&cNo"),
+                        ActionEditor.ActionItem.ActionType.BOOLEAN
                 )
         );
 
@@ -94,13 +106,17 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        Location loc = null;
+
         switch (location) {
-            case INVOKERS_LOCATION ->
-                    player.teleport(player.getLocation());
-            case HOUSE_SPAWN ->
-                    player.teleport(house.getSpawn());
+            case INVOKERS_LOCATION -> {
+                loc = player.getLocation();
+            }
+            case HOUSE_SPAWN -> {
+                loc = house.getSpawn();
+            }
             case CUSTOM, PLAYER_LOCATION -> {
-                Location loc = getLocationFromString(player, house, customLocation);
+                loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
                     return OutputType.SUCCESS;
                 }
@@ -110,10 +126,20 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                 loc.setY(Math.max(-64, Math.min(320, loc.getY())));
                 loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
                 loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
-
-                player.teleport(loc);
             }
         }
+
+        if (keepVelocity) {
+            player.teleport(
+                loc,
+                TeleportFlag.Relative.VELOCITY_X,
+                TeleportFlag.Relative.VELOCITY_Y,
+                TeleportFlag.Relative.VELOCITY_Z
+            );
+        } else {
+            player.teleport(loc);
+        }
+
         return OutputType.SUCCESS;
     }
 
@@ -122,6 +148,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("location", location.name());
         data.put("customLocation", customLocation);
+        data.put("keepVelocity", keepVelocity);
         return data;
     }
 
@@ -133,7 +160,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
     @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         try {
-            location = Locations.valueOf((String) data.get("location"));
+            location = valueOf((String) data.get("location"));
         } catch (IllegalArgumentException e) {
             location = INVOKERS_LOCATION;
         }
@@ -143,12 +170,13 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             return;
         }
         customLocation = (String) data.get("customLocation");
+        keepVelocity = (boolean) data.getOrDefault("keepVelocity", false);
     }
 
     @Override
     public String export(int indent) {
         String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
-        return " ".repeat(indent) + keyword() + " " + loc;
+        return " ".repeat(indent) + keyword() + " " + loc + " " + keepVelocity;
     }
 
     @Override
@@ -158,13 +186,16 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String syntax() {
-        return "teleport <location>";
+        return "teleport <location> <keepVelocity>";
     }
 
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (Locations.fromString(action) != null) {
-            location = Locations.fromString(action);
+        String[] split = action.split(" ");
+
+        location = fromString(split[0]);
+
+        if (location != null) {
             if (location == PLAYER_LOCATION) {
                 customLocation = "0,0,0";
             }
@@ -172,21 +203,35 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             location = CUSTOM;
             customLocation = action;
         }
+
+        split = Arrays.copyOfRange(split, 1, split.length);
+
+        if (split.length > 0) {
+            keepVelocity = Boolean.parseBoolean(split[0]);
+            split = Arrays.copyOfRange(split, 1, split.length);
+        } else {
+            keepVelocity = false;
+        }
+
         return nextLines;
     }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Location loc = null;
+
         switch (location) {
-            case INVOKERS_LOCATION ->
-                    npc.teleport(player.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-            case HOUSE_SPAWN ->
-                    npc.teleport(house.getSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            case INVOKERS_LOCATION -> {
+                loc = player.getLocation();
+            }
+            case HOUSE_SPAWN -> {
+                loc = house.getSpawn();
+            }
             case CUSTOM, PLAYER_LOCATION -> {
                 if (customLocation == null) {
                     return;
                 }
-                Location loc = getLocationFromString(player, house, customLocation);
+                loc = getLocationFromString(player, house, customLocation);
                 if (loc == null) {
                     return;
                 }
@@ -196,10 +241,9 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                 loc.setY(Math.max(-64, Math.min(320, loc.getY())));
                 loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
                 loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
-
-                npc.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
-
         }
+
+        npc.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 }
