@@ -10,10 +10,16 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import io.papermc.paper.entity.TeleportFlag;
 import net.citizensnpcs.api.npc.NPC;
+import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
+import net.minecraft.world.entity.PositionMoveRotation;
+import net.minecraft.world.entity.Relative;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -124,18 +130,32 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                 loc.setX(Math.max(-255, Math.min(255, loc.getX())));
                 loc.setZ(Math.max(-255, Math.min(255, loc.getZ())));
                 loc.setY(Math.max(-64, Math.min(320, loc.getY())));
-                loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
+                loc.setYaw(((loc.getYaw() + 180) % 360 + 360) % 360 - 180);
                 loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
             }
         }
 
-        if (keepVelocity) {
-            player.teleport(
-                loc,
-                TeleportFlag.Relative.VELOCITY_X,
-                TeleportFlag.Relative.VELOCITY_Y,
-                TeleportFlag.Relative.VELOCITY_Z
+        if (keepVelocity) {// Get the Bukkit Vector from the location difference
+            Location deltaLoc = loc.clone().subtract(player.getLocation());
+
+            Vec3 delta = new Vec3(deltaLoc.getX(), deltaLoc.getY(), deltaLoc.getZ());
+
+            //System.out.println("Test: " + deltaLoc);
+
+            PositionMoveRotation change = new PositionMoveRotation(delta, Vec3.ZERO, deltaLoc.getYaw(), deltaLoc.getPitch());
+
+            // Create the new packet with teleport id "1" and a set of relative flags.
+            ClientboundPlayerPositionPacket posPacket = new ClientboundPlayerPositionPacket(
+                338,
+                change,
+                Set.of(Relative.X, Relative.Y, Relative.Z, Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z, Relative.X_ROT, Relative.Y_ROT)
             );
+
+            ((CraftPlayer) player).getHandle().setPos(loc.getX(), loc.getY(), loc.getZ());
+            ((CraftPlayer) player).getHandle().setRot(loc.getPitch(), loc.getYaw());
+
+            // Send the packet using the player's connection.
+            ((CraftPlayer) player).getHandle().connection.send(posPacket);
         } else {
             player.teleport(loc);
         }
@@ -239,7 +259,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
                 loc.setX(Math.max(-255, Math.min(255, loc.getX())));
                 loc.setZ(Math.max(-255, Math.min(255, loc.getZ())));
                 loc.setY(Math.max(-64, Math.min(320, loc.getY())));
-                loc.setYaw(Math.max(-180, Math.min(180, loc.getYaw())));
+                loc.setYaw(((loc.getYaw() + 180) % 360 + 360) % 360 - 180);
                 loc.setPitch(Math.max(-90, Math.min(90, loc.getPitch())));
             }
         }
