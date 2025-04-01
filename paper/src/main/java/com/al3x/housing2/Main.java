@@ -144,6 +144,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new SignClickEvent(), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
