@@ -152,7 +152,7 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             );
 
             ((CraftPlayer) player).getHandle().setPos(loc.getX(), loc.getY(), loc.getZ());
-            ((CraftPlayer) player).getHandle().setRot(loc.getPitch(), loc.getYaw());
+            ((CraftPlayer) player).getHandle().setRot(loc.getYaw(), loc.getPitch());
 
             // Send the packet using the player's connection.
             ((CraftPlayer) player).getHandle().connection.send(posPacket);
