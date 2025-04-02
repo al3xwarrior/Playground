@@ -594,7 +594,11 @@ public class HousingWorld {
                 }
             }
         });
-        this.scoreboardTeam.unregister();
+
+        if (this.scoreboardTeam != null) {
+            this.scoreboardTeam.unregister();
+        }
+
         Bukkit.unloadWorld(houseWorld, false);
     }
 
