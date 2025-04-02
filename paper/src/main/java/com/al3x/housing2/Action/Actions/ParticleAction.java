@@ -1,44 +1,51 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Actions.Utils.ParticleUtils;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
-import com.al3x.housing2.Enums.*;
+import com.al3x.housing2.Enums.Locations;
+import com.al3x.housing2.Enums.ParticleType;
+import com.al3x.housing2.Enums.Particles;
+import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
-import com.al3x.housing2.Utils.*;
-import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerWorldParticles;
-import com.comphenix.protocol.wrappers.WrappedParticle;
-import com.google.gson.internal.LinkedTreeMap;
-import org.bukkit.*;
+import com.al3x.housing2.Utils.Duple;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import lombok.ToString;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static com.al3x.housing2.Enums.Locations.*;
-import static com.al3x.housing2.Enums.Particles.ParticleData.COLOR;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.SELECT_YELLOW;
 
+// TODO: Implement old display item lore in new system
+
+@ToString
 public class ParticleAction extends HTSLImpl {
-    private Particles particle;
-    private Locations location = null;
+    private Particles particle = Particles.WHITE_SMOKE;
+    private Locations location = INVOKERS_LOCATION;
     private String customLocation = null;
-    private Locations location2 = null;
+    private Locations location2 = INVOKERS_LOCATION;
     private String customLocation2 = null;
-    private PushDirection direction = null;
+    private PushDirection direction = PushDirection.FORWARD;
     private String customDirection = null;
-    private boolean isLineRange = false;
-    private ParticleType type;
-    private Double radius;
-    private Double amount;
+    private boolean isLineRange = true;
+    private ParticleType type = ParticleType.LINE;
+    private Double radius = 8D;
+    private Double amount = 20D;
     private boolean globallyVisible = false;
 
     // Custom data for particles
@@ -50,87 +57,71 @@ public class ParticleAction extends HTSLImpl {
     public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
 
     public ParticleAction() {
-        super("Particle Action");
-        this.particle = Particles.WHITE_SMOKE;
-        this.direction = PushDirection.FORWARD;
-        this.type = ParticleType.LINE;
-        this.location = INVOKERS_LOCATION;
-        this.location2 = INVOKERS_LOCATION;
-        this.isLineRange = true;
-        this.radius = 8D;
-        this.amount = 20D;
+        super(
+                "particle_action",
+                "Display Particle",
+                "Displays a particle effect.",
+                Material.FIREWORK_ROCKET,
+                List.of("particle")
+        );
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "particle",
+                        "Particle",
+                        "The particle to display.",
+                        ActionProperty.PropertyType.ENUM, Particles.class
+                ),
+                new ActionProperty(
+                        "type",
+                        "Type",
+                        "The type of particle effect.",
+                        ActionProperty.PropertyType.ENUM,
+                        ParticleType.class
+                ),
+                new ActionProperty(
+                        "location",
+                        "Location",
+                        "The location to display the particle at.",
+                        ActionProperty.PropertyType.CUSTOM,
+                        this::locationConsumer
+                ),
+                new ActionProperty(
+                        "radius",
+                        "Radius/Length",
+                        "The radius of the circle or length of the line.",
+                        ActionProperty.PropertyType.NUMBER
+                ).showIf(type == ParticleType.LINE || type == ParticleType.CURVE && isLineRange),
+                new ActionProperty(
+                        "amount",
+                        "Amount",
+                        "The amount of particles to display.",
+                        ActionProperty.PropertyType.NUMBER
+                ),
+                new ActionProperty(
+                        "globallyVisible",
+                        "Globally Visible",
+                        "If true, the particle will be visible to all players in the world.",
+                        ActionProperty.PropertyType.BOOLEAN
+                )
+        ));
     }
 
-    @Override
-    public String toString() {
-        return "ParticleAction (Particle: " + particle + ", Type: " + type + ", Radius: " + radius + ", Direction: " + direction + ", Amount: " + amount + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("4461d9d06c0bf4a7af4b16fd12831e2be0cf42e6e55e9c0d311a2a8965a23b34");
-        builder.name("&eDisplay Particles");
-        builder.info("&eSettings", "");
-        builder.info("Particle&6", particle.name());
-        builder.info("Type&6", type.name());
-        if ((type != ParticleType.CURVE && type != ParticleType.LINE) || isLineRange) {
-            builder.info("Radius", "&6" + radius);
-        }
-        if (type != ParticleType.DOT) {
-            builder.info("Amount", "&a" + amount);
-        }
-        builder.info("Location&a", ((location == Locations.CUSTOM || location == PLAYER_LOCATION) ? customLocation : location.name()));
-        if ((type == ParticleType.LINE || type == ParticleType.CURVE) && !isLineRange) {
-            builder.info("Location 2&a", ((location2 == Locations.CUSTOM || location2 == PLAYER_LOCATION) ? customLocation2 : location2.name()));
-        }
-        if (type == ParticleType.CURVE || type == ParticleType.LINE) {
-            builder.info("Direction&a", direction.name());
-        }
-
-        if (particle.getData() != null) {
-            for (String key : ParticleUtils.keys(particle)) {
-                switch (key) {
-                    case "size" -> {
-                        if (size == null) {
-                            size = 1F;
-                        }
-                        builder.info("Size", "&6" + size);
+    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
+                (coords, location) -> {
+                    if (location == CUSTOM) {
+                        customLocation = coords;
+                    } else {
+                        customLocation = null;
                     }
-                    case "color" -> {
-                        if (color1 == null) {
-                            color1 = "255,255,255";
-                        }
-                        builder.info("Color 1", "&6" + color1);
+                    this.location = location;
+                    if (location == PLAYER_LOCATION) {
+                        customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
                     }
-                    case "color2" -> {
-                        if (color2 == null) {
-                            color2 = "255,255,255";
-                        }
-                        builder.info("Color 2", "&6" + color2);
-                    }
-                    case "speed" -> {
-                        if (speed == null) {
-                            speed = 1D;
-                        }
-                        builder.info("Speed", "&6" + speed);
-                    }
+                    backMenu.open();
                 }
-            }
-        }
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("4461d9d06c0bf4a7af4b16fd12831e2be0cf42e6e55e9c0d311a2a8965a23b34");
-        builder.name("&aDisplay Particles");
-        builder.description("Do stuff with particles.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        );
     }
 
     @Override

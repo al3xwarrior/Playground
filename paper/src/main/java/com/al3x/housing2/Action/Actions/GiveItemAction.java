@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -10,92 +11,58 @@ import com.al3x.housing2.Menus.SlotSelectMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+@ToString
 public class GiveItemAction extends Action {
     ItemStack item;
-    boolean allowMultiple;
+    boolean allowMultiple = false;
     double slot = -1;
-    boolean replaceExistingSlot;
+    boolean replaceExistingSlot = false;
+
     public GiveItemAction() {
-        super("Give Item Action");
-    }
-
-    @Override
-    public String toString() {
-        return "GiveItemAction{" +
-                "item=" + item +
-                ", allowMultiple=" + allowMultiple +
-                ", slot=" + slot +
-                ", replaceExistingSlot=" + replaceExistingSlot +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&eGive Item");
-        builder.info("&eSettings", "");
-        builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType()));
-        builder.info("Allow Multiple", allowMultiple ? "&aYes" : "&cNo");
-        builder.info("Slot", slotIndexToName((int) slot));
-        builder.info("Replace Existing Slot", replaceExistingSlot ? "&aEnabled" : "&cDisabled");
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&aGive Item");
-        builder.description("Gives an item to the player");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        List<ActionEditor.ActionItem> items =  List.of(
-                new ActionEditor.ActionItem("item", ItemBuilder.create((item == null ? Material.BOOK : item.getType()))
-                        .name("&aItem")
-                        .description("Select a item to give")
-                        .info("&7Current Value", "")
-                        .info(null, (item == null ? "&cNone" : "&6" + StackUtils.getDisplayName(item))),
-                        ActionEditor.ActionItem.ActionType.ITEM
-                ),
-                new ActionEditor.ActionItem("allowMultiple", ItemBuilder.create((allowMultiple ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aAllow Multiple")
-                        .info("&7Current Value", "")
-                        .info(null, allowMultiple ? "&aYes" : "&cNo"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                ),
-                new ActionEditor.ActionItem("slot", ItemBuilder.create(Material.CHEST)
-                        .name("&aSlot")
-                        .description("Select a slot to give the item to")
-                        .info("&7Current Value", "")
-                        .info(null, slotIndexToName((int) slot)),
-                        (e, slot) -> {
-                            SlotSelectMenu menu = new SlotSelectMenu((Player) e.getWhoClicked(), Main.getInstance(), backMenu, (selectedSlot) -> {
-                                this.slot = selectedSlot;
-                            });
-                            menu.open();
-                            return true;
-                        }
-                ),
-                new ActionEditor.ActionItem("replaceExistingSlot", ItemBuilder.create((replaceExistingSlot ? Material.LIME_DYE : Material.RED_DYE))
-                        .name("&aReplace Existing Slot")
-                        .description("When enabled, if an item currently occupies the inventory slot it will be replaced with the new item.")
-                        .info("&7Current Value", "")
-                        .info(null, replaceExistingSlot ? "&aEnabled" : "&cDisabled"),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
+        super(
+                "give_item_action",
+                "Give Item",
+                "Gives an item to the player.",
+                Material.CHEST,
+                List.of("giveItem")
         );
-        return new ActionEditor(4, "&eGive Item Action Settings", items);
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "item",
+                        "Item",
+                        "The item to give",
+                        ActionProperty.PropertyType.ITEM
+                ),
+                new ActionProperty(
+                        "allowMultiple",
+                        "Allow Multiple",
+                        "If true, the player can have multiple copies of the item.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "slot",
+                        "Slot",
+                        "The slot to give the item to. -1 for first available slot, -2 for hand slot, -3 for offhand slot.",
+                        ActionProperty.PropertyType.NUMBER // FIXME
+                ),
+                new ActionProperty(
+                        "replaceExistingSlot",
+                        "Replace Existing Slot",
+                        "If true, the item will replace any existing item in the slot.",
+                        ActionProperty.PropertyType.BOOLEAN
+                )
+        ));
     }
 
     private String slotIndexToName(int index) {
@@ -202,16 +169,6 @@ public class GiveItemAction extends Action {
             return OutputType.SUCCESS;
         }
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("item", Serialization.itemStackToBase64(item));
-        data.put("allowMultiple", allowMultiple);
-        data.put("slot", slot);
-        data.put("replaceExistingSlot", replaceExistingSlot);
-        return data;
     }
 
     @Override

@@ -11,6 +11,8 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.google.gson.Gson;
+import lombok.Getter;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.waypoint.LinearWaypointProvider;
 import net.citizensnpcs.trait.waypoint.WanderWaypointProvider;
@@ -26,106 +28,104 @@ import java.util.*;
 
 import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
 
+// TODO: look at old display item lore
+
+@ToString
 public class NpcPathAction extends Action implements NPCAction {
-    int npcId;
-    NavigationType mode;
+    int npcId = -1;
+    NavigationType mode = NavigationType.STATIONARY;
+
     Double speed = null;
     Double delay = null;
     Double xRange = null;
     Double yRange = null;
+    @Getter
     List<LocationData> path = null;
     boolean loop = false;
     boolean pauseUntilComplete = false;
 
     public NpcPathAction() {
-        super("Change Npc Navigation Action");
-        npcId = -1;
-        mode = NavigationType.STATIONARY;
-    }
+        super(
+                "npc_navigation_action",
+                "Change Npc Navigation",
+                "Change the navigation of a given NPC.",
+                Material.DIAMOND_AXE,
+                List.of("npcNav")
+        );
 
-    @Override
-    public String toString() {
-        return "NpcPathAction{" +
-                "npcId=" + npcId +
-                ", mode=" + mode +
-                ", speed=" + speed +
-                ", delay=" + delay +
-                ", xRange=" + xRange +
-                ", yRange=" + yRange +
-                ", path=" + path +
-                '}';
-    }
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "npcId",
+                        "NPC",
+                        "The NPC to change the navigation of.",
+                        ActionProperty.PropertyType.NPC
+                ),
+                new ActionProperty(
+                        "mode",
+                        "Mode",
+                        "The mode to use.",
+                        ActionProperty.PropertyType.ENUM,
+                        NavigationType.class
+                ),
 
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        //Do nothing
-    }
+                new ActionProperty(
+                        "speed",
+                        "Speed",
+                        "The speed of the NPC.",
+                        ActionProperty.PropertyType.DOUBLE, 0.0, 10.0
+                ).showIf(mode != NavigationType.STATIONARY),
 
-    public List<LocationData> getPath() {
-        return path;
-    }
+                new ActionProperty(
+                        "delay",
+                        "Delay",
+                        "The stationary time between wandering.",
+                        ActionProperty.PropertyType.DOUBLE, -1.0, 100.0
+                ).showIf(mode == NavigationType.WANDER),
+                new ActionProperty(
+                        "xRange",
+                        "X Range",
+                        "The x range of the NPC.",
+                        ActionProperty.PropertyType.DOUBLE, 0.0, 100.0
+                ).showIf(mode == NavigationType.WANDER),
+                new ActionProperty(
+                        "yRange",
+                        "Y Range",
+                        "The y range of the NPC.",
+                        ActionProperty.PropertyType.DOUBLE, 0.0, 20.0
+                ).showIf(mode == NavigationType.WANDER),
 
-    @Override
-    public void createDisplayItem(ItemBuilder builder, HousingWorld house) {
-        builder.material(Material.DIAMOND_AXE);
-        builder.name("&eChange NPC Navigation");
-        builder.info("&eSettings", "");
-        builder.info("NPC", (npcId == -1 ? "&cNone" : "&6" + (house.getNPC(npcId) == null ? "Unknown NPC" : house.getNPC(npcId).getName())));
-        builder.info("Mode", mode.name());
-        if (mode != NavigationType.STATIONARY) {
-            if (speed == null) {
-                speed = 1.0;
-            }
-            builder.info("Speed", speed);
-        }
-        if (mode == NavigationType.WANDER) {
-            if (delay == null) {
-                delay = -1.0;
-            }
-            if (xRange == null) {
-                xRange = 25.0;
-            }
-            if (yRange == null) {
-                yRange = 3.0;
-            }
-            builder.info("Delay", delay);
-            builder.info("X Range", xRange);
-            builder.info("Y Range", yRange);
-        }
-        if (mode == NavigationType.PATH) {
-            if (path == null) {
-                path = new ArrayList<>();
-            }
-            builder.info("Path", path.size() + " points");
-            builder.info("Loop", loop ? "&aYes" : "&cNo");
-            builder.info("Pause Until Complete", pauseUntilComplete ? "&aYes" : "&cNo");
-        }
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.DIAMOND_AXE);
-        builder.name("&aChange NPC Navigation");
-        builder.description("Change the navigation of a given NPC.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+                new ActionProperty(
+                        "path",
+                        "Path",
+                        "The path of the NPC.",
+                        ActionProperty.PropertyType.LIST
+                ).showIf(mode == NavigationType.PATH),
+                new ActionProperty(
+                        "loop",
+                        "Loop",
+                        "If true, the path will loop.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ).showIf(mode == NavigationType.PATH),
+                new ActionProperty(
+                        "pauseUntilComplete",
+                        "Pause Until Complete",
+                        "If true, the action will pause until the path is complete.",
+                        ActionProperty.PropertyType.BOOLEAN
+                ).showIf(mode == NavigationType.PATH)
+        ));
     }
 
     @Override
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
         HousingNPC npc = house.getNPC(npcId);
 
-        ItemBuilder itemBuilder = ItemBuilder.create(Material.PLAYER_HEAD)
-                .name("&aNPC")
-                .description("Select a NPC to change the navigation of\n\nIf you are running this within a run as npc action, the npc will be the npc that the action is running as")
-                .info("&7Current Value", "")
-                .info(null, (npc == null ? "&cNone" : "&6" + npc.getName()));
-
         List<ActionEditor.ActionItem> items = new ArrayList<>();
-        items.add(new ActionEditor.ActionItem("npcId", itemBuilder,
-                ActionEditor.ActionItem.ActionType.NPC
+        items.add(new ActionEditor.ActionItem("npcId",
+                ItemBuilder.create(Material.PLAYER_HEAD)
+                        .name("&aNPC")
+                        .description("Select a NPC to change the navigation of\n\nIf you are running this within a run as npc action, the npc will be the npc that the action is running as")
+                        .info("&7Current Value", "")
+                        .info(null, (npc == null ? "&cNone" : "&6" + npc.getName()))
         ));
 
         items.add(new ActionEditor.ActionItem("mode",

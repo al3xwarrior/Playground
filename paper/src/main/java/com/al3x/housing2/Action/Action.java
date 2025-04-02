@@ -77,7 +77,9 @@ public abstract class Action {
                 .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
                 .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
                 .shiftClick();
-        properties.forEach(property -> builder.info(property.getName(), property.getValue().toString()));
+        properties.forEach(property -> {
+            if (property.isVisible()) builder.info(property.getName(), property.getValue().toString());
+        });
 
         if (!comment.isEmpty()) builder.extraLore(comment);
     }

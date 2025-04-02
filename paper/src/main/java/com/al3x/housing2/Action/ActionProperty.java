@@ -3,12 +3,10 @@ package com.al3x.housing2.Action;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.TriFunction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -31,6 +29,7 @@ public class ActionProperty {
     private Class<? extends Enum<?>> enumClass;
     private ActionPropertyConsumer consumer;
 
+    private boolean visible = true;
     private Object value;
 
     public ActionProperty(String id, String name, String description, PropertyType type) {
@@ -173,6 +172,11 @@ public class ActionProperty {
                 .description(description)
                 .info("<gray>Current value", value.toString())
                 .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
+    }
+
+    public ActionProperty showIf(boolean condition) {
+        this.visible = condition;
+        return this;
     }
 
     public interface ActionPropertyConsumer {

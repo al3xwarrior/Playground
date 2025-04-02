@@ -1,26 +1,24 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.internal.LinkedTreeMap;
 import lombok.Setter;
 import lombok.ToString;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
-import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
-import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 @ToString
@@ -49,7 +47,7 @@ public class FunctionAction extends HTSLImpl {
                         ActionProperty.PropertyType.FUNCTION
                 ),
                 new ActionProperty(
-                        "fun_for_all_players",
+                        "run_for_all_players",
                         "Run for all players",
                         "Run the function for all players in the sandbox.",
                         ActionProperty.PropertyType.BOOLEAN
@@ -59,87 +57,53 @@ public class FunctionAction extends HTSLImpl {
                         "Await",
                         "Wait for the function to finish before continuing.",
                         ActionProperty.PropertyType.BOOLEAN
+                ),
+                new ActionProperty(
+                        "add_argument",
+                        "Add Argument",
+                        "Add a argument to be passed into the function.",
+                        ActionProperty.PropertyType.CUSTOM, 52,
+                        (house, backMenu, player) -> (event, o) -> {
+                            if (arguments.size() >= 6) {
+                                backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 arguments."));
+                                return false;
+                            }
+                            arguments.put("name", "%player.name%");
+                            backMenu.open();
+                            return true;
+                        }
                 )
         ));
 
-        for (String argKey : arguments.keySet()) {
-            String argument = arguments.get(argKey);
+        arguments.forEach((key, value) -> {
             getProperties().add(new ActionProperty(
-                    "arg_" + argKey,
-                    "Argument: " + argKey,
+                    "arg_" + key,
+                    "Argument: " + key,
                     "The argument to pass to the function.",
                     ActionProperty.PropertyType.STRING,
-                    this::argConsumer
+                    (house, backMenu, player) -> {
+                        return argConsumer(house, backMenu, player, key, value);
+                    }
             ));
-        }
+        });
     }
 
-    public BiFunction<InventoryClickEvent, Object, Boolean> argConsumer(HousingWorld house, Menu backMenu, Player player) {
+    public BiFunction<InventoryClickEvent, Object, Boolean> argConsumer(HousingWorld house, Menu backMenu, Player player, String argKey, String argument) {
         return (event, o) -> {
             if (event.isLeftClick()) {
                 backMenu.getOwner().sendMessage(colorize("&eEnter the new argument value."));
                 backMenu.openChat(Main.getInstance(), (message) -> {
-                    arguments.put((String) o, message);
+                    arguments.put(argKey, message);
                     backMenu.open();
                 });
                 return true;
             } else if (event.isRightClick()) {
-                arguments.remove(o); // FIXME
+                arguments.remove(argKey);
                 backMenu.open();
                 return true;
             }
             return false;
         };
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        ArrayList<String> argKeys = new ArrayList<>(arguments.keySet());
-        for (String argKey : argKeys) {
-            String argument = arguments.get(argKey);
-            items.add(new ActionEditor.ActionItem("null",
-                    ItemBuilder.create(Material.PAPER)
-                            .name("&aArgument: &6" + argKey)
-                            .description("Edit the argument")
-                            .info("&7Current Value", "")
-                            .info(null, "&6" + argument)
-                            .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                            .rClick(ItemBuilder.ActionType.REMOVE_YELLOW),
-                    (event, obj) -> {
-                        if (event.isLeftClick()) {
-
-                            backMenu.getOwner().sendMessage(colorize("&eEnter the new argument value."));
-                            backMenu.openChat(Main.getInstance(), (message) -> {
-                                arguments.put(argKey, message);
-                                backMenu.open();
-                            });
-                            return true;
-                        } else if (event.isRightClick()) {
-                            arguments.remove(argKey);
-                            backMenu.open();
-                            return true;
-                        }
-                        return false;
-                    }
-            ));
-        }
-
-        items.add(new ActionEditor.ActionItem(
-                ItemBuilder.create(Material.PAPER)
-                        .name("&aAdd Argument")
-                        .description("Add a argument to be passed into the function."),
-                CUSTOM, 50, (event, obj) -> {
-            if (arguments.size() >= 6) {
-                backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 arguments."));
-                return false;
-            }
-            arguments.put("name", "%player.name%");
-            backMenu.open();
-            return true;
-        }
-        ));
-
-        return new ActionEditor(6, "&eFunction Action Settings", items);
     }
 
     @Override
@@ -169,16 +133,6 @@ public class FunctionAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("function", function == null ? null : function);
-        data.put("runForAllPlayers", runForAllPlayers);
-        data.put("await", await);
-        data.put("arguments", arguments);
-        return data;
-    }
-
-    @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         function = (String) data.get("function");
         runForAllPlayers = (boolean) data.get("runForAllPlayers");
@@ -199,10 +153,5 @@ public class FunctionAction extends HTSLImpl {
     @Override
     public boolean requiresPlayer() {
         return false;
-    }
-
-    @Override
-    public String keyword() {
-        return "function";
     }
 }

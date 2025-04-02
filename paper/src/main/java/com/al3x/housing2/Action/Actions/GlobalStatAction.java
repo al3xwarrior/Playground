@@ -14,6 +14,7 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,76 +24,42 @@ import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
+@ToString
 public class GlobalStatAction extends HTSLImpl {
 
     private static final Gson gson = new Gson();
-    private String statName;
 
-    private List<StatInstance> statInstances = new ArrayList<>();
-
+    private String statName = "kills";
     private StatOperation mode;
     private StatValue value;
 
+    private List<StatInstance> statInstances = new ArrayList<>(List.of(
+            new StatInstance("global")
+    ));
+
     public GlobalStatAction() {
-        super("Global Stat Action");
-        this.statName = "Kills";
+        super(
+                "global_stat_action",
+                "Global Stat",
+                "Modifies a global stat.",
+                Material.PLAYER_HEAD,
+                List.of("globalStat")
+        );
 
-        this.statInstances.add(new StatInstance("global"));
-    }
-
-    @Override
-    public String toString() {
-        // add the first 3 statinstances then do ... <number of statinstances - 3> more
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
-            sb.append(statInstances.get(i).mode).append(" ").append(statInstances.get(i).value);
-            if (i != Math.min(3, statInstances.size()) - 1) {
-                sb.append(", ");
-            }
-        }
-        if (statInstances.size() > 3) {
-            sb.append("... ").append(statInstances.size() - 3).append(" more");
-        }
-
-        return "GlobalStatAction (StatName: " + statName + ", StatInstances: " + sb.toString() + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&eChange Global Stat");
-        builder.info("&eSettings", "");
-        builder.info("Stat", "&a" + statName);
-        if (statInstances.size() > 3) {
-            builder.info("Stat Changes", "&a" + statInstances.size());
-            for (int i = 0; i < 3; i++) {
-                builder.info("Mode", "&6" + statInstances.get(i).mode);
-                builder.info("Value", "&a" + statInstances.get(i).value);
-            }
-            builder.info("", "&7&l+ " + (statInstances.size() - 3) + " more");
-        } else {
-            builder.info("&eStat Changes", "");
-            for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
-                builder.info("Mode", "&6" + statInstances.get(i).mode);
-                builder.info("Value", "&a" + statInstances.get(i).value);
-            }
-        }
-
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&aChange Global Stat");
-        builder.description("Modify a stat of the player who triggered the action.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "statName",
+                        "Stat Name",
+                        "The name of the stat to modify.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "statInstances",
+                        "Stat Instances",
+                        "The instances of the stat to modify.",
+                        ActionProperty.PropertyType. // FIXME
+                )
+        ));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.Projectile;
@@ -9,120 +9,84 @@ import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.*;
-import net.kyori.adventure.text.Component;
+import com.al3x.housing2.Utils.Duple;
+import com.al3x.housing2.Utils.HandlePlaceholders;
+import com.al3x.housing2.Utils.NumberUtilsKt;
+import com.al3x.housing2.Utils.Serialization;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.BiFunction;
 
-import static com.al3x.housing2.Utils.Color.colorize;
-
+@ToString
 public class LaunchProjectileAction extends HTSLImpl {
-    private Projectile projectile;
-    private PushDirection direction;
-    private String customDirection;
-    private String amount;
+    private Projectile projectile = Projectile.ARROW;
+    private PushDirection direction = PushDirection.FORWARD;
+    private String amount = "1.5";
 
-    //Custom Data
+    private String customDirection;
     private ItemStack item = null;
 
     public LaunchProjectileAction() {
-        super("Launch Projectile Action");
-        this.projectile = Projectile.ARROW;
-        this.direction = PushDirection.FORWARD;
-        this.amount = "1.5";
-    }
+        super(
+                "launch_projectile_action",
+                "Launch Projectile",
+                "Launches a projectile in a direction.",
+                Material.ARROW,
+                List.of("launchProjectile")
+        );
 
-    public LaunchProjectileAction(Projectile projectile, String amount, PushDirection direction) {
-        super("Launch Projectile Action");
-        this.projectile = projectile;
-        this.direction = direction;
-        this.amount = amount;
-    }
-
-    @Override
-    public String toString() {
-        return "LaunchProjectileAction (Projectile: " + projectile + ", Direction: " + direction + ", Amount: " + amount + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ARROW);
-        builder.name("&eLaunch Projectile Action");
-        builder.info("&eSettings", "");
-        builder.info("Projectile", "&a" + projectile);
-        builder.info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction));
-        builder.info("Velocity", "&a" + amount);
-
-        if (item != null) {
-            builder.info("Item", "&6" + item.getType());
-        }
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ARROW);
-        builder.name("&aLaunch Projectile Action");
-        builder.description("Launches a projectile in a direction.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-        items.addAll(Arrays.asList(
-                new ActionEditor.ActionItem("projectile",
-                        ItemBuilder.create(Material.ARROW)
-                                .name("&eProjectile")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + projectile)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Projectile.values(), null
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "projectile",
+                        "Projectile",
+                        "The projectile to launch.",
+                        ActionProperty.PropertyType.ENUM,
+                        Projectile.class
                 ),
-                new ActionEditor.ActionItem("direction",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eDirection")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + direction)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
-                        (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
-                            customDirection = str;
-                            direction = dir;
-                        })
+                new ActionProperty(
+                        "direction",
+                        "Direction",
+                        "The direction to launch the projectile.",
+                        ActionProperty.PropertyType.ENUM,
+                        PushDirection.class,
+                        this::directionConsumer
                 ),
-                new ActionEditor.ActionItem("amount",
-                        ItemBuilder.create(Material.SLIME_BALL)
-                                .name("&eVelocity")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + amount)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
+                new ActionProperty(
+                        "customDirection",
+                        "Custom Direction",
+                        "The custom direction to launch the projectile.",
+                        ActionProperty.PropertyType.ITEM
+                ).showIf(projectile.getProjectile() == ThrownPotion.class),
+                new ActionProperty(
+                        "velocity",
+                        "Velocity",
+                        "The velocity of the projectile.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "item",
+                        "Item",
+                        "The item to launch.",
+                        ActionProperty.PropertyType.ITEM
                 )
         ));
+    }
 
-        if (projectile.getProjectile() == ThrownPotion.class) {
-            items.add(new ActionEditor.ActionItem("item",
-                    ItemBuilder.create(Material.POTION)
-                            .name("&eItem")
-                            .info("&7Current Value", "")
-                            .info(null, (item == null ? "§cNone" : "&6" + StackUtils.getDisplayName(item)))
-                            .lClick(ItemBuilder.ActionType.SELECT_YELLOW),
-                    ActionEditor.ActionItem.ActionType.ITEM
-            ));
-        }
-
-        return new ActionEditor(4, "&eLaunch Projectile Settings", items);
+    public BiFunction<InventoryClickEvent, Object, Boolean> directionConsumer(HousingWorld house, Menu backMenu, Player player) {
+        return (event, obj) -> getDirection(event, obj, house, backMenu, (str, dir) -> {
+            customDirection = str;
+            direction = dir;
+        });
     }
 
     @Override
@@ -221,18 +185,6 @@ public class LaunchProjectileAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("projectile", projectile);
-        data.put("amount", amount);
-        data.put("direction", direction);
-        if (projectile == Projectile.SPLASH_POTION) {
-            data.put("item", Serialization.itemStackToBase64(item));
-        }
-        return data;
-    }
-
-    @Override
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         projectile = (data.get("projectile") instanceof String) ? Projectile.valueOf((String) data.get("projectile")) : (Projectile) data.get("projectile");
         amount = data.get("amount").toString();
@@ -245,7 +197,6 @@ public class LaunchProjectileAction extends HTSLImpl {
                 Main.getInstance().getLogger().warning("Failed to load item from base64 string");
             }
         }
-
     }
 
     @Override
@@ -277,10 +228,5 @@ public class LaunchProjectileAction extends HTSLImpl {
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "launchProjectile";
     }
 }
