@@ -37,7 +37,10 @@ import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +54,7 @@ import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
+import static org.bukkit.scoreboard.Team.Option.COLLISION_RULE;
 
 public class HousingWorld {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
@@ -92,6 +96,7 @@ public class HousingWorld {
     private List<CustomMenu> customMenus;
     private List<Group> groups;
     private List<Team> teams;
+    private org.bukkit.scoreboard.Team scoreboardTeam;
     private HashMap<String, PlayerData> playersData;
     private String defaultGroup = "default";
     private List<Location> trashCans;
@@ -277,6 +282,9 @@ public class HousingWorld {
         this.lockedReason = houseData.getLockedMessage() != null ? houseData.getLockedMessage() : "";
         this.whitelistedPlayers = houseData.getWhitelistedPlayers() != null ? houseData.getWhitelistedPlayers().stream().map(string -> Bukkit.getOfflinePlayer(UUID.fromString(string))).collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>();
 
+        setupScoreboardTeam();
+        setPlayerCollisions(houseData.getPlayerCollisions() != null ? houseData.getPlayerCollisions() : true);
+
         // House loaded after a new week was issued
         if (cookieWeek < main.getCookieManager().getWeek()) {
             cookieWeek = main.getCookieManager().getWeek();
@@ -391,6 +399,10 @@ public class HousingWorld {
         this.joinLeaveMessages = true;
         this.deathMessages = true;
         this.keepInventory = false;
+
+        setupScoreboardTeam();
+        setPlayerCollisions(true);
+
         SlimeWorld world = createOrReadWorld();
         if (world == null) {
             owner.sendMessage(colorize("&cFailed to create your house!"));
@@ -461,6 +473,20 @@ public class HousingWorld {
 
 
         scoreboardInstance = new HousingScoreboard(this);
+    }
+
+    private void setupScoreboardTeam() {
+        // Do we need the existing team check + unregistering it?
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard board = manager.getMainScoreboard();
+
+        org.bukkit.scoreboard.@Nullable Team oldTeam = board.getTeam("housing-" + this.houseUUID.toString());
+
+        if (oldTeam != null) {
+            oldTeam.unregister();
+        }
+
+        this.scoreboardTeam = board.registerNewTeam("housing-" + this.houseUUID.toString());
     }
 
     private void notifyOwnerOfFailure(OfflinePlayer owner) {
@@ -568,6 +594,11 @@ public class HousingWorld {
                 }
             }
         });
+
+        if (this.scoreboardTeam != null) {
+            this.scoreboardTeam.unregister();
+        }
+
         Bukkit.unloadWorld(houseWorld, false);
     }
 
@@ -1027,6 +1058,10 @@ public class HousingWorld {
         return teams;
     }
 
+    public org.bukkit.scoreboard.Team getScoreboardTeam() {
+        return this.scoreboardTeam;
+    }
+
     public HousingScoreboard getScoreboardInstance() {
         return scoreboardInstance;
     }
@@ -1304,6 +1339,14 @@ public class HousingWorld {
 
     public void setKeepInventory(boolean keepInventory) {
         this.keepInventory = keepInventory;
+    }
+
+    public boolean getPlayerCollisions() {
+        return this.scoreboardTeam.getOption(COLLISION_RULE) == org.bukkit.scoreboard.Team.OptionStatus.ALWAYS;
+    }
+
+    public void setPlayerCollisions(boolean playerCollisions) {
+        this.scoreboardTeam.setOption(COLLISION_RULE, playerCollisions ? org.bukkit.scoreboard.Team.OptionStatus.ALWAYS : org.bukkit.scoreboard.Team.OptionStatus.NEVER);
     }
 
     public String getScoreboardTitle() {

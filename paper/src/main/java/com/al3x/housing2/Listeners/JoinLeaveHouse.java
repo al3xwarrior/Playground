@@ -142,6 +142,8 @@ public class JoinLeaveHouse implements Listener {
             }
         }
 
+        house.getScoreboardTeam().addPlayer(player);
+
         player.updateCommands();
 
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
@@ -183,6 +185,8 @@ public class JoinLeaveHouse implements Listener {
         player.playerListName(Component.text(player.getName()));
         from.setGuests();
         if (from.getJoinLeaveMessages()) from.broadcast(colorize(player.getDisplayName() + " &eleft the world."));
+
+        from.getScoreboardTeam().removePlayer(player);
 
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
             LuckpermsHandler.removePermission(player, "housing.world." + from.getHouseUUID());

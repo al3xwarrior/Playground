@@ -62,6 +62,7 @@ public class HouseData {
     private Boolean deathMessages;
     private Boolean jukeboxPlaying;
     private Boolean keepInventory;
+    private Boolean playerCollisions;
     private String lockedMessage;
     private ResourcePackData resourcePack;
     private Boolean randomTicks;
@@ -72,7 +73,7 @@ public class HouseData {
 
     }
 
-    public HouseData(String ownerID, String houseID, String ownerName, String houseName, String description, int size, int cookies, int cookieWeek, String privacy, String icon, long timeCreated, HashMap<String, List<ActionData>> eventActions, LocationData spawnLocation, List<String> scoreboard, String scoreboardTitle, List<NPCData> houseNPCs, List<StatData> globalStats, List<CommandData> commands, List<RegionData> regions, List<LayoutData> layouts, List<HologramData> holograms, List<CustomMenuData> customMenus, List<GroupData> groups, List<TeamData> teams, String defaultGroup, HashMap<String, PlayerData> playerData, List<LocationData> trashCans, List<LaunchPad> launchPads, HashMap<String, List<ActionData>> actionButtons, String seed, List<FunctionData> functions, Integer version, Long ingameTime, Boolean dayLightCycle, WeatherTypes weather, Boolean weatherCycle, Boolean joinLeaveMessages, Boolean deathMessages, Boolean jukeboxPlaying, Boolean keepInventory, String lockedMessage, ResourcePackData resourcePack, Boolean randomTicks, List<String> whitelistedPlayers) {
+    public HouseData(String ownerID, String houseID, String ownerName, String houseName, String description, int size, int cookies, int cookieWeek, String privacy, String icon, long timeCreated, HashMap<String, List<ActionData>> eventActions, LocationData spawnLocation, List<String> scoreboard, String scoreboardTitle, List<NPCData> houseNPCs, List<StatData> globalStats, List<CommandData> commands, List<RegionData> regions, List<LayoutData> layouts, List<HologramData> holograms, List<CustomMenuData> customMenus, List<GroupData> groups, List<TeamData> teams, String defaultGroup, HashMap<String, PlayerData> playerData, List<LocationData> trashCans, List<LaunchPad> launchPads, HashMap<String, List<ActionData>> actionButtons, String seed, List<FunctionData> functions, Integer version, Long ingameTime, Boolean dayLightCycle, WeatherTypes weather, Boolean weatherCycle, Boolean joinLeaveMessages, Boolean deathMessages, Boolean jukeboxPlaying, Boolean keepInventory, Boolean playerCollisions, String lockedMessage, ResourcePackData resourcePack, Boolean randomTicks, List<String> whitelistedPlayers) {
         this.ownerID = ownerID;
         this.houseID = houseID;
         this.ownerName = ownerName;
@@ -113,6 +114,7 @@ public class HouseData {
         this.deathMessages = deathMessages;
         this.jukeboxPlaying = jukeboxPlaying;
         this.keepInventory = keepInventory;
+        this.playerCollisions = playerCollisions;
         this.lockedMessage = lockedMessage;
         this.resourcePack = resourcePack;
         this.randomTicks = randomTicks;
@@ -161,6 +163,7 @@ public class HouseData {
                 world.isJukeboxPlaying(),
                 world.getDeathMessages(),
                 world.getKeepInventory(),
+                world.getPlayerCollisions(),
                 world.getLockedReason(),
                 world.getResourcePack(),
                 world.getRandomTicks(),
