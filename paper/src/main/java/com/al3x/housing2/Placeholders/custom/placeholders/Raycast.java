@@ -14,6 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftFluidCollisionMode;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -23,12 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static net.minecraft.world.level.ClipContext.Block.COLLIDER;
 import static net.minecraft.world.level.ClipContext.Block.OUTLINE;
 
 public class Raycast {
@@ -48,6 +51,7 @@ public class Raycast {
             new ExactZ();
             new Coords();
             new ExactCoords();
+            new Collider();
         }
 
         @Override
@@ -78,8 +82,8 @@ public class Raycast {
             Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
             try {
                 Double range = argsHandled.getFirst();
-                @NotNull Duple<Vector, org.bukkit.block.Block> result = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                return result.getSecond().getType().name();
+                @NotNull Duple<Vector, Material> result = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                return result.getSecond().name();
             } catch (NumberFormatException e) {
                 return "null";
             }
@@ -329,8 +333,40 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    @NotNull Duple<Vector, org.bukkit.block.Block> duple = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    @NotNull Duple<Vector, Material> duple = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
                     return duple.getFirst().getBlockX() + "," + duple.getFirst().getBlockY() + "," + duple.getFirst().getBlockZ();
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class Collider extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.collider/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    @NotNull Duple<Vector, Material> duple = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird(), COLLIDER);
+                    return duple.getSecond().name();
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -721,7 +757,11 @@ public class Raycast {
         }
     }
 
-    private static @NotNull Duple<Vector, org.bukkit.block.Block> getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+    private static @NotNull Duple<Vector, Material> getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+        return getBlockLookingAt(player, range, yaw, pitch, OUTLINE);
+    }
+
+    private static @NotNull Duple<Vector, Material> getBlockLookingAt(Player player, double range, String yaw, String pitch, ClipContext.Block collisionType) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
@@ -766,14 +806,16 @@ public class Raycast {
             Vector dir = direction.clone().normalize().multiply(range);
             Vec3 startPos = MCUtil.toVec3(player.getEyeLocation());
             Vec3 endPos = startPos.add(dir.getX(), dir.getY(), dir.getZ());
-            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
+            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, collisionType, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
             RayTraceResult hitResult = CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
 
             if (hitResult == null || hitResult.getHitBlock() == null) {
-                return new Duple<>(new Vector(endPos.x, endPos.y, endPos.z),
-                        player.getWorld().getBlockAt((int) endPos.x, (int) endPos.y, (int) endPos.z));
+                if (collisionType.equals(COLLIDER)) {
+                    return new Duple<>(new Vector(endPos.x, endPos.y, endPos.z), Material.AIR);
+                } else return new Duple<>(new Vector(endPos.x, endPos.y, endPos.z),
+                        player.getWorld().getBlockAt((int) endPos.x, (int) endPos.y, (int) endPos.z).getType());
             }
-            return new Duple<>(hitResult.getHitPosition(), hitResult.getHitBlock());
+            return new Duple<>(hitResult.getHitPosition(), hitResult.getHitBlock().getType());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
