@@ -83,7 +83,7 @@ public abstract class Menu {
                 return;
             }
 
-            this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
+            this.inventory = Bukkit.createInventory(null, size, StringUtilsKt.housingStringFormatter(title));
 
             setupItems();
 
