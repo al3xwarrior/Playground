@@ -26,10 +26,14 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.al3x.housing2.Enums.Locations.*;
 
 public class TeleportAction extends HTSLImpl implements NPCAction {
+    // Unique teleport ID counter
+    private static final AtomicInteger teleportIdCounter = new AtomicInteger(0);
+
     private String customLocation;
     private Locations location;
     boolean keepVelocity;
@@ -115,18 +119,16 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
         Location loc = null;
 
         switch (location) {
-            case INVOKERS_LOCATION -> {
-                loc = player.getLocation();
-            }
-            case HOUSE_SPAWN -> {
-                loc = house.getSpawn();
-            }
+            case INVOKERS_LOCATION -> loc = player.getLocation();
+            case HOUSE_SPAWN -> loc = house.getSpawn();
             case CUSTOM, PLAYER_LOCATION -> {
                 loc = getLocationFromString(player, house, customLocation);
+
+                System.out.println(loc);
+
                 if (loc == null) {
                     return OutputType.SUCCESS;
                 }
-
                 loc.setX(Math.max(-255, Math.min(255, loc.getX())));
                 loc.setZ(Math.max(-255, Math.min(255, loc.getZ())));
                 loc.setY(Math.max(-64, Math.min(320, loc.getY())));
@@ -135,26 +137,34 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
             }
         }
 
-        if (keepVelocity) {// Get the Bukkit Vector from the location difference
-            Location deltaLoc = loc.clone().subtract(player.getLocation());
+        if (keepVelocity) {
+            Location current = player.getLocation();
+            double deltaX = loc.getX() - current.getX();
+            double deltaY = loc.getY() - current.getY();
+            double deltaZ = loc.getZ() - current.getZ();
 
-            Vec3 delta = new Vec3(deltaLoc.getX(), deltaLoc.getY(), deltaLoc.getZ());
+            float deltaYaw = loc.getYaw() - current.getYaw();
+            float deltaPitch = loc.getPitch() - current.getPitch();
 
-            //System.out.println("Test: " + deltaLoc);
+            Vec3 delta = new Vec3(deltaX, deltaY, deltaZ);
 
-            PositionMoveRotation change = new PositionMoveRotation(delta, Vec3.ZERO, deltaLoc.getYaw(), deltaLoc.getPitch());
+            PositionMoveRotation change = new PositionMoveRotation(delta, Vec3.ZERO, deltaYaw, deltaPitch);
 
-            // Create the new packet with teleport id "1" and a set of relative flags.
+            // Generate a unique teleport ID for this packet
+            int teleportId = teleportIdCounter.getAndIncrement();
             ClientboundPlayerPositionPacket posPacket = new ClientboundPlayerPositionPacket(
-                338,
+                teleportId,
                 change,
-                Set.of(Relative.X, Relative.Y, Relative.Z, Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z, Relative.X_ROT, Relative.Y_ROT)
+                Set.of(Relative.X, Relative.Y, Relative.Z,
+                       Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z,
+                       Relative.X_ROT, Relative.Y_ROT)
             );
 
+            // Update the server's notion of the player's position.
             ((CraftPlayer) player).getHandle().setPos(loc.getX(), loc.getY(), loc.getZ());
-            ((CraftPlayer) player).getHandle().setRot(loc.getYaw(), loc.getPitch());
+            ((CraftPlayer) player).getHandle().setRot(deltaYaw, deltaPitch);
 
-            // Send the packet using the player's connection.
+            // Send the teleport packet using the player's connection.
             ((CraftPlayer) player).getHandle().connection.send(posPacket);
         } else {
             player.teleport(loc);
@@ -241,12 +251,8 @@ public class TeleportAction extends HTSLImpl implements NPCAction {
         Location loc = null;
 
         switch (location) {
-            case INVOKERS_LOCATION -> {
-                loc = player.getLocation();
-            }
-            case HOUSE_SPAWN -> {
-                loc = house.getSpawn();
-            }
+            case INVOKERS_LOCATION -> loc = player.getLocation();
+            case HOUSE_SPAWN -> loc = house.getSpawn();
             case CUSTOM, PLAYER_LOCATION -> {
                 if (customLocation == null) {
                     return;
