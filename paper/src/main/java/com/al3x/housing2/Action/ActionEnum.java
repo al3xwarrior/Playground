@@ -64,6 +64,7 @@ public enum ActionEnum {
     HIDE_NPC("Hide NPC Action", HideNPCAction.class),
     SHOW_NPC("Show NPC Action", ShowNPCAction.class),
     SWIM_CRAWL("Swim/Crawl Action", SwimCrawlAction.class),
+    TOGGLE_SIT("Toggle Sit Action", ToggleSitAction.class),
     SET_VOICE_GROUP("Set Voice Group Action", SetVoiceGroupAction.class),
     EDIT_VOICE_GROUP("Edit Voice Group Action", EditVoiceGroupAction.class),
     EDIT_VISIBILITY("Edit Visibility Action", EditVisibilityAction.class),

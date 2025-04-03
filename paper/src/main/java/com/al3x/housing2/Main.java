@@ -75,6 +75,8 @@ public final class Main extends JavaPlugin implements Listener {
     private ResourcePackManager resourcePackManager;
     @Getter
     private PlaygroundBot playgroundBot;
+    @Getter
+    private SeatManager seatManager;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -123,6 +125,7 @@ public final class Main extends JavaPlugin implements Listener {
         this.networkManager = new NetworkManager(this);
         this.resourcePackManager = new ResourcePackManager(this);
         this.commandManager = new CommandManager();
+        this.seatManager = new SeatManager(this);
 
         this.playgroundWeb = (PlaygroundWeb) Jooby.createApp(new String[0], ExecutionMode.EVENT_LOOP, () -> new PlaygroundWeb(this));
         this.playgroundWeb.start();
@@ -145,6 +148,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
         Bukkit.getPluginManager().registerEvents(new SignClickEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new SeatListener(this), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
