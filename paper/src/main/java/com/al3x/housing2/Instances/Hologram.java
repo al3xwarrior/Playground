@@ -7,6 +7,7 @@ import com.al3x.housing2.Utils.PlibHologramLine;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import com.comphenix.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.util.Quaternion4f;
 import com.maximde.hologramlib.__relocated__.com.tcoded.folialib.FoliaLib;
 import com.maximde.hologramlib.hologram.RenderMode;
 import com.maximde.hologramlib.hologram.TextHologram;
@@ -43,6 +44,7 @@ public class Hologram {
     private boolean seeThroughBlocks = true;
     private HousingWorld house;
     private Location location;
+    private Quaternion4f rotation;
     private ConcurrentHashMap<Player, List<TextHologram>> entitys = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Player, WrapperEntity> interaction = new ConcurrentHashMap<>();
 
@@ -63,7 +65,7 @@ public class Hologram {
         this.location = location;
     }
 
-    public Hologram(HousingWorld house, List<String> text, Location location, double spacing, String scale, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
+    public Hologram(HousingWorld house, List<String> text, Location location, double spacing, String scale, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
         this.house = house;
         this.text = text;
         this.location = location;
@@ -75,6 +77,7 @@ public class Hologram {
         this.shadow = shadow;
         this.seeThroughBlocks = seeThroughBlocks;
         this.backgroundColor = backgroundColor;
+        this.rotation = rotation;
     }
 
     public void setHouse(HousingWorld house) {
@@ -139,6 +142,11 @@ public class Hologram {
                             .setTeleportDuration(0)
                             .setScale(getScaleInternal())
                             .setText(getComponent(player, i));
+
+                    if (rotation != null) {
+                        hologram = hologram.setRightRotation(this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(), this.rotation.getW());
+                    }
+
                     hologram.addViewer(player);
                     main.getHologramManager().spawn(hologram, location.clone().add(0, spacing * (text.size() - 1 - i), 0));
                     holograms.add(hologram);
@@ -206,7 +214,7 @@ public class Hologram {
 
     public void setScale(String scale) {
         this.scale = scale;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale, rotation);
     }
 
     public void setLocation(Location location) {
@@ -238,25 +246,29 @@ public class Hologram {
 
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale, rotation);
     }
 
     public void setSeeThroughBlocks(boolean seeThroughBlocks) {
         this.seeThroughBlocks = seeThroughBlocks;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale, rotation);
     }
 
     public void setAlignment(TextDisplay.TextAlignment alignment) {
         this.alignment = alignment;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale, rotation);
     }
 
     public void setBillboard(TextDisplay.Billboard billboard) {
         this.billboard = billboard;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, backgroundColor, scale, rotation);
     }
 
-    private void updateInternal(boolean shadow, boolean seeThroughBlocks, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, int backgroundColor, String scale) {
+    public void setRotationRaw(Quaternion4f rotation) {
+        this.rotation = rotation;
+    }
+
+    private void updateInternal(boolean shadow, boolean seeThroughBlocks, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, int backgroundColor, String scale, Quaternion4f rotation) {
         this.shadow = shadow;
         this.seeThroughBlocks = seeThroughBlocks;
         this.alignment = alignment;
@@ -270,6 +282,13 @@ public class Hologram {
                     holo.setSeeThroughBlocks(seeThroughBlocks);
                     holo.setAlignment(alignment);
                     holo.setBillboard(billboard);
+
+                    if (rotation != null) {
+                        holo.setRightRotation(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
+                    } else {
+                        holo.setRightRotation(0, 0, 0, 1);
+                    }
+
                     holo.setBackgroundColor(backgroundColor);
                     holo.setScale(getScaleInternal());
                     holo.update();
@@ -325,6 +344,10 @@ public class Hologram {
         return billboard;
     }
 
+    public Quaternion4f getRotation() {
+        return rotation;
+    }
+
     public TextDisplay.TextAlignment getAlignment() {
         return alignment;
     }
@@ -355,7 +378,7 @@ public class Hologram {
 
     public void setBackgroundColor(@NotNull int color) {
         this.backgroundColor = color;
-        updateInternal(shadow, seeThroughBlocks, alignment, billboard, color, scale);
+        updateInternal(shadow, seeThroughBlocks, alignment, billboard, color, scale, rotation);
     }
 
     public WrapperEntity getInteractionEntity(Player player) {

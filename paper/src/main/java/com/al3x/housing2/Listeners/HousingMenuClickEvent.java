@@ -52,7 +52,7 @@ public class HousingMenuClickEvent implements Listener {
             player.getEyeLocation(),
             player.getLocation().getDirection(),
             5,
-            entity -> entity instanceof Player && !entity.equals(player)
+            entity -> entity instanceof Player && !entity.equals(player) && player.canSee(entity)
         );
 
         if (house.hasPlayerEdit(player) && result != null && result.getHitEntity() != null) {
