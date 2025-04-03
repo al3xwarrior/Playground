@@ -397,6 +397,7 @@ public class ItemBuilder {
         KICK("kick", YELLOW),
         RESET("reset", YELLOW),
         RESTORE("restore", YELLOW),
+        USE_SELECTION("use selection", YELLOW),
         ;
 
         private String action;

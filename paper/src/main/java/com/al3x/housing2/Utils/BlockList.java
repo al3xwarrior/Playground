@@ -44,6 +44,29 @@ public class BlockList {
         return this.blockList;
     }
 
+    public static BlockList fromString(String blockData) {
+        BlockList blockList = new BlockList();
+        String[] blockDataSplit = blockData.split(",");
+        for (String block : blockDataSplit) {
+            if (block.contains("%")) {
+                String[] blockOptions = block.split("%");
+                int percentage = Integer.parseInt(blockOptions[0]);
+                Material material = Material.matchMaterial(blockOptions[1].toUpperCase());
+                if (material == null) {
+                    return null;
+                }
+                blockList.addBlock(percentage, material);
+            } else {
+                Material material = Material.matchMaterial(block);
+                if (material == null) {
+                    return null;
+                }
+                blockList.addBlock(1, material);
+            }
+        }
+        return blockList;
+    }
+
     public static BlockList fromString(Player player, String blockData) {
         BlockList blockList = new BlockList();
         String[] blockDataSplit = blockData.split(",");

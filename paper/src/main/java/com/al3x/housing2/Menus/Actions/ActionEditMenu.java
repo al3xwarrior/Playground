@@ -124,17 +124,19 @@ public class ActionEditMenu extends Menu {
 
     @Override
     public void open() {
-        OpenActionMenuEvent event = new OpenActionMenuEvent(this, action, main, player, house, backMenu);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
-                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+        Bukkit.getScheduler().runTaskLater(main, () -> {
+            OpenActionMenuEvent event = new OpenActionMenuEvent(this, action, main, player, house, backMenu);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                    AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+                }
+                MenuManager.setWindowOpen(player, this);
+                MenuManager.setMenu(player, this);
+                return;
             }
-            MenuManager.setWindowOpen(player, this);
-            MenuManager.setMenu(player, this);
-            return;
-        }
-        super.open();
+            super.open();
+        }, 1);
     }
 
     @Override
