@@ -9,12 +9,56 @@ import java.util.List;
 
 public class Touching {
     public Touching() {
+        new Top();
+        new Bottom();
         new Down();
         new Up();
         new North();
         new South();
         new East();
         new West();
+    }
+
+    private static class Top extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%touching.block/top%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of();
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (player == null) {
+                return "null";
+            }
+            Location loc = player.getEyeLocation();
+            return loc.getBlock().getType().name();
+        }
+    }
+
+    private static class Bottom extends Placeholder {
+        @Override
+        public String getPlaceholder() {
+            return "%touching.block/bottom%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of();
+        }
+
+        @Override
+        public String handlePlaceholder(String input, HousingWorld house, Player player) {
+            if (player == null) {
+                return "null";
+            }
+            Location loc = player.getLocation();
+            return loc.getBlock().getType().name();
+        }
     }
 
     private static class Down extends Placeholder {
