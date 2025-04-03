@@ -2,6 +2,7 @@ package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.github.retrooper.packetevents.util.Quaternion4f;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Display;
@@ -19,6 +20,7 @@ public class HologramData {
     private String scale;
     private TextDisplay.TextAlignment alignment;
     private Display.Billboard billboard;
+    private Quaternion4f rotation;
     private boolean shadow;
     private boolean seeThroughBlocks;
     private int backgroundColor;
@@ -27,13 +29,14 @@ public class HologramData {
 
     }
 
-    public HologramData(List<String> text, LocationData location, double spacing, String scale, TextDisplay.TextAlignment alignment, Display.Billboard billboard, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
+    public HologramData(List<String> text, LocationData location, double spacing, String scale, TextDisplay.TextAlignment alignment, Display.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
         this.text = text;
         this.location = location;
         this.spacing = spacing;
         this.scale = scale;
         this.alignment = alignment;
         this.billboard = billboard;
+        this.rotation = rotation;
         this.shadow = shadow;
         this.seeThroughBlocks = seeThroughBlocks;
         this.backgroundColor = backgroundColor;
@@ -50,6 +53,7 @@ public class HologramData {
                 hologram.getScale(),
                 hologram.getAlignment(),
                 hologram.getBillboard(),
+                hologram.getRotation(),
                 hologram.isShadow(),
                 hologram.isSeeThroughBlocks(),
                 hologram.getBackgroundColor()
@@ -66,6 +70,7 @@ public class HologramData {
             hologram.getScale(),
             hologram.getAlignment(),
             hologram.getBillboard(),
+            hologram.getRotation(),
             hologram.isShadow(),
             hologram.isSeeThroughBlocks(),
             hologram.getBackgroundColor()
@@ -81,6 +86,7 @@ public class HologramData {
             hologramData.getScale(),
             hologramData.getAlignment(),
             hologramData.getBillboard(),
+            hologramData.getRotation(),
             hologramData.isShadow(),
             hologramData.isSeeThroughBlocks(),
             hologramData.getBackgroundColor()
@@ -98,6 +104,7 @@ public class HologramData {
                 hologramData.getScale(),
                 hologramData.getAlignment(),
                 hologramData.getBillboard(),
+                hologramData.getRotation(),
                 hologramData.isShadow(),
                 hologramData.isSeeThroughBlocks(),
                 hologramData.getBackgroundColor()
