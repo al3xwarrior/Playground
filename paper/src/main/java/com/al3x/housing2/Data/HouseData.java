@@ -170,4 +170,16 @@ public class HouseData {
                 world.getWhitelistedPlayers().stream().map(player -> player.getUniqueId().toString()).toList()
         );
     }
+
+    public String getHouseID() {
+        return houseID;
+    }
+
+    public String getName() {
+        return houseName;
+    }
+
+    public String getOwnerID() {
+        return ownerID;
+    }
 }

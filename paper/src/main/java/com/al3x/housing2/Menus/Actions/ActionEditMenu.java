@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.OpenActionMenuEvent;
 import com.al3x.housing2.Instances.*;
@@ -22,9 +23,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Comparator;
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -502,6 +502,37 @@ public class ActionEditMenu extends Menu {
                             }
                         });
                         paginationMenu.open();
+                        break;
+                    }
+                    case HOUSE: {
+                        player.sendMessage(colorize("&ePlease enter the id of the House in chat!"));
+                        openChat(main, o.value.toString(), (input) -> {
+                            HousesManager housesManager = main.getHousesManager();
+
+                            // Set the field
+                            if (o.field == null) return;
+
+                            HouseData houseData = housesManager.getHouseData(input);
+                            if (houseData == null) {
+                                player.sendMessage(colorize("&cInvalid ID! Please enter a valid Housing ID."));
+                                return;
+                            }
+
+                            if (!Objects.equals(houseData.getOwnerID(), player.getUniqueId().toString())) {
+                                player.sendMessage(colorize("&cYou do not own this house! Please enter the ID of a house you own."));
+                                return;
+                            }
+
+                            if (Objects.equals(houseData.getHouseID(), house.getHouseUUID().toString())) {
+                                player.sendMessage(colorize("&cYou cannot select the same house! Please enter a different housing ID."));
+                                return;
+                            }
+
+                            o.setValue(input);
+
+                            player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: &r" + input));
+                        });
+
                         break;
                     }
                     case ACTION_SETTING: {
