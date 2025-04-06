@@ -8,6 +8,7 @@ public enum ProtoolsType implements EnumMaterial {
     REPLACE(Material.DIRT),
     COPY(Material.BUCKET),
     PASTE(Material.WATER_BUCKET),
+    INSERT(Material.MILK_BUCKET),
     UNDO(Material.BARRIER),
     ;
 

@@ -67,6 +67,9 @@ public class ProtoolsAction extends Action {
         if (mode == ProtoolsType.PASTE) {
             builder.info("Paste Location", "&a" + posA);
         }
+        if (mode == ProtoolsType.INSERT) {
+            builder.info("Insert Location", "&a" + posA);
+        }
         builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
         builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -142,6 +145,18 @@ public class ProtoolsAction extends Action {
             items.add(new ActionEditor.ActionItem("posA",
                     ItemBuilder.create(Material.GRASS_BLOCK)
                             .name("&ePaste Location")
+                            .info("&7Current Value", "")
+                            .info(null, "&a" + posA)
+                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                            .mClick(ItemBuilder.ActionType.USE_SELECTION),
+                    getPosFunction(backMenu, player, true)));
+        }
+
+        if (mode == ProtoolsType.INSERT) {
+            //start location
+            items.add(new ActionEditor.ActionItem("posA",
+                    ItemBuilder.create(Material.GRASS_BLOCK)
+                            .name("&eInsert Location")
                             .info("&7Current Value", "")
                             .info(null, "&a" + posA)
                             .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
@@ -234,7 +249,16 @@ public class ProtoolsAction extends Action {
                     player.sendMessage("&cInvalid position!");
                     return OutputType.ERROR;
                 }
-                protoolsManager.pasteRegion(house, house.getHouseUUID(), posA);
+                protoolsManager.pasteRegion(house, house.getHouseUUID(), posA, false);
+            }
+
+            case INSERT -> {
+                Location posA = getLocationFromString(player, house, this.posA);
+                if (posA == null) {
+                    player.sendMessage("&cInvalid position!");
+                    return OutputType.ERROR;
+                }
+                protoolsManager.pasteRegion(house, house.getHouseUUID(), posA, true);
             }
 
             case UNDO -> {

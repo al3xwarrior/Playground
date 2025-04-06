@@ -66,6 +66,11 @@ public class ProtoolsRegister extends AbstractHousingCommand implements Protools
                 .executes(this::paste)
                 .build(), List.of("/paste")
         );
+        commandRegistrar.register(Commands.literal("insert")
+                .requires(this::canUseProtoolsIS)
+                .executes(this::insert)
+                .build(), List.of("/insert")
+        );
         commandRegistrar.register(Commands.literal("removeselection")
                 .requires(this::canUseProtoolsIS)
                 .executes(this::removeSelection)

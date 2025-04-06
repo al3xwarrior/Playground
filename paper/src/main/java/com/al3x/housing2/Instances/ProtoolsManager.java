@@ -235,13 +235,13 @@ public class ProtoolsManager {
         sendMessage(uuid, colorize("&aRegion copied to clipboard!"));
     }
 
-    public void pasteRegion(Player player) {
+    public void pasteRegion(Player player, boolean onlyAir) {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
-        pasteRegion(house, player.getUniqueId(), player.getLocation());
+        pasteRegion(house, player.getUniqueId(), player.getLocation(), onlyAir);
     }
 
-    public void pasteRegion(HousingWorld house, UUID uuid, Location startLocation) {
+    public void pasteRegion(HousingWorld house, UUID uuid, Location startLocation, boolean onlyAir) {
         if (!checkSelection(house, uuid)) {
             sendMessage(uuid, colorize("&cYou must have a valid selection to do this."));
             return;
@@ -269,6 +269,7 @@ public class ProtoolsManager {
 
                 Location newLoc = startLocation.clone().add(relX, relY, relZ);
                 Block newBlock = newLoc.getBlock();
+                if (onlyAir && newBlock.getType() != Material.AIR) continue;
                 currentState.add(newBlock.getState());
                 changes.put(newBlock, new Duple<>(block.getType(), block.getBlockData()));
             }

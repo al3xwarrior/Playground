@@ -12,7 +12,6 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
-import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,14 +23,14 @@ import java.util.*;
 
 import static com.al3x.housing2.Enums.Locations.*;
 
-public class SpawnFakeBlock extends HTSLImpl {
+public class SpawnGhostBlock extends HTSLImpl {
 
     private String customLocation;
     private Locations location;
     ItemStack item;
 
-    public SpawnFakeBlock() {
-        super("Spawn Fake Block");
+    public SpawnGhostBlock() {
+        super("Spawn Ghost Block");
         this.location = Locations.INVOKERS_LOCATION;
         this.customLocation = "";
 
@@ -39,18 +38,18 @@ public class SpawnFakeBlock extends HTSLImpl {
 
     @Override
     public String keyword() {
-        return "spawnFakeBlock";
+        return "spawnGhostBlock";
     }
 
     @Override
     public String toString() {
-        return "SpawnFakeBlock (" + location + ")";
+        return "SpawnGhostBlock (" + location + ")";
     }
 
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHAIN_COMMAND_BLOCK);
-        builder.name("&eSpawn Fake Block");
+        builder.name("&eSpawn Ghost Block");
         builder.info("&eSettings", "");
         builder.info("Location", (customLocation.isEmpty() ? "&6" + location.name() : "&6" + customLocation));
         builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType()));
@@ -62,7 +61,7 @@ public class SpawnFakeBlock extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.CHAIN_COMMAND_BLOCK);
-        builder.name("&aSpawn Fake Block");
+        builder.name("&aSpawn Ghost Block");
         builder.description("Spawns a client-side block for the player.");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
@@ -100,7 +99,7 @@ public class SpawnFakeBlock extends HTSLImpl {
                         ActionEditor.ActionItem.ActionType.ITEM
                 )
         );
-        return new ActionEditor(4, "&eSpawn Fake Block Action Settings", items);
+        return new ActionEditor(4, "&eSpawn Ghost Block Action Settings", items);
     }
 
     @Override
@@ -188,6 +187,6 @@ public class SpawnFakeBlock extends HTSLImpl {
 
     @Override
     public String syntax() {
-        return "spawnFakeBlock <location> <item>";
+        return "spawnGhostBlock <location> <item>";
     }
 }
