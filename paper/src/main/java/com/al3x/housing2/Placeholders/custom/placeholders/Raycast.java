@@ -145,7 +145,7 @@ public class Raycast {
                 try {
                     Double range = argsHandled.getFirst();
                     Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                    if (cast.getThird() == BlockFace.EAST && cast.getFirst().getX() == cast.getFirst().getBlockX()) return String.valueOf(cast.getFirst().getBlockX() - 1);
+                    if (cast.getThird() == BlockFace.EAST && Math.abs(cast.getFirst().getX() - cast.getFirst().getBlockX()) < 0.000001) return String.valueOf(cast.getFirst().getBlockX() - 1);
                     return String.valueOf(cast.getFirst().getBlockX());
                 } catch (NumberFormatException e) {
                     return "null";
@@ -209,7 +209,7 @@ public class Raycast {
                 try {
                     Double range = argsHandled.getFirst();
                     Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                    if (cast.getThird() == BlockFace.UP && cast.getFirst().getY() == cast.getFirst().getBlockY()) return String.valueOf(cast.getFirst().getBlockY() - 1);
+                    if (cast.getThird() == BlockFace.UP && Math.abs(cast.getFirst().getY() - cast.getFirst().getBlockY()) < 0.000001) return String.valueOf(cast.getFirst().getBlockY() - 1);
                     return String.valueOf(cast.getFirst().getBlockY());
                 } catch (NumberFormatException e) {
                     return "null";
@@ -273,7 +273,7 @@ public class Raycast {
                 try {
                     Double range = argsHandled.getFirst();
                     Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                    if (cast.getThird() == BlockFace.SOUTH && cast.getFirst().getZ() == cast.getFirst().getBlockZ()) return String.valueOf(cast.getFirst().getBlockZ() - 1);
+                    if (cast.getThird() == BlockFace.SOUTH && Math.abs(cast.getFirst().getZ() - cast.getFirst().getBlockZ()) < 0.000001) return String.valueOf(cast.getFirst().getBlockZ() - 1);
                     return String.valueOf(cast.getFirst().getBlockZ());
                 } catch (NumberFormatException e) {
                     return "null";
@@ -343,9 +343,9 @@ public class Raycast {
                     int y = cast.getFirst().getBlockY();
                     int z = cast.getFirst().getBlockZ();
 
-                    if (cast.getThird() == BlockFace.EAST && cast.getFirst().getX() == cast.getFirst().getBlockX()) x--;
-                    if (cast.getThird() == BlockFace.UP && cast.getFirst().getY() == cast.getFirst().getBlockY()) y--;
-                    if (cast.getThird() == BlockFace.SOUTH && cast.getFirst().getZ() == cast.getFirst().getBlockZ()) z--;
+                    if (cast.getThird() == BlockFace.EAST && Math.abs(cast.getFirst().getX() - cast.getFirst().getBlockX()) < 0.000001) x--;
+                    if (cast.getThird() == BlockFace.UP && Math.abs(cast.getFirst().getY() - cast.getFirst().getBlockY()) < 0.000001) y--;
+                    if (cast.getThird() == BlockFace.SOUTH && Math.abs(cast.getFirst().getZ() - cast.getFirst().getBlockZ()) < 0.000001) z--;
 
                     return x + "," + y + "," + z;
                 } catch (NumberFormatException e) {
