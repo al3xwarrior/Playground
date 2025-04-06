@@ -221,7 +221,7 @@ public class JoinLeaveHouse implements Listener {
             VoiceChat.resetAudibility(player);
         }
 
-        for (Player onlinePlayer : player.getWorld().getPlayers()) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (!player.canSee(onlinePlayer)) {
                 player.showPlayer(Main.getInstance(), onlinePlayer);
             }
