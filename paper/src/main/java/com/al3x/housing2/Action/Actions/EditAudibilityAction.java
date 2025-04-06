@@ -200,12 +200,13 @@ public class EditAudibilityAction extends HTSLImpl {
         if (!data.containsKey("conditions")) return;
         Object subActions = data.get("conditions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<ActionData> actions = new ArrayList<>();
+        ArrayList<ConditionalData> conditionalData = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            ActionData action = gson.fromJson(jsonObject, ActionData.class);
-            actions.add(action);
+            ConditionalData condition = gson.fromJson(jsonObject, ConditionalData.class);
+            conditionalData.add(condition);
         }
+        conditions = ConditionalData.toList(conditionalData);
     }
 
     @Override

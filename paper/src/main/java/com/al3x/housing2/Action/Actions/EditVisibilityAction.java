@@ -7,7 +7,6 @@ import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.AttackEntityEnum;
 import com.al3x.housing2.Enums.EditVisibilityEnum;
 import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -205,12 +204,13 @@ public class EditVisibilityAction extends HTSLImpl {
         if (!data.containsKey("conditions")) return;
         Object subActions = data.get("conditions");
         JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<ActionData> actions = new ArrayList<>();
+        ArrayList<ConditionalData> conditionalData = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            ActionData action = gson.fromJson(jsonObject, ActionData.class);
-            actions.add(action);
+            ConditionalData condition = gson.fromJson(jsonObject, ConditionalData.class);
+            conditionalData.add(condition);
         }
+        conditions = ConditionalData.toList(conditionalData);
     }
 
     @Override
