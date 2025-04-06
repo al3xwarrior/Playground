@@ -26,7 +26,7 @@ public class EntityLimitListener implements Listener {
 
     HashMap<UUID, Boolean> staffAlerts = new HashMap<>();
 
-    private final int limit = 150;
+    private final int limit = Main.getInstance().getConfig().getInt("entityLimit", 150);
 
     private void alertStaff(World world) {
         if (world.getEntities().size() > limit + 5) {

@@ -225,8 +225,8 @@ public class DropItemAction extends Action {
             return OutputType.ERROR;
         }
 
-        if (dropppedItems.get() > 200) {
-            if (player.getInventory().firstEmpty() != -1) {
+        if (dropppedItems.get() > Main.getInstance().getConfig().getInt("droppedItemLimit", 200)) {
+            if (fallbackToInventory && player.getInventory().firstEmpty() != -1) {
                 player.getInventory().addItem(item);
             }
             return OutputType.ERROR;

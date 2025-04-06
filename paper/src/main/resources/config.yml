@@ -1,8 +1,14 @@
+# discord
 bot_key: ""
 guild_id: ""
+
+# limits
 globalLimits: 2000
 actionLimits:
   Particle Action: 100
+
+droppedItemLimit: 200
+entityLimit: 150
 
 # web
 api_port: 8080
