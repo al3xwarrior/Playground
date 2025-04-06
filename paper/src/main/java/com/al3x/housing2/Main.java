@@ -4,6 +4,7 @@ import com.al3x.housing2.Axiom.PlaygroundIntegration;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Listeners.HouseEvents.Permissions.BlockInteractions;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Mongo.DatabaseManager;
@@ -180,6 +181,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new OpenSomething(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new BlockInteractions(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new FishBucket(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PotionSplash(housesManager), this);
         Bukkit.getPluginManager().registerEvents(this, this);
