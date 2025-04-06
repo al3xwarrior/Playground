@@ -38,6 +38,11 @@ public class ProtoolsAction extends Action {
     }
 
     @Override
+    public String toString() {
+        return "ProtoolsAction (" + "posA='" + posA + ", posB='" + posB + ", mode=" + mode + ", blockList='" + blockList + ", blockList2='" + blockList2 + ')';
+    }
+
+    @Override
     public void createDisplayItem(ItemBuilder builder) {
         //Do nothing
     }

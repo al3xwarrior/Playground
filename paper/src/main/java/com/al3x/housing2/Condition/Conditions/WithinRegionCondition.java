@@ -22,7 +22,7 @@ public class WithinRegionCondition extends CHTSLImpl {
 
     @Override
     public String toString() {
-        return "idk";
+        return "Region: " + region;
     }
 
     @Override
