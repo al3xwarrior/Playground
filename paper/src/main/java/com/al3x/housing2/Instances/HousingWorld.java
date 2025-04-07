@@ -487,6 +487,7 @@ public class HousingWorld {
         }
 
         this.scoreboardTeam = board.registerNewTeam("housing-" + this.houseUUID.toString());
+        this.scoreboardTeam.setCanSeeFriendlyInvisibles(false);
     }
 
     private void notifyOwnerOfFailure(OfflinePlayer owner) {
