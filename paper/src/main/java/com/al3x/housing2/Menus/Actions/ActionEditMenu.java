@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Data.HouseData;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.OpenActionMenuEvent;
 import com.al3x.housing2.Instances.*;
@@ -13,6 +14,7 @@ import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,10 +23,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Comparator;
-import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -502,6 +504,76 @@ public class ActionEditMenu extends Menu {
                             }
                         });
                         paginationMenu.open();
+                        break;
+                    }
+                    case HOUSE: {
+                        if (o.field == null) return;
+
+                        List<Duple<HouseData, ItemBuilder>> houses = new ArrayList<>();
+                        HousesManager housesManager = main.getHousesManager();
+                        List<String> houseIDs = housesManager.getPlayerHouses().get(player.getUniqueId());
+
+                        for (String houseID : houseIDs) {
+                            HouseData h = housesManager.getHouseData(houseID);
+                            if (h == null) continue;
+
+                            String hIcon = h.getIcon() == null ? "OAK_DOOR" : h.getIcon();
+                            ItemStack houseItem;
+                            if (Material.getMaterial(hIcon) != null) {
+                                houseItem = new ItemStack(Material.getMaterial(hIcon));
+                            } else {
+                                try {
+                                    houseItem = Serialization.itemStackFromBase64(hIcon);
+                                } catch (IOException exception) {
+                                    houseItem = new ItemStack(Material.OAK_DOOR);
+                                }
+                            }
+
+                            ItemBuilder itemBuilder = ItemBuilder
+                                    .create(houseItem.getType())
+                                    .name(h.getName())
+                                    .info("ID", h.getHouseID());
+
+                            if (Objects.equals(houseID, house.getHouseUUID().toString())) {
+                                itemBuilder.extraLore(new String[]{"", "§c&oThis house"});
+                            } else {
+                                itemBuilder.lClick(ItemBuilder.ActionType.SELECT_YELLOW);
+                            }
+
+                            houses.add(new Duple<>(h, itemBuilder));
+                        }
+
+                        PaginationMenu<HouseData> paginationMenu = new PaginationMenu<>(
+                            main,
+                            "Select a House",
+                            houses,
+                            player,
+                            house,
+                            this,
+                            (selectedHouse) -> {
+                                // Safety check: make sure player owns the house
+                                // This should never happen in theory
+                                if (!Objects.equals(selectedHouse.getOwnerID(), player.getUniqueId().toString())) {
+                                    player.sendMessage(colorize("&cAn error occoured!"));
+                                    return;
+                                }
+
+                                if (Objects.equals(selectedHouse.getHouseID(), house.getHouseUUID().toString())) {
+                                    player.sendMessage(colorize("&cCan't send to the same house!"));
+                                    return;
+                                }
+
+                                // Set the field
+                                o.setValue(selectedHouse.getHouseID());
+
+                                player.sendMessage(colorize("&a" + item.getBuilder().getName() + " set to: &r" + selectedHouse.getHouseID()));
+
+                                open();
+                            }
+                        );
+
+                        paginationMenu.open();
+
                         break;
                     }
                     case ACTION_SETTING: {
