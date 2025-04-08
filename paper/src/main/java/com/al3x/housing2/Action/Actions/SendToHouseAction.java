@@ -1,21 +1,9 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Data.HouseData;
-import com.al3x.housing2.Events.CancellableEvent;
-import com.al3x.housing2.Data.ActionData;
-import com.al3x.housing2.Instances.HTSLHandler;
 import com.al3x.housing2.Instances.HousesManager;
-import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import com.al3x.housing2.Placeholders.custom.Placeholder;
-import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NumberUtilsKt;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -24,26 +12,22 @@ import java.util.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 
-public class JoinHouseAction extends HTSLImpl {
+public class SendToHouseAction extends HTSLImpl {
     private String housingId;
 
-    public JoinHouseAction(String housingId) {
-        super("Join House Action");
+    public SendToHouseAction(String housingId) {
+        super("Send to House Action");
 
         this.housingId = housingId;
     }
 
-    public JoinHouseAction() {
-        super("Join House Action");
+    public SendToHouseAction() {
+        super("Send to House Action");
     }
-
-    /*private HouseData getTargetHouseData(Main plugin) {
-        return plugin.getHousesManager().getHouseData(this.housingId);
-    }*/
 
     @Override
     public String toString() {
-        return "JoinHousingAction{" +
+        return "SendToHouseAction{" +
                 "housingId=" + housingId +
                 '}';
     }
@@ -51,7 +35,7 @@ public class JoinHouseAction extends HTSLImpl {
     @Override
     public void createDisplayItem(ItemBuilder builder) {
         builder.material(Material.SPRUCE_DOOR);
-        builder.name("&eJoin House Action");
+        builder.name("&eSend to House Action");
         builder.description("Send the player to a Housing");
         builder.info("&eSettings", "");
         builder.info("Housing ID", housingId);
@@ -63,7 +47,7 @@ public class JoinHouseAction extends HTSLImpl {
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
         builder.material(Material.SPRUCE_DOOR);
-        builder.name("&aJoin House Action");
+        builder.name("&eSend to House Action");
         builder.description("Send the player to a Housing");
         builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
@@ -80,7 +64,7 @@ public class JoinHouseAction extends HTSLImpl {
                 )
         );
 
-        return new ActionEditor(4, "&eJoin Housing Action Settings", items);
+        return new ActionEditor(4, "&eSend to House Action Settings", items);
     }
 
     @Override
@@ -121,29 +105,11 @@ public class JoinHouseAction extends HTSLImpl {
 
     @Override
     public String syntax() {
-        return "joinHouse <houseID>";
+        return "sendToHouse <houseID>";
     }
 
     @Override
     public String keyword() {
-        return "joinHouse";
+        return "sendToHouse";
     }
-
-    /*
-    TODO: check housing id for owner, etc. (similar to how the menu does it)
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (action.contains(" ")) {
-            Duple<String[], String> housingIdArg = handleArg(action.split(" "), 0);
-            this.housingId = housingIdArg.getSecond();
-        }
-
-        return nextLines;
-    }
-
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + keyword() + " \"" + housingId + "\"";
-    }
-     */
 }
