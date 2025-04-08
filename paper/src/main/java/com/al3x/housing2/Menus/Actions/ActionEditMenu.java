@@ -554,12 +554,12 @@ public class ActionEditMenu extends Menu {
                                 // Safety check: make sure player owns the house
                                 // This should never happen in theory
                                 if (!Objects.equals(selectedHouse.getOwnerID(), player.getUniqueId().toString())) {
-                                    player.sendMessage(colorize("&cAn error occoured!"));
+                                    player.sendMessage(colorize("&cYou aren't the owner of the selected house!"));
                                     return;
                                 }
 
                                 if (Objects.equals(selectedHouse.getHouseID(), house.getHouseUUID().toString())) {
-                                    player.sendMessage(colorize("&cCan't send to the same house!"));
+                                    player.sendMessage(colorize("&cYou can't send a player to the current house!"));
                                     return;
                                 }
 

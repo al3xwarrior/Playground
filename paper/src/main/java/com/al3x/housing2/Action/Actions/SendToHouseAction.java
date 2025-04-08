@@ -79,7 +79,7 @@ public class SendToHouseAction extends HTSLImpl {
             if (world != null) {
                 world.sendPlayerToHouse(player);
             } else {
-                player.sendMessage(colorize("&cWe couldn't load this house!"));
+                player.sendMessage(colorize("&cYou should've been sent to another house, but wasn't because that house couldn't be loaded!"));
             }
          }
         return OutputType.SUCCESS; // Not used
