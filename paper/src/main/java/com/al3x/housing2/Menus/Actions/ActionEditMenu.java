@@ -530,12 +530,12 @@ public class ActionEditMenu extends Menu {
                             }
 
                             ItemBuilder itemBuilder = ItemBuilder
-                                    .create(Material.PLAYER_HEAD)
+                                    .create(houseItem.getType())
                                     .name(h.getName())
                                     .info("ID", h.getHouseID());
 
                             if (Objects.equals(houseID, house.getHouseUUID().toString())) {
-                                itemBuilder.extraLore(colorize("§c&oThis house"));
+                                itemBuilder.extraLore(new String[]{"", "§c&oThis house"});
                             } else {
                                 itemBuilder.lClick(ItemBuilder.ActionType.SELECT_YELLOW);
                             }
