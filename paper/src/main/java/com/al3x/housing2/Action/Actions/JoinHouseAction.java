@@ -85,12 +85,6 @@ public class JoinHouseAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        return OutputType.SUCCESS; // Not used
-    }
-
-
-    @Override
-    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         HousesManager housesManager = house.getPlugin().getHousesManager();
         HousingWorld housingWorld = housesManager.getHouse(UUID.fromString(housingId));
 
@@ -106,28 +100,6 @@ public class JoinHouseAction extends HTSLImpl {
          }
         return OutputType.SUCCESS; // Not used
     }
-
-    /*
-    @Override
-    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        if (subActions.isEmpty()) {
-            return OutputType.SUCCESS;
-        }
-        String parsed = Placeholder.handlePlaceholders(npcId, house, player);
-        String npcId;
-        if (NumberUtilsKt.isInt(parsed)) {
-            npcId = parsed;
-        } else {
-            return OutputType.ERROR;
-        }
-
-        HousingNPC npc = house.getNPC(Integer.parseInt(npcId));
-
-        ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
-        executor1.setLimits(executor.getLimits());
-        return executor1.execute(npc.getCitizensNPC(), player, house, event);
-    }
-     */
 
     @Override
     public LinkedHashMap<String, Object> data() {
@@ -148,11 +120,6 @@ public class JoinHouseAction extends HTSLImpl {
     }
 
     @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + keyword() + " \"" + housingId + "\"";
-    }
-
-    @Override
     public String syntax() {
         return "joinHouse <houseID>";
     }
@@ -162,6 +129,8 @@ public class JoinHouseAction extends HTSLImpl {
         return "joinHouse";
     }
 
+    /*
+    TODO: check housing id for owner, etc. (similar to how the menu does it)
     @Override
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
         if (action.contains(" ")) {
@@ -171,4 +140,10 @@ public class JoinHouseAction extends HTSLImpl {
 
         return nextLines;
     }
+
+    @Override
+    public String export(int indent) {
+        return " ".repeat(indent) + keyword() + " \"" + housingId + "\"";
+    }
+     */
 }
