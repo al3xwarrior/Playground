@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -11,6 +8,9 @@ import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -23,88 +23,50 @@ import java.util.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.Color.fromColor;
 
+@ToString
+@Getter
+@Setter
 public class ShowBossbarAction extends HTSLImpl {
-
-    private String title;
-    private BossBar.Color barColor;
-    private BossBar.Overlay barStyle;
-    private String progress;
+    private String title = "&eHello World!";
+    private BossBar.Color barColor = BossBar.Color.WHITE;
+    private BossBar.Overlay barStyle = BossBar.Overlay.PROGRESS;
+    private String progress = "1.0";
 
     public ShowBossbarAction() {
-        super("Show Bossbar Action");
-        this.title = "&eHello World!";
-        this.barColor = BossBar.Color.WHITE;
-        this.barStyle = BossBar.Overlay.PROGRESS;
-        this.progress = "1.0";
-    }
-
-    @Override
-    public String toString() {
-        return "ShowBossbarAction (Title: " + title + ", BarColor: " + barColor + ", BarStyle: " + barStyle + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.WITHER_SKELETON_SKULL);
-        builder.name("&eDisplay Bossbar");
-        builder.info("&eSettings", "");
-        builder.info("Title", title);
-        builder.info("Color", barColor.name());
-        builder.info("Style", barStyle.name());
-        builder.info("Progress", progress);
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.WITHER_SKELETON_SKULL);
-        builder.name("&aDisplay Bossbar");
-        builder.description("Displays a bossbar for the player.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("title",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&eTitle")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + title)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("barColor",
-                        ItemBuilder.create(fromColor(barColor))
-                                .name("&eBar Color")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + barColor.name())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, BossBar.Color.values(), null
-                ),
-                new ActionEditor.ActionItem("barStyle",
-                        ItemBuilder.create(Material.FEATHER)
-                                .name("&eBar Style")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + barStyle.name())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, BossBar.Overlay.values(), Material.FEATHER
-                ),
-                new ActionEditor.ActionItem("progress",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&eProgress")
-                                .description("Must be a number between 0.0 and 1.0.")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + progress)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                )
+        super(
+                "show_bossbar_action",
+                "Show Bossbar",
+                "Shows a bossbar to the player.",
+                Material.WITHER_SKELETON_SKULL,
+                List.of("bossbar")
         );
 
-        return new ActionEditor(4, "&eShow Bossbar Action Settings", items);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "title",
+                        "Title",
+                        "The title of the bossbar.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "barColor",
+                        "Bar Color",
+                        "The color of the bossbar.",
+                        ActionProperty.PropertyType.ENUM, BossBar.Color.class
+                ),
+                new ActionProperty(
+                        "barStyle",
+                        "Bar Style",
+                        "The style of the bossbar.",
+                        ActionProperty.PropertyType.ENUM, BossBar.Overlay.class
+                ),
+                new ActionProperty(
+                        "progress",
+                        "Progress",
+                        "The progress of the bossbar.",
+                        ActionProperty.PropertyType.NUMBER, 0.0, 1.0
+                )
+        ));
     }
 
     @Override
@@ -136,36 +98,7 @@ public class ShowBossbarAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("title", title);
-        data.put("barColor", barColor.name());
-        data.put("barStyle", barStyle.name());
-        data.put("progress", progress);
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (!data.containsKey("title")) return;
-        title = (String) data.get("title");
-        try {
-            barColor = BossBar.Color.valueOf((String) data.getOrDefault("barColor", "WHITE"));
-            barStyle = BossBar.Overlay.valueOf((String) data.getOrDefault("barStyle", "PROGRESS"));
-        } catch (Exception e) {
-           barColor = BossBar.Color.WHITE;
-           barStyle = BossBar.Overlay.PROGRESS;
-        }
-        progress = data.get("progress").toString();
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "bossbar";
     }
 }

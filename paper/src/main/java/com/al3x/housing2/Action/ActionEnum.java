@@ -49,7 +49,7 @@ public enum ActionEnum {
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
     CLEAR_GLOBALSTATS("Clear Global Stats Action", ClearGlobalStatsAction.class),
     EXIT("Exit Action", ExitAction.class),
-    BREAK("Break Action", BreakBlockAction.class),
+    BREAK("Break Action", BreakAction.class),
     CONTINUE("Continue Action", ContinueAction.class),
     DISPLAY_MENU("Display Menu Action", DisplayMenuAction.class),
     CLOSE_MENU("Close Menu Action", CloseMenuAction.class),

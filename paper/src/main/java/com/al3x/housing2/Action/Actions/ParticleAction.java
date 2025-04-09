@@ -84,345 +84,94 @@ public class ParticleAction extends HTSLImpl {
                         "Location",
                         "The location to display the particle at.",
                         ActionProperty.PropertyType.CUSTOM,
-                        this::locationConsumer
+                        (house, menu, player) -> locationConsumer(house, menu, player, true)
                 ),
                 new ActionProperty(
                         "radius",
                         "Radius/Length",
                         "The radius of the circle or length of the line.",
-                        ActionProperty.PropertyType.NUMBER
+                        ActionProperty.PropertyType.NUMBER, 1.0, 20.0
                 ).showIf(type == ParticleType.LINE || type == ParticleType.CURVE && isLineRange),
+                new ActionProperty(
+                        "location2",
+                        "Location 2",
+                        "The second location to display the particle at.",
+                        ActionProperty.PropertyType.CUSTOM,
+                        (house, menu, player) -> locationConsumer(house, menu, player, false)
+                ).showIf(type == ParticleType.LINE || type == ParticleType.CURVE && !isLineRange),
+                new ActionProperty(
+                        "direction",
+                        "Direction",
+                        "The direction of the particle.",
+                        ActionProperty.PropertyType.ENUM,
+                        PushDirection.class
+                ).showIf(type == ParticleType.CURVE || type == ParticleType.LINE),
                 new ActionProperty(
                         "amount",
                         "Amount",
                         "The amount of particles to display.",
-                        ActionProperty.PropertyType.NUMBER
-                ),
+                        ActionProperty.PropertyType.NUMBER, 1.0, 100.0
+                ).showIf(type != ParticleType.DOT),
                 new ActionProperty(
                         "globallyVisible",
                         "Globally Visible",
                         "If true, the particle will be visible to all players in the world.",
                         ActionProperty.PropertyType.BOOLEAN
-                )
-        ));
+                ),
+                new ActionProperty(
+                        "size",
+                        "Size",
+                        "The size of the particle.",
+                        ActionProperty.PropertyType.NUMBER, 1.0, 10.0
+                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("size")),
+                new ActionProperty(
+                        "color",
+                        "Color",
+                        "The color of the particle.",
+                        ActionProperty.PropertyType.COLOR
+                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("color")),
+                new ActionProperty(
+                        "color2",
+                        "Color 2",
+                        "The second color of the particle.",
+                        ActionProperty.PropertyType.COLOR
+                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("color2")),
+                new ActionProperty(
+                        "speed",
+                        "Extra",
+                        "The speed of the particle.",
+                        ActionProperty.PropertyType.NUMBER, 0.0, 10.0
+                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("speed"))
+                ));
     }
 
-    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player) {
-        return (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
-                (coords, location) -> {
-                    if (location == CUSTOM) {
-                        customLocation = coords;
-                    } else {
-                        customLocation = null;
-                    }
-                    this.location = location;
-                    if (location == PLAYER_LOCATION) {
-                        customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
-                    }
-                    backMenu.open();
-                }
-        );
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu editMenu, Player player) {
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-        items.add(new ActionEditor.ActionItem("particle",
-                ItemBuilder.create(this.particle.getMaterial())
-                        .name("&eParticle")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + particle)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, Particles.values(), null
-        ));
-        items.add(new ActionEditor.ActionItem("type",
-                ItemBuilder.create(type.getMaterial())
-                        .name("&eType")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + type)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, ParticleType.values(), null
-        ));
-        items.add(new ActionEditor.ActionItem("location",
-                ItemBuilder.create(Material.COMPASS)
-                        .name("&eLocation")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + ((location == Locations.CUSTOM || location == PLAYER_LOCATION) ? customLocation : location))
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, Locations.values(), Material.COMPASS,
-                (event, o) -> getCoordinate(event, o, customLocation, house, editMenu,
-                        (coords, location) -> {
-                            customLocation = coords;
-                            this.location = location;
-                            if (location == PLAYER_LOCATION) {
-                                Location loc = player.getLocation();
-                                this.customLocation = loc.getX() + "," + loc.getY() + "," + loc.getZ();
-                            }
-                            Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                        }
-                )
-        ));
-        if ((type == ParticleType.LINE || type == ParticleType.CURVE) && !isLineRange) {
-            ActionEditor.ActionItem[] item1 = new ActionEditor.ActionItem[1];
-            ActionEditor.ActionItem i = new ActionEditor.ActionItem("location2",
-                    ItemBuilder.create(Material.COMPASS)
-                            .name("&eLocation 2")
-                            .info("&7Current Value", "")
-                            .info(null, "&a" + ((location2 == Locations.CUSTOM || location2 == PLAYER_LOCATION) ? customLocation2 : location2))
-                            .info(null, "")
-                            .info(null, "&7&lMiddle Click to toggle between")
-                            .info(null, "&7&lline range and location")
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                            .mClick(ItemBuilder.ActionType.TOGGLE_RANGE),
-                    (event, notExistant) -> {
-                        if (event.getClick() == ClickType.MIDDLE) {
-                            isLineRange = !isLineRange;
-                            editMenu.setupItems();
-                            return true;
-                        }
-                        List<Duple<Locations, ItemBuilder>> locs = new ArrayList<>();
-                        for (Locations loc : Locations.values()) {
-                            locs.add(new Duple<>(loc, ItemBuilder.create(Material.COMPASS).name("&e" + loc.name()).lClick(SELECT_YELLOW)));
-                        }
-                        new PaginationMenu<>(Main.getInstance(), "&eSelect a location type", locs, player, house, editMenu, (o) -> {
-                            getCoordinate(event, o, customLocation2, house, editMenu,
-                                    (coords, location) -> {
-                                        customLocation2 = coords;
-                                        this.location2 = location;
-                                        if (location == PLAYER_LOCATION) {
-                                            Location loc = player.getLocation();
-                                            this.customLocation2 = loc.getX() + "," + loc.getY() + "," + loc.getZ();
-                                        }
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    }
-                            );
-                        }).open();
-                        return true;
-                    }
-            );
-            item1[0] = i;
-            items.add(i);
-        }
-        if ((type != ParticleType.CURVE && type != ParticleType.LINE) || isLineRange) {
-            ItemBuilder itemBuilder = ItemBuilder.create(Material.SLIME_BALL)
-                    .name("&eRadius/Length")
-                    .info("&7Current Value", "")
-                    .info(null, "&a" + radius)
-                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
-            if (type == ParticleType.CURVE || type == ParticleType.LINE) {
-                itemBuilder
-                        .info(null, "")
-                        .info(null, "&7&lMiddle Click to toggle between")
-                        .info(null, "&7&lline range and location")
-                        .mClick(ItemBuilder.ActionType.TOGGLE_RANGE);
+    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player, boolean loc1) {
+        return (event, o) -> {
+            if (event.getClick() == ClickType.MIDDLE) {
+                isLineRange = !isLineRange;
+                backMenu.open();
+                return true;
             }
-            items.add(new ActionEditor.ActionItem("radius",
-                            itemBuilder,
-                            (e, o) -> {
-                                if (e.getClick() == ClickType.MIDDLE) {
-                                    isLineRange = !isLineRange;
-                                    editMenu.setupItems();
-                                    return true;
-                                }
-                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
-                                editMenu.openChat(Main.getInstance(), "" + radius, (s) -> {
-                                    if (NumberUtilsKt.isDouble(s)) {
-                                        radius = Double.parseDouble(s);
-                                        if (radius < 0) {
-                                            radius = 0D;
-                                        }
-                                        if (radius > 40) {
-                                            radius = 40D;
-                                        }
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    }
-                                });
-                                return true;
-                            }
-                    )
+            return getCoordinate(event, o, loc1 ? customLocation : customLocation2, house, backMenu,
+                    (coords, location) -> {
+                        if (location == CUSTOM) {
+                            if (loc1) customLocation = coords;
+                            else customLocation2 = coords;
+                        } else {
+                            if (loc1) customLocation = null;
+                            else customLocation2 = null;
+                        }
+                        if (loc1) this.location = location;
+                        else this.location2 = location;
+                        if (location == PLAYER_LOCATION) {
+                            String playerCoords = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
+                            if (loc1) customLocation = playerCoords;
+                            else customLocation2 = playerCoords;
+                        }
+                        backMenu.open();
+                    }
             );
-        }
-
-        if (type == ParticleType.LINE || type == ParticleType.CURVE && isLineRange) {
-            items.add(new ActionEditor.ActionItem("direction",
-                    ItemBuilder.create(Material.COMPASS)
-                            .name("&eDirection")
-                            .info("&7Current Value", "")
-                            .info(null, "&a" + direction)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
-                    (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
-                        customDirection = str;
-                        direction = dir;
-                        editMenu.open();
-                    }))
-            );
-        }
-
-        //May be deprecating this soon
-        if (type != ParticleType.DOT) {
-            items.add(new ActionEditor.ActionItem("amount",
-                            ItemBuilder.create(Material.IRON_BARS)
-                                    .name("&eAmount")
-                                    .description("Amount of locations to spawn particles at. eg. A line with a radius of 8 and an amount of 8 will have 1 particle every block.")
-                                    .info("&7Current Value", "")
-                                    .info(null, "&a" + amount)
-                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            ActionEditor.ActionItem.ActionType.DOUBLE, 1, 40 //Pretty easy to change the max value
-                    )
-            );
-        }
-
-        items.add(new ActionEditor.ActionItem("globallyVisible",
-                ItemBuilder.create(Material.ENDER_EYE)
-                        .name("&eGlobally Visible")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + globallyVisible)
-                        .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                (event, o) -> {
-                    globallyVisible = !globallyVisible;
-                    Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                    return true;
-                }
-        ));
-
-        for (String key : ParticleUtils.keys(particle)) {
-            switch (key) {
-                case "size" -> {
-                    if (size == null) {
-                        size = 1F;
-                    }
-                    items.add(new ActionEditor.ActionItem("size",
-                            ItemBuilder.create(Material.PAPER)
-                                    .name("&eSize")
-                                    .info("&7Current Value", "")
-                                    .info(null, "&a" + size)
-                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            (event, o) -> {
-                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
-                                editMenu.openChat(Main.getInstance(), "" + size, (s) -> {
-                                    if (NumberUtilsKt.isDouble(s)) {
-                                        size = Float.parseFloat(s);
-                                        if (size < 0) {
-                                            size = 0F;
-                                        }
-                                        if (size > 10) {
-                                            size = 10F;
-                                        }
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    }
-                                });
-                                return true;
-                            }
-                    ));
-                }
-                case "color" -> {
-                    if (color1 == null) {
-                        color1 = "255,255,255";
-                    }
-                    items.add(new ActionEditor.ActionItem("color1",
-                            ItemBuilder.create(Material.PINK_DYE)
-                                    .name("&eColor 1")
-                                    .info("&7Current Value", "")
-                                    .info(null, "&a" + color1)
-                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            (event, o) -> {
-                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
-                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
-                                    String[] split = s.split(",");
-                                    if (split.length != 3) {
-                                        player.sendMessage(colorize("&cInvalid color format!"));
-                                        return;
-                                    }
-                                    try {
-                                        int r = Integer.parseInt(split[0]);
-                                        int g = Integer.parseInt(split[1]);
-                                        int b = Integer.parseInt(split[2]);
-                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                                            player.sendMessage(colorize("&cInvalid color format!"));
-                                            return;
-                                        }
-                                        color1 = s;
-                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    } catch (NumberFormatException e) {
-                                        player.sendMessage(colorize("&cInvalid color format!"));
-                                    }
-                                });
-                                return true;
-                            })
-                    );
-                }
-                case "color2" -> {
-                    if (color2 == null) {
-                        color2 = "255,255,255";
-                    }
-                    items.add(new ActionEditor.ActionItem("color2",
-                            ItemBuilder.create(Material.PURPLE_DYE)
-                                    .name("&eColor 2")
-                                    .info("&7Current Value", "")
-                                    .info(null, "&a" + color2)
-                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            (event, o) -> {
-                                player.sendMessage(colorize("&ePlease enter the color in RGB format (0-255) separated by commas."));
-                                editMenu.openChat(Main.getInstance(), "255,255,255", (s) -> {
-                                    String[] split = s.split(",");
-                                    if (split.length != 3) {
-                                        player.sendMessage(colorize("&cInvalid color format!"));
-                                        return;
-                                    }
-                                    try {
-                                        int r = Integer.parseInt(split[0]);
-                                        int g = Integer.parseInt(split[1]);
-                                        int b = Integer.parseInt(split[2]);
-                                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                                            player.sendMessage(colorize("&cInvalid color format!"));
-                                            return;
-                                        }
-                                        color2 = s;
-                                        player.sendMessage(colorize("&aColor set to " + r + ", " + g + ", " + b + "."));
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    } catch (NumberFormatException e) {
-                                        player.sendMessage(colorize("&cInvalid color format!"));
-                                    }
-                                });
-                                return true;
-                            })
-                    );
-                }
-                case "speed" -> {
-                    if (speed == null) {
-                        speed = 1D;
-                    }
-                    items.add(new ActionEditor.ActionItem("speed",
-                            ItemBuilder.create(Material.FEATHER)
-                                    .name("&eExtra")
-                                    .description("This controls some odd properties for some particles, sometimes it controls the speed, other times it controls how they're colored.")
-                                    .info("&7Current Value", "")
-                                    .info(null, "&a" + speed)
-                                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                            (event, o) -> {
-                                player.sendMessage(colorize("&ePlease enter the number you wish to see in chat!"));
-                                editMenu.openChat(Main.getInstance(), "" + speed, (s) -> {
-                                    if (NumberUtilsKt.isDouble(s)) {
-                                        speed = Double.parseDouble(s);
-                                        if (speed < 0) {
-                                            speed = 0D;
-                                        }
-                                        if (speed > 10) {
-                                            speed = 10D;
-                                        }
-                                        Bukkit.getScheduler().runTask(Main.getInstance(), editMenu::open);
-                                    }
-                                });
-                                return true;
-                            }
-                    ));
-                }
-            }
-        }
-
-        return new ActionEditor(5, "&eParticle Settings", items);
+        };
     }
 
     public List<Location> getCircle(Location center, double radius, int amount) {
@@ -482,30 +231,6 @@ public class ParticleAction extends HTSLImpl {
             case SOUTH -> new Vector(0, 0, direction.getZ()).normalize();
             case EAST -> new Vector(direction.getX(), 0, 0).normalize();
             case WEST -> new Vector(-direction.getX(), 0, 0).normalize();
-            case CUSTOM -> {
-                if (customDirection == null) {
-                    yield null;
-                }
-                String[] split = customDirection.split(",");
-                if (split.length != 2) {
-                    yield null;
-                }
-
-                try {
-                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
-                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector vector = new Vector();
-                    double rotX = yaw;
-                    double rotY = pitch;
-                    vector.setY(-Math.sin(Math.toRadians(rotY)));
-                    double xz = Math.cos(Math.toRadians(rotY));
-                    vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
-                    vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
-                    yield vector;
-                } catch (NumberFormatException e) {
-                    yield null;
-                }
-            }
             default -> new Vector(0, 0, 0);
         };
         if (curve == null) {
@@ -562,27 +287,6 @@ public class ParticleAction extends HTSLImpl {
             case RIGHT -> {
                 Vector dir = base.getDirection();
                 direction = new Vector(dir.getZ(), 0, -dir.getX()).normalize();
-            }
-            case CUSTOM -> {
-                String[] split = customDirection.split(",");
-                if (split.length != 2) {
-                    return null;
-                }
-                //pitch,yaw
-                try {
-                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
-                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector vector = new Vector();
-                    double rotX = yaw;
-                    double rotY = pitch;
-                    vector.setY(-Math.sin(Math.toRadians(rotY)));
-                    double xz = Math.cos(Math.toRadians(rotY));
-                    vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
-                    vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
-                    direction = vector;
-                } catch (NumberFormatException e) {
-                    return null;
-                }
             }
         }
 
@@ -747,11 +451,6 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
-    public String keyword() {
-        return "particle";
-    }
-
-    @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <particle> <type> <radius> <amount> <location> <location2> [customData]";
     }
@@ -771,7 +470,7 @@ public class ParticleAction extends HTSLImpl {
         StringBuilder customData = new StringBuilder();
         List<String> requireNonNull = ParticleUtils.keys(particle);
         if (requireNonNull == null) {
-            return " ".repeat(indent) + keyword() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2;
+            return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2;
         }
         for (String key : requireNonNull) {
             switch (key) {
@@ -782,7 +481,7 @@ public class ParticleAction extends HTSLImpl {
             }
         }
 
-        return " ".repeat(indent) + keyword() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2 + customData;
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2 + customData;
     }
 
     @Override

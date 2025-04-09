@@ -58,7 +58,7 @@ public abstract class HTSLImpl extends Action {
         }
         String output = builder.toString();
         if (output.endsWith(" ")) output = output.substring(0, output.length() - 1);
-        return " ".repeat(indent) + getId() + (!output.isEmpty() ? " " + output: "");
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + (!output.isEmpty() ? " " + output: "");
     }
 
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {

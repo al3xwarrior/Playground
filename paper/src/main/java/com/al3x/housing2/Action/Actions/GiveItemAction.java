@@ -54,7 +54,7 @@ public class GiveItemAction extends Action {
                         "slot",
                         "Slot",
                         "The slot to give the item to. -1 for first available slot, -2 for hand slot, -3 for offhand slot.",
-                        ActionProperty.PropertyType.NUMBER // FIXME
+                        ActionProperty.PropertyType.SLOT
                 ),
                 new ActionProperty(
                         "replaceExistingSlot",

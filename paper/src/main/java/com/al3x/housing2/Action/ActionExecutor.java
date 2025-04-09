@@ -1,6 +1,6 @@
 package com.al3x.housing2.Action;
 
-import com.al3x.housing2.Action.Actions.BreakBlockAction;
+import com.al3x.housing2.Action.Actions.BreakAction;
 import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
@@ -133,7 +133,7 @@ public class ActionExecutor {
                 return CONTINUE;
             }
 
-            if (action instanceof BreakBlockAction && context.equals("repeat")) {
+            if (action instanceof BreakAction && context.equals("repeat")) {
                 if (onBreak != null) {
                     onBreak.accept(this);
                 }

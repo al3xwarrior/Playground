@@ -1,15 +1,15 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.StringUtilsKt;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
@@ -24,116 +24,57 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
+@ToString
+@Getter
+@Setter
 public class SendTitleAction extends HTSLImpl {
 
-    private String title;
-    private String subtitle;
-    private double fadeIn;
-    private double stay;
-    private double fadeOut;
+    private String title = "Title";
+    private String subtitle = "Subtitle";
+    private double fadeIn = 20;
+    private double stay = 20;
+    private double fadeOut = 20;
 
     public SendTitleAction() {
-        super("Send Title Action");
-        this.title = "Title";
-        this.subtitle = "Subtitle";
-        this.fadeIn = 20;
-        this.stay = 20;
-        this.fadeOut = 20;
-    }
-
-    public SendTitleAction(String title, String subtitle) {
-        super("Send Title Action");
-        this.title = title;
-        this.subtitle = subtitle;
-        this.fadeIn = 20;
-        this.stay = 20;
-        this.fadeOut = 20;
-    }
-
-    public SendTitleAction(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        super("Send Title Action");
-        this.title = title;
-        this.subtitle = subtitle;
-        this.fadeIn = fadeIn;
-        this.stay = stay;
-        this.fadeOut = fadeOut;
-    }
-
-    @Override
-    public String toString() {
-        return "SendTitleAction (Title: " + title + ", Subtitle: " + subtitle + ", FadeIn: " + fadeIn + ", Stay: " + stay + ", FadeOut: " + fadeOut + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BOOK);
-        builder.name("&eDisplay Title");
-        builder.info("&eSettings", "");
-        builder.info("Title", title);
-        builder.info("Subtitle", subtitle);
-        builder.info("Fade In Time", "&6" + fadeIn + " ticks");
-        builder.info("Stay Time", "&6" + stay + " ticks");
-        builder.info("Fade Out Time", "&6" + fadeOut + " ticks");
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.BOOK);
-        builder.name("&aDisplay Title");
-        builder.description("Displays a Title and Subtitle to the player.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("title",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&eTitle")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + title)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("subtitle",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&eSubtitle")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + subtitle)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("fadeIn",
-                        ItemBuilder.create(Material.CLOCK)
-                                .name("&eFade In Time")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + fadeIn)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.INT
-                ),
-                new ActionEditor.ActionItem("stay",
-                        ItemBuilder.create(Material.CLOCK)
-                                .name("&eStay Time")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + stay)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.INT
-                ),
-                new ActionEditor.ActionItem("fadeOut",
-                        ItemBuilder.create(Material.CLOCK)
-                                .name("&eFade Out Time")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + fadeOut)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.INT
-                )
+        super("send_title_action",
+                "Send Title",
+                "Sends a title and subtitle to the player.",
+                Material.BOOK,
+                List.of("title")
         );
 
-        return new ActionEditor(4, "&eSend Title Action Settings", items);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "title",
+                        "Title",
+                        "The title to send.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "subtitle",
+                        "Subtitle",
+                        "The subtitle to send.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "fadeIn",
+                        "Fade In Time",
+                        "The time it takes for the title to fade in.",
+                        ActionProperty.PropertyType.INT, 0.0, 100.0
+                ),
+                new ActionProperty(
+                        "stay",
+                        "Stay Time",
+                        "The time the title stays on screen.",
+                        ActionProperty.PropertyType.INT, 0.0, 100.0
+                ),
+                new ActionProperty(
+                        "fadeOut",
+                        "Fade Out Time",
+                        "The time it takes for the title to fade out.",
+                        ActionProperty.PropertyType.INT, 0.0, 100.0
+                )
+        ));
     }
 
     @Override
@@ -144,55 +85,8 @@ public class SendTitleAction extends HTSLImpl {
         return OutputType.SUCCESS;
     }
 
-    public String getTitle() {
-        return title;
-    }
-    public String getSubtitle() {
-        return subtitle;
-    }
-    public double getFadeIn() {
-        return fadeIn;
-    }
-    public double getFadeOut() {
-        return fadeOut;
-    }
-    public double getStay() {
-        return stay;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
-    }
-    public void setFadeIn(int fadeIn) {
-        this.fadeIn = fadeIn;
-    }
-    public void setFadeOut(int fadeOut) {
-        this.fadeOut = fadeOut;
-    }
-    public void setStay(int stay) {
-        this.stay = stay;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("title", title);
-        data.put("subtitle", subtitle);
-        data.put("fadeIn", fadeIn);
-        data.put("stay", stay);
-        data.put("fadeOut", fadeOut);
-        return data;
-    }
-
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "title";
     }
 }

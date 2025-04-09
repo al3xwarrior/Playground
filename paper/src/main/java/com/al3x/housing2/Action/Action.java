@@ -182,34 +182,6 @@ public abstract class Action {
         return actions;
     }
 
-    protected boolean getDirection(InventoryClickEvent event, Object obj, HousingWorld house, Menu editMenu, BiConsumer<String, PushDirection> consumer) {
-        if (obj instanceof PushDirection direction && direction == PushDirection.CUSTOM) {
-            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom direction in the chat. (pitch,yaw)"));
-            editMenu.openChat(Main.getInstance(), (message) -> {
-                //pitch,yaw
-                String[] split = message.split(",");
-                if (split.length != 2) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
-                    return;
-                }
-
-                try {
-                    //Check if the placeholders are valid
-                    Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[0]));
-                    Float.parseFloat(HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, split[1]));
-                    consumer.accept(message, PushDirection.CUSTOM);
-                } catch (NumberFormatException e) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <pitch>,<yaw>"));
-                }
-            });
-        }
-
-        if ((obj instanceof PushDirection direction) && direction != PushDirection.CUSTOM) {
-            consumer.accept(null, direction);
-        }
-        return false;
-    }
-
     protected boolean getCoordinate(InventoryClickEvent event, Object obj, String current, HousingWorld house, Menu editMenu, BiConsumer<String, Locations> consumer) {
         if (obj instanceof Locations location && location == Locations.CUSTOM) {
             event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z) or (x,y,z,yaw,pitch)"));

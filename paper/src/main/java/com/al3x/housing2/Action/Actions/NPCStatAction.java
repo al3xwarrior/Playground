@@ -60,6 +60,13 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
                         ActionProperty.PropertyType.STRING
                 ),
                 new ActionProperty(
+                        "statInstances",
+                        "Stat Instances",
+                        "The instances of the stat to modify.",
+                        ActionProperty.PropertyType.STAT_INSTANCE,
+                        new ActionProperty.StatProperties()
+                ),
+                new ActionProperty(
                         "addStatInstance",
                         "Add Stat Instance",
                         "Adds a new stat instance.",
@@ -113,7 +120,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
                 sb.append(" ");
             }
         }
-        return " ".repeat(indent) + getId() + " \"" + statName + "\" " + sb.toString();
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " \"" + statName + "\" " + sb.toString();
     }
 
     @Override

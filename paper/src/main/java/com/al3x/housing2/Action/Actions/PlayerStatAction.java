@@ -14,6 +14,8 @@ import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,182 +28,59 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class PlayerStatAction extends HTSLImpl {
 
     private static final Gson gson = new Gson();
-    private String statName;
 
-    private List<StatInstance> statInstances = new ArrayList<>();
-
+    @Setter
+    private String statName = "kills";
+    @Setter
+    @Getter
     private StatOperation mode;
+    @Getter
     private StatValue value;
 
+    private List<StatInstance> statInstances = new ArrayList<>(List.of(
+            new StatInstance("player")
+    ));
+
     public PlayerStatAction() {
-        super("Player Stat Action");
-        this.statName = "Kills";
+        super(
+                "player_stat_action",
+                "Player Stat",
+                "Changes the stat of a Player.",
+                Material.FEATHER,
+                List.of("stat")
+        );
 
-        this.statInstances.add(new StatInstance("player"));
-    }
-
-    @Override
-    public String toString() {
-        // add the first 3 statinances then do ... <number of statinstances - 3> more
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
-            sb.append(statInstances.get(i).mode).append(" ").append(Color.removeColor(statInstances.get(i).value.toString()));
-            if (i != Math.min(3, statInstances.size()) - 1) {
-                sb.append(", ");
-            }
-        }
-        if (statInstances.size() > 3) {
-            sb.append("... ").append(statInstances.size() - 3).append(" more");
-        }
-
-        return "PlayerStatAction (StatName: " + statName + ", StatInstances: " + sb.toString() + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&eChange Player Stat");
-        builder.info("&eSettings", "");
-        builder.info("Stat", "&a" + statName);
-        if (statInstances.size() > 3) {
-
-        } else {
-            builder.info("&eStat Changes", "");
-            for (int i = 0; i < Math.min(3, statInstances.size()); i++) {
-                builder.info("Mode", "&6" + statInstances.get(i).mode);
-                builder.info("Value", "&a" + statInstances.get(i).value);
-            }
-        }
-
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FEATHER);
-        builder.name("&aChange Player Stat");
-        builder.description("Modify a stat of the player who triggered the action.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        if (backMenu == null) {
-            return new ActionEditor(6, "&ePlayer Stat Action Settings");
-        }
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-
-        items.add(new ActionEditor.ActionItem("statName",
-                ItemBuilder.create(Material.BOOK)
-                        .name("&eStat")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + statName)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING
-        ));
-
-        for (int i = 0; i < statInstances.size(); i++) {
-            StatInstance instance = statInstances.get(i);
-            ItemBuilder modeItem = ItemBuilder.create(Material.COMPASS)
-                    .name("&eMode")
-                    .info("&7Current Value", "")
-                    .info(null, "&a" + instance.mode)
-                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW);
-            if (i > 0) {
-                modeItem.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-            }
-
-            int finalI = i;
-            items.add(new ActionEditor.ActionItem("mode",
-                    modeItem,
-                    (event, obj) -> {
-                        if (event.getClick() == ClickType.RIGHT && finalI > 0) {
-                            statInstances.remove(instance);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "statName",
+                        "Stat Name",
+                        "The name of the stat to change.",
+                        ActionProperty.PropertyType.STRING
+                ),
+                new ActionProperty(
+                        "statInstances",
+                        "Stat Instances",
+                        "The instances of the stat to modify.",
+                        ActionProperty.PropertyType.STAT_INSTANCE,
+                        new ActionProperty.StatProperties()
+                ),
+                new ActionProperty(
+                        "addStatInstance",
+                        "Add Stat Instance",
+                        "Adds a new stat instance.",
+                        ActionProperty.PropertyType.CUSTOM, 50,
+                        (house, backMenu, player) -> (event, obj) -> {
+                            if (statInstances.size() >= 6) {
+                                backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
+                                return false;
+                            }
+                            statInstances.add(new StatInstance("npc"));
                             backMenu.open();
                             return true;
                         }
-
-                        if (event.getClick() != ClickType.LEFT) return false;
-
-                        List<Duple<StatOperation, ItemBuilder>> modes = new ArrayList<>();
-                        for (StatOperation mode : StatOperation.values()) {
-                            if (mode.expressionOnly()) continue;
-                            modes.add(new Duple<>(mode, ItemBuilder.create(mode.getMaterial()).name("&a" + mode)));
-                        }
-                        new PaginationMenu<>(Main.getInstance(), "&eSelect a mode", modes, backMenu.getOwner(), house, backMenu, (mode) -> {
-                            instance.mode = mode;
-                            backMenu.open();
-                        }).open();
-
-                        return true;
-                    }
-            ));
-
-            ItemBuilder valueItem = ItemBuilder.create(Material.BOOK)
-                    .name("&eAmount")
-                    .info("&7Current Value", "")
-                    .info(null, "&a" + instance.value)
-                    .info(null, "")
-                    .info("Expression", (instance.value.isExpression() ? "&aEnabled" : "&cDisabled"))
-                    .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
-                    .mClick(ItemBuilder.ActionType.TOGGLE_EXPRESSION);
-
-            if (i > 0) {
-                valueItem.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-            }
-
-            items.add(new ActionEditor.ActionItem("value",
-                    valueItem,
-                    ActionEditor.ActionItem.ActionType.CUSTOM, (event, obj) -> {
-                if (event.getClick() == ClickType.MIDDLE) {
-                    instance.value.setExpression(!instance.value.isExpression());
-                    backMenu.open();
-                    return true;
-                }
-
-                if (event.getClick() == ClickType.RIGHT && finalI > 0) {
-                    statInstances.remove(instance);
-                    backMenu.open();
-                    return true;
-                }
-
-                if (event.getClick() != ClickType.LEFT) return false;
-
-                if (instance.value.isExpression()) {
-                    new ActionEditMenu(instance.value, Main.getInstance(), backMenu.getOwner(), house, backMenu).open();
-                } else {
-                    backMenu.getOwner().sendMessage(colorize("&ePlease enter the text you wish to set in chat!"));
-                    backMenu.openChat(Main.getInstance(), instance.value.getLiteralValue(), (value) -> {
-                        instance.value.setLiteralValue(value);
-                        backMenu.getOwner().sendMessage(colorize("&aValue set to: &e" + value));
-                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), backMenu::open, 1L);
-                    });
-                }
-                return true;
-            }
-            ));
-        }
-
-        items.add(new ActionEditor.ActionItem(
-                ItemBuilder.create(Material.PAPER)
-                        .name("&aAdd Stat Expression")
-                        .description("Add a new stat expression instance.\n\nBasically adds a new mode and value to the expression."),
-                ActionEditor.ActionItem.ActionType.CUSTOM, 50, (event, obj) -> {
-            if (statInstances.size() >= 6) {
-                backMenu.getOwner().sendMessage(colorize("&cYou can only have a maximum of 6 stat instances."));
-                return false;
-            }
-            statInstances.add(new StatInstance("player"));
-            backMenu.open();
-            return true;
-        }
+                )
         ));
 
-        return new ActionEditor(6, "&ePlayer Stat Action Settings", items);
     }
 
     @Override
@@ -232,26 +111,6 @@ public class PlayerStatAction extends HTSLImpl {
         }
 
         return OutputType.SUCCESS;
-    }
-
-    public String getStatName() {
-        return statName;
-    }
-
-    public StatOperation getMode() {
-        return mode;
-    }
-
-    public void setStatName(String name) {
-        this.statName = name;
-    }
-
-    public void setMode(StatOperation mode) {
-        this.mode = mode;
-    }
-
-    public StatValue getValue() {
-        return value;
     }
 
     @Override
@@ -293,12 +152,7 @@ public class PlayerStatAction extends HTSLImpl {
                 sb.append(" ");
             }
         }
-        return " ".repeat(indent) + keyword() + " \"" + statName + "\" " + sb.toString();
-    }
-
-    @Override
-    public String keyword() {
-        return "stat";
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " \"" + statName + "\" " + sb.toString();
     }
 
     @Override

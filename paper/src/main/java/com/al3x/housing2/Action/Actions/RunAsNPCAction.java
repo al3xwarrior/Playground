@@ -13,83 +13,50 @@ import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-
+@ToString
+@Getter
+@Setter
 public class RunAsNPCAction extends HTSLImpl {
     private static final Gson gson = new Gson();
     private String npcId;
-    private List<Action> subActions;
+    private List<Action> subActions = new ArrayList<>();
 
     public RunAsNPCAction(HousingNPC npc) {
-        super("Run As NPC Action");
-
+        this();
         this.npcId = String.valueOf(npc.getInternalID());
-        this.subActions = new ArrayList<>();
-    }
-
-    public RunAsNPCAction(ArrayList<Action> subactions) {
-        super("Run As NPC Action");
-        this.subActions = subactions;
     }
 
     public RunAsNPCAction() {
-        super("Run As NPC Action");
-        this.subActions = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "RunAsNPCAction{" +
-                "npcId=" + npcId +
-                ", subActions=" + subActions +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&eRun As NPC Action");
-        builder.description("Change the settings for this action");
-        builder.info("&eSettings", "");
-        builder.info("NPC ID", npcId);
-        builder.info("Actions", subActions.size());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&aRun As NPC Action");
-        builder.description("Executes the action as an NPC");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = List.of(
-                new ActionEditor.ActionItem("npcId",
-                        ItemBuilder.create(Material.PLAYER_HEAD)
-                                .name("&aNPC ID")
-                                .info("&7Current Value", "&e" + npcId)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("subActions",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&aActions")
-                                .info("&7Current Value", "")
-                                .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ACTION
-                )
+        super(
+                "run_as_npc_action",
+                "Run As NPC Action",
+                "Executes the action as an NPC.",
+                Material.PLAYER_HEAD,
+                List.of("runAsNPC")
         );
-        return new ActionEditor(4, "&eChat Action Settings", items);
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "npcId",
+                        "NPC ID",
+                        "The ID of the NPC to run the action as.",
+                        ActionProperty.PropertyType.NUMBER
+                ),
+                new ActionProperty(
+                        "subActions",
+                        "Actions",
+                        "The actions to execute.",
+                        ActionProperty.PropertyType.ACTION
+                )
+        ));
     }
 
     @Override
@@ -125,14 +92,6 @@ public class RunAsNPCAction extends HTSLImpl {
         ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
         executor1.setLimits(executor.getLimits());
         return executor1.execute(npc.getCitizensNPC(), player, house, event);
-    }
-
-    public List<Action> getSubActions() {
-        return subActions;
-    }
-
-    public void setSubActions(ArrayList<Action> subActions) {
-        this.subActions = subActions;
     }
 
     @Override
@@ -173,8 +132,8 @@ public class RunAsNPCAction extends HTSLImpl {
             if (!(action instanceof HTSLImpl impl)) continue;
             builder.append(impl.export(indent + 4)).append("\n");
         }
-        if (builder.isEmpty()) return " ".repeat(indent) + keyword();
-        return " ".repeat(indent) + keyword() + " \"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
+        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " \"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
     }
 
     @Override

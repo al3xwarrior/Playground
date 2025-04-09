@@ -12,6 +12,8 @@ import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,71 +24,35 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 
+@ToString
+@Getter
 public class RepeatAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
-    private List<Action> subActions;
-    private String times;
-
-    public RepeatAction(ArrayList<Action> subactions, String times) {
-        super("Repeat Action");
-        this.subActions = subactions;
-        this.times = times;
-    }
+    private List<Action> subActions = new ArrayList<>();
+    private String times = "1";
 
     public RepeatAction() {
-        super("Repeat Action");
-        this.subActions = new ArrayList<>();
-        this.times = "1";
-    }
-
-    @Override
-    public String toString() {
-        return "RepeatAction (SubActions: " + subActions.stream().map(Action::toString).reduce((a, b) -> a + ", " + b).orElse("") + "times: " + times + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REPEATER);
-        builder.name("&eRepeat Action");
-        builder.info("&eSettings", "");
-        builder.info("Actions", subActions.size());
-        builder.info("Times", times);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.REPEATER);
-        builder.name("&aRepeat Action");
-        builder.description("Execute actions in the list multiple times");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = List.of(
-                new ActionEditor.ActionItem("subActions",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&aActions")
-                                .info("&7Current Value", "")
-                                .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ACTION
-                ),
-                new ActionEditor.ActionItem("times",
-                        ItemBuilder.create(Material.CLOCK)
-                                .name("&aTimes")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + times)
-                                .info(null, "")
-                                .info(null, "&fMax: &c20 Times")
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                )
+        super("repeat_action",
+                "Repeat Action",
+                "Repeats the actions in the list a specified number of times.",
+                Material.REPEATER,
+                List.of("repeat")
         );
-        return new ActionEditor(4, "&eChat Action Settings", items);
+
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "subActions",
+                        "Actions",
+                        "The actions to execute.",
+                        ActionProperty.PropertyType.ACTION
+                ),
+                new ActionProperty(
+                        "times",
+                        "Times",
+                        "The number of times to repeat the actions.",
+                        ActionProperty.PropertyType.NUMBER, 1.0, 20.0
+                )
+        ));
     }
 
     @Override
@@ -154,10 +120,6 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
         return 5;
     }
 
-    public List<Action> getSubActions() {
-        return subActions;
-    }
-
     public void setSubActions(ArrayList<Action> subActions) {
         this.subActions = subActions;
     }
@@ -200,18 +162,13 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
             if (!(action instanceof HTSLImpl impl)) continue;
             builder.append(impl.export(indent + 4)).append("\n");
         }
-        if (builder.isEmpty()) return " ".repeat(indent) + keyword();
-        return " ".repeat(indent) + keyword() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
+        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
     }
 
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <times> {\\n<actions>\\n}";
-    }
-
-    @Override
-    public String keyword() {
-        return "repeat";
     }
 
     @Override

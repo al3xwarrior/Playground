@@ -41,17 +41,8 @@ public class StatActionData {
         }
 
         public StatValue toStatValue() {
-            if (isGlobal != null) { // Convert from old format
-                return new StatValue(
-                        isGlobal,
-                        isExpression,
-                        literal,
-                        value != null ? value.toStatValue() : null,
-                        statInstances
-                );
-            }
             return new StatValue(
-                    statType,
+                    isGlobal != null ? ((isGlobal) ? "global" : "player") : statType,
                     isExpression,
                     literal,
                     value != null ? value.toStatValue() : null,

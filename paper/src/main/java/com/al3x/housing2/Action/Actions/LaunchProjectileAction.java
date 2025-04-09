@@ -58,8 +58,7 @@ public class LaunchProjectileAction extends HTSLImpl {
                         "Direction",
                         "The direction to launch the projectile.",
                         ActionProperty.PropertyType.ENUM,
-                        PushDirection.class,
-                        this::directionConsumer
+                        PushDirection.class
                 ),
                 new ActionProperty(
                         "customDirection",
@@ -80,13 +79,6 @@ public class LaunchProjectileAction extends HTSLImpl {
                         ActionProperty.PropertyType.ITEM
                 )
         ));
-    }
-
-    public BiFunction<InventoryClickEvent, Object, Boolean> directionConsumer(HousingWorld house, Menu backMenu, Player player) {
-        return (event, obj) -> getDirection(event, obj, house, backMenu, (str, dir) -> {
-            customDirection = str;
-            direction = dir;
-        });
     }
 
     @Override
@@ -139,24 +131,6 @@ public class LaunchProjectileAction extends HTSLImpl {
                 break;
             case SOUTH:
                 velocity = new Vector(0, 0, amount);
-                break;
-            case CUSTOM:
-                String[] split = customDirection.split(",");
-                if (split.length != 2) {
-                    return OutputType.ERROR;
-                }
-
-                try {
-                    float pitch = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[0]));
-                    float yaw = Float.parseFloat(HandlePlaceholders.parsePlaceholders(player, house, split[1]));
-                    Vector custom = player.getEyeLocation().getDirection().setY(0).normalize().multiply(amount);
-                    custom = custom.setX(custom.getX() * Math.cos(Math.toRadians(yaw)));
-                    custom = custom.setY(Math.sin(Math.toRadians(pitch)) * amount);
-                    custom = custom.setZ(custom.getZ() * Math.sin(Math.toRadians(yaw)));
-                    velocity = custom;
-                } catch (NumberFormatException e) {
-                    return OutputType.ERROR;
-                }
                 break;
         }
         if (proj instanceof ThrownPotion) {

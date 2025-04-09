@@ -9,6 +9,9 @@ import com.al3x.housing2.Utils.ItemBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,58 +20,27 @@ import java.util.*;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
+@ToString
+@Getter
+@Setter
 public class RandomAction extends HTSLImpl implements NPCAction {
     private static final Gson gson = new Gson();
-    private List<Action> subActions;
-
-    public RandomAction(ArrayList<Action> subactions) {
-        super("Random Action");
-        this.subActions = subactions;
-    }
+    private List<Action> subActions = new ArrayList<>();
 
     public RandomAction() {
-        super("Random Action");
-        this.subActions = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "RandomAction (SubActions: " + subActions.stream().map(Action::toString).reduce((a, b) -> a + ", " + b).orElse("") + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ENDER_CHEST);
-        builder.name("&eRandom Action");
-        builder.description("Change the settings for this action");
-        builder.info("&eSettings", "");
-        builder.info("Actions", subActions.size());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.ENDER_CHEST);
-        builder.name("&aRandom Action");
-        builder.description("Executes a single random action form the selected actions.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = List.of(
-                new ActionEditor.ActionItem("subActions",
-                        ItemBuilder.create(Material.WRITTEN_BOOK)
-                                .name("&aActions")
-                                .info("&7Current Value", "")
-                                .info(null, (subActions.isEmpty() ? "&cNo Actions" : "&a" + subActions.size() + " Action"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ACTION
-                )
+        super("random_action",
+                "Random Action",
+                "Executes a random action from the list of actions.",
+                Material.ENDER_CHEST,
+                List.of("random")
         );
-        return new ActionEditor(4, "&eChat Action Settings", items);
+
+        getProperties().add(new ActionProperty(
+                "subActions",
+                "Actions",
+                "The actions to execute.",
+                ActionProperty.PropertyType.ACTION
+        ));
     }
 
     @Override
@@ -100,16 +72,7 @@ public class RandomAction extends HTSLImpl implements NPCAction {
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-
         execute(player, house, event, executor);
-    }
-
-    public List<Action> getSubActions() {
-        return subActions;
-    }
-
-    public void setSubActions(ArrayList<Action> subActions) {
-        this.subActions = subActions;
     }
 
     @Override
@@ -148,18 +111,13 @@ public class RandomAction extends HTSLImpl implements NPCAction {
             if (!(action instanceof HTSLImpl impl)) continue;
             builder.append(impl.export(indent + 4)).append("\n");
         }
-        if (builder.isEmpty()) return " ".repeat(indent) + keyword();
-        return " ".repeat(indent) + keyword() + " {\n" + builder + " ".repeat(indent) + "}";
+        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " {\n" + builder + " ".repeat(indent) + "}";
     }
 
     @Override
     public String syntax() {
-        return getScriptingKeywords() + " {\\n<actions>\\n}";
-    }
-
-    @Override
-    public String keyword() {
-        return "random";
+        return getScriptingKeywords().getFirst() + " {\\n<actions>\\n}";
     }
 
     @Override

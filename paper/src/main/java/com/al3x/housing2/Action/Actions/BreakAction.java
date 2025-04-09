@@ -11,13 +11,13 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 @ToString
-public class BreakBlockAction extends HTSLImpl implements NPCAction {
+public class BreakAction extends HTSLImpl implements NPCAction {
 
-    public BreakBlockAction() {
+    public BreakAction() {
         super(
-                "break_block_action",
-                "Break Block",
-                "Breaks a block at the specified location.",
+                "break_action",
+                "Break Loop",
+                "Breaks a repeat action.",
                 Material.STONE_PICKAXE,
                 List.of("breakBlock")
         );

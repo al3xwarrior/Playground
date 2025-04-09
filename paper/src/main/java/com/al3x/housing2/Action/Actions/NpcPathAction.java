@@ -6,10 +6,6 @@ import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.LocationData;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Listeners.NpcItems;
-import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Utils.ItemBuilder;
-import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,11 +18,8 @@ import net.citizensnpcs.trait.waypoint.triggers.WaypointTrigger;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-
-import static com.al3x.housing2.Action.ActionEditor.ActionItem.ActionType.CUSTOM;
 
 // TODO: look at old display item lore
 
@@ -98,7 +91,7 @@ public class NpcPathAction extends Action implements NPCAction {
                         "path",
                         "Path",
                         "The path of the NPC.",
-                        ActionProperty.PropertyType.LIST
+                        ActionProperty.PropertyType.PATH
                 ).showIf(mode == NavigationType.PATH),
                 new ActionProperty(
                         "loop",
@@ -113,140 +106,6 @@ public class NpcPathAction extends Action implements NPCAction {
                         ActionProperty.PropertyType.BOOLEAN
                 ).showIf(mode == NavigationType.PATH)
         ));
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        HousingNPC npc = house.getNPC(npcId);
-
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-        items.add(new ActionEditor.ActionItem("npcId",
-                ItemBuilder.create(Material.PLAYER_HEAD)
-                        .name("&aNPC")
-                        .description("Select a NPC to change the navigation of\n\nIf you are running this within a run as npc action, the npc will be the npc that the action is running as")
-                        .info("&7Current Value", "")
-                        .info(null, (npc == null ? "&cNone" : "&6" + npc.getName()))
-        ));
-
-        items.add(new ActionEditor.ActionItem("mode",
-                ItemBuilder.create(Material.COMPASS)
-                        .name("&eMode")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + mode)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, NavigationType.values(), null
-        ));
-
-        if (mode != NavigationType.STATIONARY) {
-            if (speed == null) {
-                speed = 1.0;
-            }
-            items.add(new ActionEditor.ActionItem("speed",
-                    ItemBuilder.create(Material.SUGAR)
-                            .name("&eSpeed")
-                            .info("&7Current Value", "")
-                            .info(null, speed)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.DOUBLE, 0.1, 10.0
-            ));
-        }
-
-        if (mode == NavigationType.WANDER) {
-            if (delay == null) {
-                delay = -1.0;
-            }
-            if (xRange == null) {
-                xRange = 25.0;
-            }
-            if (yRange == null) {
-                yRange = 3.0;
-            }
-            items.add(new ActionEditor.ActionItem("delay",
-                    ItemBuilder.create(Material.CLOCK)
-                            .name("&eDelay")
-                            .info("&7Current Value", "")
-                            .info(null, delay)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.DOUBLE, -1.0, 100.0
-            ));
-
-            items.add(new ActionEditor.ActionItem("xRange",
-                    ItemBuilder.create(Material.COMPASS)
-                            .name("&eX Range")
-                            .info("&7Current Value", "")
-                            .info(null, xRange)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.DOUBLE, 0.0, 100.0
-            ));
-
-            items.add(new ActionEditor.ActionItem("yRange",
-                    ItemBuilder.create(Material.COMPASS)
-                            .name("&eY Range")
-                            .info("&7Current Value", "")
-                            .info(null, yRange)
-                            .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.DOUBLE, 0.0, 20.0
-            ));
-        }
-
-        if (mode == NavigationType.PATH) {
-            if (path == null) {
-                path = new ArrayList<>();
-            }
-            items.add(new ActionEditor.ActionItem("path",
-                    ItemBuilder.create(Material.DIAMOND_AXE)
-                            .name("&aPath")
-                            .description("&bRight click &7a block too add a point\n\n&bRight click &7air to remove last point\n\n&bShift right click &7to clear the path\n\n&bShift left click &7to cancel")
-                            .lClick(ItemBuilder.ActionType.GIVE_ITEM),
-                    (e, o) -> {
-                        ItemBuilder pathItem = ItemBuilder.create(Material.DIAMOND_AXE)
-                                .name("&aPath")
-                                .description("&bRight click &7a block too add a point\n\n&bRight click &7air to remove last point\n\n&bShift right click &7to clear the path\n\n&bShift left click &7to cancel");
-                        ItemStack itemStack = pathItem.build();
-                        NbtItemBuilder nbtItem = new NbtItemBuilder(itemStack);
-                        nbtItem.setBoolean("isPathForAction", true);
-                        nbtItem.setInt("npcId", npcId);
-                        nbtItem.build();
-                        player.getInventory().addItem(itemStack);
-                        NpcItems.npcPathActionHashMap.put(player.getUniqueId(), this);
-                        return true;
-                    }
-            ));
-            items.add(new ActionEditor.ActionItem("loop",
-                    ItemBuilder.create(Material.REDSTONE_TORCH)
-                            .name("&eLoop")
-                            .info("&7Current Value", "")
-                            .info(null, loop ? "&aYes" : "&cNo")
-                            .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.BOOLEAN
-            ));
-            items.add(new ActionEditor.ActionItem("pauseUntilComplete",
-                    ItemBuilder.create(Material.REDSTONE_TORCH)
-                            .name("&ePause Until Complete")
-                            .info("&7Current Value", "")
-                            .info(null, pauseUntilComplete ? "&aYes" : "&cNo")
-                            .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                    ActionEditor.ActionItem.ActionType.BOOLEAN
-            ));
-
-            ItemBuilder paths = ItemBuilder.create(Material.PAPER)
-                    .name("&aPath Locations")
-                    .description("All the locations in the path")
-                    .rClick(ItemBuilder.ActionType.CLEAR);
-            for (int i = 0; i < path.size(); i++) {
-                LocationData locationData = path.get(i);
-                paths.info(null, "&8" + (i + 1) + ". &a" + locationData.getX() + ", " + locationData.getY() + ", " + locationData.getZ());
-            }
-            items.add(new ActionEditor.ActionItem(paths, CUSTOM, 32, (e, o) -> {
-                if (e.getClick().isRightClick()) {
-                    path.clear();
-                    return true;
-                }
-                return false;
-            }));
-        }
-
-        return new ActionEditor(4, "&eNpc Path Action Settings", items);
     }
 
     @Override

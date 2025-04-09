@@ -1,75 +1,46 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
-import com.al3x.housing2.Action.ActionEditor.ActionItem;
-import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@ToString
+@Getter
+@Setter
 public class SetHitDelayAction extends HTSLImpl implements NPCAction {
 
-    private double delay;
+    private double delay = 10;
 
     public SetHitDelayAction() {
-        super("Set Hit Delay Action");
-        this.delay = 10;
-    }
+        super(
+                "set_hit_delay_action",
+                "Set Hit Delay",
+                "Sets the hit delay for the player.",
+                Material.IRON_SWORD,
+                List.of("hitDelay")
+        );
 
-    public SetHitDelayAction(int delay) {
-        super("Set Hit Delay Action");
-        this.delay = delay;
-    }
-
-    @Override
-    public String toString() {
-        return "SetHitDelayAction (Delay: " + this.delay + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("564af0db50a03f5d45a0c6dda47928981bf47ad66dd90a4dd7e92317dbe857d1");
-        builder.name("&eSet Hit Delay");
-        builder.info("&eSettings", "");
-        builder.info("Delay", "&a" + delay);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("564af0db50a03f5d45a0c6dda47928981bf47ad66dd90a4dd7e92317dbe857d1");
-        builder.name("&aSet Hit Delay");
-        builder.description("Set the users hit delay. This is the time in ticks between each hit. Default is 10 ticks (0.5 seconds)");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionItem> items = List.of(
-                new ActionItem("delay",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&aDelay")
-                                .info("&7Current Value", "")
-                                .info(null, delay)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionItem.ActionType.INT
+        getProperties().add(
+                new ActionProperty(
+                        "delay",
+                        "Delay",
+                        "The delay in ticks.",
+                        ActionProperty.PropertyType.DOUBLE, 0.0, 100.0
                 )
         );
-        return new ActionEditor(4, "&eHit Delay Action Settings", items);
     }
 
     @Override
@@ -84,20 +55,8 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("delay", delay);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "hitDelay";
     }
 
     @Override
@@ -107,10 +66,4 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
             le.setNoDamageTicks(NumberUtilsKt.toInt(delay));
         }
     }
-
-//    @Override
-//    public void fromData(HashMap<String, Object> data) {
-//        if (!data.containsKey("message")) return;
-//        message = (String) data.get("message");
-//    }
 }

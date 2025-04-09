@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -11,6 +8,7 @@ import com.al3x.housing2.Menus.SlotSelectMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,99 +18,32 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@ToString
 public class RemoveItemAction extends Action {
-    ItemStack item;
+    ItemStack item = null;
     double slot = -1;
     public RemoveItemAction() {
-        super("Remove Item Action");
-    }
-
-    @Override
-    public String toString() {
-        return "RemoveItemAction{" +
-                "item=" + item +
-                ", slot=" + slot +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CAULDRON);
-        builder.name("&eRemove Item");
-        builder.info("&eSettings", "");
-        builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType()));
-        builder.info("Slot", slotIndexToName((int) slot));
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CAULDRON);
-        builder.name("&aRemove Item");
-        builder.description("Remove an item from the player's inventory.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        List<ActionEditor.ActionItem> items =  List.of(
-                new ActionEditor.ActionItem("item", ItemBuilder.create((item == null ? Material.BOOK : item.getType()))
-                        .name("&aItem")
-                        .description("Select a item to give")
-                        .info("&7Current Value", "")
-                        .info(null, (item == null ? "&cNone" : "&6" + StackUtils.getDisplayName(item))),
-                        ActionEditor.ActionItem.ActionType.ITEM
-                ),
-                new ActionEditor.ActionItem("slot", ItemBuilder.create(Material.CHEST)
-                        .name("&aSlot")
-                        .description("Select a slot to give the item in")
-                        .info("&7Current Value", "")
-                        .info(null, slotIndexToName((int) slot)),
-                        (e, o) -> {
-                            new SlotSelectMenu((Player) e.getWhoClicked(), Main.getInstance(), backMenu, true, (slot) -> {
-                                this.slot = slot;
-                            }).open();
-                            return true;
-                        }
-                )
+        super("remove_item_action",
+                "Remove Item",
+                "Removes an item from the player's inventory.",
+                Material.CAULDRON,
+                List.of("remove_item")
         );
-        return new ActionEditor(4, "&eFunction Action Settings", items);
-    }
 
-    private String slotIndexToName(int index) {
-        if (index == -1) {
-            return "Any Slot";
-        }
-        if (index == -2) {
-            return "Hand Slot";
-        }
-        if (index == -3 || index == -106) {
-            return "Offhand Slot";
-        }
-        if (index < 9 && index >= 0) {
-            return "Hotbar Slot " + (index + 1);
-        }
-        if (index < 36 && index >= 9) {
-            return "Inventory Slot " + (index - 8);
-        }
-        if (index == 103) {
-            return "Helmet";
-        }
-        if (index == 102) {
-            return "Chestplate";
-        }
-        if (index == 101) {
-            return "Leggings";
-        }
-        if (index == 100) {
-            return "Boots";
-        }
-        if (index >= 80 && index <= 83) {
-            return "Crafting Slot " + (index - 79);
-        }
-        return "Unknown Slot";
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "item",
+                        "Item",
+                        "The item to remove.",
+                        ActionProperty.PropertyType.ITEM
+                ),
+                new ActionProperty(
+                        "slot",
+                        "Slot",
+                        "The slot to remove the item from.",
+                        ActionProperty.PropertyType.SLOT
+                )
+        ));
     }
 
     @Override

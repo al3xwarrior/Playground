@@ -11,6 +11,9 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,103 +24,45 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
+@ToString
+@Getter
+@Setter
 public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
-    private PushDirection direction;
-    private VelocityOperation operation;
-    private String customDirection;
-    private String amount;
+    private PushDirection direction = PushDirection.FORWARD;
+    private VelocityOperation operation = VelocityOperation.SET;
+    private String customDirection = null;
+    private String amount = "1.5";
 
     public SetVelocityAction() {
-        super("Set Velocity Action");
-        this.direction = PushDirection.FORWARD;
-        this.operation = VelocityOperation.SET;
-        this.amount = "1.5";
-    }
-
-    public SetVelocityAction(String amount, PushDirection direction, VelocityOperation operation) {
-        super("Set Velocity Action");
-        this.direction = direction;
-        this.amount = amount;
-        this.operation = operation;
-    }
-
-    @Override
-    public String toString() {
-        return "SetVelocityAction (Operation: " + operation.toString() + ", Direction: " + direction.toString() + ", Amount: " + amount + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PISTON)
-                .name("&eSet Velocity")
-                .info("&eSettings", "")
-                .info("Operation", "&a" + operation)
-                .info("Direction", "&a" + (direction == PushDirection.CUSTOM ? customDirection : direction))
-                .info("Power", "&a" + amount)
-
-                .lClick(ItemBuilder.ActionType.EDIT_YELLOW)
-                .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
-                .shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PISTON)
-                .name("&aSet Velocity")
-                .description("Propel a player in a direction.")
-                .lClick(ItemBuilder.ActionType.ADD_YELLOW)
-                .extraLore("&8&oThank you Home Depot"); //Yes I did add #extraLore just for this joke
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("operation",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eOperation")
-                                .description("How the player's current velocity will be adjusted.")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + operation)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        (event, obj) -> {
-                            List<Duple<VelocityOperation, ItemBuilder>> operations = new ArrayList<>();
-                            for (VelocityOperation operation : VelocityOperation.values()) {
-                                operations.add(new Duple<>(operation, ItemBuilder.create(operation.getMaterial()).name("&a" + operation)));
-                            }
-                            new PaginationMenu<>(Main.getInstance(), "&eSelect an operation", operations, editMenu.getOwner(), house, editMenu, (operation) -> {
-                                this.operation = operation;
-                                editMenu.open();
-                            }).open();
-                            return true;
-                        }
-                ),
-                new ActionEditor.ActionItem("direction",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eDirection")
-                                .description("The direction of the velocity adjustment.")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + direction)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, PushDirection.values(), Material.COMPASS,
-                        (event, obj) -> getDirection(event, obj, house, editMenu, (str, dir) -> {
-                            customDirection = str;
-                            direction = dir;
-                            editMenu.open();
-                        })
-                ),
-                new ActionEditor.ActionItem("amount",
-                        ItemBuilder.create(Material.SLIME_BALL)
-                                .name("&ePower")
-                                .description("The amount of force to apply to the velocity adjustment.")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + amount)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                )
+        super(
+                "set_velocity_action",
+                "Set Velocity",
+                "Sets the velocity of the player.",
+                Material.PISTON,
+                List.of("velocity")
         );
 
-        return new ActionEditor(4, "&eSet Velocity Action Settings", items);
+        getProperties().addAll(List.of(
+                new ActionProperty(
+                        "direction",
+                        "Direction",
+                        "The direction of the velocity adjustment.",
+                        ActionProperty.PropertyType.ENUM, PushDirection.class
+                ),
+                new ActionProperty(
+                        "operation",
+                        "Operation",
+                        "How the player's current velocity will be adjusted.",
+                        ActionProperty.PropertyType.ENUM, VelocityOperation.class
+                ),
+                new ActionProperty(
+                        "amount",
+                        "Power",
+                        "The amount of force to apply to the velocity adjustment.",
+                        ActionProperty.PropertyType.NUMBER, 0.0, 100.0
+                )
+        ));
     }
 
     @Override
@@ -164,25 +109,6 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
                 Vector right = new Vector(direction.getZ(), 0, -direction.getX()).normalize().multiply(amount);
                 velocityAdjustment.add(right);
             }
-            case CUSTOM -> {
-                if (customDirection == null) return null;
-
-                String[] split = customDirection.split(",");
-                if (split.length != 2) return null;
-
-                try {
-                    double pitch = Math.toRadians(Float.parseFloat(Placeholder.handlePlaceholders(split[0], house, player)));
-                    double yaw = Math.toRadians(Float.parseFloat(Placeholder.handlePlaceholders(split[1], house, player)));
-
-                    velocityAdjustment.add(new Vector()
-                            .setX(Math.cos(pitch) * Math.sin(yaw))
-                            .setY(Math.sin(pitch))
-                            .setZ(Math.cos(pitch) * Math.cos(yaw))
-                            .multiply(amount));
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            }
         }
         //This way it can get two different velocities at the same time
         //ex. UP and FORWARD
@@ -208,41 +134,6 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
         return 10;
     }
 
-    public String getAmount() {
-        return amount;
-    }
-
-    public PushDirection getDirection() {
-        return direction;
-    }
-
-    //Won't do anything since it doesn't use this function
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
-    public void setDirection(PushDirection direction) {
-        this.direction = direction;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("amount", amount);
-        data.put("customDirection", customDirection);
-        data.put("direction", direction);
-        data.put("operation", operation);
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        this.amount = data.get("amount").toString();
-        this.customDirection = (String) data.get("customDirection");
-        this.direction = PushDirection.valueOf(data.get("direction").toString());
-        this.operation = VelocityOperation.valueOf(data.get("operation").toString());
-    }
-
     @Override
     public boolean requiresPlayer() {
         return true;
@@ -255,9 +146,9 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
     @Override
     public String export(int indent) {
-        String dir = direction == PushDirection.CUSTOM ? customDirection : direction.name();
+        String dir = direction.name();
         String operation = this.operation.asString();
-        return " ".repeat(indent) + keyword() + " " + operation + " " + dir + " " + amount;
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + operation + " " + dir + " " + amount;
     }
 
     @Override
@@ -266,12 +157,8 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
 
         operation = VelocityOperation.fromString(split[0]);
         Duple<String[], String> directionArg = handleArg(split, 1);
-        if (PushDirection.fromString(directionArg.getSecond()) == null) {
-            customDirection = directionArg.getSecond();
-            direction = PushDirection.CUSTOM;
-        } else {
-            direction = PushDirection.fromString(directionArg.getSecond());
-        }
+        direction = PushDirection.fromString(directionArg.getSecond());
+
         split = directionArg.getFirst();
 
         if (split.length == 0) {
@@ -283,10 +170,5 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
         split = amountArg.getFirst();
 
         return new ArrayList<>(Arrays.asList(split));
-    }
-
-    @Override
-    public String keyword() {
-        return "velocity";
     }
 }

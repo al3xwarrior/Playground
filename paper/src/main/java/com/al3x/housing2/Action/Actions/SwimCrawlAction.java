@@ -5,6 +5,7 @@ import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.ToString;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -12,32 +13,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
+@ToString
 public class SwimCrawlAction extends HTSLImpl implements NPCAction {
-
     public SwimCrawlAction() {
-        super("Swim/Crawl Action");
-    }
-
-    @Override
-    public String toString() {
-        return "SwimCrawlAction";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_BARS);
-        builder.name("&eSwim/Crawl Action");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_BARS);
-        builder.name("&aSwim/Crawl Action");
-        builder.description("Toggles if the player/npc swim or crawl depending on if they are in water or not.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        super(
+                "swim_crawl_action",
+                "Swim/Crawl Action",
+                "Toggles if the player/npc swim or crawl depending on if they are in water or not.",
+                Material.IRON_BARS,
+                List.of("swimCrawl")
+        );
     }
 
     @Override
@@ -47,18 +34,8 @@ public class SwimCrawlAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "swimCrawl";
     }
 
     @Override
