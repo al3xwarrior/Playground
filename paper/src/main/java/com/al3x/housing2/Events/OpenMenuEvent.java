@@ -15,6 +15,7 @@ public class OpenMenuEvent extends Event implements Cancellable {
     private final Main main;
 
     private boolean cancelled;
+    private boolean showItems = false;
 
     public OpenMenuEvent(Menu menu, Player player, Main main) {
         this.menu = menu;
@@ -42,6 +43,14 @@ public class OpenMenuEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public void setShowItems(boolean showItems) {
+        this.showItems = showItems;
+    }
+
+    public boolean isShowItems() {
+        return showItems;
     }
 
 
