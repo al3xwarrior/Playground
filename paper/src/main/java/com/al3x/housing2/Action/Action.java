@@ -46,7 +46,7 @@ public abstract class Action {
     @Setter
     private String comment;
 
-    private final List<ActionProperty> properties = new ArrayList<>();
+    private final List<ActionProperty<?>> properties = new ArrayList<>();
 
     // --- Methods ---
 
@@ -106,15 +106,7 @@ public abstract class Action {
         return data;
     }
 
-//    public static Action fromData(HashMap<String, Object> data) {
-//        String id = (String) data.get("id");
-//        ActionEnum actionEnum = ActionEnum.getActionById(id);
-//        if (actionEnum == null) {
-//            return null;
-//        }
-//        Action action = actionEnum.getActionInstance();
-//        action.fromData(data, action.getClass());
-//    }
+
 
     public abstract boolean requiresPlayer();
 
