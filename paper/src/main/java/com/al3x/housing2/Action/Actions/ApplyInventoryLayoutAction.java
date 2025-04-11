@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.GenericPagination.LayoutProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Layout;
 import lombok.ToString;
@@ -24,11 +25,10 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
                 List.of("layout")
         );
 
-        getProperties().add(new ActionProperty(
+        getProperties().add(new LayoutProperty(
                 "layout",
                 "Layout",
-                "The layout to apply.",
-                ActionProperty.PropertyType.LAYOUT
+                "The layout to apply."
         ));
     }
 
@@ -37,19 +37,12 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
         if (layout == null) {
             return OutputType.SUCCESS;
         }
-        Layout layout = house.getLayout(this.layout);
+        Layout layout = getValue("layout", Layout.class);
         if (layout == null) {
             return OutputType.SUCCESS;
         }
         layout.apply(player);
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("layout", layout);
-        return data;
     }
 
     @Override

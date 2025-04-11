@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import lombok.Getter;
@@ -29,11 +30,10 @@ public class ChatAction extends HTSLImpl {
                 List.of("chat")
         );
 
-        getProperties().add(new ActionProperty(
+        getProperties().add(new StringProperty(
                 "message",
                 "Message",
-                "The message to display.",
-                ActionProperty.PropertyType.STRING
+                "The message to display."
         ));
     }
 

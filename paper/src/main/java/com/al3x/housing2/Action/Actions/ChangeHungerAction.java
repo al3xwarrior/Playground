@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Color;
@@ -20,10 +22,6 @@ import java.util.List;
 @Getter
 public class ChangeHungerAction extends HTSLImpl {
 
-    @Setter
-    private StatOperation mode;
-    private String value;
-
     public ChangeHungerAction() {
         super(
                 "change_hunger_action",
@@ -33,50 +31,55 @@ public class ChangeHungerAction extends HTSLImpl {
                 List.of("hunger")
         );
 
-        mode = StatOperation.SET;
-        value = "20";
-
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "mode",
                         "Mode",
-                        "The mode to use.",
-                        ActionProperty.PropertyType.ENUM,
+                        "The mode to use.", 
                         StatOperation.class
-                ),
-                new ActionProperty(
+                ).setValue(StatOperation.SET),
+                new NumberProperty(
                         "value",
                         "Value",
-                        "The value to use.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The value to use."
+                ).setValue("20")
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
-        if (!NumberUtilsKt.isDouble(value)) {
-            return OutputType.ERROR;
+        Double val = getProperty("value", NumberProperty.class).parsedValue(house, player);
+        StatOperation mode = getValue("mode", StatOperation.class);
+        switch (mode) {
+            case INCREASE:
+                val += player.getFoodLevel();
+                break;
+            case DECREASE:
+                val = player.getFoodLevel() - val;
+                break;
+            case MULTIPLY:
+                val = player.getFoodLevel() * val;
+                break;
+            case DIVIDE:
+                val = player.getFoodLevel() / val;
+                break;
+            case MOD:
+                val = player.getFoodLevel() % val;
+                break;
+            case FLOOR:
+                val = Math.floor(player.getFoodLevel());
+                break;
+            case ROUND:
+                break;
+            case SET:
+                break;
         }
-        int val = Integer.parseInt(value);
-        player.setFoodLevel(val);
+        player.setFoodLevel(val.intValue());
         return OutputType.SUCCESS;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        mode = StatOperation.valueOf((String) data.get("mode"));
-        value = (String) data.get("value");
-    }
-
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value);
     }
 }

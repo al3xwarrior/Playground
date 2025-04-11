@@ -52,6 +52,11 @@ public class Group {
 
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public String getPrefix() {
         return prefix;
     }

@@ -150,11 +150,11 @@ public class ActionEditMenu extends Menu {
             editor = getEditor(action, house, this, player);
         }
         setTitle(colorize(editor.getTitle()));
-        List<ActionProperty> properties = editor.getProperties();
+        List<ActionProperty<?>> properties = editor.getProperties();
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
 
         for (int i = 0; i < properties.size(); i++) {
-            ActionProperty property = properties.get(i);
+            ActionProperty<?> property = properties.get(i);
             ItemBuilder builder = property.getDisplayItem();
 
             addItem(slots[i], builder.build(), (e) -> {

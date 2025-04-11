@@ -1,6 +1,9 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.DoubleProperty;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -14,11 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
-
-    private double health = 20.0;
-    private StatOperation operation = StatOperation.INCREASE;
-    private boolean healOnChange = true;
-
     public ChangeMaxHealthAction() {
         super(
                 "change_max_health_action",
@@ -29,30 +27,30 @@ public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new DoubleProperty(
                         "health",
                         "Health",
-                        "The amount to change the max health by.",
-                        ActionProperty.PropertyType.DOUBLE
-                ),
-                new ActionProperty(
+                        "The amount to change the max health by."
+                ).setValue(20.0),
+                new EnumProperty<>(
                         "operation",
                         "Operation",
                         "The operation to use.",
-                        ActionProperty.PropertyType.ENUM,
                         StatOperation.class
-                ),
-                new ActionProperty(
+                ).setValue(StatOperation.INCREASE),
+                new BooleanProperty(
                         "healOnChange",
                         "Heal On Change",
-                        "Should the player be fully healed when this action is ran",
-                        ActionProperty.PropertyType.BOOLEAN
-                )
+                        "Should the player be fully healed when this action is ran"
+                ).setValue(true)
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        double health = getValue("health", Double.class);
+        StatOperation operation = getValue("operation", StatOperation.class);
+        boolean healOnChange = getValue("healOnChange", Boolean.class);
         if (player != null) {
             double currentMax = player.getMaxHealth();
 
@@ -79,21 +77,15 @@ public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("health", health);
-        data.put("operation", operation);
-        data.put("healOnChange", healOnChange);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
     }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        double health = getValue("health", Double.class);
+        StatOperation operation = getValue("operation", StatOperation.class);
+        boolean healOnChange = getValue("healOnChange", Boolean.class);
         if (npc != null) {
             double currentMax = npc.getOrAddTrait(ScaledMaxHealthTrait.class).getMaxHealth();
 

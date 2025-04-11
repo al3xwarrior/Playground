@@ -145,5 +145,10 @@ public class Function {
     public int getLastRun() {
         return lastRun;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
 

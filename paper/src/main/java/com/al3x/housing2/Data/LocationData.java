@@ -55,6 +55,11 @@ public class LocationData {
         }
     }
 
+    @Override
+    public String toString() {
+        return x + ", " + y + ", " + z;
+    }
+
     public Location toLocation() {
         return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
     }

@@ -1,9 +1,13 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.CustomProperty;
+import com.al3x.housing2.Action.Properties.IntegerProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
@@ -27,12 +31,6 @@ import java.util.function.BiFunction;
 @Setter
 @ToString
 public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
-
-    private PotionEffectType potionEffectType = PotionEffectType.SPEED;
-    private int level = 1;
-    private int duration = 60;
-    private boolean hideParticles = false;
-
     public ApplyPotionEffectAction() {
         super(
                 "apply_potion_effect_action",
@@ -43,61 +41,62 @@ public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new CustomProperty<PotionEffectType>(
                         "potion",
                         "Potion",
                         "The potion effect to apply.",
-                        ActionProperty.PropertyType.CUSTOM,
-                        this::potionConsumer
-                ),
-                new ActionProperty(
+                        Material.POTION
+                ) {
+                    @Override
+                    public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
+                        //Create a list of all the potion effects
+                        List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
+                        for (PotionEffectType type : PotionEffectType.values()) {
+                            potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
+                        }
+                        //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
+                        new PaginationMenu<>(Main.getInstance(),
+                                "&eSelect a Potion Effect", potions,
+                                player, house, menu, (potion) -> {
+                            setValue(potion);
+                            menu.open();
+                        }).open();
+                    }
+                }.setValue(PotionEffectType.NIGHT_VISION),
+                new IntegerProperty(
                         "level",
                         "Level",
-                        "The level of the potion effect.",
-                        ActionProperty.PropertyType.INT
-                ),
-                new ActionProperty(
+                        "The level of the potion effect."
+                ).setValue(1),
+                new IntegerProperty(
                         "duration",
                         "Duration",
-                        "The duration of the potion effect in ticks.",
-                        ActionProperty.PropertyType.INT
-                ),
-                new ActionProperty(
+                        "The duration of the potion effect in ticks."
+                ).setValue(20*30),
+                new BooleanProperty(
                         "hideParticles",
                         "Hide Particles",
-                        "Whether to hide the potion effect particles.",
-                        ActionProperty.PropertyType.BOOLEAN
-                )
+                        "Whether to hide the potion effect particles."
+                ).setValue(false)
         ));
-    }
-
-    private BiFunction<InventoryClickEvent, Object, Boolean> potionConsumer(HousingWorld house, Menu backMenu, Player player) {
-        return (event, obj) -> {
-            //Create a list of all the potion effects
-            List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
-            for (PotionEffectType type : PotionEffectType.values()) {
-                potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
-            }
-            //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
-            new PaginationMenu<>(Main.getInstance(),
-                    "&eSelect a Potion Effect", potions,
-                    player, house, backMenu, (potion) -> {
-                potionEffectType = potion;
-                backMenu.open();
-            }).open();
-
-            return true;
-        };
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        PotionEffectType potionEffectType = getValue("potion", PotionEffectType.class);
+        int level = getValue("level", Integer.class);
+        int duration = getValue("duration", Integer.class);
+        boolean hideParticles = getValue("hideParticles", Boolean.class);
         player.addPotionEffect(new PotionEffect(potionEffectType, duration, level - 1, true, !hideParticles));
         return OutputType.SUCCESS;
     }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        PotionEffectType potionEffectType = getValue("potion", PotionEffectType.class);
+        int level = getValue("level", Integer.class);
+        int duration = getValue("duration", Integer.class);
+        boolean hideParticles = getValue("hideParticles", Boolean.class);
         if (!(npc.getEntity() instanceof LivingEntity le)) return;
         le.addPotionEffect(new PotionEffect(potionEffectType, duration, level - 1, true, !hideParticles));
     }

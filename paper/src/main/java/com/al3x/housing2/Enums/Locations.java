@@ -8,12 +8,11 @@ public enum Locations {
     ;
 
     public static Locations fromString(String string) {
-        return switch (string) {
-            case "CUSTOM" -> CUSTOM;
-            case "HOUSE_SPAWN" -> HOUSE_SPAWN;
-            case "PLAYER_LOCATION" -> PLAYER_LOCATION;
-            case "INVOKERS_LOCATION" -> INVOKERS_LOCATION;
-            default -> null;
-        };
+        for (Locations location : values()) {
+            if (location.name().equalsIgnoreCase(string)) {
+                return location;
+            }
+        }
+        return null;
     }
 }

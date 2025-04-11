@@ -307,7 +307,7 @@ public class ActionsMenu extends Menu {
                         if (!Objects.equals(action.getComment(), "") && action.getComment() != null) {
                             item.description(action.getComment()).punctuation(false);
                         }
-                        action.createDisplayItem(item, house);
+                        action.createDisplayItem();
                         replacePlayerWithNPC(item);
                         int finalI = i;
                         addItem(slot, item.build(), (e) -> {

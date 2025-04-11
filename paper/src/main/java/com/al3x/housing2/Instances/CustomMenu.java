@@ -46,6 +46,11 @@ public class CustomMenu {
         }).toList());
     }
 
+    @Override
+    public String toString() {
+        return title;
+    }
+
     public String getTitle() {
         return title;
     }

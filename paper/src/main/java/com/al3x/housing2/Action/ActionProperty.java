@@ -1,6 +1,6 @@
 package com.al3x.housing2.Action;
 
-import com.al3x.housing2.Action.Properties.StringProperty;
+import com.al3x.housing2.Action.Properties.*;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -47,13 +47,6 @@ public abstract class ActionProperty<V> {
     private boolean visible = true;
     private final ItemBuilder builder;
 
-    private int slot = -1;
-    private double min = 0;
-    private double max = Double.MAX_VALUE;
-    private Class<? extends Enum<?>> enumClass;
-    private ActionPropertyConsumer consumer;
-    private ActionProperties properties;
-
     public ActionProperty(String id, String name, String description, Material icon) {
         this.id = id;
         this.name = name;
@@ -63,9 +56,7 @@ public abstract class ActionProperty<V> {
         this.builder = new ItemBuilder()
                 .material(icon)
                 .name("<yellow>" + name)
-                .description(description)
-                .info("<b><yellow>Current value</b>", "")
-                .info(null, "<green>" + value);
+                .description(description);
     }
 
     public ActionProperty<V> setValue(V value) {
@@ -73,41 +64,53 @@ public abstract class ActionProperty<V> {
         return this;
     }
 
-    public abstract void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu);
-
-    @Getter
-    @RequiredArgsConstructor
-    public enum PropertyType {
-        STRING(StringProperty.class),
-        INT(),
-        DOUBLE(),
-        NUMBER(),
-        BOOLEAN(),
-        ENUM(),
-        LOCATION(),
-        ITEM(),
-        NPC(),
-        REGION(),
-        ACTION(),
-        ACTION_SETTING(),
-        FUNCTION(),
-        GROUP(),
-        TEAM(),
-        LAYOUT(),
-        MENU(),
-        CONDITION(),
-        SLOT(),
-        PATH(),
-        STAT_INSTANCE(),
-        ACTION_PROPERTIES(),
-        COLOR(),
-        CUSTOM(),
-        SOUND();
-
-        private final Class<? extends ActionProperty<?>> propertyClass;
+    public ActionProperty<V> setValue(V value, Player player) {
+        this.value = value;
+        player.sendMessage(colorize("&a" + name + " set to: " + value));
+        return this;
     }
 
+    protected String displayValue() {
+        return getValue().toString();
+    }
+
+    public abstract void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu);
+
+
+
+        /*
+        STRING(Material.STRING),
+        INT(Material.REDSTONE_TORCH),
+        DOUBLE(Material.REPEATER),
+        NUMBER(Material.IRON_INGOT),
+        BOOLEAN(Material.TURTLE_SCUTE),
+        ENUM(Material.BOOK),
+        LOCATION(Material.ENDER_PEARL),
+        ITEM(Material.ITEM_FRAME),
+        NPC(Material.PLAYER_HEAD),
+        REGION(Material.MAP),
+        ACTION(Material.PISTON),
+        ACTION_SETTING(Material.COMPARATOR),
+        FUNCTION(Material.ACTIVATOR_RAIL),
+        GROUP(Material.WHITE_BANNER),
+        TEAM(Material.BEACON),
+        LAYOUT(Material.CHAINMAIL_CHESTPLATE),
+        MENU(Material.CHEST),
+        CONDITION(Material.REDSTONE),
+        SLOT(Material.ARMOR_STAND),
+        STAT_INSTANCE(Material.BARRIER),
+        ACTION_PROPERTIES(Material.DIAMOND_SWORD),
+        COLOR(Material.PAINTING),
+        CUSTOM(Material.CHEST_MINECART),
+        SOUND(Material.NOTE_BLOCK);
+         */
+
     public ItemBuilder getDisplayItem() {
+        ItemBuilder builder = getBuilder().clone();
+        if (displayValue() != null) {
+            builder.info("<yellow>Current value", "")
+                    .info(null, displayValue());
+        }
         return builder;
     }
 
@@ -214,6 +217,16 @@ public abstract class ActionProperty<V> {
 //            };
 //        }
 //    }
+
+    public interface PropertySerializer<T, S> {
+        S serialize();
+
+        T deserialize(S value, HousingWorld house);
+    }
+
+    public static class Constant {
+
+    }
 
     public interface ActionProperties {
         List<ActionProperty<?>> actions();

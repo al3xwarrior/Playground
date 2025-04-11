@@ -28,6 +28,11 @@ public class Team {
         this.friendlyFire = data.isFriendlyFire();
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public String getName() {
         return name;
     }

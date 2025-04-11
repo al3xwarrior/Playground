@@ -321,6 +321,23 @@ public class ItemBuilder {
         return new ItemBuilder().material(material);
     }
 
+    public ItemBuilder clone() {
+        ItemBuilder clone = new ItemBuilder();
+        clone.material = this.material;
+        clone.skullTexture = this.skullTexture;
+        clone.amount = this.amount;
+        clone.data = this.data;
+        clone.name = this.name;
+        clone.description = this.description;
+        clone.extraLore = new ArrayList<>(this.extraLore);
+        clone.actions.putAll(this.actions);
+        clone.info.addAll(this.info);
+        clone.glow = this.glow;
+        clone.changeOrderLore = this.changeOrderLore;
+        clone.punctuation = this.punctuation;
+        return clone;
+    }
+
     /**
      * Enum representing different types of actions with associated colors.
      */

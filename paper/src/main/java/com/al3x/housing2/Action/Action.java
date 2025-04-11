@@ -96,28 +96,35 @@ public abstract class Action {
         data.put("id", id);
         LinkedHashMap<String, Object> propertiesData = new LinkedHashMap<>();
         properties.forEach(property -> {
-            switch (property.getValue()) {
-                case Enum<?> e -> propertiesData.put(property.getId(), e.name());
-                case ItemStack i -> propertiesData.put(property.getId(), Serialization.itemStackToBase64(i));
-                default -> propertiesData.put(property.getId(), property.getValue());
+            if (property instanceof ActionProperty.PropertySerializer<?,?>) {
+                propertiesData.put(property.getId(), ((ActionProperty.PropertySerializer<?, ?>) property).serialize());
+            } else {
+                propertiesData.put(property.getId(), property.getValue());
             }
         });
         data.put("properties", propertiesData);
         return data;
     }
 
+    public <V> V getValue(String id, Class<V> clazz) {
+        for (ActionProperty<?> property : properties) {
+            if (property.getId().equals(id)) {
+                return (V) property.getValue();
+            }
+        }
+        return null;
+    }
 
+    public <V> V getProperty(String id, Class<V> clazz) {
+        for (ActionProperty<?> property : properties) {
+            if (property.getId().equals(id) && property.getClass() == clazz) {
+                return (V) property;
+            }
+        }
+        return null;
+    }
 
     public abstract boolean requiresPlayer();
-
-    public Object getField(String name) throws NoSuchFieldException, IllegalAccessException, NumberFormatException {
-        Field field = this.getClass().getDeclaredField(name.split(" ")[0]);
-        field.setAccessible(true);
-        if (field.getType() == List.class && name.contains(" ")) {
-            return ((List<?>) field.get(this)).get(Integer.parseInt(name.split(" ")[1]));
-        }
-        return field.get(this);
-    }
 
     public int limit() {
         return -1;

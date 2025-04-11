@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -46,11 +47,11 @@ public class LaunchProjectileAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "projectile",
                         "Projectile",
                         "The projectile to launch.",
-                        ActionProperty.PropertyType.ENUM,
+                        "Select the projectile type",
                         Projectile.class
                 ),
                 new ActionProperty(

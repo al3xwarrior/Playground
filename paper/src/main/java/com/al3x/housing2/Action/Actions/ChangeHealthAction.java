@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -15,8 +17,6 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class ChangeHealthAction extends HTSLImpl implements NPCAction {
-    private StatOperation mode = StatOperation.SET;
-    private String value = "20";
 
     public ChangeHealthAction() {
         super(
@@ -28,35 +28,30 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "mode",
                         "Mode",
                         "The mode to use.",
-                        ActionProperty.PropertyType.ENUM,
                         StatOperation.class
-                ),
-                new ActionProperty(
+                ).setValue(StatOperation.SET),
+                new NumberProperty(
                         "value",
                         "Value",
-                        "The value to use.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The value to use."
+                ).setValue("20")
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
-        if (!NumberUtilsKt.isDouble(value)) {
-            return OutputType.ERROR;
-        }
-        double result = Double.parseDouble(value);
+        double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
 
-        player.setHealth(handleHealth(result, player));
+        player.setHealth(handleHealth(value, player));
         return OutputType.SUCCESS;
     }
 
     private Double handleHealth(double result, LivingEntity le) {
+        StatOperation mode = getValue("mode", StatOperation.class);
         switch (mode) {
             case INCREASE:
                 result += le.getHealth();
@@ -91,23 +86,19 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
         return true;
     }
 
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
-    }
+//    @Override
+//    public String export(int indent) {
+//        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value.toString());
+//    }
 
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
-        if (!NumberUtilsKt.isDouble(value)) {
-            return;
-        }
-        double result = Double.parseDouble(value);
+        double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
 
         if (!(npc.getEntity() instanceof LivingEntity le)) {
             return;
         }
 
-        le.setHealth(handleHealth(result, le));
+        le.setHealth(handleHealth(value, le));
     }
 }
