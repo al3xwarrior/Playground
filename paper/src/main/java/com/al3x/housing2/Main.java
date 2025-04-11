@@ -153,6 +153,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ChestListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LobbyListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityLimitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(housesManager), this);
