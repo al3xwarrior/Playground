@@ -128,6 +128,10 @@ public class LobbyListener implements Listener {
     @EventHandler
     public void hungerChange(FoodLevelChangeEvent e) {
         e.setCancelled(true);
+        if (!e.getEntity().getWorld().equals(Bukkit.getWorld("world"))) {
+            Player player = (Player) e.getEntity();
+            if (player.getFoodLevel() < 7 && player.isSprinting()) player.setSprinting(false);
+        }
     }
 
     @EventHandler
