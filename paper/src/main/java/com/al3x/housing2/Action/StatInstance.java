@@ -1,26 +1,35 @@
 package com.al3x.housing2.Action;
 
-import com.al3x.housing2.Action.Actions.StatValue;
-import com.al3x.housing2.Data.StatActionData;
+import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Enums.StatOperation;
-import com.google.gson.Gson;
 
-import java.util.LinkedHashMap;
+import static com.al3x.housing2.Action.Properties.StatValueProperty.*;
 
 public class StatInstance {
-    private static final Gson gson = new Gson();
     public StatOperation mode;
-    public StatValue value;
+    public StatValueInstance value;
 
-    public StatInstance(String statType) {
+    public StatInstance() {
         this.mode = StatOperation.INCREASE;
-        this.value = new StatValue(statType);
+        this.value = new StatValueInstance(
+                false,
+                "1.0",
+                null
+        );
     }
 
-    public void fromData(LinkedHashMap<String, Object> data, Class<? extends StatInstance> actionClass) {
-        mode = StatOperation.valueOf((String) data.get("mode"));
-        value = gson.fromJson(gson.toJson(data.get("value")), StatActionData.MoreStatData.class).toStatValue();
-    }
+    public static class StatInstanceData {
+        public StatOperation mode;
+        public StatValueData value;
 
+        public StatInstanceData(StatInstance instance) {
+            this.mode = instance.mode;
+            this.value = new StatValueData(
+                    instance.value.isExpression(),
+                    instance.value.getLiteralValue(),
+                    ActionData.toData(instance.value.getExpressionValue())
+            );
+        }
+    }
 
 }

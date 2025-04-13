@@ -21,12 +21,12 @@ public class ActionEditor {
     public ActionEditor(int rows, String title, List<ActionProperty<?>> properties) {
         this.rows = rows;
         this.title = title;
-        this.properties = properties.stream().filter(ActionProperty::isVisible).collect(Collectors.toList());
+        this.properties = properties.stream().filter(actionProperty -> actionProperty.getVisible().apply()).collect(Collectors.toList());
     }
 
     public ActionEditor(int rows, String title, ActionProperty<?>... properties) {
         this.rows = rows;
         this.title = title;
-        this.properties = Arrays.stream(properties).filter(ActionProperty::isVisible).collect(Collectors.toList());;
+        this.properties = Arrays.stream(properties).filter(actionProperty -> actionProperty.getVisible().apply()).collect(Collectors.toList());;
     }
 }

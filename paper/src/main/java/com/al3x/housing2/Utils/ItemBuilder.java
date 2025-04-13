@@ -372,6 +372,7 @@ public class ItemBuilder {
         EDIT_LEFT_CLICK_ACTIONS("edit left click actions", YELLOW),
         EDIT_RIGHT_CLICK_ACTIONS("edit right click actions", YELLOW),
         CYCLE_FORWARD("cycle forward", YELLOW),
+        EDIT_KEY("edit key", YELLOW),
         CYCLE_BACKWARD("cycle backwards", YELLOW),
         SAVE_LOCATION("save location", YELLOW),
         TOGGLE_VISIBILITY("toggle visibility", YELLOW),

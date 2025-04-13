@@ -7,6 +7,7 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.ItemSelectMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.Serialization;
+import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,6 +22,11 @@ public class ItemStackProperty extends ActionProperty<ItemStack> implements Acti
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
         new ItemSelectMenu(player, menu, item -> setValue(item, player));
+    }
+
+    @Override
+    protected String displayValue() {
+        return getValue() == null ? "&cNot Set" : StackUtils.getDisplayName(getValue());
     }
 
     @Override

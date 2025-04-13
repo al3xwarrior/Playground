@@ -12,8 +12,8 @@ import java.util.List;
 
 //Shows a list of whatever in the builder
 public class ListProperty<V> extends CustomSlotProperty<List<V>> {
-    public ListProperty(String id, String name, String description, Material icon) {
-        super(id, name, description, icon);
+    public ListProperty(String id, String name, String description, Material icon, int slot) {
+        super(id, name, description, icon, slot);
     }
 
     @Override

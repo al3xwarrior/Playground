@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.GenericPagination.TeamProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Team;
 import lombok.ToString;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @ToString
 public class ChangePlayerTeamAction extends HTSLImpl {
-    String team = null;
     public ChangePlayerTeamAction() {
         super(
                 "change_player_team_action",
@@ -26,28 +26,22 @@ public class ChangePlayerTeamAction extends HTSLImpl {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new TeamProperty(
                         "team",
                         "Team",
-                        "The team to change the player to.",
-                        ActionProperty.PropertyType.TEAM
+                        "The team to change the player to."
                 )
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        Team team = getValue("team", Team.class);
         if (team == null) {
             return OutputType.ERROR;
         }
-        Team team = house.getTeam(this.team);
         house.loadOrCreatePlayerData(player).setTeam(team.getName());
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        team = (String) data.get(getId());
     }
 
     @Override

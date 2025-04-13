@@ -1,11 +1,16 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.*;
 import com.al3x.housing2.Enums.NavigationType;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.LocationData;
 import com.al3x.housing2.Instances.HousingNPC;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Listeners.NpcItems;
+import com.al3x.housing2.Menus.Actions.ActionEditMenu;
+import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.ToString;
@@ -18,6 +23,8 @@ import net.citizensnpcs.trait.waypoint.triggers.WaypointTrigger;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -25,18 +32,6 @@ import java.util.*;
 
 @ToString
 public class NpcPathAction extends Action implements NPCAction {
-    int npcId = -1;
-    NavigationType mode = NavigationType.STATIONARY;
-
-    Double speed = null;
-    Double delay = null;
-    Double xRange = null;
-    Double yRange = null;
-    @Getter
-    List<LocationData> path = null;
-    boolean loop = false;
-    boolean pauseUntilComplete = false;
-
     public NpcPathAction() {
         super(
                 "npc_navigation_action",
@@ -47,64 +42,74 @@ public class NpcPathAction extends Action implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new NPCProperty(
                         "npcId",
                         "NPC",
-                        "The NPC to change the navigation of.",
-                        ActionProperty.PropertyType.NPC
+                        "The NPC to change the navigation of."
                 ),
-                new ActionProperty(
+                new EnumProperty<>(
                         "mode",
                         "Mode",
                         "The mode to use.",
-                        ActionProperty.PropertyType.ENUM,
                         NavigationType.class
-                ),
-
-                new ActionProperty(
+                ).setValue(NavigationType.STATIONARY),
+                new DoubleProperty(
                         "speed",
                         "Speed",
-                        "The speed of the NPC.",
-                        ActionProperty.PropertyType.DOUBLE, 0.0, 10.0
-                ).showIf(mode != NavigationType.STATIONARY),
-
-                new ActionProperty(
+                        "The speed of the NPC.", 0.0, 10.0
+                ).showIf(() -> getValue("mode", NavigationType.class) != NavigationType.STATIONARY).setValue(1.0),
+                new DoubleProperty(
                         "delay",
                         "Delay",
-                        "The stationary time between wandering.",
-                        ActionProperty.PropertyType.DOUBLE, -1.0, 100.0
-                ).showIf(mode == NavigationType.WANDER),
-                new ActionProperty(
+                        "The stationary time between wandering.", -1.0, 100.0
+                ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.WANDER).setValue(-1.0),
+                new DoubleProperty(
                         "xRange",
                         "X Range",
-                        "The x range of the NPC.",
-                        ActionProperty.PropertyType.DOUBLE, 0.0, 100.0
-                ).showIf(mode == NavigationType.WANDER),
-                new ActionProperty(
+                        "The x range of the NPC.", 0.0, 100.0
+                ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.WANDER).setValue(42.0),
+                new DoubleProperty(
                         "yRange",
                         "Y Range",
-                        "The y range of the NPC.",
-                        ActionProperty.PropertyType.DOUBLE, 0.0, 20.0
-                ).showIf(mode == NavigationType.WANDER),
-
-                new ActionProperty(
+                        "The y range of the NPC.", 0.0, 20.0
+                ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.WANDER).setValue(4.0),
+                new CustomProperty<ActionProperty.Constant>(
+                        "yes",
+                        "Path",
+                        "The path of the NPC.",
+                        Material.DIAMOND_AXE
+                ) {
+                    @Override
+                    public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
+                        ItemBuilder pathItem = ItemBuilder.create(Material.DIAMOND_AXE)
+                                .name("&aPath")
+                                .description("&bRight click &7a block too add a point\n\n&bRight click &7air to remove last point\n\n&bShift right click &7to clear the path\n\n&bShift left click &7to cancel");
+                        ItemStack itemStack = pathItem.build();
+                        NbtItemBuilder nbtItem = new NbtItemBuilder(itemStack);
+                        nbtItem.setBoolean("isPathForAction", true);
+                        nbtItem.setInt("npcId", NpcPathAction.this.getValue("npcId", Integer.class));
+                        nbtItem.build();
+                        player.getInventory().addItem(itemStack);
+                        NpcItems.npcPathActionHashMap.put(player.getUniqueId(), NpcPathAction.this);
+                    }
+                }.showIf(() -> getValue("mode", NavigationType.class) == NavigationType.PATH),
+                new BooleanProperty(
+                        "loop",
+                        "Loop",
+                        "If true, the path will loop."
+                ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.PATH),
+                new BooleanProperty(
+                        "pauseUntilComplete",
+                        "Pause Until Complete",
+                        "If true, the action will pause until the path is complete."
+                ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.PATH),
+                new ListProperty<String>(
                         "path",
                         "Path",
                         "The path of the NPC.",
-                        ActionProperty.PropertyType.PATH
-                ).showIf(mode == NavigationType.PATH),
-                new ActionProperty(
-                        "loop",
-                        "Loop",
-                        "If true, the path will loop.",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).showIf(mode == NavigationType.PATH),
-                new ActionProperty(
-                        "pauseUntilComplete",
-                        "Pause Until Complete",
-                        "If true, the action will pause until the path is complete.",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).showIf(mode == NavigationType.PATH)
+                        Material.PAPER,
+                        36
+                ).setValue(new ArrayList<>())
         ));
     }
 
@@ -115,12 +120,18 @@ public class NpcPathAction extends Action implements NPCAction {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Integer npcId = NpcPathAction.this.getValue("npcId", Integer.class);
+        if (npcId == null) {
+            return OutputType.ERROR;
+        }
         return execute(house.getNPC(npcId), player, house, event, executor);
     }
 
     public OutputType execute(HousingNPC npc, Player player, HousingWorld house, CancellableEvent cancellable, ActionExecutor actionExecutor) {
+        NavigationType mode = getValue("mode", NavigationType.class);
         npc.setNavigationType(mode);
         if (mode == NavigationType.WANDER) {
+            Double speed = getValue("speed", Double.class);
             npc.setSpeed(speed);
             npc.getCitizensNPC().getNavigator().getDefaultParameters().speedModifier(speed.floatValue());
 
@@ -131,6 +142,9 @@ public class NpcPathAction extends Action implements NPCAction {
                 waypoints.getCurrentProvider().setPaused(false);
             }
 
+            Double delay = getValue("delay", Double.class);
+            Double xRange = getValue("xRange", Double.class);
+            Double yRange = getValue("yRange", Double.class);
             WanderWaypointProvider wander = (WanderWaypointProvider) waypoints.getCurrentProvider();
             wander.setDelay(delay.intValue());
             wander.setXYRange(xRange.intValue(), yRange.intValue());
@@ -156,7 +170,8 @@ public class NpcPathAction extends Action implements NPCAction {
             LinearWaypointProvider provider = (LinearWaypointProvider) waypoints.getCurrentProvider();
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             path.clear();
-            for (LocationData locationData : this.path) {
+
+            for (LocationData locationData : getProperty()) {
                 Waypoint waypoint = new Waypoint(locationData.toLocation());
                 if (!this.loop) {
                     waypoint.addTrigger(new WaypointTrigger() {
@@ -196,59 +211,6 @@ public class NpcPathAction extends Action implements NPCAction {
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         execute(house.getNPC(npc.getId()), player, house, event, executor);
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("npcId", npcId);
-        data.put("mode", mode.name());
-        if (mode != NavigationType.STATIONARY) {
-            data.put("speed", speed);
-        }
-        if (mode == NavigationType.WANDER) {
-            data.put("delay", delay);
-            data.put("xRange", xRange);
-            data.put("yRange", yRange);
-        }
-        if (mode == NavigationType.PATH) {
-            data.put("path", path);
-            data.put("loop", loop);
-            data.put("pauseUntilComplete", pauseUntilComplete);
-        }
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        npcId = ((Double)data.get("npcId")).intValue();
-        mode = NavigationType.valueOf((String) data.get("mode"));
-        if (data.containsKey("speed")) {
-            speed = (Double) data.get("speed");
-        }
-        if (data.containsKey("delay")) {
-            delay = (Double) data.get("delay");
-        }
-        if (data.containsKey("xRange")) {
-            xRange = (Double) data.get("xRange");
-        }
-        if (data.containsKey("yRange")) {
-            yRange = (Double) data.get("yRange");
-        }
-        if (data.containsKey("path")) {
-            for (Object locationData : (List<?>) data.get("path")) {
-                if (path == null) {
-                    path = new ArrayList<>();
-                }
-                path.add(new Gson().fromJson(locationData.toString(), LocationData.class));
-            }
-        }
-        if (data.containsKey("loop")) {
-            loop = (boolean) data.get("loop");
-        }
-        if (data.containsKey("pauseUntilComplete")) {
-            pauseUntilComplete = (boolean) data.get("pauseUntilComplete");
-        }
     }
 
     @Override

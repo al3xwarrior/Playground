@@ -1,6 +1,9 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -22,10 +25,6 @@ import java.util.List;
 @Setter
 @ToString
 public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
-
-    private AttributeType attribute = AttributeType.ARMOR;
-    private String value = "1";
-
     public ChangeNPCAttributeAction() {
         super(
                 "change_npc_attribute_action",
@@ -36,19 +35,17 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "attribute",
                         "Attribute",
                         "The attribute to change.",
-                        ActionProperty.PropertyType.ENUM,
                         AttributeType.class
-                ),
-                new ActionProperty(
+                ).setValue(AttributeType.ARMOR),
+                new NumberProperty(
                         "value",
                         "Value",
-                        "The value to set the attribute to.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The value to set the attribute to."
+                ).setValue("1")
         ));
     }
 
@@ -63,20 +60,17 @@ public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + attribute.name() + " " + Color.removeColor(value);
-    }
-
-    @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
+        AttributeType attribute = getValue("attribute", AttributeType.class);
         try {
             if (attribute.getAttribute().equals(Attribute.FLYING_SPEED)) {
-                npc.getNavigator().getDefaultParameters().baseSpeed(Float.parseFloat(Placeholder.handlePlaceholders(value, house, player)));
+                npc.getNavigator().getDefaultParameters().baseSpeed(value.floatValue());
                 return;
             }
 
             AttributeTrait attributeTrait = npc.getOrAddTrait(AttributeTrait.class);
-            attributeTrait.setAttributeValue(attribute.getAttribute(), Double.parseDouble(Placeholder.handlePlaceholders(value, house, player)));
+            attributeTrait.setAttributeValue(attribute.getAttribute(), value.floatValue());
         } catch (Exception e) {
             Bukkit.getLogger().warning("Failed to change NPC attribute: " + e.getMessage());
         }

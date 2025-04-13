@@ -47,6 +47,11 @@ public abstract class PaginationProperty<T> extends ActionProperty<T> implements
     }
 
     @Override
+    protected String displayValue() {
+        return getValue() != null ? getValue().toString() : "&cNone";
+    }
+
+    @Override
     public String serialize() {
         return getValue().toString(); // Override if needed
     }

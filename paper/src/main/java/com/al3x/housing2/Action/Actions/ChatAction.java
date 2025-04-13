@@ -9,6 +9,7 @@ import com.al3x.housing2.Utils.StringUtilsKt;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,6 @@ import java.util.List;
 @Setter
 @ToString
 public class ChatAction extends HTSLImpl {
-    private String message = "&eHello world!";
 
     public ChatAction() {
         super(
@@ -34,12 +34,13 @@ public class ChatAction extends HTSLImpl {
                 "message",
                 "Message",
                 "The message to display."
-        ));
+        ).setValue("&eHello, world!"));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        player.sendMessage(StringUtilsKt.housingStringFormatter(message, house, player));
+        Component message = getProperty("message", StringProperty.class).component(house, player);
+        player.sendMessage(message);
         return OutputType.SUCCESS;
     }
 

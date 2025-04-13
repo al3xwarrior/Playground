@@ -5,9 +5,9 @@ import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.Actions.StatValue;
 import com.al3x.housing2.Action.StatInstance;
 import com.al3x.housing2.Data.ActionData;
-import com.al3x.housing2.Data.StatActionData;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
@@ -23,14 +23,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
 @Setter
-public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>> {
+public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>> implements ActionProperty.PropertySerializer<List<StatInstance>, List<StatInstance.StatInstanceData>> {
     boolean showExpression = false;
-    public StatInstanceProperty(String id, String name, String description) {
-        super(id, name, description, null);
+    public StatInstanceProperty() {
     }
 
     @Override
@@ -40,7 +40,7 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
         for (int i = 0; i < value.size(); i++) {
             StatInstance instance = value.get(i);
             properties.add(new ModeProperty(i, instance));
-            properties.add(new ValueProperty(i, instance));
+            properties.add(new StatValueProperty(i, instance));
         }
         return properties;
     }
@@ -48,6 +48,27 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
     @Override
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
 
+    }
+
+    @Override
+    public List<StatInstance.StatInstanceData> serialize() {
+        return getValue().stream().map(StatInstance.StatInstanceData::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StatInstance> deserialize(List<StatInstance.StatInstanceData> value, HousingWorld house) {
+        return value.stream().map((data) -> {
+            StatInstance instance = new StatInstance();
+            instance.mode = data.mode;
+            Action action = ActionData.fromData(data.value);
+            if (action instanceof StatValue) {
+                instance.value = (StatValue) action;
+            } else {
+                instance.value = new StatValue();
+                Main.getInstance().getLogger().severe("StatInstanceProperty: Action is not a StatValue in housing " + house.getHouseUUID().toString());
+            }
+            return instance;
+        }).collect(Collectors.toList());
     }
 
     private class ModeProperty extends ActionProperty<StatOperation> {
@@ -93,58 +114,6 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
                 instance.mode = mode;
                 menu.open();
             }).open();
-        }
-    }
-
-    private class ValueProperty extends ActionProperty<StatValue> {
-        private final int index;
-        private final StatInstance instance;
-        public ValueProperty(int index, StatInstance instance) {
-            super(
-                    "value" + index,
-                    "Amount",
-                    "The value of the stat to modify.",
-                    Material.BOOK
-            );
-            this.index = index;
-            this.instance = instance;
-            getBuilder().mClick(ItemBuilder.ActionType.TOGGLE_EXPRESSION);
-            if (index > 0) {
-                getBuilder().rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-            }
-        }
-
-        @Override
-        protected String displayValue() {
-            return instance.value.toString();
-        }
-
-        @Override
-        public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-            if (event.getClick() == ClickType.MIDDLE) {
-                instance.value.setExpression(!instance.value.isExpression());
-                menu.open();
-                return;
-            }
-
-            if (event.getClick() == ClickType.RIGHT && index > 0) {
-                StatInstanceProperty.this.getValue().remove(instance);
-                menu.open();
-                return;
-            }
-
-            if (event.getClick() != ClickType.LEFT) return;
-
-            if (instance.value.isExpression()) {
-                new ActionEditMenu(instance.value, main, player, house, menu).open();
-            } else {
-                player.sendMessage(colorize("&ePlease enter the value you wish to set in chat!"));
-                menu.openChat(main, instance.value.getLiteralValue(), (value) -> {
-                    instance.value.setLiteralValue(value);
-                    player.sendMessage(colorize("&aValue set to: &e" + value));
-                    Bukkit.getScheduler().runTaskLater(main, menu::open, 1L);
-                });
-            }
         }
     }
 }

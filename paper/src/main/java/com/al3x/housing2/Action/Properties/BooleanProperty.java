@@ -14,6 +14,7 @@ public class BooleanProperty extends ActionProperty<Boolean> {
         super(id, name, description, Material.TURTLE_SCUTE);
 
         getBuilder().lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
+        setValue(false);
     }
 
     @Override

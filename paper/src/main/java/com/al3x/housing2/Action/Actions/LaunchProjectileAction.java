@@ -30,13 +30,6 @@ import java.util.function.BiFunction;
 
 @ToString
 public class LaunchProjectileAction extends HTSLImpl {
-    private Projectile projectile = Projectile.ARROW;
-    private PushDirection direction = PushDirection.FORWARD;
-    private String amount = "1.5";
-
-    private String customDirection;
-    private ItemStack item = null;
-
     public LaunchProjectileAction() {
         super(
                 "launch_projectile_action",

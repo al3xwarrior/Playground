@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Actions.BreakAction;
 import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -111,11 +112,7 @@ public class ActionExecutor {
             limits.put(action.getId(), limits.getOrDefault(action.getId(), 0) + 1);
 
             if (action instanceof PauseAction pauseAction) {
-                String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
-                if (!NumberUtilsKt.isInt(dur)) {
-                    continue;
-                }
-                double duration = Integer.parseInt(dur);
+                double duration = pauseAction.getProperty("duration", NumberProperty.class).parsedValue(house, player);
                 scheduler.runTaskLater(Main.getInstance(), () -> {
                     execute(entity, player, house, event);
                 }, (long) duration);

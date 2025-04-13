@@ -2,6 +2,7 @@ package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Actions.Utils.ParticleUtils;
+import com.al3x.housing2.Action.Properties.*;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.ParticleType;
 import com.al3x.housing2.Enums.Particles;
@@ -35,25 +36,6 @@ import static com.al3x.housing2.Utils.ItemBuilder.ActionType.SELECT_YELLOW;
 
 @ToString
 public class ParticleAction extends HTSLImpl {
-    private Particles particle = Particles.WHITE_SMOKE;
-    private Locations location = INVOKERS_LOCATION;
-    private String customLocation = null;
-    private Locations location2 = INVOKERS_LOCATION;
-    private String customLocation2 = null;
-    private PushDirection direction = PushDirection.FORWARD;
-    private String customDirection = null;
-    private boolean isLineRange = true;
-    private ParticleType type = ParticleType.LINE;
-    private Double radius = 8D;
-    private Double amount = 20D;
-    private boolean globallyVisible = false;
-
-    // Custom data for particles
-    private Double speed = null;
-    private Float size = null;
-    private String color1 = null;
-    private String color2 = null;
-
     public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
 
     public ParticleAction() {
@@ -66,112 +48,79 @@ public class ParticleAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "particle",
                         "Particle",
                         "The particle to display.",
-                        ActionProperty.PropertyType.ENUM, Particles.class
-                ),
-                new ActionProperty(
+                        Particles.class
+                ).setValue(Particles.WHITE_SMOKE),
+                new EnumProperty<>(
                         "type",
                         "Type",
                         "The type of particle effect.",
-                        ActionProperty.PropertyType.ENUM,
                         ParticleType.class
-                ),
-                new ActionProperty(
+                ).setValue(ParticleType.LINE),
+                new LocationProperty(
                         "location",
                         "Location",
-                        "The location to display the particle at.",
-                        ActionProperty.PropertyType.CUSTOM,
-                        (house, menu, player) -> locationConsumer(house, menu, player, true)
-                ),
-                new ActionProperty(
+                        "The location to display the particle at."
+                ).setValue("INVOKERS_LOCATION"),
+                new BooleanProperty(
+                        "isLineRange",
+                        "Is Line Range",
+                        "Used for line and curve types. If true, the particle will be displayed in a line from the location to the direction. If false, the particle will be displayed at the location."
+                ).setValue(true),
+                new NumberProperty(
                         "radius",
                         "Radius/Length",
                         "The radius of the circle or length of the line.",
-                        ActionProperty.PropertyType.NUMBER, 1.0, 20.0
-                ).showIf(type == ParticleType.LINE || type == ParticleType.CURVE && isLineRange),
-                new ActionProperty(
+                        1.0, 20.0
+                ).showIf(() -> getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE && getValue("isLineRange", Boolean.class)).setValue("8"),
+                new LocationProperty(
                         "location2",
                         "Location 2",
-                        "The second location to display the particle at.",
-                        ActionProperty.PropertyType.CUSTOM,
-                        (house, menu, player) -> locationConsumer(house, menu, player, false)
-                ).showIf(type == ParticleType.LINE || type == ParticleType.CURVE && !isLineRange),
-                new ActionProperty(
+                        "The second location to display the particle at."
+                ).showIf(() -> getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE && !getValue("isLineRange", Boolean.class)).setValue("INVOKERS_LOCATION"),
+                new EnumProperty<>(
                         "direction",
                         "Direction",
                         "The direction of the particle.",
-                        ActionProperty.PropertyType.ENUM,
                         PushDirection.class
-                ).showIf(type == ParticleType.CURVE || type == ParticleType.LINE),
-                new ActionProperty(
+                ).showIf(() -> getValue("type", ParticleType.class) == ParticleType.CURVE || (getValue("type", ParticleType.class) == ParticleType.LINE && getValue("isLineRange", Boolean.class))).setValue(PushDirection.FORWARD),
+                new NumberProperty(
                         "amount",
                         "Amount",
                         "The amount of particles to display.",
-                        ActionProperty.PropertyType.NUMBER, 1.0, 100.0
-                ).showIf(type != ParticleType.DOT),
-                new ActionProperty(
+                        1.0, 100.0
+                ).showIf(() -> getValue("type", ParticleType.class) != ParticleType.DOT).setValue("20"),
+                new BooleanProperty(
                         "globallyVisible",
                         "Globally Visible",
-                        "If true, the particle will be visible to all players in the world.",
-                        ActionProperty.PropertyType.BOOLEAN
+                        "If true, the particle will be visible to all players in the world."
                 ),
-                new ActionProperty(
+                new NumberProperty(
                         "size",
                         "Size",
                         "The size of the particle.",
-                        ActionProperty.PropertyType.NUMBER, 1.0, 10.0
-                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("size")),
-                new ActionProperty(
+                        1.0, 10.0
+                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("size")),
+                new ColorProperty(
                         "color",
                         "Color",
-                        "The color of the particle.",
-                        ActionProperty.PropertyType.COLOR
-                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("color")),
-                new ActionProperty(
+                        "The color of the particle."
+                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color")),
+                new ColorProperty(
                         "color2",
                         "Color 2",
-                        "The second color of the particle.",
-                        ActionProperty.PropertyType.COLOR
-                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("color2")),
-                new ActionProperty(
+                        "The second color of the particle."
+                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color2")),
+                new NumberProperty(
                         "speed",
                         "Extra",
                         "The speed of the particle.",
-                        ActionProperty.PropertyType.NUMBER, 0.0, 10.0
-                ).showIf(particle.getData() != null && ParticleUtils.keys(particle).contains("speed"))
-                ));
-    }
-
-    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player, boolean loc1) {
-        return (event, o) -> {
-            if (event.getClick() == ClickType.MIDDLE) {
-                isLineRange = !isLineRange;
-                backMenu.open();
-                return true;
-            }
-            return getCoordinate(event, o, loc1 ? customLocation : customLocation2, house, backMenu,
-                    (coords, location) -> {
-                        if (location == CUSTOM) {
-                            if (loc1) customLocation = coords;
-                            else customLocation2 = coords;
-                        } else {
-                            if (loc1) customLocation = null;
-                            else customLocation2 = null;
-                        }
-                        if (loc1) this.location = location;
-                        else this.location2 = location;
-                        if (location == PLAYER_LOCATION) {
-                            String playerCoords = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
-                            if (loc1) customLocation = playerCoords;
-                            else customLocation2 = playerCoords;
-                        }
-                        backMenu.open();
-                    }
-            );
-        };
+                        0.0, 10.0
+                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("speed"))
+        ));
     }
 
     public List<Location> getCircle(Location center, double radius, int amount) {
@@ -222,7 +171,7 @@ public class ParticleAction extends HTSLImpl {
         double increment = distance / amount;
         Vector direction = end.toVector().subtract(start.toVector()).normalize();
         //curve the line in the direction its going
-        Vector curve = switch (this.direction) {
+        Vector curve = switch (getValue("direction", PushDirection.class)) {
             case UP, FORWARD -> new Vector(0, direction.getY(), 0).normalize();
             case LEFT -> new Vector(direction.getZ(), 0, -direction.getX()).normalize();
             case RIGHT -> new Vector(-direction.getZ(), 0, direction.getX()).normalize();
@@ -233,9 +182,6 @@ public class ParticleAction extends HTSLImpl {
             case WEST -> new Vector(-direction.getX(), 0, 0).normalize();
             default -> new Vector(0, 0, 0);
         };
-        if (curve == null) {
-            return locations;
-        }
         for (double i = 0; i < distance; i += increment) {
             Location loc = start.clone().add(direction.clone().multiply(i)).add(curve.clone().multiply(Math.sin(i / distance * Math.PI) * 2));
             locations.add(loc);
@@ -245,7 +191,7 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        Location location = locationFromLocations(player, house, null, this.location, this.customLocation);
+        Location location = getProperty("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation());
         if (location == null) {
             return OutputType.ERROR;
         }
@@ -253,27 +199,9 @@ public class ParticleAction extends HTSLImpl {
         return OutputType.SUCCESS;
     }
 
-    private Location locationFromLocations(Player player, HousingWorld house, Location base, Locations location, String customLocation) {
-        switch (location == null ? INVOKERS_LOCATION : location) {
-            case INVOKERS_LOCATION -> {
-                return player.getEyeLocation().clone();
-            }
-            case HOUSE_SPAWN -> {
-                return house.getSpawn().clone();
-            }
-            case CUSTOM, PLAYER_LOCATION -> {
-                if (base != null) {
-                    return getLocationFromString(player, base, player.getEyeLocation(), house, customLocation);
-                }
-                return getLocationFromString(player, house, customLocation);
-            }
-        }
-        return null;
-    }
-
     private Location getLocationFromLookingAt(Player player, HousingWorld house, Location base, int range) {
         Vector direction = base.getDirection();
-        switch (this.direction) {
+        switch (getValue("direction", PushDirection.class)) {
             case UP -> direction = new Vector(0, 1, 0);
             case DOWN -> direction = new Vector(0, -1, 0);
             case NORTH -> direction = new Vector(0, 0, -1);
@@ -302,7 +230,11 @@ public class ParticleAction extends HTSLImpl {
 
     private void summonParticles(Player player, HousingWorld house, Location location) {
         List<Location> locations = new ArrayList<>();
-        switch (type) {
+        Double radius = getProperty("radius", NumberProperty.class).parsedValue(house, player);
+        Double amount = getProperty("amount", NumberProperty.class).parsedValue(house, player);
+        boolean isLineRange = getValue("isLineRange", Boolean.class);
+        Particles particle = getValue("particle", Particles.class);
+        switch (getValue("type", ParticleType.class)) {
             case CIRCLE -> locations = getCircle(location, radius, amount.intValue());
             case CURVE -> {
                 Location loc2;
@@ -310,7 +242,7 @@ public class ParticleAction extends HTSLImpl {
                     //Location
                     loc2 = getLocationFromLookingAt(player, house, location, radius.intValue());
                 } else {
-                    loc2 = locationFromLocations(player, house, (this.location != INVOKERS_LOCATION) ? location : null, location2, customLocation2);
+                    loc2 = getProperty("location2", LocationProperty.class).getLocation(player, house, location, player.getEyeLocation());
                 }
 
                 if (loc2 == null) {
@@ -324,7 +256,7 @@ public class ParticleAction extends HTSLImpl {
                     //Location
                     loc2 = getLocationFromLookingAt(player, house, location, radius.intValue());
                 } else {
-                    loc2 = locationFromLocations(player, house, (this.location != INVOKERS_LOCATION) ? location : null, location2, customLocation2);
+                    loc2 = getProperty("location2", LocationProperty.class).getLocation(player, house, location, player.getEyeLocation());
                 }
                 if (loc2 == null) {
                     return;
@@ -348,7 +280,11 @@ public class ParticleAction extends HTSLImpl {
         } else {
             particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
         }
-
+        String color1 = getValue("color", ColorProperty.class).getValue();
+        String color2 = getValue("color2", ColorProperty.class).getValue();
+        Float size = getProperty("size", NumberProperty.class).parsedValue(house, player).floatValue();
+        boolean globallyVisible = getValue("globallyVisible", Boolean.class);
+        Double speed = getProperty("speed", NumberProperty.class).parsedValue(house, player);
         Object data = ParticleUtils.output(particle, color1, color2, size);
         if (globallyVisible) {
             for (Player p : house.getWorld().getPlayers()) {
@@ -377,70 +313,6 @@ public class ParticleAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("particle", particle);
-        data.put("type", type);
-        data.put("location", location);
-        data.put("customLocation", customLocation);
-        data.put("location2", location2);
-        data.put("customLocation2", customLocation2);
-        data.put("isLineRange", isLineRange);
-        data.put("radius", radius);
-        data.put("amount", amount);
-        data.put("direction", direction);
-        data.put("customDirection", customDirection);
-        data.put("globallyVisible", globallyVisible);
-
-        if (particle.getData() != null) {
-            for (String key : ParticleUtils.keys(particle)) {
-                switch (key) {
-                    case "size" -> data.put("size", size);
-                    case "color" -> data.put("color", color1);
-                    case "color2" -> data.put("color2", color2);
-                    case "speed" -> data.put("speed", speed);
-                }
-            }
-        }
-
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        particle = Particles.valueOf((String) data.get("particle"));
-        type = ParticleType.valueOf((String) data.get("type"));
-        location = Locations.valueOf((String) data.get("location"));
-        customLocation = (String) data.get("customLocation");
-        location2 = Locations.valueOf((String) data.get("location2"));
-        customLocation2 = (String) data.get("customLocation2");
-        isLineRange = (boolean) data.get("isLineRange");
-        radius = (Double) data.get("radius");
-        amount = (Double) data.get("amount");
-        direction = PushDirection.valueOf((String) data.get("direction"));
-        customDirection = (String) data.get("customDirection");
-        if (data.containsKey("globallyVisible")) {
-            globallyVisible = (boolean) data.get("globallyVisible");
-        }
-
-        if (particle.getData() != null) {
-            for (String key : ParticleUtils.keys(particle)) {
-                if (!data.containsKey(key)) {
-                    continue;
-                }
-                switch (key) {
-                    case "size" ->
-                            size = data.get("size") == null ? 1F : NumberUtilsKt.toFloaT(data.get("size").toString());
-                    case "color" -> color1 = (String) data.getOrDefault("color", "255,255,255");
-                    case "color2" -> color2 = (String) data.getOrDefault("color2", "255,255,255");
-                    case "speed" ->
-                            speed = data.get("speed") == null ? 1F : NumberUtilsKt.toDoublE(data.get("speed").toString());
-                }
-            }
-        }
-    }
-
-    @Override
     public int limit() {
         return 10;
     }
@@ -453,93 +325,5 @@ public class ParticleAction extends HTSLImpl {
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <particle> <type> <radius> <amount> <location> <location2> [customData]";
-    }
-
-    @Override
-    public String export(int indent) {
-        String loc = (location == CUSTOM || location == Locations.PLAYER_LOCATION) ? customLocation : location.name();
-        String loc2 = (location2 == CUSTOM || location2 == Locations.PLAYER_LOCATION) ? customLocation2 : location2.name();
-
-        if (loc.contains("%")) {
-            loc = "\"" + loc + "\"";
-        }
-        if (loc2.contains("%")) {
-            loc2 = "\"" + loc2 + "\"";
-        }
-
-        StringBuilder customData = new StringBuilder();
-        List<String> requireNonNull = ParticleUtils.keys(particle);
-        if (requireNonNull == null) {
-            return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2;
-        }
-        for (String key : requireNonNull) {
-            switch (key) {
-                case "size" -> customData.append(" ").append(size);
-                case "color" -> customData.append(" ").append(color1);
-                case "color2" -> customData.append(" ").append(color2);
-                case "speed" -> customData.append(" ").append(speed);
-            }
-        }
-
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + particle.name() + " " + type.name() + " " + radius + " " + amount + " " + loc + " " + loc2 + customData;
-    }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        String[] parts = action.split(" ");
-        particle = Particles.valueOf(parts[0]);
-        type = ParticleType.valueOf(parts[1]);
-        radius = Double.parseDouble(parts[2]);
-        amount = Double.parseDouble(parts[3]);
-
-        Duple<String[], String> locationArg = handleArg(parts, 4);
-        if (Locations.fromString(locationArg.getSecond()) != null) {
-            location = Locations.fromString(locationArg.getSecond());
-        } else {
-            location = CUSTOM;
-            customLocation = locationArg.getSecond();
-        }
-        parts = locationArg.getFirst();
-
-        if (parts.length == 0) {
-            return nextLines;
-        }
-
-        Duple<String[], String> location2Arg = handleArg(parts, 0);
-        if (Locations.fromString(location2Arg.getSecond()) != null) {
-            location2 = Locations.fromString(location2Arg.getSecond());
-        } else {
-            location2 = CUSTOM;
-            customLocation2 = location2Arg.getSecond();
-        }
-        parts = location2Arg.getFirst();
-
-        if (parts.length == 0) {
-            return nextLines;
-        }
-
-        List<String> requireNonNull = ParticleUtils.keys(particle);
-        if (requireNonNull == null) {
-            return nextLines;
-        }
-        for (int i = 0; i < requireNonNull.size(); i++) {
-            String key = requireNonNull.get(i);
-            Duple<String[], String> arg = handleArg(parts, i);
-            if (arg == null) {
-                continue;
-            }
-            if (key.equals("size")) {
-                size = Float.parseFloat(arg.getSecond());
-            } else if (key.equals("color")) {
-                color1 = arg.getSecond();
-            } else if (key.equals("color2")) {
-                color2 = arg.getSecond();
-            } else if (key.equals("speed")) {
-                speed = Double.parseDouble(arg.getSecond());
-            }
-            parts = arg.getFirst();
-        }
-
-        return nextLines;
     }
 }

@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.GenericPagination.GroupProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -13,9 +15,6 @@ import java.util.List;
 
 @ToString
 public class ChangePlayerGroupAction extends HTSLImpl {
-    String group = null;
-    boolean demotionProtection = false;
-
     public ChangePlayerGroupAction() {
         super(
                 "change_player_group_action",
@@ -26,17 +25,15 @@ public class ChangePlayerGroupAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new GroupProperty(
                         "group",
                         "Group",
-                        "The group to change the player to.",
-                        ActionProperty.PropertyType.GROUP
+                        "The group to change the player to."
                 ),
-                new ActionProperty(
+                new BooleanProperty(
                         "demotionProtection",
                         "Demotion Protection",
-                        "If enabled, the player cannot be demoted.",
-                        ActionProperty.PropertyType.BOOLEAN
+                        "If enabled, the player cannot be demoted."
                 )
         ));
     }
@@ -48,24 +45,19 @@ public class ChangePlayerGroupAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Group group = getValue("group", Group.class);
+        boolean demotionProtection = getValue("demotionProtection", Boolean.class);
         if (group == null) {
             return OutputType.ERROR;
         }
         if (house.getOwnerUUID() == player.getUniqueId()) {
             return OutputType.ERROR;
         }
-        Group group = house.getGroup(this.group);
         if (house.loadOrCreatePlayerData(player).getGroupInstance(house).getPriority() > group.getPriority() && demotionProtection) {
             return OutputType.ERROR;
         }
         house.loadOrCreatePlayerData(player).setGroup(group.getName());
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        group = (String) data.get("group");
-        demotionProtection = (boolean) data.get("demotionProtection");
     }
 
     @Override

@@ -21,9 +21,6 @@ import java.util.List;
 @Getter
 @ToString
 public class ChangeTimeAction extends HTSLImpl {
-    @Setter
-    private StatOperation mode = StatOperation.SET;
-    private String value = "6000";
 
     public ChangeTimeAction() {
         super(
@@ -61,47 +58,33 @@ public class ChangeTimeAction extends HTSLImpl {
 
         switch (mode) {
             case INCREASE:
-                result += house.getWorld().getTime();
+                value += house.getWorld().getTime();
                 break;
             case DECREASE:
-                result = house.getWorld().getTime() - result;
+                value = house.getWorld().getTime() - value;
                 break;
             case MULTIPLY:
-                result = house.getWorld().getTime() * result;
+                value = house.getWorld().getTime() * value;
                 break;
             case DIVIDE:
-                result = house.getWorld().getTime() / result;
+                value = house.getWorld().getTime() / value;
                 break;
             case MOD:
-                result = house.getWorld().getTime() % result;
+                value = house.getWorld().getTime() % value;
                 break;
             case FLOOR:
-                result = Math.floor(house.getWorld().getTime());
-                break;
-            case ROUND:
-                result = Math.round(house.getWorld().getTime());
+                value = Math.floor(house.getWorld().getTime());
                 break;
             case SET:
                 break;
         }
 
-        house.getWorld().setTime((long) result);
+        house.getWorld().setTime(value.longValue());
         return OutputType.SUCCESS;
     }
 
     @Override
     public boolean requiresPlayer() {
         return false;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        mode = StatOperation.valueOf((String) data.get("mode"));
-        value = (String) data.get("value");
-    }
-
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + mode.getAlternative() + " " + Color.removeColor(value);
     }
 }

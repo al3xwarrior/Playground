@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -25,9 +27,6 @@ import java.util.List;
 @ToString
 public class ChangePlayerAttributeAction extends HTSLImpl {
 
-    @Setter
-    private AttributeType attribute;
-    private String value;
 
     public ChangePlayerAttributeAction() {
         super(
@@ -38,38 +37,35 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
                 List.of("playerAttribute")
         );
 
-        attribute = AttributeType.ARMOR;
-        value = "1";
-
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "attribute",
                         "Attribute",
                         "The attribute to change.",
-                        ActionProperty.PropertyType.ENUM,
                         AttributeType.class
-                ),
-                new ActionProperty(
+                ).setValue(AttributeType.ARMOR),
+                new NumberProperty(
                         "value",
                         "Value",
-                        "The value to set.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The value to set the attribute to."
+                ).setValue("1")
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        Double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
+        AttributeType attribute = getValue("attribute", AttributeType.class);
         try {
             if (attribute.getAttribute().equals(Attribute.FLYING_SPEED)) {
-                player.setFlySpeed(Float.parseFloat(Placeholder.handlePlaceholders(value, house, player)));
+                player.setFlySpeed(value.floatValue());
                 return OutputType.SUCCESS;
             }
 
             AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
             if (attributeInstance == null) return OutputType.SUCCESS;
 
-            attributeInstance.setBaseValue(Double.parseDouble(Placeholder.handlePlaceholders(value, house, player)));
+            attributeInstance.setBaseValue(value.floatValue());
         } catch (Exception e) {
             Bukkit.getLogger().warning("Failed to change player attribute: " + e.getMessage());
         }
@@ -77,26 +73,7 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("attribute", attribute == null ? AttributeType.ARMOR.name() : attribute.name());
-        data.put("value", value);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        attribute = AttributeType.valueFrom((String) data.get("attribute")) == null ? AttributeType.ARMOR : AttributeType.valueFrom((String) data.get("attribute"));
-        value = (String) data.get("value");
-    }
-
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + attribute.name() + " " + Color.removeColor(value);
     }
 }

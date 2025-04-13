@@ -3,6 +3,10 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.IntegerProperty;
+import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.LocationProperty;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -33,16 +37,6 @@ import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 @Setter
 @ToString
 public class DropItemAction extends Action {
-    private ItemStack item = null;
-    private String customLocation = null;
-    private Locations location = Locations.INVOKERS_LOCATION;
-    private boolean dropNaturally = true;
-    private boolean itemMerging = true;
-    private boolean prioritizePlayer = false;
-    private boolean fallbackToInventory = false;
-    private boolean showName = false;
-    private int pickupDelay = 20;
-
     public DropItemAction() {
         super(
                 "drop_item_action",
@@ -53,112 +47,68 @@ public class DropItemAction extends Action {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new ItemStackProperty(
                         "item",
                         "Item",
-                        "The item to drop",
-                        ActionProperty.PropertyType.ITEM
-                ).setValue(item),
-                new ActionProperty(
+                        "The item to drop"
+                ),
+                new LocationProperty(
                         "location",
                         "Location",
-                        "The location to drop the item at",
-                        ActionProperty.PropertyType.ENUM,
-                        Locations.class,
-                        this::locationConsumer
-                ).setValue(location),
-                new ActionProperty(
+                        "The location to drop the item at"
+                ).setValue("INVOKERS_LOCATION"),
+                new BooleanProperty(
                         "drop_naturally",
                         "Drop Naturally",
-                        "When enabled, the item will be dropped naturally in the world, having some slight randomness to its location",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).setValue(dropNaturally),
-                new ActionProperty(
+                        "When enabled, the item will be dropped naturally in the world, having some slight randomness to its location"
+                ).setValue(true),
+                new BooleanProperty(
                         "item_merging",
                         "Item Merging",
-                        "When enabled, the item will not merge with other items on the ground immediately",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).setValue(itemMerging),
-                new ActionProperty(
+                        "When enabled, the item will not merge with other items on the ground immediately"
+                ).setValue(true),
+                new BooleanProperty(
                         "prioritize_player",
                         "Prioritize Player",
-                        "When enabled, the player the action is executed on will be prioritized for picking up the item",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).setValue(prioritizePlayer),
-                new ActionProperty(
+                        "When enabled, the player the action is executed on will be prioritized for picking up the item"
+                ).setValue(false),
+                new BooleanProperty(
                         "fallback_to_inventory",
                         "Fallback to Inventory",
-                        "When enabled, items will be put into the player's inventory if they cannot be dropped in the world",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).setValue(fallbackToInventory),
-                new ActionProperty(
+                        "When enabled, items will be put into the player's inventory if they cannot be dropped in the world"
+                ).setValue(false),
+                new BooleanProperty(
                         "display_name",
                         "Display Name",
-                        "When enabled, the item will display its name above it",
-                        ActionProperty.PropertyType.BOOLEAN
-                ).setValue(showName),
-                new ActionProperty(
+                        "When enabled, the item will display its name above it"
+                ).setValue(false),
+                new IntegerProperty(
                         "pickup_delay",
                         "Pickup Delay",
-                        "The delay in ticks before the item can be picked up by players",
-                        ActionProperty.PropertyType.INT
-                ).setValue(pickupDelay)
+                        "The delay in ticks before the item can be picked up by players"
+                ).setValue(20)
         ));
-    }
-
-    public BiFunction<InventoryClickEvent, Object, Boolean> locationConsumer(HousingWorld house, Menu backMenu, Player player) {
-        return (event, o) -> getCoordinate(event, o, customLocation, house, backMenu,
-                (coords, location) -> {
-                    if (location == CUSTOM) {
-                        customLocation = coords;
-                    } else {
-                        customLocation = null;
-                    }
-                    this.location = location;
-                    if (location == PLAYER_LOCATION) {
-                        customLocation = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
-                    }
-                    backMenu.open();
-                }
-        );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        if (item == null || location == null) return OutputType.ERROR;
+        ItemStack stack = getValue("item", ItemStack.class);
 
-        Location loc = null;
-        switch (location) {
-            case INVOKERS_LOCATION -> loc = player.getLocation();
-            case HOUSE_SPAWN -> loc = house.getSpawn();
-            case CUSTOM, PLAYER_LOCATION -> {
-                loc = getLocationFromString(player, house, customLocation);
-                if (loc == null) {
-                    return OutputType.ERROR;
-                }
+        if (stack == null) return OutputType.ERROR;
 
-                if (loc.getX() > 255) {
-                    loc.setX(255);
-                }
-                if (loc.getZ() > 255) {
-                    loc.setY(255);
-                }
-                if (loc.getY() > 255) {
-                    loc.setY(255);
-                }
-            }
-        }
+        Location loc = getProperty("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation());
 
         AtomicBoolean executed = new AtomicBoolean(false);
 
         AtomicInteger dropppedItems = new AtomicInteger();
         List<Entity> entities = house.getWorld().getEntities();
+        boolean itemMerging = getValue("item_merging", Boolean.class);
         entities.stream().filter(entity -> entity instanceof Item).forEach(entity -> {
             dropppedItems.getAndIncrement();
             Item item = (Item) entity;
-            if (item.getItemStack().isSimilar(this.item) && itemMerging && !executed.get()) {
-                ItemStack newItemStack = this.item.clone();
-                newItemStack.setAmount(item.getItemStack().getAmount() + this.item.getAmount());
+            if (item.getItemStack().isSimilar(stack) && itemMerging && !executed.get()) {
+                ItemStack newItemStack = stack.clone();
+                newItemStack.setAmount(item.getItemStack().getAmount() + stack.getAmount());
                 item.setItemStack(newItemStack);
                 executed.set(true);
             }
@@ -170,52 +120,25 @@ public class DropItemAction extends Action {
 
         if (dropppedItems.get() > 200) {
             if (player.getInventory().firstEmpty() != -1) {
-                player.getInventory().addItem(item);
+                player.getInventory().addItem(stack);
             }
             return OutputType.ERROR;
         }
 
         Item itemEntity = null;
+        boolean dropNaturally = getValue("drop_naturally", Boolean.class);
         if (dropNaturally)
-            itemEntity = house.getWorld().dropItemNaturally(loc, item);
+            itemEntity = house.getWorld().dropItemNaturally(loc, stack);
         else
-            itemEntity = house.getWorld().dropItem(loc, item);
+            itemEntity = house.getWorld().dropItem(loc, stack);
 
+        int pickupDelay = getValue("pickup_delay", Integer.class);
+        boolean showName = getValue("display_name", Boolean.class);
         itemEntity.setPickupDelay(pickupDelay);
         itemEntity.setCustomNameVisible(showName);
 
         return OutputType.SUCCESS;
     }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        try {
-            item = Serialization.itemStackFromBase64((String) data.get("item"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.getInstance().getLogger().warning("Failed to load item from base64 string");
-        }
-        customLocation = (String) data.get("customLocation");
-        try {
-            location = Locations.valueOf((String) data.get("location"));
-        } catch (IllegalArgumentException e) {
-            location = Locations.INVOKERS_LOCATION;
-        }
-        dropNaturally = (boolean) data.get("dropNaturally");
-        itemMerging = (boolean) data.get("itemMerging");
-        prioritizePlayer = (boolean) data.get("prioritizePlayer");
-        fallbackToInventory = (boolean) data.get("fallbackToInventory");
-        showName = (boolean) data.get("showName");
-
-        // ender dont look at this!!
-        Object o = data.get("pickupDelay");
-        if (o instanceof Double) {
-            pickupDelay = ((Double) o).intValue();
-        } else {
-            pickupDelay = (int) data.get("pickupDelay");
-        }
-    }
-
     @Override
     public boolean requiresPlayer() {
         return true;

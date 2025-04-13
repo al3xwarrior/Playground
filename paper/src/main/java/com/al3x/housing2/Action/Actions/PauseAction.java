@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Duple;
 import lombok.Getter;
@@ -15,7 +16,6 @@ import java.util.List;
 @Getter
 @ToString
 public class PauseAction extends HTSLImpl implements NPCAction {
-    String duration = "5.0"; // in ticks
 
     public PauseAction() {
         super(
@@ -27,12 +27,11 @@ public class PauseAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new NumberProperty(
                         "duration",
                         "Duration",
-                        "The amount of ticks to wait before continuing. 1 second is 20 ticks.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The amount of ticks to wait before continuing. 1 second is 20 ticks."
+                ).setValue("5")
         );
     }
 
@@ -42,26 +41,7 @@ public class PauseAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (data.containsKey("duration")) {
-            duration = data.get("duration").toString();
-        }
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return false;
-    }
-
-    @Override
-    public String export(int indent) {
-        return "pause " + (duration.contains(" ") ? "\"" + duration + "\"" : duration);
-    }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        Duple<String[], String> durationArg = handleArg(action.split(" "), 0);
-        duration = durationArg.getSecond();
-        return nextLines;
     }
 }

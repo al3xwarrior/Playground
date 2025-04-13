@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.StringUtilsKt;
 import lombok.Getter;
@@ -18,9 +19,6 @@ import java.util.List;
 @Setter
 @ToString
 public class ChangePlayerDisplayNameAction extends HTSLImpl {
-
-    private String name = "%player.name%";
-
     public ChangePlayerDisplayNameAction() {
         super(
                 "change_player_display_name_action",
@@ -31,16 +29,16 @@ public class ChangePlayerDisplayNameAction extends HTSLImpl {
         );
 
         getProperties().add(
-                new ActionProperty("name",
+                new StringProperty("name",
                         "Name",
-                        "The name to set.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The name to set."
+                ).setValue("%player.name%")
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        String name = getProperty("name", StringProperty.class).parsedValue(house, player);
         if (house.getWorld().getPlayers().contains(player)) {
             MiniMessage miniMessage = MiniMessage.miniMessage();
             if (miniMessage.stripTags(miniMessage.serialize(StringUtilsKt.housingStringFormatter(name, house, player))).length() > 64) {
