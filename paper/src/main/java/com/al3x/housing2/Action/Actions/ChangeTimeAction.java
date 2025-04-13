@@ -4,6 +4,9 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Color;
@@ -32,31 +35,25 @@ public class ChangeTimeAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<StatOperation>(
                         "mode",
                         "Mode",
                         "The mode to use.",
-                        ActionProperty.PropertyType.ENUM,
                         StatOperation.class
-                ),
-                new ActionProperty(
+                ).setValue(StatOperation.SET),
+                new NumberProperty(
                         "value",
                         "Value",
-                        "The value to use.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The value to use."
+                ).setValue("6000")
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String value = HandlePlaceholders.parsePlaceholders(player, house, this.value);
-        if (!NumberUtilsKt.isDouble(value)) {
-            return OutputType.ERROR;
-        }
-        double result = Double.parseDouble(value);
+        Double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
 
-        switch (mode) {
+        switch (getValue("mode", StatOperation.class)) {
             case INCREASE:
                 value += house.getWorld().getTime();
                 break;

@@ -1,6 +1,10 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.DoubleProperty;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -27,11 +31,6 @@ import static com.al3x.housing2.Utils.Color.fromColor;
 @Getter
 @Setter
 public class ShowBossbarAction extends HTSLImpl {
-    private String title = "&eHello World!";
-    private BossBar.Color barColor = BossBar.Color.WHITE;
-    private BossBar.Overlay barStyle = BossBar.Overlay.PROGRESS;
-    private String progress = "1.0";
-
     public ShowBossbarAction() {
         super(
                 "show_bossbar_action",
@@ -42,43 +41,47 @@ public class ShowBossbarAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new StringProperty(
                         "title",
                         "Title",
-                        "The title of the bossbar.",
-                        ActionProperty.PropertyType.STRING
-                ),
-                new ActionProperty(
+                        "The title of the bossbar."
+                ).setValue("&eHello World!"),
+                new EnumProperty<>(
                         "barColor",
                         "Bar Color",
                         "The color of the bossbar.",
-                        ActionProperty.PropertyType.ENUM, BossBar.Color.class
-                ),
-                new ActionProperty(
+                        BossBar.Color.class
+                ).setValue(BossBar.Color.WHITE),
+                new EnumProperty<>(
                         "barStyle",
                         "Bar Style",
                         "The style of the bossbar.",
-                        ActionProperty.PropertyType.ENUM, BossBar.Overlay.class
-                ),
-                new ActionProperty(
+                        BossBar.Overlay.class
+                ).setValue(BossBar.Overlay.PROGRESS),
+                new DoubleProperty(
                         "progress",
                         "Progress",
                         "The progress of the bossbar.",
-                        ActionProperty.PropertyType.NUMBER, 0.0, 1.0
-                )
+                        0.0, 1.0
+                ).setValue(1.0)
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         try {
-            float progressFixed = Float.parseFloat(Placeholder.handlePlaceholders(progress, house, player));
+            float progressFixed = Float.parseFloat(Placeholder.handlePlaceholders(getValue("progress", DoubleProperty.class).toString(), house, player));
             if (progressFixed > 1) {
                 progressFixed = 1;
             } else if (progressFixed < 0) {
                 progressFixed = 0;
             }
-            BossBar bossBar = BossBar.bossBar(StringUtilsKt.housingStringFormatter(title, house, player), progressFixed, barColor, barStyle);
+            BossBar bossBar = BossBar.bossBar(
+                    getValue("title", StringProperty.class).component(house, player),
+                    progressFixed,
+                    getValue("barColor", BossBar.Color.class),
+                    getValue("barStyle", BossBar.Overlay.class)
+            );
             bossBar.addViewer(player);
             if (!house.bossBars.containsKey(player.getUniqueId())) {
                 house.bossBars.put(player.getUniqueId(), new ArrayList<>());

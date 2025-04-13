@@ -4,6 +4,9 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.SlotProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -23,11 +26,6 @@ import java.util.List;
 
 @ToString
 public class GiveItemAction extends Action {
-    ItemStack item;
-    boolean allowMultiple = false;
-    double slot = -1;
-    boolean replaceExistingSlot = false;
-
     public GiveItemAction() {
         super(
                 "give_item_action",
@@ -38,71 +36,38 @@ public class GiveItemAction extends Action {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new ItemStackProperty(
                         "item",
                         "Item",
-                        "The item to give",
-                        ActionProperty.PropertyType.ITEM
+                        "The item to give"
                 ),
-                new ActionProperty(
+                new BooleanProperty(
                         "allowMultiple",
                         "Allow Multiple",
-                        "If true, the player can have multiple copies of the item.",
-                        ActionProperty.PropertyType.BOOLEAN
-                ),
-                new ActionProperty(
+                        "If true, the player can have multiple copies of the item."
+                ).setValue(true),
+                new SlotProperty(
                         "slot",
                         "Slot",
-                        "The slot to give the item to. -1 for first available slot, -2 for hand slot, -3 for offhand slot.",
-                        ActionProperty.PropertyType.SLOT
-                ),
-                new ActionProperty(
+                        "The slot to give the item to. -1 for first available slot, -2 for hand slot, -3 for offhand slot."
+                ).setValue(-1),
+                new BooleanProperty(
                         "replaceExistingSlot",
                         "Replace Existing Slot",
-                        "If true, the item will replace any existing item in the slot.",
-                        ActionProperty.PropertyType.BOOLEAN
-                )
+                        "If true, the item will replace any existing item in the slot."
+                ).setValue(false)
         ));
     }
 
-    private String slotIndexToName(int index) {
-        if (index == -1) {
-            return "First Available Slot";
-        }
-        if (index == -2) {
-            return "Hand Slot";
-        }
-        if (index == -3 || index == -106) {
-            return "Offhand Slot";
-        }
-        if (index < 9 && index >= 0) {
-            return "Hotbar Slot " + (index + 1);
-        }
-        if (index < 36 && index >= 9) {
-            return "Inventory Slot " + (index - 8);
-        }
-        if (index == 103) {
-            return "Helmet";
-        }
-        if (index == 102) {
-            return "Chestplate";
-        }
-        if (index == 101) {
-            return "Leggings";
-        }
-        if (index == 100) {
-            return "Boots";
-        }
-        if (index >= 80 && index <= 83) {
-            return "Crafting Slot " + (index - 79);
-        }
-        return "Unknown Slot";
-    }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        ItemStack item = getValue("item", ItemStackProperty.class).getValue();
+        boolean allowMultiple = getValue("allowMultiple", BooleanProperty.class).getValue();
+        int slot = getValue("slot", SlotProperty.class).getValue();
+        boolean replaceExistingSlot = getValue("replaceExistingSlot", BooleanProperty.class).getValue();
+
         if (item == null) return OutputType.ERROR;
-        int slot = (int) this.slot;
 
         if (player.getInventory().contains(item) && !allowMultiple) {
             return OutputType.ERROR;
@@ -169,19 +134,6 @@ public class GiveItemAction extends Action {
             return OutputType.SUCCESS;
         }
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        try {
-            item = Serialization.itemStackFromBase64((String) data.get("item"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.getInstance().getLogger().warning("Failed to load item from base64 string");
-        }
-        allowMultiple = (boolean) data.get("allowMultiple");
-        slot = (double) data.get("slot");
-        replaceExistingSlot = (boolean) data.get("replaceExistingSlot");
     }
 
     @Override

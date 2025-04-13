@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.Projectile;
@@ -22,8 +23,6 @@ import java.util.List;
 @ToString
 @Getter
 public class SetGamemodeAction extends HTSLImpl {
-    private Gamemodes gamemode = Gamemodes.SURVIVAL;
-
     public SetGamemodeAction() {
         super(
                 "set_gamemode_action",
@@ -34,20 +33,19 @@ public class SetGamemodeAction extends HTSLImpl {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new EnumProperty<>(
                         "gamemode",
                         "Gamemode",
                         "The gamemode to set.",
-                        ActionProperty.PropertyType.ENUM,
                         Gamemodes.class
-                )
+                ).setValue(Gamemodes.SURVIVAL)
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         if (player != null) {
-            player.setGameMode(gamemode.getGameMode());
+            player.setGameMode(getValue("gamemode", Gamemodes.class).getGameMode());
         }
         return OutputType.SUCCESS;
     }

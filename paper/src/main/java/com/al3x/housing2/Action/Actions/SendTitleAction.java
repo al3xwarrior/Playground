@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.IntegerProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -28,13 +30,6 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Getter
 @Setter
 public class SendTitleAction extends HTSLImpl {
-
-    private String title = "Title";
-    private String subtitle = "Subtitle";
-    private double fadeIn = 20;
-    private double stay = 20;
-    private double fadeOut = 20;
-
     public SendTitleAction() {
         super("send_title_action",
                 "Send Title",
@@ -44,44 +39,45 @@ public class SendTitleAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new StringProperty(
                         "title",
                         "Title",
-                        "The title to send.",
-                        ActionProperty.PropertyType.STRING
-                ),
-                new ActionProperty(
+                        "The title to send."
+                ).setValue("Title"),
+                new StringProperty(
                         "subtitle",
                         "Subtitle",
-                        "The subtitle to send.",
-                        ActionProperty.PropertyType.STRING
-                ),
-                new ActionProperty(
+                        "The subtitle to send."
+                ).setValue("Subtitle"),
+                new IntegerProperty(
                         "fadeIn",
                         "Fade In Time",
                         "The time it takes for the title to fade in.",
-                        ActionProperty.PropertyType.INT, 0.0, 100.0
-                ),
-                new ActionProperty(
+                        0, 100
+                ).setValue(20),
+                new IntegerProperty(
                         "stay",
                         "Stay Time",
                         "The time the title stays on screen.",
-                        ActionProperty.PropertyType.INT, 0.0, 100.0
-                ),
-                new ActionProperty(
+                        0, 100
+                ).setValue(20),
+                new IntegerProperty(
                         "fadeOut",
                         "Fade Out Time",
                         "The time it takes for the title to fade out.",
-                        ActionProperty.PropertyType.INT, 0.0, 100.0
-                )
+                        0, 100
+                ).setValue(20)
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        Component title = StringUtilsKt.housingStringFormatter(this.title, house, player);
-        Component subtitle = StringUtilsKt.housingStringFormatter(this.subtitle, house, player);
-        player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis((long) fadeIn * 50), Duration.ofMillis((long) stay * 50), Duration.ofMillis((long) fadeOut * 50))));
+        Component title = getValue("title", StringProperty.class).component(house, player);
+        Component subtitle = getValue("subtitle", StringProperty.class).component(house, player);
+        player.showTitle(Title.title(title, subtitle, Title.Times.times(
+                Duration.ofMillis(getValue("fadeIn", IntegerProperty.class).getValue() * 50),
+                Duration.ofMillis(getValue("stay", IntegerProperty.class).getValue() * 50),
+                Duration.ofMillis(getValue("fadeOut", IntegerProperty.class).getValue() * 50))));
         return OutputType.SUCCESS;
     }
 

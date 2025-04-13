@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.DoubleProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -21,9 +22,6 @@ import java.util.List;
 @Getter
 @Setter
 public class SetHitDelayAction extends HTSLImpl implements NPCAction {
-
-    private double delay = 10;
-
     public SetHitDelayAction() {
         super(
                 "set_hit_delay_action",
@@ -34,22 +32,22 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new DoubleProperty(
                         "delay",
                         "Delay",
                         "The delay in ticks.",
-                        ActionProperty.PropertyType.DOUBLE, 0.0, 100.0
-                )
+                        0.0, 100.0
+                ).setValue(10.0)
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
 
-        player.setMaximumNoDamageTicks(NumberUtilsKt.toInt(delay));
+        player.setMaximumNoDamageTicks(NumberUtilsKt.toInt(getValue("delay", DoubleProperty.class).getValue()));
 
         //This is not super simple to use lol :)
-        player.setNoDamageTicks(NumberUtilsKt.toInt(delay));
+        player.setNoDamageTicks(NumberUtilsKt.toInt(getValue("delay", DoubleProperty.class).getValue()));
 
         return OutputType.SUCCESS;
     }
@@ -62,8 +60,8 @@ public class SetHitDelayAction extends HTSLImpl implements NPCAction {
     @Override
     public void npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (npc.getEntity() instanceof LivingEntity le) {
-            le.setMaximumNoDamageTicks(NumberUtilsKt.toInt(delay));
-            le.setNoDamageTicks(NumberUtilsKt.toInt(delay));
+            le.setMaximumNoDamageTicks(NumberUtilsKt.toInt(getValue("delay", DoubleProperty.class).getValue()));
+            le.setNoDamageTicks(NumberUtilsKt.toInt(getValue("delay", DoubleProperty.class).getValue()));
         }
     }
 }

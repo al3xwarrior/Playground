@@ -3,6 +3,8 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.GenericPagination.MenuProperty;
+import com.al3x.housing2.Instances.CustomMenu;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.CustomMenuViewer;
@@ -15,9 +17,6 @@ import java.util.List;
 
 @ToString
 public class DisplayMenuAction extends HTSLImpl {
-
-    String menu;
-
     public DisplayMenuAction() {
         super(
                 "display_menu_action",
@@ -28,25 +27,23 @@ public class DisplayMenuAction extends HTSLImpl {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new MenuProperty(
                         "menu",
                         "Menu",
-                        "The menu to display.",
-                        ActionProperty.PropertyType.MENU
+                        "The menu to display."
                 )
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        if (menu == null) {
-            return OutputType.ERROR;
-        }
-        house.getCustomMenus().stream().filter(customMenu -> customMenu.getTitle().equals(menu)).findFirst().ifPresent(customMenu -> {
-            Bukkit.getScheduler().runTask(Main.getInstance(), () -> { //Make sure it runs on the main thread
-                new CustomMenuViewer(player, customMenu).open();
-            });
+        if (getValue("menu", CustomMenu.class) != null) return OutputType.ERROR;
+
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            // this might cause an error if it doesn't exist?
+            new CustomMenuViewer(player, getValue("menu", CustomMenu.class)).open();
         });
+
         return OutputType.SUCCESS;
     }
 

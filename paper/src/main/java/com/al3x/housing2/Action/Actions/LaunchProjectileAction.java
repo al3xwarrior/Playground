@@ -5,6 +5,8 @@ import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -39,64 +41,45 @@ public class LaunchProjectileAction extends HTSLImpl {
                 List.of("launchProjectile")
         );
 
+        // hello future bug fixer (i hope it isn't me)
+        // i have definitely absolutely done something wrong here!
+        // so if it doesn't work.. have fun! -pixel
+
         getProperties().addAll(List.of(
                 new EnumProperty<>(
                         "projectile",
                         "Projectile",
                         "The projectile to launch.",
-                        "Select the projectile type",
                         Projectile.class
-                ),
-                new ActionProperty(
+                ).setValue(Projectile.ARROW),
+                new EnumProperty<>(
                         "direction",
                         "Direction",
                         "The direction to launch the projectile.",
-                        ActionProperty.PropertyType.ENUM,
                         PushDirection.class
-                ),
-                new ActionProperty(
-                        "customDirection",
-                        "Custom Direction",
-                        "The custom direction to launch the projectile.",
-                        ActionProperty.PropertyType.ITEM
-                ).showIf(projectile.getProjectile() == ThrownPotion.class),
-                new ActionProperty(
+                ).setValue(PushDirection.FORWARD),
+                new StringProperty(
                         "velocity",
                         "Velocity",
-                        "The velocity of the projectile.",
-                        ActionProperty.PropertyType.STRING
+                        "The velocity of the projectile."
                 ),
-                new ActionProperty(
+                new ItemStackProperty(
                         "item",
                         "Item",
-                        "The item to launch.",
-                        ActionProperty.PropertyType.ITEM
+                        "The item to launch."
                 )
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        org.bukkit.entity.Projectile proj = player.launchProjectile(projectile.getProjectile());
+        org.bukkit.entity.Projectile proj = player.launchProjectile(getValue("projectile", Projectile.class).getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), 10));
 
-        String amountParsed = HandlePlaceholders.parsePlaceholders(player, house, this.amount);
-
-        if (!NumberUtilsKt.isDouble(amountParsed)) {
-            return OutputType.ERROR;
-        }
-        double amount = Double.parseDouble(amountParsed);
-
-        if (amount < 0) {
-            return OutputType.ERROR;
-        }
-
-        if (amount > 10) {
-            amount = 10;
-        }
+        double amount = 1.5; // was hardcoded?
 
         Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
-        switch (direction) {
+        switch (getValue("direction", PushDirection.class)) {
             case UP:
                 velocity.setY(amount);
                 break;
@@ -127,16 +110,15 @@ public class LaunchProjectileAction extends HTSLImpl {
                 velocity = new Vector(0, 0, amount);
                 break;
         }
+
         if (proj instanceof ThrownPotion) {
             ThrownPotion potion = (ThrownPotion) proj;
-            if (item != null) {
-                potion.setItem(item);
-            }
+            potion.setItem(getValue("item", ItemStackProperty.class).getValue());
             potion.setVelocity(velocity);
             potion.setShooter(player);
-
             return OutputType.SUCCESS;
         }
+
         proj.setVelocity(velocity);
         proj.setShooter(player);
         return OutputType.SUCCESS;
@@ -150,47 +132,6 @@ public class LaunchProjectileAction extends HTSLImpl {
     @Override
     public boolean mustBeSync() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        projectile = (data.get("projectile") instanceof String) ? Projectile.valueOf((String) data.get("projectile")) : (Projectile) data.get("projectile");
-        amount = data.get("amount").toString();
-        direction = (data.get("direction") instanceof String) ? PushDirection.valueOf((String) data.get("direction")) : (PushDirection) data.get("direction");
-        if (projectile == Projectile.SPLASH_POTION) {
-            try {
-                item = Serialization.itemStackFromBase64((String) data.get("item"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                Main.getInstance().getLogger().warning("Failed to load item from base64 string");
-            }
-        }
-    }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        String[] split = action.split(" ");
-        if (split.length < 3) {
-            return nextLines;
-        }
-
-        try {
-            projectile = Projectile.getProjectile(split[0]);
-            Duple<String[], String> arg = handleArg(split, 1);
-            if (arg == null) {
-                return nextLines;
-            }
-            amount = arg.getSecond();
-            split = arg.getFirst();
-            if (split.length < 1) {
-                return nextLines;
-            }
-            direction = PushDirection.valueOf(split[0]);
-        } catch (IllegalArgumentException e) {
-            return nextLines;
-        }
-
-        return nextLines;
     }
 
     @Override

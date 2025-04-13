@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.SlotProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -20,8 +22,6 @@ import java.util.List;
 
 @ToString
 public class RemoveItemAction extends Action {
-    ItemStack item = null;
-    double slot = -1;
     public RemoveItemAction() {
         super("remove_item_action",
                 "Remove Item",
@@ -31,24 +31,23 @@ public class RemoveItemAction extends Action {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new ItemStackProperty(
                         "item",
                         "Item",
-                        "The item to remove.",
-                        ActionProperty.PropertyType.ITEM
+                        "The item to remove."
                 ),
-                new ActionProperty(
+                new SlotProperty(
                         "slot",
                         "Slot",
-                        "The slot to remove the item from.",
-                        ActionProperty.PropertyType.SLOT
+                        "The slot to remove the item from."
                 )
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        if (item == null) return OutputType.ERROR;
+        ItemStack item = getValue("item", ItemStackProperty.class).getValue();
+        int slot = getValue("slot", SlotProperty.class).getValue();
 
         if (slot == -1) {
             player.getInventory().removeItemAnySlot(item);
@@ -60,25 +59,6 @@ public class RemoveItemAction extends Action {
             player.getInventory().setItem((int) slot, null);
         }
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("item", Serialization.itemStackToBase64(item));
-        data.put("slot", slot);
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        try {
-            item = Serialization.itemStackFromBase64((String) data.get("item"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.getInstance().getLogger().warning("Failed to load item from base64 string");
-        }
-        slot = (double) data.get("slot");
     }
 
     @Override

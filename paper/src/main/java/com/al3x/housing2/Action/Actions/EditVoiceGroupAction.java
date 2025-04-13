@@ -4,6 +4,8 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.VoiceGroupTypes;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -21,10 +23,6 @@ import java.util.List;
 @Getter
 @ToString
 public class EditVoiceGroupAction extends HTSLImpl {
-    @Setter
-    private VoiceGroupTypes type = VoiceGroupTypes.NORMAL;
-    private String groupName = "Cool group";
-
     public EditVoiceGroupAction() {
         super(
                 "edit_voice_group_action",
@@ -35,42 +33,38 @@ public class EditVoiceGroupAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "type",
                         "Type",
                         "The type of the voice group.",
-                        ActionProperty.PropertyType.ENUM, VoiceGroupTypes.class
-                ),
-                new ActionProperty(
+                        VoiceGroupTypes.class
+                ).setValue(VoiceGroupTypes.NORMAL),
+                new StringProperty(
                         "groupName",
                         "Group Name",
-                        "The name of the voice group.",
-                        ActionProperty.PropertyType.STRING
+                        "The name of the voice group."
                 )
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String groupName = HandlePlaceholders.parsePlaceholders(player, house, this.groupName);
+        String groupName = getValue("groupName", StringProperty.class).parsedValue(house, player);
         Group group = VoiceChat.getGroup(house.getWorld(), groupName);
 
-        switch (type) {
+        if (group == null) return OutputType.ERROR;
+
+        switch (getValue("type", VoiceGroupTypes.class)) {
             case VoiceGroupTypes.ISOLATED -> VoiceChat.setGroupType(group, Group.Type.ISOLATED);
             case VoiceGroupTypes.NORMAL -> VoiceChat.setGroupType(group, Group.Type.NORMAL);
             case VoiceGroupTypes.OPEN -> VoiceChat.setGroupType(group, Group.Type.OPEN);
         }
+
         return OutputType.SUCCESS;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        type = VoiceGroupTypes.valueOf((String) data.get("type"));
-        groupName = (String) data.get("groupName");
     }
 }
