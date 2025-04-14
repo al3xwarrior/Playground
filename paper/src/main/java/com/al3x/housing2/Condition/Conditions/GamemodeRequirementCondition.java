@@ -1,10 +1,15 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -16,71 +21,28 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GamemodeRequirementCondition extends CHTSLImpl {
-    private Gamemodes gamemode;
-
     public GamemodeRequirementCondition() {
-        super("Gamemode Requirement");
-        this.gamemode = Gamemodes.SURVIVAL;
-    }
-
-    @Override
-    public String toString() {
-        return "GamemodeRequirementCondition";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.DAYLIGHT_DETECTOR);
-        builder.name("&aGamemode Requirement");
-        builder.description("Requires the user to be in the specified gamemode.");
-        builder.info("Gamemode", gamemode.toString());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.DAYLIGHT_DETECTOR);
-        builder.name("&eGamemode Requirement");
-        builder.description("Requires the user to be in the specified gamemode.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("gamemode",
-                        ItemBuilder.create(Material.DAYLIGHT_DETECTOR)
-                                .name("&eGamemode")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + gamemode)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Gamemodes.values(), null
-                )
+        super(ConditionEnum.GAMEMODE_REQUIREMENT,
+                "Gamemode Requirement",
+                "Checks if the player is in the specified gamemode.",
+                Material.DAYLIGHT_DETECTOR,
+                List.of("gamemode")
         );
-        return new ActionEditor(4, "Gamemode Requirement", items);
+        getProperties().add(new EnumProperty<>(
+                "gamemode",
+                "Gamemode",
+                "The gamemode to check for.",
+                Gamemodes.class
+        ).setValue(Gamemodes.SURVIVAL));
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return (player.getGameMode() == gamemode.getGameMode());
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("gamemode", gamemode);
-        return data;
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        return player.getGameMode() == getValue("gamemode", Gamemodes.class).getGameMode() ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "gamemode";
     }
 }

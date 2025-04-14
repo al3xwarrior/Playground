@@ -60,7 +60,7 @@ public abstract class Action {
         return new ActionEditor(4, "<yellow>" + name + " Settings", properties);
     }
 
-    public void createDisplayItem() {
+    public ItemBuilder createDisplayItem() {
         ItemBuilder builder = new ItemBuilder()
                 .material(icon)
                 .name("<yellow>" + name)

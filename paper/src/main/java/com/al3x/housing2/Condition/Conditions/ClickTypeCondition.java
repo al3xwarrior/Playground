@@ -1,8 +1,12 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Events.CancellableEvent;
@@ -20,65 +24,31 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ClickTypeCondition extends CHTSLImpl {
-    private ClickType type;
 
     public ClickTypeCondition() {
-        super("Click Type Requirement");
-        this.type = ClickType.LEFT;
-    }
-
-    @Override
-    public String toString() {
-        return "ClickTypeCondition{" +
-                "type=" + type +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.DETECTOR_RAIL);
-        builder.name("&eClick Type Requirement");
-        builder.description("Requires the users click type to match the provided condition.");
-        builder.info("Type", type.name());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.DETECTOR_RAIL);
-        builder.name("&eClick Type Requirement");
-        builder.description("Requires the users click type to match the provided condition.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("type",
-                        ItemBuilder.create(Material.DETECTOR_RAIL)
-                                .name("&eType")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + type.name())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, ClickType.values(), Material.STONE_BUTTON
-                )
+        super(
+                ConditionEnum.CLICKTYPE_REQUIREMENT,
+                "Click Type",
+                "Checks if the click type is the same as the one specified.",
+                Material.OAK_BUTTON,
+                List.of("clickType")
         );
-        return new ActionEditor(4, "Click Type Requirement", items);
-    }
 
+        getProperties().add(
+                new EnumProperty<>(
+                        "type",
+                        "Click Type",
+                        "The type of click to check for.",
+                        ClickType.class
+                ).setValue(ClickType.LEFT)
+        );
+    }
     @Override
-    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         if (event.cancellable() instanceof InventoryClickEvent e) {
-            return e.getClick() == type;
+            return e.getClick() == getValue("type", ClickType.class) ? OutputType.TRUE : OutputType.FALSE;
         }
-        return false;
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
+        return OutputType.FALSE;
     }
 
     @Override
@@ -87,19 +57,7 @@ public class ClickTypeCondition extends CHTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("type", type.name());
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "clickType";
     }
 }

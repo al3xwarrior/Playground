@@ -35,7 +35,7 @@ public class ConditionalData {
     public static List<Condition> toList(List<ConditionalData> conditionList) {
         List<Condition> list = new ArrayList<>();
         for (ConditionalData data : conditionList) {
-            ConditionEnum conditionEnum = ConditionEnum.getConditionByName(data.getCondition());
+            ConditionEnum conditionEnum = ConditionEnum.getConditionById(data.getCondition());
             if (conditionEnum == null) {
                 throw new IllegalArgumentException("Condition " + data.getCondition() + " does not exist");
             }

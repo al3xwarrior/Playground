@@ -1,8 +1,15 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.GenericPagination.GroupProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Data.PlayerData;
+import com.al3x.housing2.Events.CancellableEvent;
+import com.al3x.housing2.Instances.Group;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.ItemBuilder;
 import org.bukkit.Material;
@@ -13,86 +20,40 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GroupRequirementCondition extends CHTSLImpl {
-    private String group = null;
-    boolean includeHigherGroups = false;
-
-
     public GroupRequirementCondition() {
-        super("Required Group");
-    }
-
-    @Override
-    public String toString() {
-        return "GroupRequirementCondition (group: " + (group == null ? "&cNone" : "&6" + group) + ", includeHigherGroups: " + includeHigherGroups + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&aRequired Group");
-        builder.description("Requires players to match the required group (or higher if set).");
-        builder.info("Group", (group == null ? "&cNone" : "&6" + group));
-        builder.info("Include Higher Groups", includeHigherGroups ? "&aYes" : "&cNo");
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.name("&eRequired Group");
-        builder.description("Requires players to match the required group (or higher if set).");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("group",
-                        ItemBuilder.create(Material.DIAMOND)
-                                .name("&eGroup")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (group == null ? "None" : group))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.GROUP
-                ),
-                new ActionEditor.ActionItem("includeHigherGroups",
-                        ItemBuilder.create((includeHigherGroups) ? Material.LIME_DYE : Material.RED_DYE)
-                                .name("&eInclude Higher Groups")
-                                .info("&7Current Value", "")
-                                .info(null, includeHigherGroups ? "&aYes" : "&cNo")
-                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
+        super(ConditionEnum.REQUIRED_GROUP,
+                "Group Requirement",
+                "Checks if the player is in the specified group.",
+                Material.DIAMOND_SWORD,
+                List.of("group")
         );
-        return new ActionEditor(4, "", items);
+
+        getProperties().add(new GroupProperty(
+                "group",
+                "Group",
+                "The group to check for."
+        ));
+
+        getProperties().add(new BooleanProperty(
+                "includeHigherGroups",
+                "Include Higher Groups",
+                "If true, the player will be considered in the group if they are in a higher group."
+        ).setValue(false));
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Group group = getProperty("group", GroupProperty.class).getValue();
+        boolean includeHigherGroups = getValue("includeHigherGroups", Boolean.class);
         PlayerData playerData = house.loadOrCreatePlayerData(player);
         if (includeHigherGroups) {
-            return playerData.getGroupInstance(house).getPriority() >= house.getGroup(group).getPriority();
+            return playerData.getGroupInstance(house).getPriority() >= group.getPriority() ? OutputType.TRUE : OutputType.FALSE;
         }
-        return playerData.getGroupInstance(house).getPriority() == house.getGroup(group).getPriority();
-    }
+        return playerData.getGroupInstance(house).getPriority() == group.getPriority() ? OutputType.TRUE : OutputType.FALSE;
 
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("group", group);
-        data.put("includeHigherGroups", includeHigherGroups);
-        return data;
     }
-
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "inGroup";
     }
 }

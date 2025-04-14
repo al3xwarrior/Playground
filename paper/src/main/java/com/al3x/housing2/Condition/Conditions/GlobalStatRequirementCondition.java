@@ -2,8 +2,14 @@ package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Events.CancellableEvent;
@@ -23,17 +29,36 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCondition {
-    private String stat;
-    private StatComparator comparator;
-    private String compareValue;
-    private boolean ignoreCase;
-
     public GlobalStatRequirementCondition() {
-        super("Global Stat Requirement");
-        this.stat = "Kills";
-        this.comparator = StatComparator.EQUALS;
-        this.compareValue = "1.0";
-        this.ignoreCase = false;
+        super(ConditionEnum.GLOBALSTAT_REQUIREMENT,
+                "Global Stat Requirement",
+                "Checks if the global stat matches the provided condition.",
+                Material.PLAYER_HEAD,
+                List.of("stat", "comparator", "compareValue", "ignoreCase")
+        );
+        getProperties().addAll(List.of(
+                new StringProperty(
+                        "stat",
+                        "Stat Name",
+                        "The name of the global stat to check for."
+                ).setValue("Kills"),
+                new EnumProperty<>(
+                        "comparator",
+                        "Comparator",
+                        "The comparator to use for the stat.",
+                        StatComparator.class
+                ).setValue(StatComparator.EQUALS),
+                new StringProperty(
+                        "compareValue",
+                        "Compare Value",
+                        "The value to compare the stat against."
+                ).setValue("1.0"),
+                new BooleanProperty(
+                        "ignoreCase",
+                        "Ignore Case",
+                        "Whether to ignore case when comparing the stat value."
+                ).setValue(false)
+        ));
     }
 
     @Override
@@ -42,90 +67,32 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
     }
 
     @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
-        builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&eGlobal Stat Requirement");
-        builder.description("Requires a global stat to match the provided condition.");
-        builder.info("Stat", stat);
-        builder.info("Comparator", comparator.name());
-        builder.info("Value", compareValue);
-        builder.info("Ignores Case", ignoreCase ? "Yes" : "No");
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
+    public ItemBuilder createDisplayItem() {
+        return super.createDisplayItem()
+                .skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
     }
 
     @Override
     public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.PLAYER_HEAD);
+        super.createAddDisplayItem(builder);
         builder.skullTexture("cf40942f364f6cbceffcf1151796410286a48b1aeba77243e218026c09cd1");
-        builder.name("&eGlobal Stat Requirement");
-        builder.description("Requires a global stat to match the provided condition.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
     }
 
     @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("stat",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&eStat")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + stat)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("comparator",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eMode")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + comparator)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, StatComparator.values(), null
-                ),
-                new ActionEditor.ActionItem("compareValue",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&eAmount")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + compareValue)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("ignoreCase",
-                        ItemBuilder.create((ignoreCase ? Material.LIME_DYE : Material.RED_DYE))
-                                .name((ignoreCase ? "&aIgnore Case" : "&cIgnore Case"))
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + ignoreCase)
-                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
-        );
-        return new ActionEditor(4, "Global Stat Requirement", items);
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        Stat stat = house.getStatManager().getGlobalStatByName(this.stat);
-        String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        String statName = getProperty("stat", StringProperty.class).parsedValue(house, player);
+        Stat stat = house.getStatManager().getGlobalStatByName(statName);
+        String compareValue = getProperty("compareValue", StringProperty.class).parsedValue(house, player);
         String statValue = stat.getValue();
 
-        if (ignoreCase) {
+        if (getProperty("ignoreCase", BooleanProperty.class).getValue()) {
             statValue = statValue.toLowerCase();
             compareValue = compareValue.toLowerCase();
         }
 
-        return Comparator.compare(comparator, statValue, compareValue);
-    }
+        StatComparator comparator = getValue("comparator", StatComparator.class);
 
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("stat", stat);
-        data.put("comparator", comparator.name());
-        data.put("compareValue", compareValue);
-        data.put("ignoreCase", ignoreCase);
-        return data;
+        return Comparator.compare(comparator, statValue, compareValue) ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
@@ -133,40 +100,35 @@ public class GlobalStatRequirementCondition extends CHTSLImpl implements NPCCond
         return false;
     }
 
-    @Override
-    public String keyword() {
-        return "globalstat";
-    }
-
-    @Override
-    public String export(int indent) {
-        String compareValue = this.compareValue;
-        if (compareValue.contains(" ")) {
-            compareValue = "\"" + compareValue + "\"";
-        }
-        return "globalstat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
-    }
-
-    @Override
-    public void importCondition(String action, List<String> nextLines) {
-        String[] parts = action.split(" ");
-        Duple<String[], String> statArg = handleArg(parts, 0);
-        this.stat = statArg.getSecond();
-        parts = statArg.getFirst();
-        if (parts.length == 0) {
-            return;
-        }
-        this.comparator = StatComparator.getComparator(parts[0]);
-        Duple<String[], String> compareValueArg = handleArg(parts, 1);
-        compareValue = compareValueArg.getSecond();
-        parts = compareValueArg.getFirst();
-        if (parts.length > 0) {
-            ignoreCase = Boolean.parseBoolean(parts[0]);
-        }
-    }
+//    @Override
+//    public String export(int indent) {
+//        String compareValue = this.compareValue;
+//        if (compareValue.contains(" ")) {
+//            compareValue = "\"" + compareValue + "\"";
+//        }
+//        return "globalstat " + stat + " " + comparator.name() + " " + compareValue + " " + ignoreCase;
+//    }
+//
+//    @Override
+//    public void importCondition(String action, List<String> nextLines) {
+//        String[] parts = action.split(" ");
+//        Duple<String[], String> statArg = handleArg(parts, 0);
+//        this.stat = statArg.getSecond();
+//        parts = statArg.getFirst();
+//        if (parts.length == 0) {
+//            return;
+//        }
+//        this.comparator = StatComparator.getComparator(parts[0]);
+//        Duple<String[], String> compareValueArg = handleArg(parts, 1);
+//        compareValue = compareValueArg.getSecond();
+//        parts = compareValueArg.getFirst();
+//        if (parts.length > 0) {
+//            ignoreCase = Boolean.parseBoolean(parts[0]);
+//        }
+//    }
 
     @Override
     public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        return execute(player, house);
+        return execute(player, house) == OutputType.TRUE;
     }
 }

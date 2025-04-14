@@ -6,23 +6,27 @@ import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class Condition extends Action {
-    public Condition(String id, String name, String description, Material icon, List<String> scriptingKeywords) {
-        super(id, name, description, icon, scriptingKeywords);
+    public Condition(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
+        super(condition.name(), name, description, icon, scriptingKeywords);
+    }
+
+    @Override
+    public OutputType execute(Player player, HousingWorld house) {
+        return null;
     }
 
     public abstract OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor);
 
     public Condition clone() {
         Condition condition;
-        ConditionEnum conditionEnum = ConditionEnum.getConditionByName(getName());
+        ConditionEnum conditionEnum = ConditionEnum.getConditionById(getName());
         if (conditionEnum == null) {
             return null;
         }
-        condition = conditionEnum.getConditionInstance(data);
+        condition = conditionEnum.getConditionInstance(data());
         return condition;
     }
 }
