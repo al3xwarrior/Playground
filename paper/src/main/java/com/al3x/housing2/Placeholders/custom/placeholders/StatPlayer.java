@@ -16,7 +16,7 @@ public class StatPlayer extends Placeholder {
 
     @Override
     public List<String> getAliases() {
-        return List.of("%player.stat/[stat]%");
+        return List.of("%player.stat/[stat]%", "%s.p/[stat]%");
     }
 
     @Override

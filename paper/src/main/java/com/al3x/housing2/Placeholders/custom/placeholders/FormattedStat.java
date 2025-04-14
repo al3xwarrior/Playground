@@ -9,6 +9,7 @@ import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 public class FormattedStat {
     public FormattedStat() {
@@ -33,6 +34,11 @@ public class FormattedStat {
         @Override
         public String getPlaceholder() {
             return "%formattedstat.global/[stat] [places]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%fs.g/[stat] [places]%");
         }
 
         @Override
@@ -73,6 +79,11 @@ public class FormattedStat {
         }
 
         @Override
+        public List<String> getAliases() {
+            return List.of("%fs.p/[stat] [places]%");
+        }
+
+        @Override
         public String handlePlaceholder(String input, HousingWorld house, Player player) {
             if (input.split("/").length < 2) {
                 return "0";
@@ -102,6 +113,11 @@ public class FormattedStat {
         @Override
         public boolean hasArgs() {
             return true;
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%fs.n/[npc] [stat] [places]%");
         }
 
         @Override
@@ -135,6 +151,11 @@ public class FormattedStat {
         @Override
         public String getPlaceholder() {
             return "%formattedstat/[placeholder] [places]%";
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return List.of("%fs/[placeholder] [places]%");
         }
 
         @Override

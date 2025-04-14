@@ -87,7 +87,7 @@ public class House {
 
         @Override
         public List<String> getAliases() {
-            return List.of("%house.stat/[stat]%");
+            return List.of("%house.stat/[stat]%", "%s.g/[stat]%");
         }
 
         @Override
