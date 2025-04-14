@@ -242,7 +242,7 @@ public class ItemsMenu extends Menu {
 
         ItemStack dragonEgg = new ItemStack(Material.DRAGON_EGG);
         ItemMeta dragonEggMeta = dragonEgg.getItemMeta();
-        dragonEggMeta.setDisplayName(colorize("&fDragon Egg"));
+        dragonEggMeta.setDisplayName(colorize("&dDragon Egg"));
         dragonEgg.setItemMeta(dragonEggMeta);
         addItem(26, dragonEgg, () -> {
             player.getInventory().addItem(new ItemStack(Material.DRAGON_EGG));
@@ -252,8 +252,16 @@ public class ItemsMenu extends Menu {
         ItemMeta barrierMeta = barrier.getItemMeta();
         barrierMeta.setDisplayName(colorize("&cBarrier"));
         barrier.setItemMeta(barrierMeta);
-        addItem(25, barrier, () -> {
+        addItem(24, barrier, () -> {
             player.getInventory().addItem(new ItemStack(Material.BARRIER));
+        });
+
+        ItemStack light = new ItemStack(Material.LIGHT);
+        ItemMeta lightMeta = light.getItemMeta();
+        lightMeta.setDisplayName(colorize("&aLight"));
+        light.setItemMeta(lightMeta);
+        addItem(25, light, () -> {
+            player.getInventory().addItem(new ItemStack(Material.LIGHT));
         });
 
         ItemStack backArrow = new ItemStack(Material.ARROW);
