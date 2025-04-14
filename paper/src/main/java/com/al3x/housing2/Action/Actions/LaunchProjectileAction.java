@@ -6,6 +6,7 @@ import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.Projectile;
 import com.al3x.housing2.Enums.PushDirection;
@@ -41,10 +42,6 @@ public class LaunchProjectileAction extends HTSLImpl {
                 List.of("launchProjectile")
         );
 
-        // hello future bug fixer (i hope it isn't me)
-        // i have definitely absolutely done something wrong here!
-        // so if it doesn't work.. have fun! -pixel
-
         getProperties().addAll(List.of(
                 new EnumProperty<>(
                         "projectile",
@@ -58,16 +55,17 @@ public class LaunchProjectileAction extends HTSLImpl {
                         "The direction to launch the projectile.",
                         PushDirection.class
                 ).setValue(PushDirection.FORWARD),
-                new StringProperty(
+                new NumberProperty(
                         "velocity",
                         "Velocity",
-                        "The velocity of the projectile."
-                ),
+                        "The velocity of the projectile.",
+                        0.1, 5
+                ).setValue("1.5"),
                 new ItemStackProperty(
                         "item",
                         "Item",
                         "The item to launch."
-                )
+                ).showIf(() -> getValue("projectile", Projectile.class) == Projectile.SPLASH_POTION).setValue(new ItemStack(Material.SPLASH_POTION, 1))
         ));
     }
 
@@ -76,7 +74,7 @@ public class LaunchProjectileAction extends HTSLImpl {
         org.bukkit.entity.Projectile proj = player.launchProjectile(getValue("projectile", Projectile.class).getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), 10));
 
-        double amount = 1.5; // was hardcoded?
+        double amount = getProperty("amount", NumberProperty.class).parsedValue(house, player);
 
         Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
         switch (getValue("direction", PushDirection.class)) {
@@ -111,8 +109,7 @@ public class LaunchProjectileAction extends HTSLImpl {
                 break;
         }
 
-        if (proj instanceof ThrownPotion) {
-            ThrownPotion potion = (ThrownPotion) proj;
+        if (proj instanceof ThrownPotion potion) {
             potion.setItem(getValue("item", ItemStackProperty.class).getValue());
             potion.setVelocity(velocity);
             potion.setShooter(player);
@@ -127,11 +124,6 @@ public class LaunchProjectileAction extends HTSLImpl {
     @Override
     public int limit() {
         return 5;
-    }
-
-    @Override
-    public boolean mustBeSync() {
-        return true;
     }
 
     @Override

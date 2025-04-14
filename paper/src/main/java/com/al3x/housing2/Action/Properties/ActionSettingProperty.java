@@ -27,7 +27,8 @@ public class ActionSettingProperty extends ActionProperty<Action> implements Act
     }
 
     @Override
-    public Action deserialize(ActionData value, HousingWorld house) {
-        return ActionData.fromData(value);
+    public Action deserialize(Object value) {
+        if (value instanceof ActionData data) return ActionData.fromData(data);
+        return null;
     }
 }

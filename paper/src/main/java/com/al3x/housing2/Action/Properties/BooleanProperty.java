@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class BooleanProperty extends ActionProperty<Boolean> {
     public BooleanProperty(String id, String name, String description) {
-        super(id, name, description, Material.TURTLE_SCUTE);
+        super(id, name, description, Material.RED_DYE);
 
         getBuilder().lClick(ItemBuilder.ActionType.TOGGLE_YELLOW);
         setValue(false);
@@ -20,6 +20,12 @@ public class BooleanProperty extends ActionProperty<Boolean> {
     @Override
     protected String displayValue() {
         return getValue() ? "§aEnabled" : "§cDisabled";
+    }
+
+    @Override
+    public ItemBuilder getDisplayItem() {
+        return super.getDisplayItem().clone()
+                .material(getValue() ? Material.LIME_DYE : Material.RED_DYE);
     }
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {

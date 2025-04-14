@@ -3,7 +3,6 @@ package com.al3x.housing2.Action.Properties;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
-import com.al3x.housing2.Menus.Actions.ActionEnumMenu;
 import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -38,7 +37,7 @@ public class EnumProperty<E extends Enum<E>> extends ActionProperty<E> implement
     }
 
     @Override
-    public E deserialize(String value, HousingWorld house) {
-        return Enum.valueOf(enumClass, value);
+    public E deserialize(Object value) {
+        return Enum.valueOf(enumClass, value.toString());
     }
 }

@@ -34,7 +34,10 @@ public class ConditionsProperty extends ActionProperty<List<Condition>> implemen
     }
 
     @Override
-    public List<Condition> deserialize(List<ConditionalData> value, HousingWorld house) {
-        return ConditionalData.toList(value);
+    public List<Condition> deserialize(Object value) {
+        if (value instanceof List) {
+            return ConditionalData.toList((List<ConditionalData>) value);
+        }
+        return null;
     }
 }

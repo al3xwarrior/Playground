@@ -103,7 +103,7 @@ public class NpcPathAction extends Action implements NPCAction {
                         "Pause Until Complete",
                         "If true, the action will pause until the path is complete."
                 ).showIf(() -> getValue("mode", NavigationType.class) == NavigationType.PATH),
-                new ListProperty<String>(
+                new ListProperty<LocationData>(
                         "path",
                         "Path",
                         "The path of the NPC.",
@@ -134,7 +134,6 @@ public class NpcPathAction extends Action implements NPCAction {
             Double speed = getValue("speed", Double.class);
             npc.setSpeed(speed);
             npc.getCitizensNPC().getNavigator().getDefaultParameters().speedModifier(speed.floatValue());
-
             Waypoints waypoints = npc.getCitizensNPC().getOrAddTrait(Waypoints.class);
             if (npc.getPreviousNavigationType() != NavigationType.WANDER) {
                 npc.setNavigationType(NavigationType.WANDER);
@@ -171,9 +170,11 @@ public class NpcPathAction extends Action implements NPCAction {
             List<Waypoint> path = (AbstractList<Waypoint>) provider.waypoints();
             path.clear();
 
-            for (LocationData locationData : getProperty()) {
+            boolean pauseUntilComplete = getValue("pauseUntilComplete", Boolean.class);
+            boolean loop = getValue("loop", Boolean.class);
+            for (LocationData locationData: (List<LocationData>) getProperty("path", ListProperty.class).getValue()) {
                 Waypoint waypoint = new Waypoint(locationData.toLocation());
-                if (!this.loop) {
+                if (!loop) {
                     waypoint.addTrigger(new WaypointTrigger() {
                         @Override
                         public String description() {

@@ -8,14 +8,18 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.block.impl.CraftFence;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActionsProperty extends ActionProperty<List<Action>> implements ActionProperty.PropertySerializer<List<Action>, List<ActionData>> {
     public ActionsProperty(String id, String name, String description) {
         super(id, name, description, Material.PISTON);
+
+        setValue(new ArrayList<>());
     }
 
     @Override
@@ -33,7 +37,10 @@ public class ActionsProperty extends ActionProperty<List<Action>> implements Act
     }
 
     @Override
-    public List<Action> deserialize(List<ActionData> value, HousingWorld house) {
-        return ActionData.toList(value);
+    public List<Action> deserialize(Object value) {
+        if (value instanceof List) {
+            return ActionData.toList((List<ActionData>) value);
+        }
+        return null;
     }
 }

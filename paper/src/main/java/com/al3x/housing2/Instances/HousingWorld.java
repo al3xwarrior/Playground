@@ -317,7 +317,7 @@ public class HousingWorld {
             List<ActionData> actions = houseData.getEventActions().get(type.name());
             if (actions != null) {
                 for (ActionData action : actions) {
-                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getData(), action.getComment()));
+                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getProperties(), action.getComment()));
                 }
             }
         }

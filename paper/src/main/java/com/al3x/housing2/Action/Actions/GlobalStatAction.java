@@ -41,7 +41,7 @@ public class GlobalStatAction extends HTSLImpl {
                 ).setValue(new ArrayList<>(List.of(
                         new StatInstance()
                 ))),
-                new AddStatInstanceProperty(50)
+                new AddStatInstanceProperty(35)
         ));
     }
 

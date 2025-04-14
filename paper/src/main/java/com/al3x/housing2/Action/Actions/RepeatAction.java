@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.ActionsProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
@@ -27,10 +29,6 @@ import java.util.List;
 @ToString
 @Getter
 public class RepeatAction extends HTSLImpl implements NPCAction {
-    private static final Gson gson = new Gson();
-    private List<Action> subActions = new ArrayList<>();
-    private String times = "1";
-
     public RepeatAction() {
         super("repeat_action",
                 "Repeat Action",
@@ -40,17 +38,16 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new ActionsProperty(
                         "subActions",
                         "Actions",
-                        "The actions to execute.",
-                        ActionProperty.PropertyType.ACTION
+                        "The actions to execute."
                 ),
-                new ActionProperty(
+                new NumberProperty(
                         "times",
                         "Times",
                         "The number of times to repeat the actions.",
-                        ActionProperty.PropertyType.NUMBER, 1.0, 20.0
+                        1.0, 20.0
                 )
         ));
     }
@@ -68,23 +65,12 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
+        List<Action> subActions = getValue("subActions", ActionsProperty.class).getValue();
         if (subActions.isEmpty()) {
             return OutputType.SUCCESS;
         }
 
-        String times = HandlePlaceholders.parsePlaceholders(player, house, this.times);
-
-        if (!NumberUtilsKt.isInt(times)) {
-            return OutputType.ERROR;
-        }
-
-        int timesInt = Integer.parseInt(times);
-        if (timesInt < 1) {
-            return OutputType.ERROR;
-        }
-        if (timesInt > 20) {
-            timesInt = 20;
-        }
+        int timesInt = getValue("times", NumberProperty.class).parsedValue(house, player).intValue();
 
         ActionExecutor first = null;
         ActionExecutor last = null;
@@ -120,82 +106,53 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
         return 5;
     }
 
-    public void setSubActions(ArrayList<Action> subActions) {
-        this.subActions = subActions;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", ActionData.fromList(subActions));
-        data.put("times", times);
-        return data;
-    }
 
     @Override
     public boolean requiresPlayer() {
         return false;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (!data.containsKey("subActions")) return;
-        // I don't know how this works lol
-        Object subActions = data.get("subActions");
-        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<ActionData> actions = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            ActionData action = gson.fromJson(jsonObject, ActionData.class);
-            actions.add(action);
-        }
-
-        this.subActions = ActionData.toList(actions);
-        this.times = data.get("times").toString();
-    }
-
-    @Override
-    public String export(int indent) {
-        StringBuilder builder = new StringBuilder();
-        for (Action action : subActions) {
-            if (!(action instanceof HTSLImpl impl)) continue;
-            builder.append(impl.export(indent + 4)).append("\n");
-        }
-        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
-    }
+//    @Override
+//    public String export(int indent) {
+//        StringBuilder builder = new StringBuilder();
+//        for (Action action : subActions) {
+//            if (!(action instanceof HTSLImpl impl)) continue;
+//            builder.append(impl.export(indent + 4)).append("\n");
+//        }
+//        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+//        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + times + " {\n" + builder + " ".repeat(indent) + "}";
+//    }
 
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <times> {\\n<actions>\\n}";
     }
 
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (indent.length() > 4 * 3) {
-            throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
-        }
-        if (action.contains(" ")) {
-            Duple<String[], String> timesArg = handleArg(action.split(" "), 0);
-            this.times = timesArg.getSecond();
-            action = String.join(" ", timesArg.getFirst());
-        }
-        ArrayList<String> subactions = new ArrayList<>();
-        if (action.startsWith("{")) {
-            for (int i = 0; i < nextLines.size(); i++) {
-                String line = nextLines.get(i);
-                if (line.startsWith(indent + "}")) {
-                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
-                    break;
-                }
-                subactions.add(line);
-            }
-        }
-
-        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
-
-        this.subActions = actions;
-        return nextLines;
-    }
+//    @Override
+//    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+//        if (indent.length() > 4 * 3) {
+//            throw new IllegalArgumentException("Nesting limit reached"); //TODO: change this to a proper exception
+//        }
+//        if (action.contains(" ")) {
+//            Duple<String[], String> timesArg = handleArg(action.split(" "), 0);
+//            this.times = timesArg.getSecond();
+//            action = String.join(" ", timesArg.getFirst());
+//        }
+//        ArrayList<String> subactions = new ArrayList<>();
+//        if (action.startsWith("{")) {
+//            for (int i = 0; i < nextLines.size(); i++) {
+//                String line = nextLines.get(i);
+//                if (line.startsWith(indent + "}")) {
+//                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
+//                    break;
+//                }
+//                subactions.add(line);
+//            }
+//        }
+//
+//        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
+//
+//        this.subActions = actions;
+//        return nextLines;
+//    }
 }

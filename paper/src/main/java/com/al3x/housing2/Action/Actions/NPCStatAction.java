@@ -46,7 +46,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
                 ).setValue(new ArrayList<>(List.of(
                         new StatInstance()
                 ))),
-                new AddStatInstanceProperty(50)
+                new AddStatInstanceProperty(35)
         ));
     }
 

@@ -40,7 +40,7 @@ public class RemoveItemAction extends Action {
                         "slot",
                         "Slot",
                         "The slot to remove the item from."
-                )
+                ).setValue(-1)
         ));
     }
 

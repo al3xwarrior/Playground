@@ -56,17 +56,22 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
     }
 
     @Override
-    public List<StatInstance> deserialize(List<StatInstance.StatInstanceData> value, HousingWorld house) {
+    public List<StatInstance> deserialize(Object val) {
+        if (!(val instanceof List<?>)) return null;
+        List<StatInstance> value = (List<StatInstance>) val;
         return value.stream().map((data) -> {
             StatInstance instance = new StatInstance();
             instance.mode = data.mode;
-            Action action = ActionData.fromData(data.value);
-            if (action instanceof StatValue) {
-                instance.value = (StatValue) action;
-            } else {
-                instance.value = new StatValue();
-                Main.getInstance().getLogger().severe("StatInstanceProperty: Action is not a StatValue in housing " + house.getHouseUUID().toString());
+            Action action = ActionData.fromData(data.value.getExpressionValue());
+            if (!(action instanceof StatValue statValue)) {
+                Main.getInstance().getLogger().warning("Failed to deserialize StatInstance: " + data.value.getExpressionValue() + " is not a StatValue");
+                return null;
             }
+            instance.value = new StatValueProperty.StatValueInstance(
+                    data.value.isExpression(),
+                    data.value.getLiteralValue(),
+                    statValue
+            );
             return instance;
         }).collect(Collectors.toList());
     }

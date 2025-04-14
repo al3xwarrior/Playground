@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
@@ -15,8 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class SetVoiceGroupAction extends HTSLImpl {
-    private String groupName = "Cool group";
-
     public SetVoiceGroupAction() {
         super(
                 "set_voice_group_action",
@@ -27,18 +26,17 @@ public class SetVoiceGroupAction extends HTSLImpl {
         );
 
         getProperties().add(
-                new ActionProperty(
+                new StringProperty(
                         "groupName",
                         "Group Name",
-                        "The name of the voice group.",
-                        ActionProperty.PropertyType.STRING
-                )
+                        "The name of the voice group."
+                ).setValue("Cool group")
         );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String groupName = HandlePlaceholders.parsePlaceholders(player, house, this.groupName);
+        String groupName = getProperty("groupName", StringProperty.class).parsedValue(house, player);
         VoiceChat.setPlayerGroup(player, groupName);
         return OutputType.SUCCESS;
     }

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.ActionsProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
@@ -24,9 +25,6 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Getter
 @Setter
 public class RandomAction extends HTSLImpl implements NPCAction {
-    private static final Gson gson = new Gson();
-    private List<Action> subActions = new ArrayList<>();
-
     public RandomAction() {
         super("random_action",
                 "Random Action",
@@ -35,11 +33,10 @@ public class RandomAction extends HTSLImpl implements NPCAction {
                 List.of("random")
         );
 
-        getProperties().add(new ActionProperty(
+        getProperties().add(new ActionsProperty(
                 "subActions",
                 "Actions",
-                "The actions to execute.",
-                ActionProperty.PropertyType.ACTION
+                "The actions to execute."
         ));
     }
 
@@ -55,6 +52,7 @@ public class RandomAction extends HTSLImpl implements NPCAction {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        List<Action> subActions = getProperty("subActions", ActionsProperty.class).getValue();
         if (subActions.isEmpty()) {
             return OutputType.SUCCESS;
         }
@@ -76,67 +74,43 @@ public class RandomAction extends HTSLImpl implements NPCAction {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", ActionData.fromList(subActions));
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return false;
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (!data.containsKey("subActions")) return;
-        // I don't know how this works lol
-        Object subActions = data.get("subActions");
-        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<ActionData> actions = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            ActionData action = gson.fromJson(jsonObject, ActionData.class);
-            actions.add(action);
-        }
-
-        this.subActions = ActionData.toList(actions);
-    }
-
-    @Override
-    public String export(int indent) {
-        StringBuilder builder = new StringBuilder();
-        for (Action action : subActions) {
-            if (!(action instanceof HTSLImpl impl)) continue;
-            builder.append(impl.export(indent + 4)).append("\n");
-        }
-        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " {\n" + builder + " ".repeat(indent) + "}";
-    }
-
+//
+//    @Override
+//    public String export(int indent) {
+//        StringBuilder builder = new StringBuilder();
+//        for (Action action : subActions) {
+//            if (!(action instanceof HTSLImpl impl)) continue;
+//            builder.append(impl.export(indent + 4)).append("\n");
+//        }
+//        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+//        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " {\n" + builder + " ".repeat(indent) + "}";
+//    }
+//
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " {\\n<actions>\\n}";
     }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        ArrayList<String> subactions = new ArrayList<>();
-        if (action.startsWith(indent + "{")) {
-            for (int i = 0; i < nextLines.size(); i++) {
-                String line = nextLines.get(i);
-                if (line.startsWith(indent + "}")) {
-                    nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
-                    break;
-                }
-                subactions.add(line);
-            }
-        }
-
-        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
-
-        this.subActions = actions;
-        return nextLines;
-    }
+//
+//    @Override
+//    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+//        ArrayList<String> subactions = new ArrayList<>();
+//        if (action.startsWith(indent + "{")) {
+//            for (int i = 0; i < nextLines.size(); i++) {
+//                String line = nextLines.get(i);
+//                if (line.startsWith(indent + "}")) {
+//                    nextLines = new ArrayList<>(nextLines.subList(i + 1, nextLines.size()));
+//                    break;
+//                }
+//                subactions.add(line);
+//            }
+//        }
+//
+//        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
+//
+//        this.subActions = actions;
+//        return nextLines;
+//    }
 }

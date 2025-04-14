@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.ActionsProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HTSLHandler;
@@ -25,13 +27,9 @@ import java.util.*;
 @Getter
 @Setter
 public class RunAsNPCAction extends HTSLImpl {
-    private static final Gson gson = new Gson();
-    private String npcId;
-    private List<Action> subActions = new ArrayList<>();
-
     public RunAsNPCAction(HousingNPC npc) {
         this();
-        this.npcId = String.valueOf(npc.getInternalID());
+        getProperty("npcId", NumberProperty.class).setValue(String.valueOf(npc.getInternalID()));
     }
 
     public RunAsNPCAction() {
@@ -44,17 +42,15 @@ public class RunAsNPCAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new NumberProperty(
                         "npcId",
                         "NPC ID",
-                        "The ID of the NPC to run the action as.",
-                        ActionProperty.PropertyType.NUMBER
+                        "The ID of the NPC to run the action as."
                 ),
-                new ActionProperty(
+                new ActionsProperty(
                         "subActions",
                         "Actions",
-                        "The actions to execute.",
-                        ActionProperty.PropertyType.ACTION
+                        "The actions to execute."
                 )
         ));
     }
@@ -76,18 +72,13 @@ public class RunAsNPCAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        List<Action> subActions = getValue("subActions", ActionsProperty.class).getValue();
         if (subActions.isEmpty()) {
             return OutputType.SUCCESS;
         }
-        String parsed = Placeholder.handlePlaceholders(npcId, house, player);
-        String npcId;
-        if (NumberUtilsKt.isInt(parsed)) {
-            npcId = parsed;
-        } else {
-            return OutputType.ERROR;
-        }
+        int npcId = getProperty("npcId", NumberProperty.class).parsedValue(house, player).intValue();
 
-        HousingNPC npc = house.getNPC(Integer.parseInt(npcId));
+        HousingNPC npc = house.getNPC(npcId);
 
         ActionExecutor executor1 = new ActionExecutor("runAsNPC", subActions);
         executor1.setLimits(executor.getLimits());
@@ -95,74 +86,48 @@ public class RunAsNPCAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("subActions", ActionData.fromList(subActions));
-        data.put("npcId", npcId);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return false;
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        if (!data.containsKey("subActions")) return;
-        // I don't know how this works lol
-        Object subActions = data.get("subActions");
-        JsonArray jsonArray = gson.toJsonTree(subActions).getAsJsonArray();
-        ArrayList<ActionData> actions = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            ActionData action = gson.fromJson(jsonObject, ActionData.class);
-            actions.add(action);
-        }
-
-        this.subActions = ActionData.toList(actions);
-        this.npcId = String.valueOf(data.get("npcId"));
-    }
-
-    @Override
-    public String export(int indent) {
-        StringBuilder builder = new StringBuilder();
-        for (Action action : subActions) {
-            if (!(action instanceof HTSLImpl impl)) continue;
-            builder.append(impl.export(indent + 4)).append("\n");
-        }
-        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " \"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
-    }
+//
+//    @Override
+//    public String export(int indent) {
+//        StringBuilder builder = new StringBuilder();
+//        for (Action action : subActions) {
+//            if (!(action instanceof HTSLImpl impl)) continue;
+//            builder.append(impl.export(indent + 4)).append("\n");
+//        }
+//        if (builder.isEmpty()) return " ".repeat(indent) + getScriptingKeywords().getFirst();
+//        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " \"" + npcId + "\"" + " {\n" + builder + " ".repeat(indent) + "}";
+//    }
 
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <npcID> {\\n<actions>\\n}";
     }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        if (action.contains(" ")) {
-            Duple<String[], String> npcIdArg = handleArg(action.split(" "), 0);
-            this.npcId = npcIdArg.getSecond();
-            action = String.join(" ", npcIdArg.getFirst());
-        }
-        ArrayList<String> subactions = new ArrayList<>();
-        if (action.startsWith("{")) {
-            for (int i = 0; i < nextLines.size(); i++) {
-                String line = nextLines.get(i);
-                if (line.startsWith(indent + "}")) {
-                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
-                    break;
-                }
-                subactions.add(line);
-            }
-        }
-
-        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
-
-        this.subActions = actions;
-        return nextLines;
-    }
+//
+//    @Override
+//    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
+//        if (action.contains(" ")) {
+//            Duple<String[], String> npcIdArg = handleArg(action.split(" "), 0);
+//            this.npcId = npcIdArg.getSecond();
+//            action = String.join(" ", npcIdArg.getFirst());
+//        }
+//        ArrayList<String> subactions = new ArrayList<>();
+//        if (action.startsWith("{")) {
+//            for (int i = 0; i < nextLines.size(); i++) {
+//                String line = nextLines.get(i);
+//                if (line.startsWith(indent + "}")) {
+//                    nextLines = new ArrayList<>(nextLines.subList(i, nextLines.size()));
+//                    break;
+//                }
+//                subactions.add(line);
+//            }
+//        }
+//
+//        ArrayList<Action> actions = new ArrayList<>(HTSLHandler.importActions(String.join("\n", subactions), indent + "    "));
+//
+//        this.subActions = actions;
+//        return nextLines;
+//    }
 }

@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.PushDirection;
 import com.al3x.housing2.Enums.VelocityOperation;
 import com.al3x.housing2.Events.CancellableEvent;
@@ -28,12 +30,6 @@ import java.util.*;
 @Getter
 @Setter
 public class SetVelocityAction extends HTSLImpl implements NPCAction {
-
-    private PushDirection direction = PushDirection.FORWARD;
-    private VelocityOperation operation = VelocityOperation.SET;
-    private String customDirection = null;
-    private String amount = "1.5";
-
     public SetVelocityAction() {
         super(
                 "set_velocity_action",
@@ -44,24 +40,24 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new EnumProperty<>(
                         "direction",
                         "Direction",
                         "The direction of the velocity adjustment.",
-                        ActionProperty.PropertyType.ENUM, PushDirection.class
-                ),
-                new ActionProperty(
+                        PushDirection.class
+                ).setValue(PushDirection.FORWARD),
+                new EnumProperty<>(
                         "operation",
                         "Operation",
                         "How the player's current velocity will be adjusted.",
-                        ActionProperty.PropertyType.ENUM, VelocityOperation.class
-                ),
-                new ActionProperty(
+                        VelocityOperation.class
+                ).setValue(VelocityOperation.SET),
+                new NumberProperty(
                         "amount",
                         "Power",
                         "The amount of force to apply to the velocity adjustment.",
-                        ActionProperty.PropertyType.NUMBER, 0.0, 100.0
-                )
+                        0.0, 100.0
+                ).setValue("1.5")
         ));
     }
 
@@ -77,18 +73,8 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
     public Vector execute(Vector playerVelocity, Location eyeLocation, Player player, HousingWorld house) {
         Vector velocityAdjustment = new Vector();
 
-        double amount = 1.5;
-        try {
-            amount = Double.parseDouble(Placeholder.handlePlaceholders(this.amount, house, player));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-
-        if (amount == 0) return null;
-        if (amount > 100) amount = 100;
-        if (amount < 0) amount = 0;
-
-        switch (direction) {
+        double amount = getProperty("amount", NumberProperty.class).parsedValue(house, player);
+        switch (getValue("direction", PushDirection.class)) {
             case FORWARD -> velocityAdjustment.add(eyeLocation.getDirection().multiply(amount));
             case BACKWARD -> velocityAdjustment.add(eyeLocation.getDirection().multiply(-amount));
             case UP -> velocityAdjustment.add(new Vector(0, 1, 0).multiply(amount));
@@ -112,7 +98,8 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
         }
         //This way it can get two different velocities at the same time
         //ex. UP and FORWARD
-        switch (operation) {
+
+        switch (getValue("operation", VelocityOperation.class)) {
             case VelocityOperation.SET -> playerVelocity = velocityAdjustment;
             case VelocityOperation.ADD -> playerVelocity.add(velocityAdjustment);
             case VelocityOperation.SUBTRACT -> playerVelocity.subtract(velocityAdjustment);
@@ -142,33 +129,5 @@ public class SetVelocityAction extends HTSLImpl implements NPCAction {
     @Override
     public String syntax() {
         return getScriptingKeywords().getFirst() + " <operation> <direction> <amount>";
-    }
-
-    @Override
-    public String export(int indent) {
-        String dir = direction.name();
-        String operation = this.operation.asString();
-        return " ".repeat(indent) + getScriptingKeywords().getFirst() + " " + operation + " " + dir + " " + amount;
-    }
-
-    @Override
-    public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {
-        String[] split = action.split(" ");
-
-        operation = VelocityOperation.fromString(split[0]);
-        Duple<String[], String> directionArg = handleArg(split, 1);
-        direction = PushDirection.fromString(directionArg.getSecond());
-
-        split = directionArg.getFirst();
-
-        if (split.length == 0) {
-            return nextLines;
-        }
-
-        Duple<String[], String> amountArg = handleArg(directionArg.getFirst(), 0);
-        amount = amountArg.getSecond();
-        split = amountArg.getFirst();
-
-        return new ArrayList<>(Arrays.asList(split));
     }
 }

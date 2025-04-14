@@ -89,7 +89,7 @@ public class StatValueProperty extends ActionProperty<StatValueProperty.StatValu
     }
 
     @Override
-    public StatValueInstance deserialize(StatValueData value, HousingWorld house) {
+    public StatValueInstance deserialize(Object value) {
         Action action = ActionData.fromData(value.expressionValue);
         if (!(action instanceof StatValue)) {
             action = new StatValue();
@@ -131,6 +131,7 @@ public class StatValueProperty extends ActionProperty<StatValueProperty.StatValu
     }
 
     @AllArgsConstructor
+    @Getter
     public static class StatValueData {
         private boolean isExpression;
         private String literalValue;

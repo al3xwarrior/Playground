@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 @Setter
 public class ActionData {
     private String action;
-    private HashMap<String, Object> data;
+    private HashMap<String, Object> properties;
     private String comment;
 
     public ActionData() {
         //used for serialization
     }
 
-    public ActionData(String action, HashMap<String, Object> data, String comment) {
+    public ActionData(String action, HashMap<String, Object> properties, String comment) {
         this.action = action;
-        this.data = data;
+        this.properties = properties;
         this.comment = comment;
     }
 
@@ -34,7 +34,7 @@ public class ActionData {
         HashMap<String, List<ActionData>> map = new HashMap<>();
         for (Map.Entry<EventType, List<Action>> entry : actionMap.entrySet()) {
             List<ActionData> list = entry.getValue().stream()
-                    .map(action -> new ActionData(action.getName(), action.data(), action.getComment()))
+                    .map(action -> new ActionData(action.getId(), action.data(), action.getComment()))
                     .collect(Collectors.toList());
             map.put(entry.getKey().name(), list);
         }
@@ -45,7 +45,7 @@ public class ActionData {
         HashMap<String, List<ActionData>> map = new HashMap<>();
         for (Map.Entry<String, List<Action>> entry : actionMap.entrySet()) {
             List<ActionData> list = entry.getValue().stream()
-                    .map(action -> new ActionData(action.getName(), action.data(), action.getComment()))
+                    .map(action -> new ActionData(action.getId(), action.data(), action.getComment()))
                     .collect(Collectors.toList());
             map.put(entry.getKey(), list);
         }
@@ -54,7 +54,7 @@ public class ActionData {
 
     public static List<ActionData> fromList(List<Action> actionList) {
         return actionList.stream()
-                .map(action -> new ActionData(action.getName(), action.data(), action.getComment()))
+                .map(action -> new ActionData(action.getId(), action.data(), action.getComment()))
                 .collect(Collectors.toList());
     }
 
@@ -65,7 +65,7 @@ public class ActionData {
             if (actionEnum == null) {
                 continue; //skip invalid actions, rather than freaking out
             }
-            collect.add(actionEnum.getActionInstance(data.getData(), data.getComment()));
+            collect.add(actionEnum.getActionInstance(data.getProperties(), data.getComment()));
         }
         return collect;
     }
@@ -79,6 +79,6 @@ public class ActionData {
         if (actionEnum == null) {
             throw new IllegalArgumentException("Action " + data.getAction() + " does not exist");
         }
-        return actionEnum.getActionInstance(data.getData(), data.getComment());
+        return actionEnum.getActionInstance(data.getProperties(), data.getComment());
     }
 }

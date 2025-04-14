@@ -1,6 +1,8 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.SoundProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -23,10 +25,6 @@ import java.util.*;
 @Getter
 @Setter
 public class StopSoundAction extends HTSLImpl {
-
-    private Sound sound = Sound.ENTITY_PLAYER_LEVELUP; //Default sound
-    private boolean clearAll = false;
-
     public StopSoundAction() {
         super("stop_sound_action",
                 "Stop Sound",
@@ -36,53 +34,36 @@ public class StopSoundAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new ActionProperty(
+                new SoundProperty(
                         "sound",
                         "Sound",
-                        "The sound to stop.",
-                        ActionProperty.PropertyType.SOUND
-                ),
-                new ActionProperty(
+                        "The sound to stop."
+                ).setValue(Sound.ENTITY_PLAYER_LEVELUP),
+                new BooleanProperty(
                         "clearAll",
                         "Clear All",
-                        "If true, this will clear all sound effects except the one selected.",
-                        ActionProperty.PropertyType.BOOLEAN
+                        "If true, this will clear all sound effects except the one selected."
                 )
         ));
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        boolean clearAll = getValue("clearAll", Boolean.class);
+        Sound s = getValue("sound", Sound.class);
         if (clearAll) {
             for (Sound sound : Sound.values()) { //I don't love this, but its the same implementation as the clear potion effect action
-                if (sound == this.sound) continue;
+                if (sound == s) continue;
                 player.stopSound(sound);
             }
         } else {
-            player.stopSound(sound);
+            player.stopSound(s);
         }
         return OutputType.SUCCESS;
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("sound", sound.name());
-        data.put("clearall", clearAll);
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        //Bunch of errors coming from PotionEffectType so I needed to add this
-        if (!data.containsKey("sound")) return;
-        sound = Sound.valueOf((String) data.get("sound"));
-        if (!data.containsKey("clearall")) return;
-        clearAll = (boolean) data.get("clearall");
     }
 }

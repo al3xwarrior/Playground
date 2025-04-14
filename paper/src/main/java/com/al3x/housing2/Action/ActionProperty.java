@@ -65,8 +65,8 @@ public abstract class ActionProperty<V> {
         }
     }
 
-    public ActionProperty<V> setValue(V value) {
-        this.value = value;
+    public ActionProperty<V> setValue(Object value) {
+        this.value = (V) value;
         return this;
     }
 
@@ -108,7 +108,7 @@ public abstract class ActionProperty<V> {
     public interface PropertySerializer<T, S> {
         S serialize();
 
-        T deserialize(S value, HousingWorld house);
+        T deserialize(Object value);
     }
 
     public static class Constant {

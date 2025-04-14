@@ -33,7 +33,7 @@ public class ChangePlayerGroupAction extends HTSLImpl {
                 new BooleanProperty(
                         "demotionProtection",
                         "Demotion Protection",
-                        "If enabled, the player cannot be demoted."
+                        "If enabled, the player cannot be demoted if their priority is higher than the group they are being changed to."
                 )
         ));
     }

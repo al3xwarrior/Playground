@@ -69,6 +69,10 @@ public class LocationProperty extends ActionProperty<String> {
         ).open();
     }
 
+    public Location getLocation(Player player, HousingWorld house) {
+        return getLocation(player, house, player.getLocation(), player.getEyeLocation());
+    }
+
     public Location getLocation(Player player, HousingWorld house, Location baseLocation, Location eyeLocation) {
         if (getValue() == null) return null;
         if (getValue().equalsIgnoreCase("null") || getValue().equals("0")) return null;
@@ -87,7 +91,7 @@ public class LocationProperty extends ActionProperty<String> {
         String[] split = value.split(",");
         if (split.length != 3 && split.length != 5) return null;
         try {
-            if (value.contains("^")) {
+            if (value.contains("^") && eyeLocation != null) {
                 String x = split[0];
                 String y = split[1];
                 String z = split[2];

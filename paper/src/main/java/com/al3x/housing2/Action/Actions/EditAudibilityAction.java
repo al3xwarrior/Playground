@@ -55,7 +55,7 @@ public class EditAudibilityAction extends HTSLImpl {
                         "conditions",
                         "Conditions",
                         "The conditions to use."
-                ).setValue(new ArrayList<>()).showIf(getValue("mode", EditVisibilityEnum.class) == EditVisibilityEnum.CONDITION)
+                ).setValue(new ArrayList<>()).showIf(() -> getValue("mode", EditVisibilityEnum.class) == EditVisibilityEnum.CONDITION)
         ));
     }
 
@@ -70,10 +70,9 @@ public class EditAudibilityAction extends HTSLImpl {
         Double limit = getProperty("limit", NumberProperty.class).parsedValue(house, player);
         List<Player> players = new ArrayList<>(player.getWorld().getPlayers());
         Main main = house.getPlugin();
-        EditVisibilityEnum mode = getProperty("mode", EditVisibilityEnum.class);
         List<Condition> conditions = getProperty("conditions", ConditionsProperty.class).getValue();
         boolean value = getValue("value", Boolean.class);
-        switch (mode) {
+        switch (getValue("mode", EditVisibilityEnum.class)) {
             case NEAREST:
                 players.sort(Comparator.comparing((Entity entity) -> entity.getLocation().distance(player.getLocation())));
                 break;

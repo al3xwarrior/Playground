@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus.Actions;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionProperty;
+import com.al3x.housing2.Action.Properties.CustomSlotProperty;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.OpenActionMenuEvent;
@@ -14,6 +15,8 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.StackUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,21 +32,26 @@ import java.util.List;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ActionEditMenu extends Menu {
-    private Main main;
+    private final Main main;
+    @Setter
+    @Getter
     private Action action;
     private Condition condition;
-    private Player player;
-    private HousingWorld house;
+    private final Player player;
+    private final HousingWorld house;
+    @Setter
     private HousingNPC housingNPC;
+    @Setter
     private EventType event;
+    @Getter
+    @Setter
     private Runnable update;
-    private Menu backMenu;
+    @Getter
+    private final Menu backMenu;
 
+    @Getter
+    @Setter
     private List<Action> parentActions = new ArrayList<>();
-
-    public Menu getBackMenu() {
-        return backMenu;
-    }
 
     public int getBackMenusNestedLevel() {
         if (backMenu == null) {
@@ -59,7 +67,7 @@ public class ActionEditMenu extends Menu {
     }
 
     private static ActionEditor getEditor(Action action, HousingWorld house, ActionEditMenu menu, Player player) {
-        return action.editorMenu(house) != null ? action.editorMenu(house) : action.editorMenu(house, menu) != null ? action.editorMenu(house, menu) : action.editorMenu(house, menu, player);
+        return action.editorMenu(house, menu, player);
     }
 
     private static ActionEditor getEditor(Condition condition, HousingWorld house, ActionEditMenu menu, Player player) {
@@ -85,14 +93,6 @@ public class ActionEditMenu extends Menu {
         this.player = player;
         this.house = house;
         this.backMenu = backMenu;
-    }
-
-    public List<Action> getParentActions() {
-        return parentActions;
-    }
-
-    public void setParentActions(List<Action> parentActions) {
-        this.parentActions = parentActions;
     }
 
     @Override
@@ -156,9 +156,13 @@ public class ActionEditMenu extends Menu {
         for (int i = 0; i < properties.size(); i++) {
             ActionProperty<?> property = properties.get(i);
             ItemBuilder builder = property.getDisplayItem();
-
-            addItem(slots[i], builder.build(), (e) -> {
-
+            int slot = slots[i];
+            if (property instanceof CustomSlotProperty<?> customSlotProperty) {
+                slot = customSlotProperty.getCustomSlot();
+            }
+            addItem(slot, builder.build(), (e) -> {
+                e.setCancelled(true);
+                property.runnable(e, house, player, this);
             });
         }
 
@@ -205,29 +209,5 @@ public class ActionEditMenu extends Menu {
                 new ActionClipboardMenu(player, main, house, action, this).open();
             });
         }
-    }
-
-    public void setEvent(EventType event) {
-        this.event = event;
-    }
-
-    public void setHousingNPC(HousingNPC housingNPC) {
-        this.housingNPC = housingNPC;
-    }
-
-    public void setUpdate(Runnable update) {
-        this.update = update;
-    }
-
-    public Runnable getUpdate() {
-        return update;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
     }
 }

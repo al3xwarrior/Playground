@@ -32,8 +32,6 @@ import static com.al3x.housing2.Enums.Locations.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.SELECT_YELLOW;
 
-// TODO: Implement old display item lore in new system
-
 @ToString
 public class ParticleAction extends HTSLImpl {
     public static HashMap<UUID, Duple<String, Integer>> particlesCooldownMap = new HashMap<>();
@@ -305,11 +303,6 @@ public class ParticleAction extends HTSLImpl {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean mustBeSync() {
-        return true;
     }
 
     @Override

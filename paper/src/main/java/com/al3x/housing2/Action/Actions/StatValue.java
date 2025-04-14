@@ -46,7 +46,7 @@ public class StatValue extends Action {
                 ),
                 new StatInstanceProperty()
                         .setValue(new ArrayList<>()),
-                new AddStatInstanceProperty(50)
+                new AddStatInstanceProperty(35)
         ));
     }
 

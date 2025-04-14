@@ -35,7 +35,7 @@ public class ChangeTimeAction extends HTSLImpl {
         );
 
         getProperties().addAll(List.of(
-                new EnumProperty<StatOperation>(
+                new EnumProperty<>(
                         "mode",
                         "Mode",
                         "The mode to use.",

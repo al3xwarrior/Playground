@@ -38,12 +38,12 @@ public class ItemStackProperty extends ActionProperty<ItemStack> implements Acti
     }
 
     @Override
-    public ItemStack deserialize(String value, HousingWorld house) {
+    public ItemStack deserialize(Object value) {
         if (value == null) {
             return null;
         }
         try {
-            return Serialization.itemStackFromBase64(value);
+            return Serialization.itemStackFromBase64(value.toString());
         } catch (IOException e) {
             Main.getInstance().getLogger().throwing("ItemStackProperty", "deserialize", e);
             return null;

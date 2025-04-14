@@ -35,8 +35,6 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Getter
 @RequiredArgsConstructor
 public abstract class Action {
-    private static final Gson gson = new Gson();
-
     private final String id;
     private final String name;
     private final String description;
@@ -59,12 +57,6 @@ public abstract class Action {
     public abstract OutputType execute(Player player, HousingWorld house);
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        return editorMenu(house, backMenu);
-    }
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        return editorMenu(house);
-    }
-    public ActionEditor editorMenu(HousingWorld house) {
         return new ActionEditor(4, "<yellow>" + name + " Settings", properties);
     }
 
@@ -78,7 +70,7 @@ public abstract class Action {
                 .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
                 .shiftClick();
         properties.forEach(property -> {
-            if (property.isVisible()) builder.info(property.getName(), property.getValue().toString());
+            if (property.getVisible().apply()) builder.info(property.getName(), property.getValue().toString());
         });
 
         if (!comment.isEmpty()) builder.extraLore(comment);
@@ -92,8 +84,6 @@ public abstract class Action {
     }
 
     public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("id", id);
         LinkedHashMap<String, Object> propertiesData = new LinkedHashMap<>();
         properties.forEach(property -> {
             if (property instanceof ActionProperty.PropertySerializer<?,?>) {
@@ -102,11 +92,13 @@ public abstract class Action {
                 propertiesData.put(property.getId(), property.getValue());
             }
         });
-        data.put("properties", propertiesData);
-        return data;
+        return propertiesData;
     }
 
     public <V> V getValue(String id, Class<V> clazz) {
+        if (clazz.isInstance(ActionProperty.class)) {
+            throw new IllegalArgumentException("Cannot use an ActionProperty as a class type");
+        }
         for (ActionProperty<?> property : properties) {
             if (property.getId().equals(id)) {
                 return (V) property.getValue();
@@ -115,7 +107,7 @@ public abstract class Action {
         return null;
     }
 
-    public <V> V getProperty(String id, Class<V> clazz) {
+    public <V extends ActionProperty<?>> V getProperty(String id, Class<V> clazz) {
         for (ActionProperty<?> property : properties) {
             if (property.getId().equals(id) && property.getClass() == clazz) {
                 return (V) property;
@@ -148,158 +140,20 @@ public abstract class Action {
         return null;
     }
 
-    public boolean mustBeSync() {
-        return false;
-    }
-
     public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
         for (String key : data.keySet()) {
-            try {
-                Field field = actionClass.getDeclaredField(key);
-                field.setAccessible(true);
-                if (field.getType().isEnum() && data.get(key) != null) {
-                    if (data.get(key) instanceof String) {
-                        field.set(this, Enum.valueOf((Class<Enum>) field.getType(), (String) data.get(key)));
-                        continue;
-                    } else if (data.get(key) instanceof Enum) {
-                        field.set(this, data.get(key));
-                        continue;
-                    }
-                }
-                field.set(this, data.get(key));
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    protected <T> List<T> dataToList(JsonArray jsonArray, Class<T> clazz) {
-        ArrayList<T> actions = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            actions.add(gson.fromJson(jsonObject, clazz));
-        }
-        return actions;
-    }
-
-    protected boolean getCoordinate(InventoryClickEvent event, Object obj, String current, HousingWorld house, Menu editMenu, BiConsumer<String, Locations> consumer) {
-        if (obj instanceof Locations location && location == Locations.CUSTOM) {
-            event.getWhoClicked().sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z) or (x,y,z,yaw,pitch)"));
-            editMenu.openChat(Main.getInstance(), (current == null ? "" : current), (message) -> {
-                String oldMessage = message;
-                message = HandlePlaceholders.parsePlaceholders((Player) event.getWhoClicked(), house, message);
-                String[] split = message.split(",");
-                if (split.length != 3 && split.length != 5) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
-                    return;
-                }
-
-                try {
-                    for (int i = 0; i < split.length; i++) {
-                        if (split[i].startsWith("~")) {
-                            split[i] = split[i].substring(1);
-                        }
-
-                        if (split[i].startsWith("^")) {
-                            split[i] = split[i].substring(1);
-                        }
-
-                        if (split[i].isEmpty()) continue;
-                        if (split[i].equalsIgnoreCase("null")) {
-                            split[i] = "0";
-                        }
-
-                        Float.parseFloat(split[i]);
-                    }
-                    consumer.accept(oldMessage, Locations.CUSTOM);
-                } catch (NumberFormatException e) {
-                    event.getWhoClicked().sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
-                    return;
-                }
-            });
-        }
-
-        if ((obj instanceof Locations direction) && direction != Locations.CUSTOM) {
-            consumer.accept(null, direction);
-        }
-        return false;
-    }
-
-    protected Location getLocationFromString(Player player, HousingWorld house, String message) {
-        return getLocationFromString(player, player.getLocation(), player.getEyeLocation(), house, message);
-    }
-
-    protected Location getLocationFromString(Player player, Location baseLocation, Location eyeLocation, HousingWorld house, String message) {
-        message = HandlePlaceholders.parsePlaceholders(player, house, message);
-        String[] split = message.split(",");
-        if (split.length != 3 && split.length != 5) {
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
-            return null;
-        }
-
-        try {
-            if (message.contains("^")) {
-                String x = split[0];
-                String y = split[1];
-                String z = split[2];
-
-                double xV = (x.startsWith("^")) ? Double.parseDouble(x.substring(1)) : Double.parseDouble(x);
-                double yV = (y.startsWith("^")) ? Double.parseDouble(y.substring(1)) : Double.parseDouble(y);
-                double zV = (z.startsWith("^")) ? Double.parseDouble(z.substring(1)) : Double.parseDouble(z);
-
-                //forward
-                Vector forward = eyeLocation.getDirection().clone().multiply(zV);
-                //right
-                Vector right = eyeLocation.getDirection().clone().crossProduct(new Vector(0, 1, 0)).normalize().multiply(xV);
-                //up
-                Vector up = new Vector(0, yV, 0);
-
-                return baseLocation.clone().add(forward).add(right).add(up);
-            }
-
-            double x = 0, y = 0, z = 0, yaw = baseLocation.getYaw(), pitch = baseLocation.getPitch();
-
-            for (int i = 0; i < split.length; i++) {
-                double handledValue = handleRelative(i, split[i], baseLocation, eyeLocation);
-                if (i == 0) {
-                    x = handledValue;
-                } else if (i == 1) {
-                    y = handledValue;
-                } else if (i == 2) {
-                    z = handledValue;
-                } else if (i == 3) {
-                    yaw = handledValue;
+            ActionProperty<?> property = properties.stream()
+                    .filter(p     -> p.getId().equals(key))
+                    .findFirst()
+                    .orElse(null);
+            if (property != null) {
+                if (property instanceof ActionProperty.PropertySerializer<?, ?> serializer) {
+                    serializer.deserialize(data.get(key));
                 } else {
-                    pitch = handledValue;
+                    property.setValue(data.get(key));
                 }
             }
-
-            return new Location(baseLocation.getWorld(), x, y, z, (float) yaw, (float) pitch);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z>"));
-            return null;
         }
-    }
-
-    private double handleRelative(int index, String part, Location baseLocation, Location eyeLocation) {
-        //Sorry if this looks like a mess :(
-        double value = (part.startsWith("~")) ?
-                (part.length() == 1 ? 0 : Double.parseDouble(part.substring(1))) :
-                Double.parseDouble(part);
-
-        double base = switch (index) {
-            case 0 -> baseLocation.getX();
-            case 1 -> baseLocation.getY();
-            case 2 -> baseLocation.getZ();
-            case 3 -> baseLocation.getYaw();
-            case 4 -> baseLocation.getPitch();
-            default -> 0;
-        };
-
-        if (part.startsWith("~")) {
-            return base + value;
-        }
-        return value;
     }
 
     @Override
@@ -317,7 +171,7 @@ public abstract class Action {
 
     public Action clone() {
         Action action;
-        ActionEnum actionEnum = ActionEnum.getActionById(getName());
+        ActionEnum actionEnum = ActionEnum.getActionById(getId());
         if (actionEnum == null) {
             return null;
         }

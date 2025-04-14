@@ -20,6 +20,8 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundWebsocket;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,13 +39,24 @@ public class ActionsMenu extends Menu {
     private Main main;
     private Player player;
     private HousingWorld house;
+    @Getter
+    @Setter
     private List<Action> actions;
+    @Setter
     private List<Condition> conditions;
+    @Setter
     private HousingNPC housingNPC;
+    @Setter
     private EventType event;
+    @Setter
     private Function function;
+    @Getter
+    @Setter
     private Menu backMenu;
+    @Setter
     private Runnable update;
+    @Setter
+    @Getter
     private int nestedLevel = 0;
     //If the player accidentally deletes an action, we can cache it here
     private Action cachedAction;
@@ -51,6 +64,8 @@ public class ActionsMenu extends Menu {
     private String varName = null;
     private String search = "";
     //1 is the new 0
+    @Setter
+    @Getter
     private List<Action> parentActions = new ArrayList<>();
     private int currentPage = 1;
 
@@ -129,14 +144,6 @@ public class ActionsMenu extends Menu {
 
     public void addParentAction(Action action) {
         parentActions.add(action);
-    }
-
-    public List<Action> getParentActions() {
-        return parentActions;
-    }
-
-    public void setParentActions(List<Action> parentActions) {
-        this.parentActions = parentActions;
     }
 
     @Override
@@ -493,46 +500,6 @@ public class ActionsMenu extends Menu {
         });
     }
 
-    public void setEvent(EventType event) {
-        this.event = event;
-    }
-
-    public void setFunction(Function function) {
-        this.function = function;
-    }
-
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
-    }
-
-    public void setConditions(List<Condition> conditions) {
-        this.conditions = conditions;
-    }
-
-    public void setBackMenu(Menu backMenu) {
-        this.backMenu = backMenu;
-    }
-
-    public void setHousingNPC(HousingNPC housingNPC) {
-        this.housingNPC = housingNPC;
-    }
-
-    public void setUpdate(Runnable update) {
-        this.update = update;
-    }
-
-    public int getNestedLevel() {
-        return nestedLevel;
-    }
-
-    public void setNestedLevel(int nestedLevel) {
-        this.nestedLevel = nestedLevel;
-    }
-
-    public Menu getBackMenu() {
-        return backMenu;
-    }
-
     private void replacePlayerWithNPC(ItemBuilder itemBuilder) {
         if (parentActions.stream().anyMatch(action -> action instanceof RunAsNPCAction)) {
             itemBuilder.description(itemBuilder.getDescription().replaceAll("(pP)layer", "NPC"));
@@ -570,7 +537,4 @@ public class ActionsMenu extends Menu {
         setupItems();
     }
 
-    public List<Action> getActions() {
-        return actions;
-    }
 }
