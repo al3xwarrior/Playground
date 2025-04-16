@@ -31,8 +31,8 @@ public enum ConditionEnum {
     GAMEMODE_REQUIREMENT(GamemodeRequirementCondition.class),
     PLACEHOLDER_REQUIREMENT( PlaceholderRequirementCondition.class),
     IS_ATTACK_COOLDOWN(IsAttackCooldownCondition.class),
-    IS_VOICE_CONNECTED(IsVoiceConnected.class),
-    IS_EATING(IsEating.class),
+    IS_VOICE_CONNECTED(IsVoiceConnectedCondition.class),
+    IS_EATING(IsEatingCondition.class),
     IS_SPRINTING(IsSprintingCondition.class),
     ;
 

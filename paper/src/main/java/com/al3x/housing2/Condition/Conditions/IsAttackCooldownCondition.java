@@ -1,8 +1,11 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.StatComparator;
 import com.al3x.housing2.Events.CancellableEvent;
@@ -21,53 +24,20 @@ import java.util.List;
 
 public class IsAttackCooldownCondition extends CHTSLImpl {
     public IsAttackCooldownCondition() {
-        super("Is Attack Cooldown");
+        super(ConditionEnum.IS_ATTACK_COOLDOWN,
+                "Is Attack Cooldown",
+                "Is the player on attack cooldown?",
+                Material.CLOCK,
+                List.of("isAttackCooldown"));
     }
 
     @Override
-    public String toString() {
-        return "IsAttackCooldownCondition";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CLOCK);
-        builder.name("&eIs Attack Cooldown");
-        builder.description("Is the player on attack cooldown?");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CLOCK);
-        builder.name("&eIs Attack Cooldown");
-        builder.description("Is the player on attack cooldown?");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
-        return player.getAttackCooldown() != 1.0f;
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        return player.getAttackCooldown() != 1.0f ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "isAttackCooldown";
     }
 }
