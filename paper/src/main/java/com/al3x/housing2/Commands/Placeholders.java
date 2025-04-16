@@ -27,14 +27,16 @@ public class Placeholders extends AbstractHousingCommand {
         commandRegistrar.register(Commands.literal("placeholders")
                 .requires(ctx -> hasPermission(ctx, Permissions.EDIT_ACTIONS))
                 .then(Commands.argument("filter", StringArgumentType.greedyString())
-                        .suggests((ctx, builder) -> getPlaceholdersSuggestions(ctx, builder, false))
+                        .suggests((ctx, builder) -> {
+                            Placeholder.categories.stream()
+                                    .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                                    .forEach(builder::suggest);
+                            return builder.buildFuture();
+                        })
                         .executes(context -> {
                             return placeholders(context, context.getSource().getSender(), StringArgumentType.getString(context, "filter"));
                         })
                 )
-                .executes(context -> {
-                    return placeholders(context, context.getSource().getSender(), "");
-                })
                 .build()
         );
     }
@@ -44,7 +46,6 @@ public class Placeholders extends AbstractHousingCommand {
         HousingWorld house = main.getHousesManager().getHouse(player.getWorld());
 
         player.sendMessage(colorize("&eHousing Placeholders:"));
-        player.sendMessage(colorize("&7Use &e/placeholders <filter> &7to filter the list."));
 
         List<Placeholder> placeholders = Placeholder.placeholders;
         // Filter placeholders

@@ -12,6 +12,7 @@ import java.util.*;
 public abstract class Placeholder {
     public static final Logger log = LoggerFactory.getLogger(Placeholder.class);
     public static List<Placeholder> placeholders = new ArrayList<>();
+    public static List<String> categories = new ArrayList<>();
 
     public Placeholder() {
         placeholders.add(this);
@@ -49,6 +50,12 @@ public abstract class Placeholder {
         new FormattedStat();
 
         new Voice();
+
+        for (Placeholder p : placeholders) {
+            if (p.getPlaceholder() == null || p.getPlaceholder().isEmpty()) return;
+            String category = p.getPlaceholder().replaceAll("%", "").split("/")[0].split("\\.")[0];
+            if (!categories.contains(category)) categories.add(category);
+        }
     }
 
     public List<String> getAliases() {
