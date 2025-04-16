@@ -113,7 +113,7 @@ public class JukeboxMenu extends Menu {
         } else {
             addItem(50, ItemBuilder.create(Material.RED_DYE)
                     .name("&7Currently Stopped")
-                    .description("&7Song Playing: \"&e" + house.getCurrentSong().getTitle() + "&7\"\n\nn&7Click to start the music!")
+                    .description("&7Song Playing: \"&e" + house.getCurrentSong().getTitle() + "&7\"\n\n&7Click to start the music!")
                     .punctuation(false)
                     .build(), () -> {
                 house.startMusic();
