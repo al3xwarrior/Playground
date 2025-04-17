@@ -32,6 +32,6 @@ public class MenuProperty extends PaginationProperty<CustomMenu> {
 
     @Override
     protected void onSelect(CustomMenu item, Player player) {
-        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getTitle()));
+//        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getTitle()));
     }
 }

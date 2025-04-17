@@ -39,6 +39,6 @@ public class FunctionProperty extends PaginationProperty<Function> {
 
     @Override
     protected void onSelect(Function function, Player player) {
-        player.sendMessage(colorize("&aSet " + getName() + " to: " + function.getName()));
+//        player.sendMessage(colorize("&aSet " + getName() + " to: " + function.getName()));
     }
 }

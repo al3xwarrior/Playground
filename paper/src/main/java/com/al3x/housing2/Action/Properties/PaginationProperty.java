@@ -41,6 +41,7 @@ public abstract class PaginationProperty<T> extends ActionProperty<T> implements
             (item) -> {
                 onSelect(item, player);
                 setValue(item, player);
+                menu.open();
             }
         );
         paginationMenu.open();

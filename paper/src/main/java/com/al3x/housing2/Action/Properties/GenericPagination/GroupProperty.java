@@ -37,6 +37,6 @@ public class GroupProperty extends PaginationProperty<Group> {
 
     @Override
     protected void onSelect(Group item, Player player) {
-        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getName()));
+//        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getName()));
     }
 }

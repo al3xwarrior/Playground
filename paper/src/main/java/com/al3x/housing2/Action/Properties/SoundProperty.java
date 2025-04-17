@@ -26,7 +26,7 @@ public class SoundProperty extends ActionProperty<Sound>  {
         //Create a list of all the potion effects
         List<Duple<Sound, ItemBuilder>> soundDuple = new ArrayList<>();
         for (Sound type : Registry.SOUNDS) {
-            soundDuple.add(new Duple<>(type, ItemBuilder.create(Material.NOTE_BLOCK).name("&6" + StringUtilsKt.formatCapitalize(type.name()))));
+            soundDuple.add(new Duple<>(type, ItemBuilder.create(Material.NOTE_BLOCK).name("&6" + type.name())));
         }
         //Basically because Sound isnt a ENUM we cant just use the enum class
         new PaginationMenu<>(main,

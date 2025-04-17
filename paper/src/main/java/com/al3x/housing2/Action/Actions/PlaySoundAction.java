@@ -46,22 +46,22 @@ public class PlaySoundAction extends HTSLImpl {
                         "sound",
                         "Sound",
                         "The sound to play."
-                ),
+                ).setValue(Sound.ENTITY_EXPERIENCE_ORB_PICKUP),
                 new DoubleProperty(
                         "volume",
                         "Volume",
                         "The volume of the sound."
-                ),
+                ).setValue(1.0),
                 new DoubleProperty(
                         "pitch",
                         "Pitch",
                         "The pitch of the sound."
-                ),
+                ).setValue(1.0),
                 new LocationProperty(
                         "location",
                         "Location",
                         "The location to play the sound at."
-                )
+                ).setValue(INVOKERS_LOCATION)
         ));
     }
 

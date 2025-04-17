@@ -37,6 +37,6 @@ public class LayoutProperty extends PaginationProperty<Layout> {
 
     @Override
     protected void onSelect(Layout item, Player player) {
-        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getName()));
+//        player.sendMessage(colorize("&aSet " + getName() + " to: " + item.getName()));
     }
 }

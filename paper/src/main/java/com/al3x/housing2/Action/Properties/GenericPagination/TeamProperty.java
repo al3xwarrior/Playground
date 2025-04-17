@@ -35,6 +35,6 @@ public class TeamProperty extends PaginationProperty<Team> {
 
     @Override
     protected void onSelect(Team item, Player player) {
-        player.sendMessage("§aSet " + getName() + " to: " + item.getName());
+//        player.sendMessage("§aSet " + getName() + " to: " + item.getName());
     }
 }

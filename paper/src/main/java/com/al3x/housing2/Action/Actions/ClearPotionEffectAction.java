@@ -56,12 +56,12 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
                             menu.open();
                         }).open();
                     }
-                }.setValue(PotionEffectType.SPEED),
+                }.setValue(PotionEffectType.GLOWING),
                 new BooleanProperty(
                         "clearall",
                         "Clear All",
                         "If true, this will clear all potion effects except the one selected."
-                )
+                ).setValue(false)
         ));
     }
 

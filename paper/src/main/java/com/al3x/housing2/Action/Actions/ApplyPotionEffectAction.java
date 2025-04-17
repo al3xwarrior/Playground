@@ -62,7 +62,7 @@ public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
                             menu.open();
                         }).open();
                     }
-                }.setValue(PotionEffectType.NIGHT_VISION),
+                }.setValue(PotionEffectType.GLOWING),
                 new IntegerProperty(
                         "level",
                         "Level",

@@ -30,5 +30,6 @@ public class BooleanProperty extends ActionProperty<Boolean> {
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
         setValue(!getValue());
+        menu.open();
     }
 }

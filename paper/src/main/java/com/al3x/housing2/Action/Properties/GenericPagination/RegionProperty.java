@@ -36,6 +36,6 @@ public class RegionProperty extends PaginationProperty<Region> {
 
     @Override
     protected void onSelect(Region item, Player player) {
-        player.sendMessage("§aSet " + getName() + " to: " + item.getName());
+//        player.sendMessage("§aSet " + getName() + " to: " + item.getName());
     }
 }
