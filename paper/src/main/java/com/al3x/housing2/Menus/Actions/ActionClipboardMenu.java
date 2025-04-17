@@ -37,7 +37,7 @@ public class ActionClipboardMenu extends Menu {
     public void initItems() {
         clearItems();
         int[] allowedSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
-        List<Action> newList = clipboardManager.fromClipboard(player.getUniqueId().toString());
+        List<Action> newList = clipboardManager.fromClipboard(player.getUniqueId().toString(), house);
         newList = newList.stream().filter(action -> action.getClass().equals(this.action.getClass())).toList();
         PaginationList<Action> actions = new PaginationList<>(newList, 21);
         List<Action> page = actions.getPage(currentPage);
@@ -52,17 +52,16 @@ public class ActionClipboardMenu extends Menu {
         } else {
             for (int i = 0; i < page.size(); i++) {
                 Action action = page.get(i);
-                ItemBuilder itemBuilder = new ItemBuilder();
-                action.createDisplayItem(itemBuilder, house);
+                ItemBuilder itemBuilder = action.createDisplayItem();
                 itemBuilder.lClick(ItemBuilder.ActionType.CLONE);
                 itemBuilder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
                 itemBuilder.shiftClick(false);
                 addItem(allowedSlots[i], itemBuilder.build(), (e) -> {
                     if (e.isRightClick()) {
-                        clipboardManager.removeAction(player.getUniqueId().toString(), action);
+                        clipboardManager.removeAction(player.getUniqueId().toString(), action, house);
                         setupItems();
                     } else if (e.isLeftClick()) {
-                        this.action.fromData(action.data(), action.getClass());
+                        this.action.fromData(action.data(), action.getClass(), house);
                         previousMenu.setAction(this.action);
                         if (previousMenu.getUpdate() != null) {
                             previousMenu.getUpdate().run();

@@ -2,6 +2,7 @@ package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Condition.ConditionEnum;
+import com.al3x.housing2.Instances.HousingWorld;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +33,14 @@ public class ConditionalData {
         return list;
     }
 
-    public static List<Condition> toList(List<ConditionalData> conditionList) {
+    public static List<Condition> toList(List<ConditionalData> conditionList, HousingWorld house) {
         List<Condition> list = new ArrayList<>();
         for (ConditionalData data : conditionList) {
             ConditionEnum conditionEnum = ConditionEnum.getConditionById(data.getCondition());
             if (conditionEnum == null) {
                 throw new IllegalArgumentException("Condition " + data.getCondition() + " does not exist");
             }
-            list.add(conditionEnum.getConditionInstance(data.getData()));
+            list.add(conditionEnum.getConditionInstance(data.getData(), house));
         }
         return list;
     }

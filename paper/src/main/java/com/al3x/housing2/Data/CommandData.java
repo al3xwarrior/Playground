@@ -2,6 +2,7 @@ package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Instances.Command;
 import com.al3x.housing2.Instances.Command.CommandArg;
+import com.al3x.housing2.Instances.HousingWorld;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,7 +43,7 @@ public class CommandData {
         return commandData;
     }
 
-    public static List<Command> toList(List<CommandData> commandDataList) {
+    public static List<Command> toList(List<CommandData> commandDataList, HousingWorld house) {
         List<Command> commands = new ArrayList<>();
         if (commandDataList != null) {
             for (CommandData commandData : commandDataList) {
@@ -51,7 +52,7 @@ public class CommandData {
                         commandData.getCommand(),
                         commandData.getArgs(),
                         commandData.getPriorityRequired(),
-                        ActionData.toList(commandData.getActions())
+                        ActionData.toList(commandData.getActions(), house)
                 ));
             }
         }

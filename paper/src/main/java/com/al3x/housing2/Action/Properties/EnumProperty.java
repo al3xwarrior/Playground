@@ -37,7 +37,7 @@ public class EnumProperty<E extends Enum<E>> extends ActionProperty<E> implement
     }
 
     @Override
-    public E deserialize(Object value) {
+    public E deserialize(Object value, HousingWorld housingWorld) {
         return Enum.valueOf(enumClass, value.toString());
     }
 }

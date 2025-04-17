@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -24,8 +25,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.HypixelLoreFormatter.loreSplitter;
 import static com.al3x.housing2.Utils.HypixelLoreFormatter.splitComponent;
 import static com.al3x.housing2.Utils.StringUtilsKt.housingStringFormatter;
-import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
-
+import static org.bukkit.ChatColor.YELLOW;
 
 /**
  * ItemBuilder class for creating ItemStack objects with customizable properties such as name, description, actions,
@@ -70,6 +70,7 @@ public class ItemBuilder {
         this.description = "";
         this.actions = new HashMap<>();
         this.info = new ArrayList<>();
+        this.extraLore = new ArrayList<>();
         this.glow = false;
         this.changeOrderLore = false;
         this.punctuation = true;
@@ -329,7 +330,7 @@ public class ItemBuilder {
         clone.data = this.data;
         clone.name = this.name;
         clone.description = this.description;
-        clone.extraLore = new ArrayList<>(this.extraLore);
+        clone.extraLore = new ArrayList<>(this.extraLore == null ? new ArrayList<>() : this.extraLore);
         clone.actions.putAll(this.actions);
         clone.info.addAll(this.info);
         clone.glow = this.glow;
@@ -382,9 +383,9 @@ public class ItemBuilder {
         ;
 
         private final String action;
-        private final NamedTextColor color;
+        private final ChatColor color;
 
-        ActionType(String action, NamedTextColor color) {
+        ActionType(String action, ChatColor color) {
             this.action = action;
             this.color = color;
         }

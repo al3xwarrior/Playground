@@ -4,6 +4,9 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,14 +61,14 @@ public class ActionData {
                 .collect(Collectors.toList());
     }
 
-    public static List<Action> toList(List<ActionData> actionDataList) {
+    public static List<Action> toList(List<ActionData> actionDataList, HousingWorld house) {
         List<Action> collect = new ArrayList<>();
         for (ActionData data : actionDataList) {
             ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
             if (actionEnum == null) {
                 continue; //skip invalid actions, rather than freaking out
             }
-            collect.add(actionEnum.getActionInstance(data.getProperties(), data.getComment()));
+            collect.add(actionEnum.getActionInstance(data.getProperties(), data.getComment(), house));
         }
         return collect;
     }
@@ -74,11 +77,11 @@ public class ActionData {
         return new ActionData(action.getName(), action.data(), action.getComment());
     }
 
-    public static Action fromData(ActionData data) {
+    public static Action fromData(ActionData data, HousingWorld house) {
         ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
         if (actionEnum == null) {
             throw new IllegalArgumentException("Action " + data.getAction() + " does not exist");
         }
-        return actionEnum.getActionInstance(data.getProperties(), data.getComment());
+        return actionEnum.getActionInstance(data.getProperties(), data.getComment(), house);
     }
 }

@@ -11,6 +11,7 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Returnable;
+import com.google.gson.JsonElement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -77,6 +79,9 @@ public abstract class ActionProperty<V> {
     }
 
     protected String displayValue() {
+        if (value == null) {
+            return "&cNone";
+        }
         return getValue().toString();
     }
 
@@ -85,7 +90,7 @@ public abstract class ActionProperty<V> {
         ItemBuilder builder = getBuilder().clone();
         if (displayValue() != null) {
             builder.info("<yellow>Current value", "")
-                    .info(null, displayValue());
+                    .info(null, "§a" + displayValue());
         }
         return builder;
     }
@@ -108,7 +113,13 @@ public abstract class ActionProperty<V> {
     public interface PropertySerializer<T, S> {
         S serialize();
 
-        T deserialize(Object value);
+        default T deserialize(Object value, HousingWorld house) {
+            return null;
+        }
+
+        default T deserialize(JsonElement value, HousingWorld house) {
+            return null;
+        }
     }
 
     public static class Constant {

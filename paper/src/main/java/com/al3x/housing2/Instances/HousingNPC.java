@@ -106,7 +106,7 @@ public class HousingNPC {
         this.lookAtPlayer = data.isLookAtPlayer();
         this.location = location;
         this.entityType = EntityType.valueOf(data.getNpcType());
-        this.actions = ActionData.toList(data.getActions());
+        this.actions = ActionData.toList(data.getActions(), house);
         this.stats = StatData.toList(data.getStats() == null ? new ArrayList<>() : data.getStats());
         this.internalID = data.getNpcID();
         this.eventActions = new HashMap<>();
@@ -120,7 +120,7 @@ public class HousingNPC {
                     this.eventActions.put(type.name(), new ArrayList<>());
                     continue;
                 }
-                this.eventActions.put(type.name(), ActionData.toList(data.getEventActions().get(type.name())));
+                this.eventActions.put(type.name(), ActionData.toList(data.getEventActions().get(type.name()), house));
             }
         }
 

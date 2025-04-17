@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.Properties.CustomSlotProperty;
+import com.al3x.housing2.Action.Properties.ExpandableProperty;
 import com.al3x.housing2.Condition.Condition;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.OpenActionMenuEvent;
@@ -71,7 +72,7 @@ public class ActionEditMenu extends Menu {
     }
 
     private static ActionEditor getEditor(Condition condition, HousingWorld house, ActionEditMenu menu, Player player) {
-        return condition.editorMenu(house) != null ? condition.editorMenu(house) : condition.editorMenu(house, menu) != null ? condition.editorMenu(house, menu) : condition.editorMenu(house, player);
+        return condition.editorMenu(house, menu, player);
     }
 
     //Action
@@ -124,17 +125,19 @@ public class ActionEditMenu extends Menu {
 
     @Override
     public void open() {
-        OpenActionMenuEvent event = new OpenActionMenuEvent(this, action, main, player, house, backMenu);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
-                AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+        Bukkit.getScheduler().runTask(main, () -> {
+            OpenActionMenuEvent event = new OpenActionMenuEvent(this, action, main, player, house, backMenu);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
+                    AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
+                }
+                MenuManager.setWindowOpen(player, this);
+                MenuManager.setMenu(player, this);
+                return;
             }
-            MenuManager.setWindowOpen(player, this);
-            MenuManager.setMenu(player, this);
-            return;
-        }
-        super.open();
+            super.open();
+        });
     }
 
     @Override
@@ -150,13 +153,24 @@ public class ActionEditMenu extends Menu {
             editor = getEditor(action, house, this, player);
         }
         setTitle(colorize(editor.getTitle()));
-        List<ActionProperty<?>> properties = editor.getProperties();
+        List<ActionProperty<?>> properties = new ArrayList<>(editor.getProperties());
         int[] slots = new int[]{11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35};
+
+        //Go through all properties and expand them
+        for (int i = 0; i < properties.size(); i++) {
+            ActionProperty<?> property = properties.get(i);
+            if (property instanceof ExpandableProperty) {
+                ExpandableProperty expandableProperty = (ExpandableProperty) property;
+                List<ActionProperty<?>> expandedProperties = expandableProperty.getProperties();
+                properties.remove(property);
+                properties.addAll(i, expandedProperties);
+            }
+        }
 
         for (int i = 0; i < properties.size(); i++) {
             ActionProperty<?> property = properties.get(i);
             ItemBuilder builder = property.getDisplayItem();
-            int slot = slots[i];
+            int slot = slots[i] - 1;
             if (property instanceof CustomSlotProperty<?> customSlotProperty) {
                 slot = customSlotProperty.getCustomSlot();
             }

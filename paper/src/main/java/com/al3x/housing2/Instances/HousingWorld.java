@@ -14,6 +14,7 @@ import com.al3x.housing2.Data.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -52,7 +53,9 @@ import static com.al3x.housing2.Enums.permissions.Permissions.*;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class HousingWorld {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+            .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+            .create();
 
     private transient Main main;
     private transient SlimeLoader loader;
@@ -233,9 +236,9 @@ public class HousingWorld {
         this.timeCreated = houseData.getTimeCreated();
         this.privacy = houseData.getPrivacy() != null ? HousePrivacy.valueOf(houseData.getPrivacy()) : HousePrivacy.PRIVATE;
         this.statManager.setGlobalStats(StatData.toList(houseData.getGlobalStats()));
-        this.commands = houseData.getCommands() != null ? CommandData.toList(houseData.getCommands()) : new ArrayList<>();
+        this.commands = houseData.getCommands() != null ? CommandData.toList(houseData.getCommands(), this) : new ArrayList<>();
         this.layouts = houseData.getLayouts() != null ? LayoutData.toList(houseData.getLayouts()) : new ArrayList<>();
-        this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.toList(houseData.getCustomMenus()) : new ArrayList<>();
+        this.customMenus = houseData.getCustomMenus() != null ? CustomMenuData.toList(houseData.getCustomMenus(), this) : new ArrayList<>();
         this.groups = houseData.getGroups() != null ? GroupData.toList(houseData.getGroups()) : new ArrayList<>();
         this.teams = houseData.getTeams() != null ? TeamData.toList(houseData.getTeams()) : new ArrayList<>();
         this.playersData = houseData.getPlayerData() != null ? houseData.getPlayerData() : new HashMap<>();
@@ -259,7 +262,7 @@ public class HousingWorld {
         this.scoreboard = houseData.getScoreboard();
         this.scoreboardTitle = houseData.getScoreboardTitle() != null ? houseData.getScoreboardTitle() : "<gradient:gold:green><b>ᴘʟᴀʏɢʀᴏᴜɴᴅ";
         loadEventActions();
-        this.functions = houseData.getFunctions() != null ? FunctionData.toList(houseData.getFunctions()) : new ArrayList<>();
+        this.functions = houseData.getFunctions() != null ? FunctionData.toList(houseData.getFunctions(), this) : new ArrayList<>();
         this.seed = houseData.getSeed();
         this.random = new Random(seed.hashCode());
         this.size = houseData.getSize();
@@ -288,7 +291,7 @@ public class HousingWorld {
     }
 
     private void setupDataAfterLoad() {
-        this.regions = houseData.getRegions() != null ? RegionData.toList(houseData.getRegions()) : new ArrayList<>();
+        this.regions = houseData.getRegions() != null ? RegionData.toList(houseData.getRegions(), this) : new ArrayList<>();
         this.holograms = houseData.getHolograms() != null ? HologramData.toList(houseData.getHolograms(), this) : new ArrayList<>();
         this.spawn = houseData.getSpawnLocation() != null ? houseData.getSpawnLocation().toLocation() : new Location(Bukkit.getWorld(this.houseUUID.toString()), 0, 61, 0);
         this.trashCans = houseData.getTrashCans() != null ? new ArrayList<>(houseData.getTrashCans().stream().map(LocationData::toLocation).toList()) : new ArrayList<>();
@@ -317,7 +320,7 @@ public class HousingWorld {
             List<ActionData> actions = houseData.getEventActions().get(type.name());
             if (actions != null) {
                 for (ActionData action : actions) {
-                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getProperties(), action.getComment()));
+                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getProperties(), action.getComment(), this));
                 }
             }
         }
@@ -529,12 +532,16 @@ public class HousingWorld {
 
         try {
             houseData = HouseData.fromHousingWorld(this);
+            File testfile = new File(main.getDataFolder(), "testhouses/" + houseUUID + ".json");
             File file = new File(main.getDataFolder(), "houses/" + houseUUID + ".json");
+            if (!testfile.getParentFile().exists()) testfile.getParentFile().mkdirs();
+            if (!testfile.exists()) testfile.createNewFile();
             if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
             if (!file.exists()) file.createNewFile();
             String json = GSON.toJson(houseData);
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
             main.getHousesManager().updateCache(houseData);
+
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
@@ -1098,7 +1105,7 @@ public class HousingWorld {
     public List<Action> getActionButton(Location location) {
         for (LocationData loc : actionButtons.keySet()) {
             if (loc.toLocation().distance(location) < 1) {
-                return ActionData.toList(actionButtons.get(loc));
+                return ActionData.toList(actionButtons.get(loc), this);
             }
         }
         return new ArrayList<>();

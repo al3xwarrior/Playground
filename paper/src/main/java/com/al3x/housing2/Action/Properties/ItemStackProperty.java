@@ -38,7 +38,7 @@ public class ItemStackProperty extends ActionProperty<ItemStack> implements Acti
     }
 
     @Override
-    public ItemStack deserialize(Object value) {
+    public ItemStack deserialize(Object value, HousingWorld housingWorld) {
         if (value == null) {
             return null;
         }

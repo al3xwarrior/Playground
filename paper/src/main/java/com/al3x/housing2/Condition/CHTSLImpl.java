@@ -14,7 +14,7 @@ import java.util.List;
 
 public abstract class CHTSLImpl extends Condition {
     public CHTSLImpl(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
-        super(condition.name(), name, description, icon, scriptingKeywords);
+        super(condition, name, description, icon, scriptingKeywords);
     }
 
     public String syntax() {

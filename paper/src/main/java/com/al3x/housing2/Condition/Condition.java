@@ -20,13 +20,13 @@ public abstract class Condition extends Action {
 
     public abstract OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor);
 
-    public Condition clone() {
+    public Condition clone(HousingWorld house) {
         Condition condition;
         ConditionEnum conditionEnum = ConditionEnum.getConditionById(getName());
         if (conditionEnum == null) {
             return null;
         }
-        condition = conditionEnum.getConditionInstance(data());
+        condition = conditionEnum.getConditionInstance(data(), house);
         return condition;
     }
 }

@@ -96,7 +96,7 @@ public class EditVisibilityAction extends HTSLImpl {
             case CONDITION:
                 int count = 0;
                 for (Player onlinePlayer : players) {
-                    if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor))) {
+                    if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor) == OutputType.TRUE)) {
                         if (!value) player.hidePlayer(main, onlinePlayer);
                             else player.showPlayer(main, onlinePlayer);
                         count++;

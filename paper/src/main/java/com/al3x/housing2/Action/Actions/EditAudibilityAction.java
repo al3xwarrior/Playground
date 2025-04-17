@@ -81,7 +81,7 @@ public class EditAudibilityAction extends HTSLImpl {
             case CONDITION:
                 int count = 0;
                 for (Player onlinePlayer : players) {
-                    if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor))) {
+                    if (conditions.stream().allMatch(condition -> condition.execute(onlinePlayer, house, null, executor) == OutputType.TRUE)) {
                         VoiceChat.editAudibility(player, onlinePlayer, value);
                         count++;
                         if (count > limit) return OutputType.SUCCESS;

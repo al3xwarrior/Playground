@@ -1,5 +1,6 @@
 package com.al3x.housing2.Placeholders.custom.placeholders;
 
+import com.al3x.housing2.Action.Properties.ArgumentsProperty;
 import com.al3x.housing2.Instances.Function;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
@@ -94,11 +95,15 @@ public class Misc {
             }
             String arg1 = StringUtilsKt.substringAfter(input, "/");
             arg1 = Placeholder.handlePlaceholders(arg1, house, player, true);
-            HashMap<String, String> args = Function.functionArguments.get(player.getUniqueId());
+            List<ArgumentsProperty.Argument> args = Function.functionArguments.get(player.getUniqueId());
             if (args == null) {
                 return "null";
             }
-            String arg = args.getOrDefault(arg1, "null");
+            String finalArg = arg1;
+            String arg = args.stream().filter((argument) -> argument.getName().equals(finalArg))
+                    .map(ArgumentsProperty.Argument::getValue)
+                    .findFirst()
+                    .orElse("null");
             arg = Placeholder.handlePlaceholders(arg, house, player, false);
             return arg;
         }

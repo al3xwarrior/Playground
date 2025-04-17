@@ -52,7 +52,7 @@ public class FunctionAction extends HTSLImpl {
                         "Add Argument",
                         "Add a argument to be passed into the function.",
                         Material.PAPER,
-                        50
+                        32
                 ) {
 
                     @Override
@@ -81,7 +81,9 @@ public class FunctionAction extends HTSLImpl {
                         });
                     }
                 },
-                new ArgumentsProperty().setValue(new ArrayList<>())
+                new ArgumentsProperty(
+                        "arguments"
+                ).setValue(new ArrayList<>())
         ));
     }
 
@@ -99,10 +101,11 @@ public class FunctionAction extends HTSLImpl {
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         Function function = getValue("function", Function.class);
         if (function == null) {
+            player.sendMessage(colorize("&cThe function is not set."));
             return OutputType.ERROR;
         }
         boolean await = getValue("await", Boolean.class);
-        List<ArgumentsProperty.Argument> arguments = getValue("arguments", ArgumentsProperty.class).getValue();
+        List<ArgumentsProperty.Argument> arguments = getProperty("arguments", ArgumentsProperty.class).getValue();
         if (getValue("run_for_all_players", Boolean.class)) {
             return function.execute(Main.getInstance(), null, null, house, false, await, executor, arguments);
         } else {

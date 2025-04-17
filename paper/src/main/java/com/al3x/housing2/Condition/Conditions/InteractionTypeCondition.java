@@ -1,7 +1,11 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Gamemodes;
 import com.al3x.housing2.Events.CancellableEvent;
@@ -19,85 +23,39 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class InteractionTypeCondition extends CHTSLImpl {
-    private boolean attack;
 
     public InteractionTypeCondition() {
-        super("Interaction Type");
-        this.attack = true;
-    }
-
-    @Override
-    public String toString() {
-        return "InteractionTypeCondition";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.OAK_BUTTON);
-        builder.name("&aInteraction Type");
-        builder.description("If the player must attack or interact with an npc.");
-        builder.info("Attack", "" + attack);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.OAK_BUTTON);
-        builder.name("&eInteraction Type");
-        builder.description("If the player must attack or interact with an npc.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("attack",
-                        ItemBuilder.create(Material.DAYLIGHT_DETECTOR)
-                                .name("&e" + (!attack ? "Set Attack" : "Set Interact"))
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (attack ? "Attack" : "Interact"))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
+        super(ConditionEnum.INTERACTION_TYPE,
+                "Interaction Type",
+                "If the player must attack or interact with an npc.",
+                Material.OAK_BUTTON,
+                List.of("interactionType")
         );
-        return new ActionEditor(4, "Gamemode Requirement", items);
+
+        getProperties().add(
+                new BooleanProperty("attack",
+                        "Attack",
+                        "If the player must attack the npc."
+                ).setValue(false)
+        );
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        boolean attack = getValue("attack", Boolean.class);
         if (event.cancellable() instanceof EntityDamageByEntityEvent) {
-            return attack;
+            return attack ? OutputType.TRUE : OutputType.FALSE;
         } else if (event.cancellable() instanceof PlayerInteractEntityEvent) {
-            return !attack;
+            return !attack ? OutputType.TRUE : OutputType.FALSE;
         } else {
-            return false;
+            return OutputType.FALSE;
         }
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("attack", attack);
-        return data;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
     }
-
-    @Override
-    public String keyword() {
-        return "interactionType";
-    }
-
     @Override
     public List<EventType> allowedEvents() {
         return Arrays.asList(EventType.PLAYER_DAMAGE, EventType.PLAYER_ATTACK);

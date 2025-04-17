@@ -21,7 +21,10 @@ public class ConditionsProperty extends ActionProperty<List<Condition>> implemen
 
     @Override
     protected String displayValue() {
-        return getValue().size() + " conditions";
+        if (getValue() == null || getValue().isEmpty()) {
+            return "&cNo conditions";
+        }
+        return "&a" + getValue().size() + " conditions";
     }
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
@@ -34,9 +37,9 @@ public class ConditionsProperty extends ActionProperty<List<Condition>> implemen
     }
 
     @Override
-    public List<Condition> deserialize(Object value) {
+    public List<Condition> deserialize(Object value, HousingWorld housingWorld) {
         if (value instanceof List) {
-            return ConditionalData.toList((List<ConditionalData>) value);
+            return ConditionalData.toList((List<ConditionalData>) value, housingWorld);
         }
         return null;
     }

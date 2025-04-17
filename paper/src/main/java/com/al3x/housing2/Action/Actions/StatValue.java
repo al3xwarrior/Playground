@@ -45,7 +45,9 @@ public class StatValue extends Action {
                         "value"
                 ),
                 new StatInstanceProperty()
-                        .setValue(new ArrayList<>()),
+                        .setValue(new ArrayList<>(List.of(
+                                new StatInstance()
+                        ))),
                 new AddStatInstanceProperty(35)
         ));
     }
@@ -119,51 +121,4 @@ public class StatValue extends Action {
     public OutputType execute(Player player, HousingWorld house) {
         return OutputType.SUCCESS;
     } // never "executed"
-
-//    public String[] importValue(String[] nextParts) {
-//        if (nextParts.length < 1) return new String[0];
-//        String[] parts = nextParts;
-//
-//        if (parts[0].startsWith("(")) {
-//            setExpression(true);
-//            parts[0] = parts[0].substring(1);
-//
-//            List<StatInstance> statInstances = new ArrayList<>();
-//            StatInstance statInstance = new StatInstance(statType);
-//            statInstance.mode = null;
-//            statInstance.value = null;
-//
-//            value = new StatValue(statType);
-//            parts = value.importValue(parts);
-//
-//            while (parts.length > 0) {
-//                String part = parts[0];
-//                if (StatOperation.getOperation(part) != null) {
-//                    statInstance.mode = StatOperation.getOperation(part);
-//                    parts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)).toArray(new String[0]);
-//                    continue;
-//                } else {
-//                    if (part.endsWith(")")) {
-//                        parts[0] = part.substring(0, part.length() - 1);
-//                    }
-//                    StatValue value = new StatValue(statType);
-//                    parts = value.importValue(parts);
-//                    statInstance.value = value;
-//                }
-//
-//                if (statInstance.mode != null && statInstance.value != null) {
-//                    statInstances.add(statInstance);
-//                    statInstance = new StatInstance(statType);
-//                }
-//            }
-//
-//            this.statInstances = statInstances;
-//        } else {
-//            setExpression(false);
-//            Duple<String[], String> literalArg = handleArg(parts, 0);
-//            this.literalValue = literalArg.getSecond();
-//            parts = literalArg.getFirst();
-//        }
-//        return parts;
-//    }
 }

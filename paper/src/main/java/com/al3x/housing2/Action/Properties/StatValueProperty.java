@@ -89,8 +89,12 @@ public class StatValueProperty extends ActionProperty<StatValueProperty.StatValu
     }
 
     @Override
-    public StatValueInstance deserialize(Object value) {
-        Action action = ActionData.fromData(value.expressionValue);
+    public StatValueInstance deserialize(Object v, HousingWorld house) {
+        if (!(v instanceof StatValueData value)) {
+            Main.getInstance().getLogger().severe("Invalid value: " + v);
+            return new StatValueInstance(false, "1.0", null);
+        }
+        Action action = ActionData.fromData(value.expressionValue, house);
         if (!(action instanceof StatValue)) {
             action = new StatValue();
             Main.getInstance().getLogger().severe("Invalid action expression: " + action);
@@ -127,6 +131,11 @@ public class StatValueProperty extends ActionProperty<StatValueProperty.StatValu
                 return expressionValue.calculate(player, world);
             }
             return literalValue;
+        }
+
+        @Override
+        public String toString() {
+            return isExpression ? expressionValue.toString() : literalValue;
         }
     }
 

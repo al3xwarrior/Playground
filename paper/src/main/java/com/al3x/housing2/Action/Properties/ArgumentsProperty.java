@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.Returnable;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,8 +18,13 @@ import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ArgumentsProperty extends ExpandableProperty<List<ArgumentsProperty.Argument>> {
 
-    public ArgumentsProperty() {
-        super();
+    public ArgumentsProperty(String id) {
+        super(id);
+    }
+
+    @Override
+    public Returnable<Boolean> getVisible() {
+        return () -> false;
     }
 
     @Override

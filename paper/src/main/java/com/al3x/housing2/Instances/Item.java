@@ -54,7 +54,7 @@ public class Item {
     }
 
 
-    public static Item fromItemStack(ItemStack item) {
+    public static Item fromItemStack(ItemStack item, HousingWorld house) {
         if (item == null || item.getItemMeta() == null) {
             return null;
         }
@@ -66,7 +66,7 @@ public class Item {
             for (ClickType clickType : actions.keySet()) {
                 String base64 = actionsBuilder.getString(clickType.name().toLowerCase());
                 if (base64 != null) {
-                    actions.put(clickType, StringToBase64.actionsFromBase64(base64));
+                    actions.put(clickType, StringToBase64.actionsFromBase64(base64, house));
                 }
             }
         }

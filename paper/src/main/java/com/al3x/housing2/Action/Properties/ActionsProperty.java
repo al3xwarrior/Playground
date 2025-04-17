@@ -6,9 +6,8 @@ import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
-import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.google.gson.JsonArray;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.block.impl.CraftFence;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -24,9 +23,11 @@ public class ActionsProperty extends ActionProperty<List<Action>> implements Act
 
     @Override
     protected String displayValue() {
-        return getValue().size() + " actions";
+        if (getValue() == null || getValue().isEmpty()) {
+            return "&cNo actions";
+        }
+        return "&a" + getValue().size() + " actions";
     }
-
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
         new ActionsMenu(main, player, house, getValue(), menu, getId()).open();
     }
@@ -37,9 +38,9 @@ public class ActionsProperty extends ActionProperty<List<Action>> implements Act
     }
 
     @Override
-    public List<Action> deserialize(Object value) {
+    public List<Action> deserialize(Object value, HousingWorld housingWorld) {
         if (value instanceof List) {
-            return ActionData.toList((List<ActionData>) value);
+            return ActionData.toList((List<ActionData>) value, housingWorld);
         }
         return null;
     }

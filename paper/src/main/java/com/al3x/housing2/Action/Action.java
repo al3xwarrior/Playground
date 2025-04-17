@@ -11,6 +11,7 @@ import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -35,6 +36,9 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Getter
 @RequiredArgsConstructor
 public abstract class Action {
+    private static Gson gson = new GsonBuilder()
+            .create();
+
     private final String id;
     private final String name;
     private final String description;
@@ -57,7 +61,7 @@ public abstract class Action {
     public abstract OutputType execute(Player player, HousingWorld house);
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        return new ActionEditor(4, "<yellow>" + name + " Settings", properties);
+        return new ActionEditor(4, "§e" + name + " Settings", properties);
     }
 
     public ItemBuilder createDisplayItem() {
@@ -70,10 +74,13 @@ public abstract class Action {
                 .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
                 .shiftClick();
         properties.forEach(property -> {
-            if (property.getVisible().apply()) builder.info(property.getName(), property.getValue().toString());
+            if (property.getVisible() != null && property.getVisible().apply() && property.displayValue() != null)
+                builder.info(property.getName(), property.displayValue());
         });
 
-        if (!comment.isEmpty()) builder.extraLore(comment);
+        if (comment != null && !comment.isEmpty()) builder.extraLore(comment);
+
+        return builder;
     }
 
     public void createAddDisplayItem(ItemBuilder builder) {
@@ -140,20 +147,26 @@ public abstract class Action {
         return null;
     }
 
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        for (String key : data.keySet()) {
-            ActionProperty<?> property = properties.stream()
-                    .filter(p     -> p.getId().equals(key))
-                    .findFirst()
-                    .orElse(null);
-            if (property != null) {
-                if (property instanceof ActionProperty.PropertySerializer<?, ?> serializer) {
-                    serializer.deserialize(data.get(key));
-                } else {
-                    property.setValue(data.get(key));
+    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass, HousingWorld house) {
+        house.runOnLoadOrNow((h) -> {
+            for (String key : data.keySet()) {
+                ActionProperty<?> property = properties.stream()
+                        .filter(p     -> p.getId().equals(key))
+                        .findFirst()
+                        .orElse(null);
+                if (property != null) {
+                    if (property instanceof ActionProperty.PropertySerializer<?, ?> serializer) {
+                        Object value = serializer.deserialize(gson.toJsonTree(data.get(key)), house);
+                        if (value == null) {
+                            value = serializer.deserialize(data.get(key), house);
+                        }
+                        property.setValue(value);
+                    } else {
+                        property.setValue(data.get(key));
+                    }
                 }
             }
-        }
+        });
     }
 
     @Override
@@ -169,7 +182,7 @@ public abstract class Action {
         return Objects.hashCode(getName());
     }
 
-    public Action clone() {
+    public Action clone(HousingWorld house) {
         Action action;
         ActionEnum actionEnum = ActionEnum.getActionById(getId());
         if (actionEnum == null) {
@@ -181,7 +194,7 @@ public abstract class Action {
                 data.put(key, ((Enum<?>) data.get(key)).name());
             }
         }
-        action = actionEnum.getActionInstance(data, this.comment);
+        action = actionEnum.getActionInstance(data, this.comment, house);
         return action;
     }
 }

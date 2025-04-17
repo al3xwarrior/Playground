@@ -2,6 +2,7 @@ package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Action.Actions.AttackEntityAction;
+import com.al3x.housing2.Instances.HousingWorld;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -88,10 +89,10 @@ public enum ActionEnum {
         return id;
     }
 
-    public Action getActionInstance(HashMap<String, Object> data, String comment) {
+    public Action getActionInstance(HashMap<String, Object> data, String comment, HousingWorld house) {
         try {
             Action action = this.action.getDeclaredConstructor().newInstance();
-            action.fromData(data, this.action);
+            action.fromData(data, this.action, house);
             action.setComment(comment);
             return action;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

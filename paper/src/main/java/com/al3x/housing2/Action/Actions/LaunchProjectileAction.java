@@ -74,7 +74,7 @@ public class LaunchProjectileAction extends HTSLImpl {
         org.bukkit.entity.Projectile proj = player.launchProjectile(getValue("projectile", Projectile.class).getProjectile());
         proj.setMetadata("projectile", new FixedMetadataValue(Main.getInstance(), 10));
 
-        double amount = getProperty("amount", NumberProperty.class).parsedValue(house, player);
+        double amount = getProperty("velocity", NumberProperty.class).parsedValue(house, player);
 
         Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(amount);
         switch (getValue("direction", PushDirection.class)) {

@@ -31,14 +31,14 @@ public class CustomMenu {
         items.set(0, new Duple<>(new ItemStack(Material.DIAMOND), new ArrayList<>()));
     }
 
-    public CustomMenu(CustomMenuData data) {
+    public CustomMenu(CustomMenuData data, HousingWorld house) {
         this.title = data.getTitle();
         this.rows = data.getRows();
         this.refreshRate = data.getRefreshRate();
         this.items = new ArrayList<>(data.getItems().stream().map(item -> {
             if (item == null) return null;
             try {
-                return new Duple<>(Serialization.itemStackFromBase64(item.getItem()), ActionData.toList(item.getActions()));
+                return new Duple<>(Serialization.itemStackFromBase64(item.getItem()), ActionData.toList(item.getActions(), house));
             } catch (IOException e) {
                 e.printStackTrace();
             }

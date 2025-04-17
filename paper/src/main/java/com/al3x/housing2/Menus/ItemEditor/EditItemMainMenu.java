@@ -28,18 +28,20 @@ import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.*;
 
 public class EditItemMainMenu extends Menu {
+    Player player;
     public EditItemMainMenu(Player player) {
         super(player, "&7Edit Item", 9 * 6);
+        this.player = player;
     }
 
     @Override
     public void initItems() {
         clearItems();
+        HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
 
-        Item customItem = Item.fromItemStack(player.getInventory().getItemInMainHand());
+        Item customItem = Item.fromItemStack(player.getInventory().getItemInMainHand(), house);
         ItemStack item = customItem.getBase();
 
-        HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
 
         addItem(13, item);
 

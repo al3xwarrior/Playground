@@ -53,11 +53,15 @@ public abstract class PaginationProperty<T> extends ActionProperty<T> implements
 
     @Override
     public String serialize() {
-        return getValue().toString(); // Override if needed
+        return (getValue() != null) ? getValue().toString() : null;
     }
 
     @Override
-    public T deserialize(Object value) {
-        return value;
+    public T deserialize(Object value, HousingWorld housingWorld) {
+        return getItems(housingWorld)
+            .stream()
+            .filter(item -> item.toString().equals(value))
+            .findFirst()
+            .orElse(null);
     }
 }

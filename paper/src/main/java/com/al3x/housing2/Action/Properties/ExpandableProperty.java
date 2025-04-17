@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public abstract class ExpandableProperty<V> extends ActionProperty<V> {
     private final List<ActionProperty<?>> properties = new ArrayList<>();
-    public ExpandableProperty() {
-        super("error", "&cERROR!", "&cIf you are seeing this, something went wrong.", Material.BARRIER);
+    public ExpandableProperty(String id) {
+        super(id, "&cERROR!", "&cIf you are seeing this, something went wrong.", Material.BARRIER);
     }
 }

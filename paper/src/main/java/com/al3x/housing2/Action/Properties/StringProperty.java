@@ -19,6 +19,7 @@ public class StringProperty extends ActionProperty<String> {
     }
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
+        player.sendMessage(colorize("&aPlease type the value you want to set for " + getName() + ":"));
         menu.openChat(main, getValue(), (message) -> setValue(message, player));
     }
 

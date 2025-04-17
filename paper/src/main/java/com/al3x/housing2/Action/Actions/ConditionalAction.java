@@ -90,7 +90,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
             }
 
             boolean conditionResult = (entity == player)
-                ? condition.execute(player, house, event, oldExecutor) != not
+                ? (condition.execute(player, house, event, oldExecutor) == OutputType.TRUE) != not
                 : (condition instanceof NPCCondition npcCondition) &&
                   npcCondition.npcExecute(player, CitizensAPI.getNPCRegistry().getNPC(entity), house, event, oldExecutor) != not;
 

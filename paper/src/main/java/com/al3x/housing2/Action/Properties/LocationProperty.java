@@ -26,7 +26,6 @@ public class LocationProperty extends ActionProperty<String> {
                 Locations.values(),
                 Material.BARRIER, player, house, menu,
                 (location) -> {
-                    setValue(location.name());
                     if (location == Locations.CUSTOM) {
                         player.sendMessage(colorize("&ePlease enter the custom location in the chat. (x,y,z) or (x,y,z,yaw,pitch)"));
                         menu.openChat(main, getValue(), (message) -> {
@@ -64,6 +63,8 @@ public class LocationProperty extends ActionProperty<String> {
                     } else if (location == Locations.PLAYER_LOCATION) {
                         Location loc = player.getLocation();
                         setValue(loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch());
+                    } else {
+                        setValue(location.name());
                     }
                 }
         ).open();

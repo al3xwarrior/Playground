@@ -1,6 +1,7 @@
 package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Instances.CustomMenu;
+import com.al3x.housing2.Instances.HousingWorld;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,10 +26,10 @@ public class CustomMenuData {
         this.items = items;
     }
 
-    public static List<CustomMenu> toList(List<CustomMenuData> customMenuData) {
+    public static List<CustomMenu> toList(List<CustomMenuData> customMenuData, HousingWorld house) {
         List<CustomMenu> list = new ArrayList<>();
         for (CustomMenuData data : customMenuData) {
-            list.add(new CustomMenu(data));
+            list.add(new CustomMenu(data, house));
         }
         return list;
     }

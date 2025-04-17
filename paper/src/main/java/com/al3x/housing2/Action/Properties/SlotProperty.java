@@ -10,7 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class SlotProperty extends ActionProperty<Integer> {
+public class SlotProperty extends ActionProperty<Integer> implements ActionProperty.PropertySerializer<Integer, Double> {
     public SlotProperty(String id, String name, String description) {
         super(id, name, description, Material.ARMOR_STAND);
     }
@@ -56,5 +56,15 @@ public class SlotProperty extends ActionProperty<Integer> {
             return "Crafting Slot " + (index - 79);
         }
         return "Unknown Slot";
+    }
+
+    @Override
+    public Double serialize() {
+        return getValue().doubleValue();
+    }
+
+    @Override
+    public Integer deserialize(Object value, HousingWorld housingWorld) {
+        return ((Double) value).intValue();
     }
 }

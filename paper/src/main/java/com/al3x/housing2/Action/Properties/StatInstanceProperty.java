@@ -31,6 +31,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>> implements ActionProperty.PropertySerializer<List<StatInstance>, List<StatInstance.StatInstanceData>> {
     boolean showExpression = false;
     public StatInstanceProperty() {
+        super("statInstances");
     }
 
     @Override
@@ -56,13 +57,13 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
     }
 
     @Override
-    public List<StatInstance> deserialize(Object val) {
+    public List<StatInstance> deserialize(Object val, HousingWorld housingWorld) {
         if (!(val instanceof List<?>)) return null;
-        List<StatInstance> value = (List<StatInstance>) val;
+        List<StatInstance.StatInstanceData> value = (List<StatInstance.StatInstanceData>) val;
         return value.stream().map((data) -> {
             StatInstance instance = new StatInstance();
             instance.mode = data.mode;
-            Action action = ActionData.fromData(data.value.getExpressionValue());
+            Action action = ActionData.fromData(data.value.getExpressionValue(), housingWorld);
             if (!(action instanceof StatValue statValue)) {
                 Main.getInstance().getLogger().warning("Failed to deserialize StatInstance: " + data.value.getExpressionValue() + " is not a StatValue");
                 return null;

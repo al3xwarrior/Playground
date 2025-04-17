@@ -113,6 +113,10 @@ public class NpcPathAction extends Action implements NPCAction {
         ));
     }
 
+    public List<LocationData> getPath() {
+        return (List<LocationData>) getProperty("path", ListProperty.class).getValue();
+    }
+
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         return OutputType.SUCCESS; //Not used

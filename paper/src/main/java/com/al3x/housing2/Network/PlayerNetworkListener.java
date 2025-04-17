@@ -3,6 +3,7 @@ package com.al3x.housing2.Network;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Instances.HTSLHandler;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
@@ -34,7 +35,9 @@ public final class PlayerNetworkListener implements PlaygroundServerboundMessage
     @Override
     public void handleImport(@NotNull ServerboundImport message) {
         try {
-            List<Action> action = HTSLHandler.importActions(message.getHtslContent(), "");
+            HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getPlayer().getWorld());
+            if (house == null) return;
+            List<Action> action = HTSLHandler.importActions(message.getHtslContent(), "", house);
             Menu menu = MenuManager.getPlayerMenu(player.getPlayer());
             if (menu instanceof ActionsMenu actionsMenu) {
                 actionsMenu.getActions().clear();
@@ -83,7 +86,9 @@ public final class PlayerNetworkListener implements PlaygroundServerboundMessage
                 return;
             }
             try {
-                List<Action> action = HTSLHandler.importActions(serverboundWebsocket.getHtslContent(), "");
+                HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getPlayer().getWorld());
+                if (house == null) return;
+                List<Action> action = HTSLHandler.importActions(serverboundWebsocket.getHtslContent(), "", house);
                 ActionsMenu actionsMenu = player.getActionsMenu(serverboundWebsocket.getPort());
                 actionsMenu.getActions().clear(); //This will update the actions internally
                 actionsMenu.getActions().addAll(action);

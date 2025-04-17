@@ -2,6 +2,7 @@ package com.al3x.housing2.Condition;
 
 import com.al3x.housing2.Condition.Conditions.*;
 import com.al3x.housing2.Condition.Conditions.IsSneakingCondition;
+import com.al3x.housing2.Instances.HousingWorld;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -46,10 +47,10 @@ public enum ConditionEnum {
         return condition;
     }
 
-    public Condition getConditionInstance(HashMap<String, Object> data) {
+    public Condition getConditionInstance(HashMap<String, Object> data, HousingWorld house) {
         try {
             Condition condition = this.condition.getDeclaredConstructor().newInstance();
-            condition.fromData(data, this.condition);
+            condition.fromData(data, this.condition, house);
             return condition;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
