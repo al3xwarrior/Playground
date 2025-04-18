@@ -23,6 +23,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver;
 import io.papermc.paper.math.FinePosition;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -305,6 +306,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
     }
 
     private int invite(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        MiniMessage mm = MiniMessage.miniMessage();
         Player player = (Player) context.getSource().getSender();
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) {
@@ -318,7 +320,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
             return Command.SINGLE_SUCCESS;
         }
         house.setInvitedPlayer(invitedPlayer);
-        invitedPlayer.sendMessage(colorize("&eYou were invited by &b" + player.getName() + " &eto visit the house &b" + house.getName()));
+        invitedPlayer.sendMessage(colorize("&eYou were invited by &b" + player.getName() + " &eto visit the house &b" + mm.deserialize(house.getName())));
         player.sendMessage(colorize("&eSent &b" + invitedPlayer.getName() + "&e an invite!"));
         return Command.SINGLE_SUCCESS;
     }
