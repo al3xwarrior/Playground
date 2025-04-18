@@ -72,6 +72,7 @@ public enum ActionEnum {
     EDIT_AUDIBILITY("Edit Audibility Action", EditAudibilityAction.class),
     PROTOOLS_ACTION("Protools Action", ProtoolsAction.class),
     SPAWN_GHOST_BLOCK("Spawn Ghost Block Action", SpawnGhostBlock.class),
+    SET_PLAYER_SLOT("Set Player Slot", SetPlayerSlotAction.class);
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;
