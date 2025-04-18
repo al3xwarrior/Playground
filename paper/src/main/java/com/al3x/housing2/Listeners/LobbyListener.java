@@ -58,6 +58,9 @@ public class LobbyListener implements Listener {
                     inv.remove(randomHouse);
                 }
 
+                // don't replace the slot
+                if (inv.getItem(8) != null) continue;
+
                 // Player Owns House
                 if (house.hasPermission(player, Permissions.HOUSING_MENU)) {
                     if (inv.contains(ownerMenu)) continue;
