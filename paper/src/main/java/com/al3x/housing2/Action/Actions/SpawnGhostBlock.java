@@ -91,7 +91,7 @@ public class SpawnGhostBlock extends HTSLImpl {
                                 }
                         )
                 ),
-                new ActionEditor.ActionItem("item", ItemBuilder.create((item == null ? Material.STONE : item.getType()))
+                new ActionEditor.ActionItem("item", ItemBuilder.create((item == null ? Material.STONE : item.getType() == Material.AIR ? Material.WHITE_STAINED_GLASS : item.getType()))
                         .name("&aItem")
                         .description("Select a block to set")
                         .info("&7Current Value", "")
