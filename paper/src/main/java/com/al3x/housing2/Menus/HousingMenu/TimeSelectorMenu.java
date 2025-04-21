@@ -56,6 +56,8 @@ public class TimeSelectorMenu extends Menu {
         addItem(39, ItemBuilder.create(Material.DAYLIGHT_DETECTOR)
                 .name(colorize("&aToggle Daylight Cycle"))
                 .description("Toggle whether the daylight cycle should run in this house.")
+                .info("&7Current Value", "")
+                .info(null, house.getDaylightCycle() ? "&aEnabled" : "&cDisabled")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
                 .build(), (e) -> {
             if (house.getDaylightCycle()) {
