@@ -29,3 +29,7 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 }
+
+if (file('local.gradle').exists()) {
+  apply from: 'local.gradle'
+}
