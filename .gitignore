@@ -120,3 +120,6 @@ build
 
 # don't ignore gradle wrapper
 !gradle/wrapper/gradle-wrapper.jar
+
+# Local Gradle
+local.gradle
