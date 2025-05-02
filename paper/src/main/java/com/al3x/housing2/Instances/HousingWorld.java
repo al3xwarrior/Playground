@@ -1138,7 +1138,7 @@ public class HousingWorld {
                 return ActionData.toList(actionButtons.get(loc));
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public void setActionButton(Location location, List<Action> actions) {

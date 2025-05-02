@@ -5,6 +5,7 @@ import com.al3x.housing2.Utils.GlobalItem;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.NbtItemBuilder;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -77,8 +78,24 @@ public class GlobalItemManager {
                         player.sendMessage("§cYou cannot create an Action Button in Adventure Mode");
                         return;
                     }
-                    if (event.getInteractionPoint() != null) {
-                        house.addActionButton(event.getInteractionPoint());
+                    if (event.getClickedBlock() != null) {
+                        Location newLoc = switch (event.getBlockFace()) {
+                            case NORTH -> event.getClickedBlock().getLocation().add(0, 0, -1);
+                            case EAST -> event.getClickedBlock().getLocation().add(1, 0, 0);
+                            case SOUTH -> event.getClickedBlock().getLocation().add(0, 0, 1);
+                            case WEST -> event.getClickedBlock().getLocation().add(-1, 0, 0);
+                            case UP -> event.getClickedBlock().getLocation().add(0, 1, 0);
+                            default -> null;
+                        };
+                        if (newLoc == null) {
+                            player.sendMessage("§cYou must be looking at a block to run this action");
+                            return;
+                        }
+                        if (house.getActionButton(newLoc) != null) {
+                            player.sendMessage("§cThere is already an Action Button at this location");
+                            return;
+                        }
+                        house.addActionButton(newLoc);
                         player.sendMessage("§aSuccessfully created Action Button");
                     } else {
                         player.sendMessage("§cYou must be looking at a block to run this action");
