@@ -19,7 +19,7 @@ public class ItemSelectMenu extends Menu {
     public final Consumer<ItemStack> consumer;
     private int easteregg = 0;
     public ItemSelectMenu(Player player, Menu back, Consumer<ItemStack> consumer) {
-        super(player, "&eSelect an item", 4*9);
+        super(player, "&eSelect an item", 5*9);
         this.player = player;
         this.back = back;
         this.consumer = consumer;
@@ -32,23 +32,33 @@ public class ItemSelectMenu extends Menu {
             builder.material(Material.GRAY_STAINED_GLASS_PANE);
             builder.name("&bSelect an item");
             builder.description("Select an item from your inventory!");
-            addItem(i, builder.build(), (e) -> {
-                if (e.getClick() == ClickType.MIDDLE) consumer.accept(null);
-            });
+            addItem(i, builder.build(), () -> {});
         }
+
+        // air
+        ItemBuilder airBuilder = new ItemBuilder();
+        airBuilder.material(Material.WHITE_STAINED_GLASS);
+        airBuilder.name("&eSet to Air");
+        airBuilder.description("Click here to set the item to air.\n\n&cBe careful when using this, it can cause players to get stuck!");
+        addItem(37, airBuilder.build(), () -> {
+            ItemStack airStack = ItemStack.of(Material.AIR);
+            consumer.accept(airStack);
+        });
 
         //back
         ItemBuilder backBuilder = new ItemBuilder();
         backBuilder.material(Material.ARROW);
         backBuilder.name("&aGo Back");
         backBuilder.description("To " + back.getTitle());
-        addItem(31, backBuilder.build(), back::open);
+        addItem(40, backBuilder.build(), back::open);
 
-        //Info
+        //unset item
         ItemBuilder infoBuilder = new ItemBuilder();
-        infoBuilder.material(Material.PAPER);
-        infoBuilder.name("&eInfo");
-        infoBuilder.description("Middle click any item to set that item to Not Set.");
-        addItem(32, infoBuilder.build(), () -> {});
+        infoBuilder.material(Material.GLASS);
+        infoBuilder.name("&eUnset Value");
+        infoBuilder.description("Click here to unset the item value.");
+        addItem(36, infoBuilder.build(), () -> {
+            consumer.accept(null);
+        });
     }
 }

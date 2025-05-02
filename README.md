@@ -14,9 +14,10 @@ Now the project has a team of a few people who maintain the project as well as t
 - [VariousCacti](https://github.com/VariousCacti)
 - [Wekend](https://github.com/Wekendd)
 - [BusterBrown1218](https://github.com/BusterBrown1218)
+- [Kumpelinus](https://github.com/Kumpelinus)
+- [PixelBedrock](https://github.com/PixelBedrock)
 ### Playtesters:
 - [pjma](https://github.com/npjma)
-- [PixelBedrock](https://github.com/PixelBedrock)
 
 # How to Use on your own:
 ### Requirements
