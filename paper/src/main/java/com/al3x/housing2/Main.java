@@ -12,6 +12,7 @@ import com.al3x.housing2.Network.NetworkManager;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.HousingCommandFramework;
+import com.al3x.housing2.Utils.NameTag;
 import com.al3x.housing2.Utils.SkinCache;
 import com.al3x.housing2.Utils.VoiceChat;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -30,6 +31,7 @@ import lombok.Getter;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -231,6 +233,12 @@ public final class Main extends JavaPlugin implements Listener {
         Runnables.stopRunnables();
         for (HousingWorld house : housesManager.getConcurrentLoadedHouses().values()) {
             housesManager.saveHouseAndUnload(house);
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            NameTag tag = NameTag.getNameTag(player);
+            if (tag != null) {
+                tag.stop(player);
+            }
         }
         SkinCache.save();
         INSTANCE.getLogger().info("[Housing2] Disabled");

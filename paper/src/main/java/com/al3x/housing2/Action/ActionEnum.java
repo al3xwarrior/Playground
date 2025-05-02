@@ -43,6 +43,7 @@ public enum ActionEnum {
     PARTICLE("Particle Action", ParticleAction.class),
     CHANGE_NPC_NAVIGATION("Change Npc Navigation Action", NpcPathAction.class),
     CHANGE_PLAYER_DISPLAYNAME("Change Player Display Name Action", ChangePlayerDisplayNameAction.class),
+    CHANGE_NAMETAG("NameTag Action", NameTagAction.class),
     REPEAT("Repeat Action", RepeatAction.class),
     CLEAR_BOSSBAR("Clear Bossbars Action", ClearBossbarAction.class),
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),

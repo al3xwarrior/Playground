@@ -212,6 +212,7 @@ public class ActionsMenu extends Menu {
                         Condition condition = conditions.get(i);
                         int slot = allowedSlots[i];
                         ItemBuilder item = new ItemBuilder();
+                        item.description = (condition.inverted ? "&cInverted\n" : "") + item.getDescription();
                         item.mClick(ItemBuilder.ActionType.CLONE);
                         condition.createDisplayItem(item);
                         replacePlayerWithNPC(item);

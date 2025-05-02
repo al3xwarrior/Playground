@@ -47,7 +47,7 @@ public class ItemBuilder {
     private int amount;
     private short data;
     private String name;
-    private String description;
+    public String description;
     private List<String> extraLore;
     private HashMap<ClickType, ActionType> actions;
     //Key: String, Value: Object (String, Int or Double)

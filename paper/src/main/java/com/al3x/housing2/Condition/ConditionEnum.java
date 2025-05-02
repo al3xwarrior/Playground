@@ -55,6 +55,9 @@ public enum ConditionEnum {
     public Condition getConditionInstance(HashMap<String, Object> data) {
         try {
             Condition condition = this.condition.getDeclaredConstructor().newInstance();
+            if (data.get("inverted") != null) {
+                condition.inverted = (boolean) data.get("inverted");
+            }
             condition.fromData(data, this.condition);
             return condition;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

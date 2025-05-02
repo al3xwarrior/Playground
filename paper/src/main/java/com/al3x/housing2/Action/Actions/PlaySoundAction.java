@@ -33,6 +33,7 @@ public class PlaySoundAction extends HTSLImpl {
     private Double volume;
     private Double pitch;
     private Sound sound;
+    private String customSound;
     private String customLocation;
     private Locations location;
 
@@ -55,7 +56,7 @@ public class PlaySoundAction extends HTSLImpl {
         builder.material(Material.NOTE_BLOCK);
         builder.name("&ePlay Sound");
         builder.info("&eSettings", "");
-        builder.info("Value", "&a" + sound);
+        builder.info("Value", "&a" + (customSound == null ? sound.name(): customSound));
         builder.info("Volume", "&a" + volume);
         builder.info("Pitch", "&a" + pitch);
         builder.info("Location", "&a" + (location == CUSTOM ? customLocation : location));
@@ -137,7 +138,29 @@ public class PlaySoundAction extends HTSLImpl {
                                     backMenu.open();
                                 }
                         )
-                )
+                ),
+                new ActionEditor.ActionItem(
+                        ItemBuilder.create(Material.PAPER)
+                                .name("&eCustom Sound")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + customSound)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                                .rClick(ItemBuilder.ActionType.CLEAR),
+                        ActionEditor.ActionItem.ActionType.CUSTOM, 32, (event, o) -> {
+                            if (event.isRightClick()) {
+                                customSound = null;
+                            }
+                    backMenu.openChat(Main.getInstance(), customSound == null ? "" : customSound, (input) -> {
+                        if (input == null || input.isEmpty()) {
+                            player.sendMessage(colorize("&cPlease enter a valid sound name."));
+                            backMenu.open();
+                            return;
+                        }
+                        customSound = input;
+                        backMenu.open();
+                    });
+                    return true;
+                })
         );
 
         return new ActionEditor(4, "&ePlay Sound Action Settings", items);
@@ -150,17 +173,34 @@ public class PlaySoundAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        switch (location) {
-            case INVOKERS_LOCATION ->
-                    player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
-            case HOUSE_SPAWN ->
-                    player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
-            case CUSTOM -> {
-                if (customLocation == null) return OutputType.ERROR;
-                Location loc = getLocationFromString(player, house, customLocation);
-                if (loc != null) player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+        if (customSound == null) {
+            switch (location) {
+                case INVOKERS_LOCATION ->
+                        player.playSound(player.getLocation(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                case HOUSE_SPAWN ->
+                        player.playSound(house.getSpawn(), sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                case CUSTOM -> {
+                    if (customLocation == null) return OutputType.ERROR;
+                    Location loc = getLocationFromString(player, house, customLocation);
+                    if (loc != null)
+                        player.playSound(loc, sound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                }
+            }
+        } else {
+            switch (location) {
+                case INVOKERS_LOCATION ->
+                        player.playSound(player.getLocation(), customSound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                case HOUSE_SPAWN ->
+                        player.playSound(house.getSpawn(), customSound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                case CUSTOM -> {
+                    if (customLocation == null) return OutputType.ERROR;
+                    Location loc = getLocationFromString(player, house, customLocation);
+                    if (loc != null)
+                        player.playSound(loc, customSound, NumberUtilsKt.toFloat(volume), NumberUtilsKt.toFloat(pitch));
+                }
             }
         }
+
         return OutputType.SUCCESS;
     }
 
@@ -170,6 +210,7 @@ public class PlaySoundAction extends HTSLImpl {
         data.put("volume", volume);
         data.put("pitch", pitch);
         data.put("sound", sound.name());
+        data.put("customSound", customSound);
         data.put("location", location.name());
         data.put("customLocation", customLocation);
         return data;
@@ -185,13 +226,14 @@ public class PlaySoundAction extends HTSLImpl {
         volume = (Double) data.get("volume");
         pitch = (Double) data.get("pitch");
         sound = Sound.valueOf((String) data.get("sound"));
+        customSound = (String) data.get("customSound");
         customLocation = (String) data.get("customLocation");
         location = Locations.valueOf((String) data.get("location"));
     }
 
     @Override
     public String export(int indent) {
-        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\""  : location.name();
+        String loc = (location == CUSTOM || location == PLAYER_LOCATION) ? "\"" + customLocation + "\"" : location.name();
         return " ".repeat(indent) + keyword() + " " + sound.name() + " " + volume + " " + pitch + " " + loc;
     }
 

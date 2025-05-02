@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -32,7 +33,7 @@ public class ProtoolsManager {
     private Stack<Integer> cancelledTasks = new Stack<>();
 
     // Queue Stuff
-    private final HashMap<Integer, List<HashMap<Block, Duple<Material, BlockData>>>> taskQueue;
+    private final ConcurrentHashMap<Integer, List<HashMap<Block, Duple<Material, BlockData>>>> taskQueue;
 
     public ProtoolsManager(Main main, HousesManager housesManager) {
         this.main = main;
@@ -42,7 +43,7 @@ public class ProtoolsManager {
         this.copiedRegions = new HashMap<>();
         this.housesManager = housesManager;
 
-        this.taskQueue = new HashMap<>();
+        this.taskQueue = new ConcurrentHashMap<>();
     }
 
     public List<Block> removeIllegalBlocks(HousingWorld house, List<Block> blocks) {

@@ -74,14 +74,24 @@ public class BlockList {
             if (block.contains("%")) {
                 String[] blockOptions = block.split("%");
                 int percentage = Integer.parseInt(blockOptions[0]);
-                Material material = Material.matchMaterial(blockOptions[1].toUpperCase());
+                Material material;
+                if (NumberUtilsKt.isInt(blockOptions[1])) {
+                    material = Material.values()[Integer.parseInt(blockOptions[1])];
+                } else {
+                    material = Material.matchMaterial(blockOptions[1].toUpperCase());
+                }
                 if (material == null) {
                     player.sendMessage(colorize("&cInvalid block type \"" + blockOptions[1].toUpperCase() + "\"."));
                     return null;
                 }
                 blockList.addBlock(percentage, material);
             } else {
-                Material material = Material.matchMaterial(block);
+                Material material;
+                if (NumberUtilsKt.isInt(block)) {
+                    material = Material.values()[Integer.parseInt(block)];
+                } else {
+                    material = Material.matchMaterial(block);
+                }
                 if (material == null) {
                     player.sendMessage(colorize("&cInvalid block type \"" + block.toUpperCase() + "\"."));
                     return null;

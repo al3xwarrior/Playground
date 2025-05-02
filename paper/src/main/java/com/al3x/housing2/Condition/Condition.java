@@ -22,6 +22,7 @@ import java.util.List;
  */
 public abstract class Condition {
     protected String name;
+    public boolean inverted = false;
 
     public Condition(String name) {
         this.name = name;
@@ -92,6 +93,10 @@ public abstract class Condition {
 
     public void fromData(HashMap<String, Object> data, Class< ? extends Condition> condtionClass) {
         for (String key : data.keySet()) {
+            if (key.equals("inverted")) {
+                inverted = (Boolean) data.get(key);
+                continue;
+            }
             try {
                 Field field = condtionClass.getDeclaredField(key);
                 field.setAccessible(true);
@@ -113,6 +118,7 @@ public abstract class Condition {
             return null;
         }
         HashMap<String, Object> data = data();
+        data.put("inverted", inverted);
         for (String key : data.keySet()) {
             if (data.get(key) instanceof Enum<?> e) {
                 data.put(key, e.name());

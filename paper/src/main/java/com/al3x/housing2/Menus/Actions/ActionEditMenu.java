@@ -150,6 +150,22 @@ public class ActionEditMenu extends Menu {
         ActionEditor editor;
         if (action == null) {
             editor = getEditor(condition, house, this, player);
+            ArrayList<ActionEditor.ActionItem> items = new ArrayList<>(editor.getItems());
+            items.addFirst(new ActionEditor.ActionItem(
+                    "inverted",
+                    ItemBuilder.create(Material.BARRIER)
+                            .name("&aInverted")
+                            .info("&7Current Value", "")
+                            .info(null, "&6" + condition.inverted)
+                            .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
+                    ActionType.CUSTOM, (e, o) -> {
+                        condition.inverted = !condition.inverted;
+                        player.sendMessage(colorize("&aInverted set to: " + condition.inverted));
+                        open();
+                        return true;
+                    }
+            ));
+            editor.setItems(items);
         } else {
             editor = getEditor(action, house, this, player);
         }

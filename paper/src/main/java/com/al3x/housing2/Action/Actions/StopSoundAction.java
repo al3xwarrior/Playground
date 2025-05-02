@@ -21,9 +21,12 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
+import static com.al3x.housing2.Utils.Color.colorize;
+
 public class StopSoundAction extends HTSLImpl {
 
     private Sound sound;
+    private String customSound;
     private boolean clearAll;
 
     public StopSoundAction() {
@@ -48,7 +51,7 @@ public class StopSoundAction extends HTSLImpl {
         builder.material(Material.QUARTZ);
         builder.name("&eStop Sound");
         builder.info("&eSettings", "");
-        builder.info("Sound", "&a" + sound.name());
+        builder.info("Sound", "&a" + (customSound == null ? sound.name(): customSound));
         builder.info("Clear Others", ((clearAll) ? "&aYes" : "&cNo"));
         builder.lClick(ActionType.EDIT_YELLOW).rClick(ActionType.REMOVE_YELLOW);
         builder.shiftClick();
@@ -93,25 +96,47 @@ public class StopSoundAction extends HTSLImpl {
                 ),
                 new ActionItem("clearAll", //Needs to be the exact same as the variable name
                         ItemBuilder.create((clearAll) ? Material.LIME_DYE : Material.RED_DYE)
-                                .name("&aClear Others")
-                                .description("If toggled on, this will clear all sound effects except the one selected")
+                                .name("&aClear All Sounds")
+                                .description("If toggled on, this will clear all sound effects including the one selected")
                                 .info("&7Current Value", "")
                                 .info(null, ((clearAll) ? "&aYes" : "&cNo"))
                                 .lClick(ActionType.CHANGE_YELLOW),
                         ActionItem.ActionType.BOOLEAN
-                )
+                ),
+                new ActionEditor.ActionItem(
+                        ItemBuilder.create(Material.PAPER)
+                                .name("&eCustom Sound")
+                                .info("&7Current Value", "")
+                                .info(null, "&a" + customSound)
+                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW)
+                                .rClick(ItemBuilder.ActionType.CLEAR),
+                        ActionEditor.ActionItem.ActionType.CUSTOM, 32, (event, o) -> {
+                    if (event.isRightClick()) {
+                        customSound = null;
+                    }
+                    backMenu.openChat(Main.getInstance(), customSound == null ? "" : customSound, (input) -> {
+                        if (input == null || input.isEmpty()) {
+                            player.sendMessage(colorize("&cPlease enter a valid sound name."));
+                            backMenu.open();
+                            return;
+                        }
+                        customSound = input;
+                        backMenu.open();
+                    });
+                    return true;
+                })
         );
-        return new ActionEditor(4, "&eSound Effect Action Settings", items);
+        return new ActionEditor(4, "&eStop Sound Action Settings", items);
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         if (clearAll) {
-            for (Sound sound : Sound.values()) { //I don't love this, but its the same implementation as the clear potion effect action
-                if (sound == this.sound) continue;
-                player.stopSound(sound);
-            }
+            player.stopAllSounds();
         } else {
+            if (customSound != null && !customSound.isEmpty()) {
+                player.stopSound(customSound);
+            }
             player.stopSound(sound);
         }
         return OutputType.SUCCESS;
@@ -121,6 +146,7 @@ public class StopSoundAction extends HTSLImpl {
     public LinkedHashMap<String, Object> data() {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("sound", sound.name());
+        data.put("customSound", customSound);
         data.put("clearall", clearAll);
         return data;
     }
@@ -137,6 +163,8 @@ public class StopSoundAction extends HTSLImpl {
         sound = Sound.valueOf((String) data.get("sound"));
         if (!data.containsKey("clearall")) return;
         clearAll = (boolean) data.get("clearall");
+        if (!data.containsKey("customSound")) return;
+        customSound = (String) data.get("customSound");
     }
 
     @Override

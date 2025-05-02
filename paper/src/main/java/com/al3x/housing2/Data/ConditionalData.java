@@ -27,7 +27,9 @@ public class ConditionalData {
     public static List<ConditionalData> fromList(List<Condition> conditions) {
         List<ConditionalData> list = new ArrayList<>();
         for (Condition condition : conditions) {
-            list.add(new ConditionalData(condition.getName(), condition.data()));
+            HashMap<String, Object> data = new HashMap<>(condition.data());
+            data.put("inverted", condition.inverted);
+            list.add(new ConditionalData(condition.getName(), data));
         }
         return list;
     }
