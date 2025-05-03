@@ -8,6 +8,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.Utils.StackUtils;
 import org.bukkit.Location;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -212,13 +214,6 @@ public class DropItemAction extends Action {
         List<Entity> entities = house.getWorld().getEntities();
         entities.stream().filter(entity -> entity instanceof Item).forEach(entity -> {
             dropppedItems.getAndIncrement();
-            Item item = (Item) entity;
-            if (item.getItemStack().isSimilar(this.item) && itemMerging && !executed.get()) {
-                ItemStack newItemStack = this.item.clone();
-                newItemStack.setAmount(item.getItemStack().getAmount() + this.item.getAmount());
-                item.setItemStack(newItemStack);
-                executed.set(true);
-            }
         });
 
         if (executed.get()) {
@@ -230,6 +225,13 @@ public class DropItemAction extends Action {
                 player.getInventory().addItem(item);
             }
             return OutputType.ERROR;
+        }
+
+        ItemStack item = this.item.clone();
+        if (itemMerging) {
+            NbtItemBuilder nbt = new NbtItemBuilder(item);
+            nbt.setString("droppedItem", UUID.randomUUID().toString());
+            nbt.build();
         }
 
         Item itemEntity = null;

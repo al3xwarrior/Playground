@@ -2,11 +2,17 @@ package com.al3x.housing2.Listeners;
 
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
+import com.al3x.housing2.Utils.NbtItemBuilder;
+import io.papermc.paper.event.player.PlayerPickItemEvent;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -67,5 +73,18 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler
+    public void onPickupItem(PlayerAttemptPickupItemEvent event) {
+        Player player = event.getPlayer();
+        Item item = event.getItem();
+        ItemStack itemStack = item.getItemStack().clone();
+        NbtItemBuilder nbt = new NbtItemBuilder(itemStack);
+        String droppedItem = nbt.getString("droppedItem");
+        if (droppedItem != null) {
+            nbt.remove("droppedItem");
+        }
+        nbt.build();
     }
 }
