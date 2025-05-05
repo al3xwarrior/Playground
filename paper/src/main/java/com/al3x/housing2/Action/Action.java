@@ -203,6 +203,7 @@ public abstract class Action {
         Action action;
         ActionEnum actionEnum = ActionEnum.getActionById(getId());
         if (actionEnum == null) {
+            Main.getInstance().getLogger().warning("Action " + getId() + " not found");
             return null;
         }
         HashMap<String, Object> data = data();

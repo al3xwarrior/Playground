@@ -328,7 +328,15 @@ public class HousingWorld {
             List<ActionData> actions = houseData.getEventActions().get(type.name());
             if (actions != null) {
                 for (ActionData action : actions) {
-                    eventActions.get(type).add(ActionEnum.getActionById(action.getAction()).getActionInstance(action.getProperties(), action.getComment(), this));
+                    if (action.getAction() == null) {
+                        continue;
+                    }
+                    ActionEnum e = ActionEnum.getActionById(action.getAction());
+                    if (e == null) {
+                        main.getLogger().warning("Action " + action.getAction() + " not found");
+                        continue;
+                    }
+                    eventActions.get(type).add(e.getActionInstance(action.getProperties(), action.getComment(), this));
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Condition;
 
 import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import org.bukkit.Material;
@@ -11,6 +12,14 @@ import java.util.List;
 public abstract class Condition extends Action.InternalAction {
     public Condition(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
         super(condition.name(), name, description, icon, scriptingKeywords);
+
+        getProperties().add(
+                new BooleanProperty(
+                        "inverted",
+                        "Inverted",
+                        "If true, the condition will be inverted."
+                ).setValue(false)
+        );
     }
 
     @Override

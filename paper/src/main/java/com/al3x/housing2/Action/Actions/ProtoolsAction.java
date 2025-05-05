@@ -86,7 +86,7 @@ public class ProtoolsAction extends Action {
                 Location posB = getProperty("posB", ProtoolsCoordsProperty.class).getLocation(player, house);
 
                 if (posA == null || posB == null) {
-                    player.sendMessage("&cInvalid positions!");
+                    player.sendMessage("§cInvalid positions!");
                     return OutputType.ERROR;
                 }
 
@@ -101,7 +101,7 @@ public class ProtoolsAction extends Action {
                 BlockList from = BlockList.fromString(getValue("blockList", String.class));
                 BlockList to = BlockList.fromString(getValue("blockList2", String.class));
                 if (from == null || to == null) {
-                    player.sendMessage("&cInvalid blocks!");
+                    player.sendMessage("§cInvalid blocks!");
                     return OutputType.ERROR;
                 }
                 protoolsManager.setRegionTo(house, house.getHouseUUID(), from, to);
@@ -114,7 +114,7 @@ public class ProtoolsAction extends Action {
             case PASTE -> {
                 Location posA = getProperty("posA", ProtoolsCoordsProperty.class).getLocation(player, house);
                 if (posA == null) {
-                    player.sendMessage("&cInvalid position!");
+                    player.sendMessage("§cInvalid position!");
                     return OutputType.ERROR;
                 }
                 protoolsManager.pasteRegion(house, house.getHouseUUID(), posA, false);
@@ -123,7 +123,7 @@ public class ProtoolsAction extends Action {
             case INSERT -> {
                 Location posA = getProperty("posA", ProtoolsCoordsProperty.class).getLocation(player, house);
                 if (posA == null) {
-                    player.sendMessage("&cInvalid position!");
+                    player.sendMessage("§cInvalid position!");
                     return OutputType.ERROR;
                 }
                 protoolsManager.pasteRegion(house, house.getHouseUUID(), posA, true);

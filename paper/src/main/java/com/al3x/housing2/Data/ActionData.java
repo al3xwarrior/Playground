@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -66,6 +67,7 @@ public class ActionData {
         for (ActionData data : actionDataList) {
             ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
             if (actionEnum == null) {
+                Main.getInstance().getLogger().warning("Action " + data.action + " not found");
                 continue; //skip invalid actions, rather than freaking out
             }
             collect.add(actionEnum.getActionInstance(data.getProperties(), data.getComment(), house));
@@ -86,7 +88,8 @@ public class ActionData {
         }
         ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
         if (actionEnum == null) {
-            throw new IllegalArgumentException("Action " + data.getAction() + " does not exist");
+            Main.getInstance().getLogger().warning("Action " + data.action + " not found");
+            return null; //skip invalid actions, rather than freaking out
         }
         return actionEnum.getActionInstance(data.getProperties(), data.getComment(), house);
     }

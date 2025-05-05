@@ -3,6 +3,7 @@ package com.al3x.housing2.Action;
 import com.al3x.housing2.Action.Actions.*;
 import com.al3x.housing2.Action.Actions.AttackEntityAction;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Main;
 import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;

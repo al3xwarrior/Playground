@@ -89,11 +89,14 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
                 continue;
             }
 
+            boolean inverted = condition.getValue("inverted", Boolean.class);
+
             boolean conditionResult = (entity == player)
                 ? (condition.execute(player, house, event, oldExecutor) == OutputType.TRUE) != not
                 : (condition instanceof NPCCondition npcCondition) &&
                   npcCondition.npcExecute(player, CitizensAPI.getNPCRegistry().getNPC(entity), house, event, oldExecutor) != not;
 
+            conditionResult = (inverted != conditionResult);
             if (conditionResult) {
                 result = true;
                 if (matchAnyCondition) break;
