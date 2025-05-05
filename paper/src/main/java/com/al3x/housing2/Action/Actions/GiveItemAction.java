@@ -62,10 +62,10 @@ public class GiveItemAction extends Action {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        ItemStack item = getValue("item", ItemStackProperty.class).getValue();
-        boolean allowMultiple = getValue("allowMultiple", BooleanProperty.class).getValue();
-        int slot = getValue("slot", SlotProperty.class).getValue();
-        boolean replaceExistingSlot = getValue("replaceExistingSlot", BooleanProperty.class).getValue();
+        ItemStack item = getProperty("item", ItemStackProperty.class).getValue();
+        boolean allowMultiple = getProperty("allowMultiple", BooleanProperty.class).getValue();
+        int slot = getProperty("slot", SlotProperty.class).getValue();
+        boolean replaceExistingSlot = getProperty("replaceExistingSlot", BooleanProperty.class).getValue();
 
         if (item == null) return OutputType.ERROR;
 

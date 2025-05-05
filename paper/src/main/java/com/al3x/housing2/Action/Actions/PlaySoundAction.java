@@ -73,10 +73,10 @@ public class PlaySoundAction extends HTSLImpl {
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         player.playSound(
-                getValue("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation()),
-                getValue("sound", SoundProperty.class).getValue(),
-                NumberUtilsKt.toFloat(getValue("volume", DoubleProperty.class).getValue()),
-                NumberUtilsKt.toFloat(getValue("pitch", DoubleProperty.class).getValue()));
+                getProperty("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation()),
+                getProperty("sound", SoundProperty.class).getValue(),
+                NumberUtilsKt.toFloat(getProperty("volume", DoubleProperty.class).getValue()),
+                NumberUtilsKt.toFloat(getProperty("pitch", DoubleProperty.class).getValue()));
         return OutputType.SUCCESS;
     }
 

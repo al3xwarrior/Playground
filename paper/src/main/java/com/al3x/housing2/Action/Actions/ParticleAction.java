@@ -73,12 +73,12 @@ public class ParticleAction extends HTSLImpl {
                         "Radius/Length",
                         "The radius of the circle or length of the line.",
                         1.0, 20.0
-                ).showIf(() -> getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE && getValue("isLineRange", Boolean.class)).setValue("8"),
+                ).showIf(() -> (getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE) && getValue("isLineRange", Boolean.class)).setValue("8"),
                 new LocationProperty(
                         "location2",
                         "Location 2",
                         "The second location to display the particle at."
-                ).showIf(() -> getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE && !getValue("isLineRange", Boolean.class)).setValue("INVOKERS_LOCATION"),
+                ).showIf(() -> (getValue("type", ParticleType.class) == ParticleType.LINE || getValue("type", ParticleType.class) == ParticleType.CURVE) && !getValue("isLineRange", Boolean.class)).setValue("INVOKERS_LOCATION"),
                 new EnumProperty<>(
                         "direction",
                         "Direction",
@@ -101,23 +101,23 @@ public class ParticleAction extends HTSLImpl {
                         "Size",
                         "The size of the particle.",
                         1.0, 10.0
-                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("size")),
+                ).setValue("1.0").showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("size")),
                 new ColorProperty(
                         "color",
                         "Color",
                         "The color of the particle."
-                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color")),
+                ).setValue("FFFFFF").showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color")),
                 new ColorProperty(
                         "color2",
                         "Color 2",
                         "The second color of the particle."
-                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color2")),
+                ).setValue("FFFFFF").showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("color2")),
                 new NumberProperty(
                         "speed",
                         "Extra",
                         "The speed of the particle.",
                         0.0, 10.0
-                ).showIf(() -> getValue("particle", Particles.class).getData() != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("speed"))
+                ).setValue("1.0").showIf(() -> getValue("particle", Particles.class) != null && ParticleUtils.keys(getValue("particle", Particles.class)).contains("speed"))
         ));
     }
 
@@ -189,7 +189,8 @@ public class ParticleAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        Location location = getProperty("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation());
+        Location location = getProperty("location", LocationProperty.class).getLocation(player, house, player.getLocation(), player.getEyeLocation())
+                .add(0, player.getEyeHeight(), 0);
         if (location == null) {
             return OutputType.ERROR;
         }
@@ -278,8 +279,8 @@ public class ParticleAction extends HTSLImpl {
         } else {
             particlesCooldownMap.put(player.getUniqueId(), new Duple<>(particle.name(), 0));
         }
-        String color1 = getValue("color", ColorProperty.class).getValue();
-        String color2 = getValue("color2", ColorProperty.class).getValue();
+        String color1 = getProperty("color", ColorProperty.class).getValue();
+        String color2 = getProperty("color2", ColorProperty.class).getValue();
         Float size = getProperty("size", NumberProperty.class).parsedValue(house, player).floatValue();
         boolean globallyVisible = getValue("globallyVisible", Boolean.class);
         Double speed = getProperty("speed", NumberProperty.class).parsedValue(house, player);

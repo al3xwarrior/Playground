@@ -46,8 +46,12 @@ public class RemoveItemAction extends Action {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        ItemStack item = getValue("item", ItemStackProperty.class).getValue();
-        int slot = getValue("slot", SlotProperty.class).getValue();
+        ItemStack item = getProperty("item", ItemStackProperty.class).getValue();
+        int slot = getProperty("slot", SlotProperty.class).getValue();
+
+        if (item == null) {
+            return OutputType.ERROR;
+        }
 
         if (slot == -1) {
             player.getInventory().removeItemAnySlot(item);

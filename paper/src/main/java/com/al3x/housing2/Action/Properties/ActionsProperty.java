@@ -7,6 +7,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,10 +39,8 @@ public class ActionsProperty extends ActionProperty<List<Action>> implements Act
     }
 
     @Override
-    public List<Action> deserialize(Object value, HousingWorld housingWorld) {
-        if (value instanceof List) {
-            return ActionData.toList((List<ActionData>) value, housingWorld);
-        }
-        return null;
+    public List<Action> deserialize(JsonElement value, HousingWorld housingWorld) {
+        List<ActionData> data = dataToList(value.getAsJsonArray(), ActionData.class);
+        return ActionData.toList(data, housingWorld);
     }
 }

@@ -11,7 +11,9 @@ import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Returnable;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,6 +33,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.al3x.housing2.Action.Action.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 @Getter
@@ -48,7 +51,7 @@ public abstract class ActionProperty<V> {
     private ItemBuilder.ActionType mClick = null;
 
     @Getter
-    private V value;
+    public V value;
     private Returnable<Boolean> visible = () -> true;
     private final ItemBuilder builder;
 
@@ -65,6 +68,8 @@ public abstract class ActionProperty<V> {
         if (description != null) {
             builder.description(description);
         }
+
+        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
     }
 
     public ActionProperty<V> setValue(Object value) {
@@ -86,6 +91,7 @@ public abstract class ActionProperty<V> {
     }
 
     public abstract void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu);
+
     public ItemBuilder getDisplayItem() {
         ItemBuilder builder = getBuilder().clone();
         if (displayValue() != null) {
@@ -108,6 +114,19 @@ public abstract class ActionProperty<V> {
     public ActionProperty<V> rClick(ItemBuilder.ActionType action) {
         this.rClick = action;
         return this;
+    }
+
+    protected <T> List<T> dataToList(JsonArray jsonArray, Class<T> clazz) {
+        ArrayList<T> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            actions.add(gson.fromJson(jsonObject, clazz));
+        }
+        return actions;
+    }
+
+    public <T> T dataToObject(JsonElement jsonElement, Class<T> clazz) {
+        return gson.fromJson(jsonElement, clazz);
     }
 
     public interface PropertySerializer<T, S> {

@@ -47,7 +47,7 @@ public class PlayerStatAction extends HTSLImpl {
                 ).setValue(new ArrayList<>(List.of(
                         new StatInstance()
                 ))),
-                new AddStatInstanceProperty(35)
+                new AddStatInstanceProperty(32)
         ));
 
     }

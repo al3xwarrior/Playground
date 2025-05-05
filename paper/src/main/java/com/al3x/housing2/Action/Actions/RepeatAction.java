@@ -48,7 +48,7 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
                         "Times",
                         "The number of times to repeat the actions.",
                         1.0, 20.0
-                )
+                ).setValue(5.0)
         ));
     }
 
@@ -65,12 +65,12 @@ public class RepeatAction extends HTSLImpl implements NPCAction {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor oldExecutor) {
-        List<Action> subActions = getValue("subActions", ActionsProperty.class).getValue();
+        List<Action> subActions = getProperty("subActions", ActionsProperty.class).getValue();
         if (subActions.isEmpty()) {
             return OutputType.SUCCESS;
         }
 
-        int timesInt = getValue("times", NumberProperty.class).parsedValue(house, player).intValue();
+        int timesInt = getProperty("times", NumberProperty.class).parsedValue(house, player).intValue();
 
         ActionExecutor first = null;
         ActionExecutor last = null;

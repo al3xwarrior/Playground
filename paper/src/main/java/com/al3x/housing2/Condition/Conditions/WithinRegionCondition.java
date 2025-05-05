@@ -35,7 +35,7 @@ public class WithinRegionCondition extends CHTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        Region region = getValue("region", RegionProperty.class).getValue();
+        Region region = getProperty("region", RegionProperty.class).getValue();
         return region.getPlayersInRegion().contains(player.getUniqueId()) ? OutputType.TRUE : OutputType.FALSE;
     }
 

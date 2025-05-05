@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action;
 
+import com.al3x.housing2.Action.Properties.ExpandableProperty;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Enums.Locations;
 import com.al3x.housing2.Enums.PushDirection;
@@ -7,6 +8,7 @@ import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
@@ -36,7 +38,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Getter
 @RequiredArgsConstructor
 public abstract class Action {
-    private static Gson gson = new GsonBuilder()
+    public static Gson gson = new GsonBuilder()
             .create();
 
     private final String id;
@@ -74,8 +76,16 @@ public abstract class Action {
                 .rClick(ItemBuilder.ActionType.REMOVE_YELLOW)
                 .shiftClick();
         properties.forEach(property -> {
-            if (property.getVisible() != null && property.getVisible().apply() && property.displayValue() != null)
+            if (property.getVisible() != null && property.getVisible().apply() && property.displayValue() != null) {
+                if (property instanceof ExpandableProperty<?> expandable) {
+                    for (Duple<String, String> info : expandable.getInfo()) {
+                        builder.info(info.getFirst(), info.getSecond());
+                    }
+                    return;
+                }
+
                 builder.info(property.getName(), property.displayValue());
+            }
         });
 
         if (comment != null && !comment.isEmpty()) builder.extraLore(comment);
@@ -103,7 +113,7 @@ public abstract class Action {
     }
 
     public <V> V getValue(String id, Class<V> clazz) {
-        if (clazz.isInstance(ActionProperty.class)) {
+        if (clazz.isNestmateOf(ActionProperty.class)) {
             throw new IllegalArgumentException("Cannot use an ActionProperty as a class type");
         }
         for (ActionProperty<?> property : properties) {
@@ -147,7 +157,7 @@ public abstract class Action {
         return null;
     }
 
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass, HousingWorld house) {
+    public void fromData(HashMap<String, Object> data, HousingWorld house) {
         house.runOnLoadOrNow((h) -> {
             for (String key : data.keySet()) {
                 ActionProperty<?> property = properties.stream()

@@ -51,7 +51,7 @@ public class HealthRequirementCondition extends CHTSLImpl implements NPCConditio
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         StatComparator comparator = getValue("comparator", StatComparator.class);
-        double compareValue = getValue("compareValue", DoubleProperty.class).getValue();
+        double compareValue = getProperty("compareValue", DoubleProperty.class).getValue();
         return Comparator.compare(comparator, player.getHealth(), compareValue) ? OutputType.TRUE : OutputType.FALSE;
     }
 
@@ -63,7 +63,7 @@ public class HealthRequirementCondition extends CHTSLImpl implements NPCConditio
     @Override
     public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         StatComparator comparator = getValue("comparator", StatComparator.class);
-        double compareValue = getValue("compareValue", DoubleProperty.class).getValue();
+        double compareValue = getProperty("compareValue", DoubleProperty.class).getValue();
         if (npc.getEntity() instanceof LivingEntity le) {
             return Comparator.compare(comparator, le.getHealth(), compareValue);
         } else {

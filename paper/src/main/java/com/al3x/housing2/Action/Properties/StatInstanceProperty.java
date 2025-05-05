@@ -12,6 +12,8 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.PaginationMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.internal.LinkedTreeMap;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,9 +24,11 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.al3x.housing2.Instances.HousesManager.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
 
 @Setter
@@ -57,24 +61,29 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
     }
 
     @Override
-    public List<StatInstance> deserialize(Object val, HousingWorld housingWorld) {
-        if (!(val instanceof List<?>)) return null;
-        List<StatInstance.StatInstanceData> value = (List<StatInstance.StatInstanceData>) val;
+    public List<StatInstance> deserialize(JsonElement val, HousingWorld housingWorld) {
+        List<StatInstance.StatInstanceData> value = dataToList(val.getAsJsonArray(), StatInstance.StatInstanceData.class);
+
         return value.stream().map((data) -> {
             StatInstance instance = new StatInstance();
             instance.mode = data.mode;
-            Action action = ActionData.fromData(data.value.getExpressionValue(), housingWorld);
-            if (!(action instanceof StatValue statValue)) {
-                Main.getInstance().getLogger().warning("Failed to deserialize StatInstance: " + data.value.getExpressionValue() + " is not a StatValue");
-                return null;
-            }
             instance.value = new StatValueProperty.StatValueInstance(
                     data.value.isExpression(),
                     data.value.getLiteralValue(),
-                    statValue
+                    StatValue.fromActionData(data.value.getExpressionValue(), housingWorld)
             );
             return instance;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Duple<String, String>> getInfo() {
+        List<Duple<String, String>> info = new LinkedList<>();
+        info.add(new Duple<>("Stat Instances", ""));
+        for (StatInstance instance : getValue()) {
+            info.add(new Duple<>(instance.mode.name(), instance.value.toString()));
+        }
+        return info;
     }
 
     private class ModeProperty extends ActionProperty<StatOperation> {

@@ -39,7 +39,7 @@ public class ActionbarAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        player.sendActionBar(getValue("message", StringProperty.class).component(house, player));
+        player.sendActionBar(getProperty("message", StringProperty.class).component(house, player));
         return OutputType.SUCCESS;
     }
 

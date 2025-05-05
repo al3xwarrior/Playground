@@ -92,7 +92,7 @@ public enum ActionEnum {
     public Action getActionInstance(HashMap<String, Object> data, String comment, HousingWorld house) {
         try {
             Action action = this.action.getDeclaredConstructor().newInstance();
-            action.fromData(data, this.action, house);
+            action.fromData(data, house);
             action.setComment(comment);
             return action;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

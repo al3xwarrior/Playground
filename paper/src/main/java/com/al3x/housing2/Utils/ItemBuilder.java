@@ -15,6 +15,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +63,7 @@ public class ItemBuilder {
     private boolean changeOrderLore;
     private boolean punctuation;
     private int textWidth;
+    private PotionType potionType;
 
     public ItemBuilder() {
         this.material = Material.AIR;
@@ -75,6 +78,8 @@ public class ItemBuilder {
         this.changeOrderLore = false;
         this.punctuation = true;
         this.textWidth = 28;
+        this.skullTexture = null;
+        this.potionType = null;
     }
 
     public ItemBuilder material(Material material) {
@@ -252,12 +257,23 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder potionType(PotionType potionType) {
+        this.potionType = potionType;
+        return this;
+    }
+
     public ItemStack build() {
         //Make the skull or item stack
         if (skullTexture != null) {
             stack = SkullTextures.getCustomSkull(skullTexture);
         } else {
             stack = new ItemStack(material, amount);
+        }
+
+        if (potionType != null && material == Material.POTION) {
+            PotionMeta potionMeta = (PotionMeta) stack.getItemMeta();
+            potionMeta.setBasePotionType(potionType);
+            stack.setItemMeta(potionMeta);
         }
 
         ItemMeta itemMeta = stack.getItemMeta();

@@ -7,6 +7,7 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.EnumMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.HandlePlaceholders;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -58,13 +59,16 @@ public class LocationProperty extends ActionProperty<String> {
                                 player.sendMessage(colorize("&cInvalid format! Please use: <x>,<y>,<z> or <x>,<y>,<z>,<yaw>,<pitch>"));
                                 return;
                             }
-                            setValue(customLocation);
+                            setValue(customLocation, player);
+                            Bukkit.getScheduler().runTask(main, menu::open);
                         });
                     } else if (location == Locations.PLAYER_LOCATION) {
                         Location loc = player.getLocation();
-                        setValue(loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch());
+                        setValue(loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch(), player);
+                        menu.open();
                     } else {
-                        setValue(location.name());
+                        setValue(location.name(), player);
+                        menu.open();
                     }
                 }
         ).open();

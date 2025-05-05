@@ -74,10 +74,16 @@ public class ActionData {
     }
 
     public static ActionData toData(Action action) {
+        if (action == null) {
+            return null;
+        }
         return new ActionData(action.getName(), action.data(), action.getComment());
     }
 
     public static Action fromData(ActionData data, HousingWorld house) {
+        if (data == null) {
+            return null;
+        }
         ActionEnum actionEnum = ActionEnum.getActionById(data.getAction());
         if (actionEnum == null) {
             throw new IllegalArgumentException("Action " + data.getAction() + " does not exist");

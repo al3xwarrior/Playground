@@ -6,6 +6,7 @@ import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.Properties.*;
 import com.al3x.housing2.Action.Properties.StatValueProperty.StatValueInstance;
 import com.al3x.housing2.Action.StatInstance;
+import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -48,7 +49,7 @@ public class StatValue extends Action {
                         .setValue(new ArrayList<>(List.of(
                                 new StatInstance()
                         ))),
-                new AddStatInstanceProperty(35)
+                new AddStatInstanceProperty(32)
         ));
     }
 
@@ -121,4 +122,11 @@ public class StatValue extends Action {
     public OutputType execute(Player player, HousingWorld house) {
         return OutputType.SUCCESS;
     } // never "executed"
+
+    public static StatValue fromActionData(ActionData data, HousingWorld house) {
+        if (data == null) return null;
+        StatValue value = new StatValue();
+        value.fromData(data.getProperties(), house);
+        return value;
+    }
 }

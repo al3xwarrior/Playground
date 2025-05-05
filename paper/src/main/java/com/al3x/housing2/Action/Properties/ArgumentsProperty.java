@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Properties;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
+import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Returnable;
 import lombok.Getter;
@@ -20,6 +21,13 @@ public class ArgumentsProperty extends ExpandableProperty<List<ArgumentsProperty
 
     public ArgumentsProperty(String id) {
         super(id);
+    }
+
+    @Override
+    public List<Duple<String, String>> getInfo() {
+        List<Duple<String, String>> info = new ArrayList<>();
+        info.add(new Duple<>("Arguments", getValue().size() + ""));
+        return info;
     }
 
     @Override

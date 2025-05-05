@@ -28,7 +28,7 @@ public class ConditionalData {
     public static List<ConditionalData> fromList(List<Condition> conditions) {
         List<ConditionalData> list = new ArrayList<>();
         for (Condition condition : conditions) {
-            list.add(new ConditionalData(condition.getName(), condition.data()));
+            list.add(new ConditionalData(condition.getId(), condition.data()));
         }
         return list;
     }

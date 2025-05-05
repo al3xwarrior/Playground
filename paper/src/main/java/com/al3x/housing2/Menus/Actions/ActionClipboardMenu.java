@@ -61,7 +61,7 @@ public class ActionClipboardMenu extends Menu {
                         clipboardManager.removeAction(player.getUniqueId().toString(), action, house);
                         setupItems();
                     } else if (e.isLeftClick()) {
-                        this.action.fromData(action.data(), action.getClass(), house);
+                        this.action.fromData(action.data(), house);
                         previousMenu.setAction(this.action);
                         if (previousMenu.getUpdate() != null) {
                             previousMenu.getUpdate().run();

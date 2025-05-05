@@ -72,7 +72,7 @@ public class RunAsNPCAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        List<Action> subActions = getValue("subActions", ActionsProperty.class).getValue();
+        List<Action> subActions = getProperty("subActions", ActionsProperty.class).getValue();
         if (subActions.isEmpty()) {
             return OutputType.SUCCESS;
         }

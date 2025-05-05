@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,10 +27,22 @@ public class NumberProperty extends ActionProperty<String> {
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
         player.sendMessage("§eEnter a value:");
-        menu.openChat(main, getValue(), message -> setValue(message, player));
+        menu.openChat(main, getValue(), message -> {
+            if (NumberUtilsKt.isDouble(message)) {
+                double value = Double.parseDouble(message);
+
+                if (value < getMin()) value = getMin();
+                if (value > getMax()) value = getMax();
+
+                setValue(String.valueOf(value), player);
+                return;
+            }
+            setValue(message, player);
+        });
     }
 
     public Double parsedValue(HousingWorld house, Player player) {
+        if (getValue() == null) return 0D;
         String value = Placeholder.handlePlaceholders(getValue(), house, player);
         try {
             double parsedValue = Double.parseDouble(value);

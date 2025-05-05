@@ -72,12 +72,12 @@ public class SendTitleAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        Component title = getValue("title", StringProperty.class).component(house, player);
-        Component subtitle = getValue("subtitle", StringProperty.class).component(house, player);
+        Component title = getProperty("title", StringProperty.class).component(house, player);
+        Component subtitle = getProperty("subtitle", StringProperty.class).component(house, player);
         player.showTitle(Title.title(title, subtitle, Title.Times.times(
-                Duration.ofMillis(getValue("fadeIn", IntegerProperty.class).getValue() * 50),
-                Duration.ofMillis(getValue("stay", IntegerProperty.class).getValue() * 50),
-                Duration.ofMillis(getValue("fadeOut", IntegerProperty.class).getValue() * 50))));
+                Duration.ofMillis(getProperty("fadeIn", IntegerProperty.class).getValue() * 50),
+                Duration.ofMillis(getProperty("stay", IntegerProperty.class).getValue() * 50),
+                Duration.ofMillis(getProperty("fadeOut", IntegerProperty.class).getValue() * 50))));
         return OutputType.SUCCESS;
     }
 

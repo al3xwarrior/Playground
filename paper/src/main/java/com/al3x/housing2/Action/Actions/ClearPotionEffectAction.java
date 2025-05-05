@@ -3,6 +3,7 @@ package com.al3x.housing2.Action.Actions;
 import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.BooleanProperty;
 import com.al3x.housing2.Action.Properties.CustomProperty;
+import com.al3x.housing2.Action.Properties.PotionProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -36,27 +37,11 @@ public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new CustomProperty<PotionEffectType>(
+                new PotionProperty(
                         "potion",
                         "Potion",
-                        "The potion effect to clear.",
-                        Material.POTION
-                ) {
-                    @Override
-                    public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-                        List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
-                        for (PotionEffectType type : PotionEffectType.values()) {
-                            potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
-                        }
-
-                        new PaginationMenu<>(Main.getInstance(),
-                                "&eSelect a Potion Effect", potions,
-                                player, house, menu, (potion) -> {
-                            setValue(potion);
-                            menu.open();
-                        }).open();
-                    }
-                }.setValue(PotionEffectType.GLOWING),
+                        "The potion effect to apply."
+                ).setValue(PotionEffectType.GLOWING),
                 new BooleanProperty(
                         "clearall",
                         "Clear All",

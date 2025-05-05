@@ -49,7 +49,7 @@ public class MaxHealthRequirementCondition extends CHTSLImpl implements NPCCondi
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         StatComparator comparator = getValue("comparator", StatComparator.class);
-        double compareValue = getValue("compareValue", DoubleProperty.class).getValue();
+        double compareValue = getProperty("compareValue", DoubleProperty.class).getValue();
         return Comparator.compare(comparator, player.getMaxHealth(), compareValue) ? OutputType.TRUE : OutputType.FALSE;
     }
 
@@ -61,7 +61,7 @@ public class MaxHealthRequirementCondition extends CHTSLImpl implements NPCCondi
     @Override
     public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
         StatComparator comparator = getValue("comparator", StatComparator.class);
-        double compareValue = getValue("compareValue", DoubleProperty.class).getValue();
+        double compareValue = getProperty("compareValue", DoubleProperty.class).getValue();
         if (npc.getEntity() instanceof LivingEntity le) {
             return Comparator.compare(comparator, le.getMaxHealth(), compareValue);
         } else {

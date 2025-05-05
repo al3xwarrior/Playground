@@ -8,6 +8,7 @@ import com.al3x.housing2.Data.ConditionalData;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Menus.Actions.ActionsMenu;
+import com.google.gson.JsonElement;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -37,10 +38,8 @@ public class ConditionsProperty extends ActionProperty<List<Condition>> implemen
     }
 
     @Override
-    public List<Condition> deserialize(Object value, HousingWorld housingWorld) {
-        if (value instanceof List) {
-            return ConditionalData.toList((List<ConditionalData>) value, housingWorld);
-        }
-        return null;
+    public List<Condition> deserialize(JsonElement value, HousingWorld housingWorld) {
+        List<ConditionalData> data = dataToList(value.getAsJsonArray(), ConditionalData.class);
+        return ConditionalData.toList(data, housingWorld);
     }
 }

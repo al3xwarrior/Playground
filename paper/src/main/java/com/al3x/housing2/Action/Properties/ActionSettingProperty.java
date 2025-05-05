@@ -14,7 +14,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.List;
 
-@Slf4j
 public class ActionSettingProperty extends ActionProperty<Action> implements ActionProperty.PropertySerializer<Action, ActionData> {
     public ActionSettingProperty(String id, String name, String description) {
         super(id, name, description, Material.COMPARATOR);
@@ -30,14 +29,8 @@ public class ActionSettingProperty extends ActionProperty<Action> implements Act
     }
 
     @Override
-    public Action deserialize(Object value, HousingWorld house) {
-        if (value instanceof ActionData data) return ActionData.fromData(data, house);
-        return null;
-    }
-
-    @Override
     public Action deserialize(JsonElement value, HousingWorld housingWorld) {
-        System.out.println(value);
-        return null;
+        ActionData data = dataToObject(value, ActionData.class);
+        return ActionData.fromData(data, housingWorld);
     }
 }

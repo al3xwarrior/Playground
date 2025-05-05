@@ -65,15 +65,15 @@ public class PlaceholderRequirementCondition extends CHTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        String placeholderValue = getValue("placeholder", StringProperty.class).parsedValue(house, player);
-        String compareValue = getValue("compareValue", StringProperty.class).parsedValue(house, player);
+        String placeholderValue = getProperty("placeholder", StringProperty.class).parsedValue(house, player);
+        String compareValue = getProperty("compareValue", StringProperty.class).parsedValue(house, player);
 
-        if (getValue("ignoreCase", BooleanProperty.class).getValue()) {
+        if (getValue("ignoreCase", Boolean.class)) {
             placeholderValue = placeholderValue.toLowerCase();
             compareValue = compareValue.toLowerCase();
         }
 
-        if (getValue("ignoreColor", BooleanProperty.class).getValue()) {
+        if (getValue("ignoreColor", Boolean.class)) {
             placeholderValue = Color.removeColor(placeholderValue);
             compareValue = Color.removeColor(compareValue);
         }

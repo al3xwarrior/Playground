@@ -50,7 +50,7 @@ public enum ConditionEnum {
     public Condition getConditionInstance(HashMap<String, Object> data, HousingWorld house) {
         try {
             Condition condition = this.condition.getDeclaredConstructor().newInstance();
-            condition.fromData(data, this.condition, house);
+            condition.fromData(data, house);
             return condition;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();

@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 @Getter
-public class IntegerProperty extends ActionProperty<Integer> {
+public class IntegerProperty extends ActionProperty<Integer> implements ActionProperty.PropertySerializer<Integer, Object> {
     private final int min;
     private final int max;
 
@@ -37,5 +37,21 @@ public class IntegerProperty extends ActionProperty<Integer> {
                 player.sendMessage("§cInvalid number format.");
             }
         });
+    }
+
+    @Override
+    public Object serialize() {
+        return getValue();
+    }
+
+    @Override
+    public Integer deserialize(Object value, HousingWorld house) {
+        if (value instanceof Double) {
+            return ((Double) value).intValue();
+        } else if (value instanceof Integer) {
+            return (Integer) value;
+        }
+
+        return Integer.parseInt(value.toString());
     }
 }

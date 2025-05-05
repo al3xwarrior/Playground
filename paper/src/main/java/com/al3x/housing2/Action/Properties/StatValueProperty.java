@@ -9,6 +9,7 @@ import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -89,20 +90,12 @@ public class StatValueProperty extends ActionProperty<StatValueProperty.StatValu
     }
 
     @Override
-    public StatValueInstance deserialize(Object v, HousingWorld house) {
-        if (!(v instanceof StatValueData value)) {
-            Main.getInstance().getLogger().severe("Invalid value: " + v);
-            return new StatValueInstance(false, "1.0", null);
-        }
-        Action action = ActionData.fromData(value.expressionValue, house);
-        if (!(action instanceof StatValue)) {
-            action = new StatValue();
-            Main.getInstance().getLogger().severe("Invalid action expression: " + action);
-        }
+    public StatValueInstance deserialize(JsonElement v, HousingWorld house) {
+        StatValueData value = dataToObject(v, StatValueData.class);
         return new StatValueInstance(
                 value.isExpression,
                 value.literalValue,
-                (StatValue) action
+                StatValue.fromActionData(value.expressionValue, house)
         );
     }
 

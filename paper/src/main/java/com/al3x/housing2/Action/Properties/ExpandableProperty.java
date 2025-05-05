@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Properties;
 
 import com.al3x.housing2.Action.ActionProperty;
+import com.al3x.housing2.Utils.Duple;
 import lombok.Getter;
 import org.bukkit.Material;
 
@@ -13,4 +14,6 @@ public abstract class ExpandableProperty<V> extends ActionProperty<V> {
     public ExpandableProperty(String id) {
         super(id, "&cERROR!", "&cIf you are seeing this, something went wrong.", Material.BARRIER);
     }
+
+    public abstract List<Duple<String, String>> getInfo();
 }

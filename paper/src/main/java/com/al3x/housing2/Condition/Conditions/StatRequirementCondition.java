@@ -60,12 +60,12 @@ public class StatRequirementCondition extends CHTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
-        String statString = getValue("stat", StringProperty.class).parsedValue(house, player);
+        String statString = getProperty("stat", StringProperty.class).parsedValue(house, player);
         Stat stat = house.getStatManager().getPlayerStatByName(player, statString);
-        String compareValue = getValue("compareValue", StringProperty.class).parsedValue(house, player);
+        String compareValue = getProperty("compareValue", StringProperty.class).parsedValue(house, player);
         String statValue = stat.getValue();
 
-        if (getValue("ignoreCase", BooleanProperty.class).getValue()) {
+        if (getProperty("ignoreCase", BooleanProperty.class).getValue()) {
             statValue = statValue.toLowerCase();
             compareValue = compareValue.toLowerCase();
         }

@@ -49,7 +49,7 @@ public class EditVoiceGroupAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        String groupName = getValue("groupName", StringProperty.class).parsedValue(house, player);
+        String groupName = getProperty("groupName", StringProperty.class).parsedValue(house, player);
         Group group = VoiceChat.getGroup(house.getWorld(), groupName);
 
         if (group == null) return OutputType.ERROR;

@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.BooleanProperty;
 import com.al3x.housing2.Action.Properties.CustomProperty;
 import com.al3x.housing2.Action.Properties.IntegerProperty;
+import com.al3x.housing2.Action.Properties.PotionProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -41,28 +42,11 @@ public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
         );
 
         getProperties().addAll(List.of(
-                new CustomProperty<PotionEffectType>(
+                new PotionProperty(
                         "potion",
                         "Potion",
-                        "The potion effect to apply.",
-                        Material.POTION
-                ) {
-                    @Override
-                    public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-                        //Create a list of all the potion effects
-                        List<Duple<PotionEffectType, ItemBuilder>> potions = new ArrayList<>();
-                        for (PotionEffectType type : PotionEffectType.values()) {
-                            potions.add(new Duple<>(type, ItemBuilder.create(Material.POTION).name("&6" + type.getName())));
-                        }
-                        //Basically because PotionEffectType isnt a ENUM we cant just use the enum class
-                        new PaginationMenu<>(Main.getInstance(),
-                                "&eSelect a Potion Effect", potions,
-                                player, house, menu, (potion) -> {
-                            setValue(potion);
-                            menu.open();
-                        }).open();
-                    }
-                }.setValue(PotionEffectType.GLOWING),
+                        "The potion effect to apply."
+                ).setValue(PotionEffectType.GLOWING),
                 new IntegerProperty(
                         "level",
                         "Level",

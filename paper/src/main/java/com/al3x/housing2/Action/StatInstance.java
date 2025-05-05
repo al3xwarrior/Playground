@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action;
 
+import com.al3x.housing2.Action.Actions.StatValue;
 import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Enums.StatOperation;
 
