@@ -18,46 +18,40 @@ repositories {
     maven { url 'https://maven.citizensnpcs.co/repo' }
     maven { url 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
     maven { url 'https://repo.rapture.pw/repository/maven-releases/' }
-    maven { url "https://repo.dmulloy2.net/repository/public/" }
-    maven { url "https://jitpack.io" }
+    maven { url 'https://repo.dmulloy2.net/repository/public/' }
+    maven { url 'https://jitpack.io' }
     maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
+        name = 'papermc'
+        url  = uri('https://repo.papermc.io/repository/maven-public/')
     }
-    maven { url = 'https://repo.extendedclip.com/releases/' }
-    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
-    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+    maven { url 'https://repo.extendedclip.com/releases/' }
+    maven { url uri('https://repo.codemc.io/repository/maven-releases/') }
+    maven { url uri('https://repo.codemc.io/repository/maven-snapshots/') }
     maven { url 'https://jitpack.io' }
     maven { url 'https://catcoder.pl.ua/snapshots' }
-    maven { url "https://repo.nexomc.com/releases" }
-    maven { url = 'https://maven.maxhenkel.de/repository/public' }
+    maven { url 'https://repo.nexomc.com/releases' }
+    maven { url 'https://maven.maxhenkel.de/repository/public' }
     maven {
-        name "redstoneReleases"
-        url "https://repo.redstone.llc/releases"
+        name = 'redstoneReleases'
+        url  = 'https://repo.redstone.llc/releases'
     }
-    maven {url = "https://repo.xenondevs.xyz/releases" }
-
+    maven { url 'https://repo.xenondevs.xyz/releases' }
 }
 
 dependencies {
     implementation project(':common')
-    implementation ("wtf.choco:networking-bukkit:0.1.1") {
+    implementation('wtf.choco:networking-bukkit:0.1.1') {
         exclude group: 'org.spigotmc', module: 'spigot-api'
     }
-    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-    compileOnly('net.citizensnpcs:citizensapi:2.0.37-SNAPSHOT') {
-        transitive = false
-    }
-    compileOnly('net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT') {
-        transitive = false
-    }
-    implementation "com.google.code.gson:gson:2.11.0"
+    paperweight.paperDevBundle('1.21.4-R0.1-SNAPSHOT')
+    compileOnly('net.citizensnpcs:citizensapi:2.0.37-SNAPSHOT') { transitive = false }
+    compileOnly('net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT') { transitive = false }
+    implementation 'com.google.code.gson:gson:2.11.0'
     compileOnly 'com.infernalsuite.asp:api:4.0.0-SNAPSHOT'
     implementation 'com.infernalsuite.asp:file-loader:4.0.0-SNAPSHOT'
-    compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
-    implementation ('com.github.maximjsx:HologramLib:1.7.1') {
+    compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation('com.github.maximjsx:HologramLib:1.7.1') {
         exclude group: 'me.tofaa.entitylib', module: 'spigot'
     }
     implementation 'com.github.Tofaa2.EntityLib:api:2.4.11'
@@ -66,8 +60,8 @@ dependencies {
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     implementation 'com.github.ShieldCommunity:SternalBoard:84b5137622'
-    compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.27"
-    implementation("net.dv8tion:JDA:5.3.0") { // replace $version with the latest version
+    compileOnly 'de.maxhenkel.voicechat:voicechat-api:2.5.27'
+    implementation('net.dv8tion:JDA:5.3.0') { // replace $version with the latest version
         // Optionally disable audio natives to reduce jar size by excluding `opus-java`
         // Gradle DSL:
          exclude module: 'opus-java'
@@ -86,13 +80,15 @@ dependencies {
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'
 
     // heads
-    compileOnly("com.arcaniax:HeadDatabase-API:1.3.2")
+    compileOnly 'com.arcaniax:HeadDatabase-API:1.3.2'
 
     // LuckPerms
-    compileOnly("net.luckperms:api:5.4")
+    compileOnly 'net.luckperms:api:5.4'
 
-    //Mongo !!?!?!?!?!
+    // Mongo !!?!?!?!?!
     implementation 'org.mongodb:mongodb-driver-sync:5.3.0'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
@@ -100,18 +96,18 @@ dependencies {
     implementation 'org.json:json:20250107'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-String outputLocation = 'build/libs'
+def defaultOutput = layout.buildDirectory.dir('libs').get().asFile
 //You can put this in your local gradle.properties file
-if (project.hasProperty('outputLocation')) {
-    outputLocation = project.outputLocation
-}
+def outputLocation = project.hasProperty('outputLocation')
+             ? file(project.property('outputLocation'))
+             : defaultOutput
 
 tasks.register('copyJarToLocation', Copy) {
-    from shadowJar
+    from tasks.named('shadowJar').flatMap { it.archiveFile }
     into outputLocation
 }
 
@@ -128,22 +124,23 @@ java {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "playgroundRepo"
-            url = "https://repo.redstone.llc/playground"
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
     publications {
-        maven(MavenPublication) {
-            groupId = "com.al3x"
-            artifactId = "Playground"
-            version = project.findProperty("commit") ?: System.getenv("COMMIT")
+        create('mavenJava', MavenPublication) {
+            groupId = 'com.al3x'
+            artifactId = 'Playground'
+            version = project.findProperty('commit') ?: System.getenv('COMMIT') ?: version
+            //noinspection GroovyAssignabilityCheck
             from components.java
         }
     }
+    repositories {
+        maven {
+            name = 'playgroundRepo'
+            url  = uri('https://repo.redstone.llc/playground')
+            credentials(PasswordCredentials)
+            authentication {
+                create("basic", BasicAuthentication)
+        }
+    }
+  }
 }

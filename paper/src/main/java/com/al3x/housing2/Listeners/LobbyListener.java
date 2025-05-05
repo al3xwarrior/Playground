@@ -58,6 +58,9 @@ public class LobbyListener implements Listener {
                     inv.remove(randomHouse);
                 }
 
+                // don't replace the slot
+                if (inv.getItem(8) != null) continue;
+
                 // Player Owns House
                 if (house.hasPermission(player, Permissions.HOUSING_MENU)) {
                     if (inv.contains(ownerMenu)) continue;
@@ -101,7 +104,7 @@ public class LobbyListener implements Listener {
         // Obviously this won't work for other servers where the coords are not the same
         if (block.getLocation().getBlockX() == -14 && block.getLocation().getBlockY() == 66 && block.getLocation().getBlockZ() == 21) {
             e.getPlayer().playSound(e.getPlayer().getLocation(), "block.note_block.pling", 1, 1);
-            e.getPlayer().sendMessage(colorize("&7Join the &fHousing2 &7discord here: &f&nhttps://discord.gg/2J7FwNaSat"));
+            e.getPlayer().sendMessage(colorize("&7Join the &fPlayground &7discord here: &f&nhttps://discord.gg/2J7FwNaSat"));
         } else if (block.getLocation().getBlockX() == 0 && block.getLocation().getBlockY() == 66 && block.getLocation().getBlockZ() == 21) {
             e.getPlayer().playSound(e.getPlayer().getLocation(), "block.note_block.pling", 1, 1);
             e.getPlayer().sendMessage(colorize("&7Watch the &fDevlog Series &7on YouTube: &f&nhttps://www.youtube.com/playlist?list=PLfMl37vB75Imh66A-fndddZooejR8qin-"));
@@ -128,6 +131,10 @@ public class LobbyListener implements Listener {
     @EventHandler
     public void hungerChange(FoodLevelChangeEvent e) {
         e.setCancelled(true);
+        if (!e.getEntity().getWorld().equals(Bukkit.getWorld("world"))) {
+            Player player = (Player) e.getEntity();
+            if (player.getFoodLevel() < 7 && player.isSprinting()) player.setSprinting(false);
+        }
     }
 
     @EventHandler

@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,6 +29,7 @@ public class ActionExecutor {
     private HashMap<String, Integer> limits = new HashMap<>();
     private String context;
     private List<Action> queue = new ArrayList<>();
+    private final ActionEnum[] allowedOutofWorldActions = {ActionEnum.PLAYER_STAT};
     double pause = 0;
     boolean isPaused = false;
 
@@ -140,7 +142,7 @@ public class ActionExecutor {
             try {
                 if (player == entity) {
                     if (player.getWorld() != house.getWorld()) {
-                        return ERROR;
+                        if (action.requiresPlayer() && Arrays.stream(allowedOutofWorldActions).noneMatch(n -> n.getAction().equals(action.getClass()))) continue;
                     }
                     OutputType ot = action.execute(player, house, event, this);
 

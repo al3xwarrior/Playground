@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
@@ -32,7 +33,7 @@ public class ProtoolsManager {
     private Stack<Integer> cancelledTasks = new Stack<>();
 
     // Queue Stuff
-    private final HashMap<Integer, List<HashMap<Block, Duple<Material, BlockData>>>> taskQueue;
+    private final ConcurrentHashMap<Integer, List<HashMap<Block, Duple<Material, BlockData>>>> taskQueue;
 
     public ProtoolsManager(Main main, HousesManager housesManager) {
         this.main = main;
@@ -42,12 +43,10 @@ public class ProtoolsManager {
         this.copiedRegions = new HashMap<>();
         this.housesManager = housesManager;
 
-        this.taskQueue = new HashMap<>();
+        this.taskQueue = new ConcurrentHashMap<>();
     }
 
-    public List<Block> removeIllegalBlocks(Player player, List<Block> blocks) {
-        HousingWorld house = housesManager.getHouse(player.getWorld());
-
+    public List<Block> removeIllegalBlocks(HousingWorld house, List<Block> blocks) {
         List<Location> trashCans = house.getTrashCans();
         List<LaunchPad> launchPads = house.getLaunchPads();
 
@@ -87,15 +86,23 @@ public class ProtoolsManager {
 
     public void setPositions(Player player, Location pos1, Location pos2) {
         HousingWorld house = housesManager.getHouse(player.getWorld());
+        setPositions(house, player, pos1, pos2);
+    }
+
+    public void setPositions(HousingWorld house, Player player, Location pos1, Location pos2) {
+        if (house != null && player == null) {
+            this.selections.put(house.getHouseUUID(), new Duple<>(pos1, pos2));
+            return;
+        }
+        if (player == null) return;
+
         if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
         this.selections.put(player.getUniqueId(), new Duple<>(pos1, pos2));
     }
 
-public boolean checkSelection(Player player) {
-        if (this.selections.containsKey(player.getUniqueId())) {
-            Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
-            HousingWorld house = housesManager.getHouse(player.getWorld());
-            if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return false;
+    public boolean checkSelection(HousingWorld house, UUID uuid) {
+        if (this.selections.containsKey(uuid)) {
+            Duple<Location, Location> selection = this.selections.get(uuid);
             if (selection.getFirst().getWorld().getName().equals("world") || selection.getSecond().getWorld().getName().equals("world")) {
                 return false;
             }
@@ -105,7 +112,7 @@ public boolean checkSelection(Player player) {
             if (selection.getFirst().getWorld() != selection.getSecond().getWorld()) {
                 return false;
             }
-            if (selection.getFirst().getWorld() != player.getWorld() || selection.getSecond().getWorld() != player.getWorld()) {
+            if (selection.getFirst().getWorld() != house.getWorld() || selection.getSecond().getWorld() != house.getWorld()) {
                 return false;
             }
             return true;
@@ -115,25 +122,27 @@ public boolean checkSelection(Player player) {
     }
 
     public void setRegionTo(Player player, BlockList blockList) {
-        if (!checkSelection(player)) {
-            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
-            return;
-        }
-        this.cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
-        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
+        setRegionTo(house, player.getUniqueId(), blockList);
+    }
+
+    public void setRegionTo(HousingWorld world, UUID uuid, BlockList blockList) {
+        this.cooldowns.put(uuid, System.currentTimeMillis());
+        Duple<Location, Location> selection = this.selections.get(uuid);
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
         if (blocks.size() > 100 * 100 * 100) {
-            player.sendMessage(colorize("&cThe region is too large!"));
+            sendMessage(uuid, colorize("&cThe region is too large!"));
             return;
         }
 
         // error message is probably sent to the player already
         if (blockList == null) return;
 
-        blocks = removeIllegalBlocks(player, blocks);
+        blocks = removeIllegalBlocks(world, blocks);
 
         // Save the current state of the blocks to be able to be undone
         List<BlockState> currentState = new ArrayList<>();
@@ -150,28 +159,40 @@ public boolean checkSelection(Player player) {
 
         split(changes, taskID);
 
-        addUndoStack(player.getUniqueId(), currentState, taskID);
-        player.sendMessage(colorize("&aRegion set successfully!"));
+        addUndoStack(uuid, currentState, taskID);
+        sendMessage(uuid, colorize("&aRegion set successfully!"));
+    }
+
+    private void sendMessage(UUID uuid, String message) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            player.sendMessage(colorize(message));
+        }
     }
 
     public void setRegionTo(Player player, BlockList from, BlockList to) {
-        if (!checkSelection(player)) {
-            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
+        setRegionTo(house, player.getUniqueId(), from, to);
+    }
+    public void setRegionTo(HousingWorld world, UUID uuid, BlockList from, BlockList to) {
+        if (!checkSelection(world, uuid)) {
+            sendMessage(uuid, colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(colorize("&aReplacing region..."));
-        cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
-        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        sendMessage(uuid, colorize("&aReplacing region..."));
+        cooldowns.put(uuid, System.currentTimeMillis());
+        Duple<Location, Location> selection = this.selections.get(uuid);
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
         List<Block> blocks = cuboid.getBlocks();
         if (blocks.size() > 100 * 100 * 100) {
-            player.sendMessage(colorize("&cThe region is too large!"));
+            sendMessage(uuid, colorize("&cThe region is too large!"));
             return;
         }
 
-        blocks = removeIllegalBlocks(player, blocks);
+        blocks = removeIllegalBlocks(world, blocks);
 
         // Save the current state of the blocks to be able to be undone
         List<BlockState> currentState = new ArrayList<>();
@@ -191,39 +212,51 @@ public boolean checkSelection(Player player) {
 
         split(changes, taskID);
 
-        addUndoStack(player.getUniqueId(), currentState, taskID);
-        player.sendMessage(colorize("&aRegion replaced successfully!"));
+        addUndoStack(uuid, currentState, taskID);
+        sendMessage(uuid, colorize("&aRegion replaced successfully!"));
     }
 
     public void copyToClipboard(Player player) {
-        if (!checkSelection(player)) {
-            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
+        copyToClipboard(house, player.getUniqueId());
+    }
+
+    public void copyToClipboard(HousingWorld house, UUID uuid) {
+        if (!checkSelection(house, uuid))  {
+            sendMessage(uuid, colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(colorize("&aCopying region to clipboard..."));
-        Duple<Location, Location> selection = this.selections.get(player.getUniqueId());
+        sendMessage(uuid, colorize("&aCopying region to clipboard..."));
+        Duple<Location, Location> selection = this.selections.get(uuid);
         Location pos1 = selection.getFirst();
         Location pos2 = selection.getSecond();
         Cuboid cuboid = new Cuboid(pos1, pos2);
-        copiedRegions.put(player.getUniqueId(), cuboid);
-        player.sendMessage(colorize("&aRegion copied to clipboard!"));
+        copiedRegions.put(uuid, cuboid);
+        sendMessage(uuid, colorize("&aRegion copied to clipboard!"));
     }
 
-    public void pasteRegion(Player player) {
-        if (!checkSelection(player)) {
-            player.sendMessage(colorize("&cYou must have a valid selection to do this."));
+    public void pasteRegion(Player player, boolean onlyAir) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
+        pasteRegion(house, player.getUniqueId(), player.getLocation(), onlyAir);
+    }
+
+    public void pasteRegion(HousingWorld house, UUID uuid, Location startLocation, boolean onlyAir) {
+        if (!checkSelection(house, uuid)) {
+            sendMessage(uuid, colorize("&cYou must have a valid selection to do this."));
             return;
         }
-        player.sendMessage(colorize("&aPasting region..."));
-        if (copiedRegions.containsKey(player.getUniqueId())) {
-            Cuboid cuboid = copiedRegions.get(player.getUniqueId());
+        sendMessage(uuid, colorize("&aPasting region..."));
+        if (copiedRegions.containsKey(uuid)) {
+            Cuboid cuboid = copiedRegions.get(uuid);
             List<Block> blocks = cuboid.getBlocks();
             if (blocks.size() > 100 * 100 * 100) {
-                player.sendMessage(colorize("&cThe region is too large!"));
+                sendMessage(uuid, colorize("&cThe region is too large!"));
                 return;
             }
 
-            blocks = removeIllegalBlocks(player, blocks);
+            blocks = removeIllegalBlocks(house, blocks);
 
             // Save the current state of the blocks to be able to be undone
             List<BlockState> currentState = new ArrayList<>();
@@ -235,8 +268,9 @@ public boolean checkSelection(Player player) {
                 int relY = block.getY() - cuboid.getLowerY();
                 int relZ = block.getZ() - cuboid.getLowerZ();
 
-                Location newLoc = player.getLocation().clone().add(relX, relY, relZ);
+                Location newLoc = startLocation.clone().add(relX, relY, relZ);
                 Block newBlock = newLoc.getBlock();
+                if (onlyAir && newBlock.getType() != Material.AIR) continue;
                 currentState.add(newBlock.getState());
                 changes.put(newBlock, new Duple<>(block.getType(), block.getBlockData()));
             }
@@ -244,10 +278,10 @@ public boolean checkSelection(Player player) {
 
             split(changes, taskID);
 
-            addUndoStack(player.getUniqueId(), currentState, taskID);
-            player.sendMessage(colorize("&aRegion pasted successfully!"));
+            addUndoStack(uuid, currentState, taskID);
+            sendMessage(uuid, "&aRegion pasted successfully!");
         } else {
-            player.sendMessage(colorize("&cYou must copy a region before pasting."));
+            sendMessage(uuid, "&cYou must copy a region before pasting.");
         }
     }
 
@@ -295,7 +329,9 @@ public boolean checkSelection(Player player) {
 
     // I could not be asked to figure out the math for this method (shoutout to chatgippity)
     public void createSphere(Player player, int radius, BlockList blockList) {
-        if (!checkSelection(player)) {
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null || !house.hasPermission(player, Permissions.PRO_TOOLS)) return;
+        if (!checkSelection(house, player.getUniqueId())) {
             player.sendMessage(colorize("&cYou must have a valid selection to do this."));
             return;
         }
@@ -348,6 +384,18 @@ public boolean checkSelection(Player player) {
             undoStack.remove(0); // Remove the oldest state
         }
         undoStack.push(new Duple<>(blockStates, taskID));
+    }
+
+    public void undo(UUID uuid) {
+        if (undoStacks.containsKey(uuid) && !undoStacks.get(uuid).isEmpty()) {
+            Duple<List<BlockState>, Integer> previousState = undoStacks.get(uuid).pop();
+            List<BlockState> blockStates = previousState.getFirst();
+            int taskID = previousState.getSecond();
+            cancelledTasks.push(taskID);
+            for (BlockState blockState : blockStates) {
+                blockState.update(true, false);
+            }
+        }
     }
 
     public void undo(Player player) {

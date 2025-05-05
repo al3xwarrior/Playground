@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Arrays;
 
@@ -31,6 +32,8 @@ public class OpenSomething implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
 
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
         if (!e.hasBlock() || e.getClickedBlock() == null) return;
 
         if (!house.hasPermission(player, Permissions.IRON_DOOR) && e.getClickedBlock().getType() == org.bukkit.Material.IRON_DOOR) {
@@ -38,7 +41,7 @@ public class OpenSomething implements Listener {
             player.sendMessage(colorize("&cYou do not have permission to open iron doors!"));
         }
 
-        Material[] doors = {Material.OAK_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.JUNGLE_DOOR, Material.SPRUCE_DOOR, Material.DARK_OAK_DOOR, Material.CRIMSON_DOOR, Material.WARPED_DOOR, Material.MANGROVE_DOOR, Material.CHERRY_DOOR, Material.BAMBOO_DOOR};
+        Material[] doors = {Material.OAK_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.JUNGLE_DOOR, Material.SPRUCE_DOOR, Material.DARK_OAK_DOOR, Material.CRIMSON_DOOR, Material.WARPED_DOOR, Material.MANGROVE_DOOR, Material.CHERRY_DOOR, Material.BAMBOO_DOOR, Material.PALE_OAK_DOOR, Material.COPPER_DOOR, Material.WAXED_COPPER_DOOR, Material.EXPOSED_COPPER_DOOR, Material.WAXED_EXPOSED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR, Material.WAXED_WEATHERED_COPPER_DOOR, Material.OXIDIZED_COPPER_DOOR, Material.WAXED_OXIDIZED_COPPER_DOOR};
         if (!house.hasPermission(player, Permissions.WOOD_DOOR) && Arrays.stream(doors).anyMatch(door -> e.getClickedBlock().getType() == door)) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou do not have permission to open wooden doors!"));
@@ -49,19 +52,19 @@ public class OpenSomething implements Listener {
             player.sendMessage(colorize("&cYou do not have permission to open iron trapdoors!"));
         }
 
-        Material[] trapdoors = {Material.OAK_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.BIRCH_TRAPDOOR, Material.DARK_OAK_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.SPRUCE_TRAPDOOR, Material.CRIMSON_TRAPDOOR, Material.WARPED_TRAPDOOR, Material.MANGROVE_TRAPDOOR, Material.CHERRY_TRAPDOOR, Material.BAMBOO_TRAPDOOR};
+        Material[] trapdoors = {Material.OAK_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.BIRCH_TRAPDOOR, Material.DARK_OAK_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.SPRUCE_TRAPDOOR, Material.CRIMSON_TRAPDOOR, Material.WARPED_TRAPDOOR, Material.MANGROVE_TRAPDOOR, Material.CHERRY_TRAPDOOR, Material.BAMBOO_TRAPDOOR, Material.PALE_OAK_TRAPDOOR, Material.COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR, Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR, Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_OXIDIZED_COPPER_TRAPDOOR};
         if (!house.hasPermission(player, Permissions.WOOD_TRAPDOOR) && Arrays.stream(trapdoors).anyMatch(trapdoor -> e.getClickedBlock().getType() == trapdoor)) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou do not have permission to open wooden trapdoors!"));
         }
 
-        Material[] fenceGates = {Material.OAK_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.DARK_OAK_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE, Material.CRIMSON_FENCE_GATE, Material.WARPED_FENCE_GATE, Material.MANGROVE_FENCE_GATE, Material.CHERRY_FENCE_GATE, Material.BAMBOO_FENCE_GATE};
+        Material[] fenceGates = {Material.OAK_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.DARK_OAK_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE, Material.CRIMSON_FENCE_GATE, Material.WARPED_FENCE_GATE, Material.MANGROVE_FENCE_GATE, Material.CHERRY_FENCE_GATE, Material.BAMBOO_FENCE_GATE, Material.PALE_OAK_FENCE_GATE};
         if (!house.hasPermission(player, Permissions.FENCE_GATE) && Arrays.stream(fenceGates).anyMatch(fencegate -> e.getClickedBlock().getType() == fencegate)) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou do not have permission to open fence gates!"));
         }
 
-        Material[] button = {Material.STONE_BUTTON, Material.OAK_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON, Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.SPRUCE_BUTTON, Material.CRIMSON_BUTTON, Material.WARPED_BUTTON, Material.MANGROVE_BUTTON, Material.CHERRY_BUTTON, Material.BAMBOO_BUTTON};
+        Material[] button = {Material.STONE_BUTTON, Material.OAK_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON, Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.SPRUCE_BUTTON, Material.CRIMSON_BUTTON, Material.WARPED_BUTTON, Material.MANGROVE_BUTTON, Material.CHERRY_BUTTON, Material.BAMBOO_BUTTON, Material.PALE_OAK_BUTTON};
         if (!house.hasPermission(player, Permissions.BUTTON) && Arrays.stream(button).anyMatch(b -> e.getClickedBlock().getType() == b)) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou do not have permission to push buttons!"));
@@ -85,6 +88,16 @@ public class OpenSomething implements Listener {
         if (!house.hasPermission(player, Permissions.USE_SHULKERS) && e.getClickedBlock().getType().name().contains("SHULKER_BOX")) {
             e.setCancelled(true);
             player.sendMessage(colorize("&cYou do not have permission to open shulker boxes!"));
+        }
+
+        boolean cantBuild = !((house.hasPermission(player, Permissions.BUILD) && house.getOwner().isOnline()) || house.hasPermission(player, Permissions.OFFLINE_BUILD) && house.getOwner().isOnline());
+        Material[] interactions = {Material.CHISELED_BOOKSHELF, Material.FLOWER_POT};
+        if (cantBuild && Arrays.stream(interactions).anyMatch(n -> n.equals(e.getClickedBlock().getType()))) {
+            e.setCancelled(true);
+        }
+
+        if (!house.hasPermission(player, Permissions.JUKEBOX) && e.getClickedBlock().getType().equals(Material.JUKEBOX)) {
+            e.setCancelled(true);
         }
     }
 }

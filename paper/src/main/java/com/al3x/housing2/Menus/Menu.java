@@ -78,12 +78,12 @@ public abstract class Menu {
                 if (MenuManager.getPlayerMenu(player) != null && MenuManager.getListener(player) != null) {
                     AsyncPlayerChatEvent.getHandlerList().unregister(MenuManager.getListener(player));
                 }
-                MenuManager.setWindowOpen(player, this);
+                if (!event.isShowItems()) MenuManager.setWindowOpen(player, this);
                 MenuManager.setMenu(player, this);
                 return;
             }
 
-            this.inventory = Bukkit.createInventory(null, size, colorize(getTitle()));
+            this.inventory = Bukkit.createInventory(null, size, StringUtilsKt.housingStringFormatter(title));
 
             setupItems();
 

@@ -44,7 +44,7 @@ public class BlockList {
         return this.blockList;
     }
 
-    public static BlockList fromString(Player player, String blockData) {
+    public static BlockList fromString(String blockData) {
         BlockList blockList = new BlockList();
         String[] blockDataSplit = blockData.split(",");
         for (String block : blockDataSplit) {
@@ -53,12 +53,45 @@ public class BlockList {
                 int percentage = Integer.parseInt(blockOptions[0]);
                 Material material = Material.matchMaterial(blockOptions[1].toUpperCase());
                 if (material == null) {
-                    player.sendMessage(colorize("&cInvalid block type \"" + blockOptions[1].toUpperCase() + "\"."));
                     return null;
                 }
                 blockList.addBlock(percentage, material);
             } else {
                 Material material = Material.matchMaterial(block);
+                if (material == null) {
+                    return null;
+                }
+                blockList.addBlock(1, material);
+            }
+        }
+        return blockList;
+    }
+
+    public static BlockList fromString(Player player, String blockData) {
+        BlockList blockList = new BlockList();
+        String[] blockDataSplit = blockData.split(",");
+        for (String block : blockDataSplit) {
+            if (block.contains("%")) {
+                String[] blockOptions = block.split("%");
+                int percentage = Integer.parseInt(blockOptions[0]);
+                Material material;
+                if (NumberUtilsKt.isInt(blockOptions[1])) {
+                    material = Material.values()[Integer.parseInt(blockOptions[1])];
+                } else {
+                    material = Material.matchMaterial(blockOptions[1].toUpperCase());
+                }
+                if (material == null) {
+                    player.sendMessage(colorize("&cInvalid block type \"" + blockOptions[1].toUpperCase() + "\"."));
+                    return null;
+                }
+                blockList.addBlock(percentage, material);
+            } else {
+                Material material;
+                if (NumberUtilsKt.isInt(block)) {
+                    material = Material.values()[Integer.parseInt(block)];
+                } else {
+                    material = Material.matchMaterial(block);
+                }
                 if (material == null) {
                     player.sendMessage(colorize("&cInvalid block type \"" + block.toUpperCase() + "\"."));
                     return null;

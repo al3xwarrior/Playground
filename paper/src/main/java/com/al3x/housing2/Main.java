@@ -4,6 +4,7 @@ import com.al3x.housing2.Axiom.PlaygroundIntegration;
 import com.al3x.housing2.Instances.*;
 import com.al3x.housing2.Listeners.HouseEvents.*;
 import com.al3x.housing2.Listeners.*;
+import com.al3x.housing2.Listeners.HouseEvents.Permissions.BlockInteractions;
 import com.al3x.housing2.Listeners.HouseEvents.Permissions.OpenSomething;
 import com.al3x.housing2.Listeners.ProtocolLib.EntityInteraction;
 import com.al3x.housing2.Mongo.DatabaseManager;
@@ -11,6 +12,7 @@ import com.al3x.housing2.Network.NetworkManager;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Placeholders.papi.CookiesPlaceholder;
 import com.al3x.housing2.Utils.HousingCommandFramework;
+import com.al3x.housing2.Utils.NameTag;
 import com.al3x.housing2.Utils.SkinCache;
 import com.al3x.housing2.Utils.VoiceChat;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -29,6 +31,7 @@ import lombok.Getter;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -75,6 +78,8 @@ public final class Main extends JavaPlugin implements Listener {
     private ResourcePackManager resourcePackManager;
     @Getter
     private PlaygroundBot playgroundBot;
+    @Getter
+    private SeatManager seatManager;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -123,6 +128,7 @@ public final class Main extends JavaPlugin implements Listener {
         this.networkManager = new NetworkManager(this);
         this.resourcePackManager = new ResourcePackManager(this);
         this.commandManager = new CommandManager();
+        this.seatManager = new SeatManager(this);
 
         this.playgroundWeb = (PlaygroundWeb) Jooby.createApp(new String[0], ExecutionMode.EVENT_LOOP, () -> new PlaygroundWeb(this));
         this.playgroundWeb.start();
@@ -144,6 +150,8 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new NpcItems(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new ProtoolsListener(this.protoolsManager), this);
         Bukkit.getPluginManager().registerEvents(new HologramInteractListener(this, housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new SignClickEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new SeatListener(this), this);
         Bukkit.getPluginManager().registerEvents(new TrashCanListener(this), this);
         Bukkit.getPluginManager().registerEvents(new LaunchPadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ActionButtonListener(), this);
@@ -175,6 +183,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PlayerEnterPortal(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new JumpEvent(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new OpenSomething(housesManager), this);
+        Bukkit.getPluginManager().registerEvents(new BlockInteractions(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new FishBucket(housesManager), this);
         Bukkit.getPluginManager().registerEvents(new PotionSplash(housesManager), this);
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -224,6 +233,12 @@ public final class Main extends JavaPlugin implements Listener {
         Runnables.stopRunnables();
         for (HousingWorld house : housesManager.getConcurrentLoadedHouses().values()) {
             housesManager.saveHouseAndUnload(house);
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            NameTag tag = NameTag.getNameTag(player);
+            if (tag != null) {
+                tag.stop(player);
+            }
         }
         SkinCache.save();
         INSTANCE.getLogger().info("[Housing2] Disabled");

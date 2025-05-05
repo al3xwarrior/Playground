@@ -70,6 +70,7 @@ public class Serialization {
     }
 
     public static ItemStack itemStackFromBase64(String data) throws IOException {
+        if (data == null) return null;
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);

@@ -56,6 +56,7 @@ public class TimeSelectorMenu extends Menu {
         addItem(39, ItemBuilder.create(Material.DAYLIGHT_DETECTOR)
                 .name(colorize("&aToggle Daylight Cycle"))
                 .description("Toggle whether the daylight cycle should run in this house.")
+                .info("&7Current Value", house.getDaylightCycle() ? "&aEnabled" : "&cDisabled")
                 .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW)
                 .build(), (e) -> {
             if (house.getDaylightCycle()) {
@@ -66,6 +67,7 @@ public class TimeSelectorMenu extends Menu {
                 player.sendMessage(colorize("&eEnabled &aDaylight Cycle"));
             }
             house.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, house.getDaylightCycle());
+            setupItems();
         });
 
         addItem(40, ItemBuilder.create(Material.ARROW)

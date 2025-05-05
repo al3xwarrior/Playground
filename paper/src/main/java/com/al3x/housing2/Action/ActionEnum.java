@@ -66,10 +66,15 @@ public enum ActionEnum {
     HIDE_NPC("hide_npc_action", HideNPCAction.class),
     SHOW_NPC("Show NPC Action", ShowNPCAction.class),
     SWIM_CRAWL("show_npc_action", SwimCrawlAction.class),
-    SET_VOICE_GROUP("set_voice_group_action", SetVoiceGroupAction.class),
+    TOGGLE_SIT("Toggle Sit Action", ToggleSitAction.class),
+    SEND_TO_HOUSE("Send to House Action", SendToHouseAction.class),
+    SET_VOICE_GROUP("Set Voice Group Action", SetVoiceGroupAction.class),
     EDIT_VOICE_GROUP("edit_voice_group_action", EditVoiceGroupAction.class),
     EDIT_VISIBILITY("edit_visibility_action", EditVisibilityAction.class),
     EDIT_AUDIBILITY("edit_audibility_action", EditAudibilityAction.class),
+    PROTOOLS_ACTION("Protools Action", ProtoolsAction.class),
+    SPAWN_GHOST_BLOCK("Spawn Ghost Block", SpawnGhostBlock.class),
+    SET_PLAYER_SLOT("Set Player Slot Action", SetPlayerSlotAction.class);
     // Add new actions here
     // Name of the action and the class that has the name of the action need to be the exact same
     ;

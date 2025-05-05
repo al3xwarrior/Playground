@@ -56,6 +56,7 @@ public class CommandManager {
         new Function(registrar, housesManager);
         new Test(registrar);
         new SetHouseSize(registrar, housesManager);
+        new Teleport(registrar, housesManager);
 
         //Register the commands inside each house.
         HouseCommands.register(registrar);

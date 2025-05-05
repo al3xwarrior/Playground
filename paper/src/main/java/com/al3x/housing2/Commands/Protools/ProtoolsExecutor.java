@@ -79,8 +79,15 @@ public interface ProtoolsExecutor {
 
     default int paste(CommandContext<CommandSourceStack> context) {
         Player player = (Player) context.getSource().getSender();
-        getProtoolsManager().pasteRegion(player);
+        getProtoolsManager().pasteRegion(player, false);
         player.sendMessage(Color.colorize("&aRegion pasted..."));
+        return 1;
+    }
+
+    default int insert(CommandContext<CommandSourceStack> context) {
+        Player player = (Player) context.getSource().getSender();
+        getProtoolsManager().pasteRegion(player, true);
+        player.sendMessage(Color.colorize("&aRegion inserted..."));
         return 1;
     }
 

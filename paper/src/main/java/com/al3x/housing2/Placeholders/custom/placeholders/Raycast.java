@@ -14,7 +14,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftFluidCollisionMode;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.util.CraftRayTraceResult;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static net.minecraft.world.level.ClipContext.Block.COLLIDER;
 import static net.minecraft.world.level.ClipContext.Block.OUTLINE;
 
 public class Raycast {
@@ -48,6 +50,8 @@ public class Raycast {
             new ExactZ();
             new Coords();
             new ExactCoords();
+            new Face();
+            new Collider();
         }
 
         @Override
@@ -78,8 +82,8 @@ public class Raycast {
             Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
             try {
                 Double range = argsHandled.getFirst();
-                @NotNull Duple<Vector, org.bukkit.block.Block> result = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                return result.getSecond().getType().name();
+                @NotNull Truple<Vector, Material, BlockFace> result = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                return result.getSecond().name();
             } catch (NumberFormatException e) {
                 return "null";
             }
@@ -140,7 +144,9 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst().getBlockX());
+                    Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (cast.getThird() == BlockFace.EAST && Math.abs(cast.getFirst().getX() - cast.getFirst().getBlockX()) < 0.000001) return String.valueOf(cast.getFirst().getBlockX() - 1);
+                    return String.valueOf(cast.getFirst().getBlockX());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -202,7 +208,9 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst().getBlockY());
+                    Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (cast.getThird() == BlockFace.UP && Math.abs(cast.getFirst().getY() - cast.getFirst().getBlockY()) < 0.000001) return String.valueOf(cast.getFirst().getBlockY() - 1);
+                    return String.valueOf(cast.getFirst().getBlockY());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
@@ -264,13 +272,14 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    return String.valueOf(getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getFirst().getBlockZ());
+                    Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    if (cast.getThird() == BlockFace.SOUTH && Math.abs(cast.getFirst().getZ() - cast.getFirst().getBlockZ()) < 0.000001) return String.valueOf(cast.getFirst().getBlockZ() - 1);
+                    return String.valueOf(cast.getFirst().getBlockZ());
                 } catch (NumberFormatException e) {
                     return "null";
                 }
             }
         }
-
 
         private static class ExactCoords extends Placeholder {
             @Override
@@ -329,13 +338,83 @@ public class Raycast {
                 Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
                 try {
                     Double range = argsHandled.getFirst();
-                    @NotNull Duple<Vector, org.bukkit.block.Block> duple = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
-                    return duple.getFirst().getBlockX() + "," + duple.getFirst().getBlockY() + "," + duple.getFirst().getBlockZ();
+                    @NotNull Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird());
+                    int x = cast.getFirst().getBlockX();
+                    int y = cast.getFirst().getBlockY();
+                    int z = cast.getFirst().getBlockZ();
+
+                    if (cast.getThird() == BlockFace.EAST && Math.abs(cast.getFirst().getX() - cast.getFirst().getBlockX()) < 0.000001) x--;
+                    if (cast.getThird() == BlockFace.UP && Math.abs(cast.getFirst().getY() - cast.getFirst().getBlockY()) < 0.000001) y--;
+                    if (cast.getThird() == BlockFace.SOUTH && Math.abs(cast.getFirst().getZ() - cast.getFirst().getBlockZ()) < 0.000001) z--;
+
+                    return x + "," + y + "," + z;
                 } catch (NumberFormatException e) {
                     return "null";
                 }
             }
         }
+
+        private static class Collider extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.collider/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                try {
+                    Double range = argsHandled.getFirst();
+                    @NotNull Truple<Vector, Material, BlockFace> cast = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird(), COLLIDER);
+                    return cast.getSecond().name();
+                } catch (NumberFormatException e) {
+                    return "null";
+                }
+            }
+        }
+
+        private static class Face extends Placeholder {
+            @Override
+            public String getPlaceholder() {
+                return "%raycast.block.face/[range]%";
+            }
+
+            @Override
+            public boolean hasArgs() {
+                return true;
+            }
+
+            @Override
+            public String handlePlaceholder(String input, HousingWorld house, Player player) {
+                if (player == null) {
+                    return "null";
+                }
+                if (!input.contains("/")) {
+                    return "null";
+                }
+                String[] a = input.split("/");
+                String args = String.join("/", Arrays.asList(a).subList(1, a.length));
+                Truple<Double, String, String> argsHandled = handleRaycastArgs(args, house, player);
+                Double range = argsHandled.getFirst();
+                BlockFace face = getBlockLookingAt(player, range, argsHandled.getSecond(), argsHandled.getThird()).getThird();
+                if (face == null) return "null";
+                return face.name();
+            }
+        }
+
     }
 
     //Just id for now
@@ -721,7 +800,11 @@ public class Raycast {
         }
     }
 
-    private static @NotNull Duple<Vector, org.bukkit.block.Block> getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+    private static @NotNull Truple<Vector, Material, BlockFace> getBlockLookingAt(Player player, double range, String yaw, String pitch) {
+        return getBlockLookingAt(player, range, yaw, pitch, OUTLINE);
+    }
+
+    private static @NotNull Truple<Vector, Material, BlockFace> getBlockLookingAt(Player player, double range, String yaw, String pitch, ClipContext.Block collisionType) {
         try {
             Location eye = player.getEyeLocation();
             Vector direction = eye.getDirection();
@@ -766,14 +849,16 @@ public class Raycast {
             Vector dir = direction.clone().normalize().multiply(range);
             Vec3 startPos = MCUtil.toVec3(player.getEyeLocation());
             Vec3 endPos = startPos.add(dir.getX(), dir.getY(), dir.getZ());
-            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, OUTLINE, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
+            HitResult nmsHitResult = ((CraftWorld) player.getWorld()).getHandle().clip(new ClipContext(startPos, endPos, collisionType, CraftFluidCollisionMode.toNMS(FluidCollisionMode.NEVER), CollisionContext.empty()), (Predicate) null);
             RayTraceResult hitResult = CraftRayTraceResult.fromNMS(player.getWorld(), nmsHitResult);
 
             if (hitResult == null || hitResult.getHitBlock() == null) {
-                return new Duple<>(new Vector(endPos.x, endPos.y, endPos.z),
-                        player.getWorld().getBlockAt((int) endPos.x, (int) endPos.y, (int) endPos.z));
+                if (collisionType.equals(COLLIDER)) {
+                    return new Truple<>(new Vector(endPos.x, endPos.y, endPos.z), Material.AIR, null);
+                } else return new Truple<>(new Vector(endPos.x, endPos.y, endPos.z),
+                        player.getWorld().getBlockAt((int) endPos.x, (int) endPos.y, (int) endPos.z).getType(), null);
             }
-            return new Duple<>(hitResult.getHitPosition(), hitResult.getHitBlock());
+            return new Truple<>(hitResult.getHitPosition(), hitResult.getHitBlock().getType(), hitResult.getHitBlockFace());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

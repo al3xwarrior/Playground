@@ -10,6 +10,8 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static com.al3x.housing2.Utils.Color.colorize;
 
 public class ViewPlayerStats extends AbstractHousingCommand {
@@ -26,7 +28,7 @@ public class ViewPlayerStats extends AbstractHousingCommand {
                         })
                         .build()
                 )
-                .build()
+                .build(), List.of("viewstats")
         );
     }
 
