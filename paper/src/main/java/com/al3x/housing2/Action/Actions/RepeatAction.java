@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 public class RepeatAction extends HTSLImpl implements NPCAction {
     public RepeatAction() {
-        super("repeat_action",
+        super(ActionEnum.REPEAT,
                 "Repeat Action",
                 "Repeats the actions in the list a specified number of times.",
                 Material.REPEATER,

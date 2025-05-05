@@ -33,7 +33,7 @@ import static com.al3x.housing2.Utils.Color.fromColor;
 public class ShowBossbarAction extends HTSLImpl {
     public ShowBossbarAction() {
         super(
-                "show_bossbar_action",
+                ActionEnum.SHOW_BOSSBAR,
                 "Show Bossbar",
                 "Shows a bossbar to the player.",
                 Material.WITHER_SKELETON_SKULL,

@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.BooleanProperty;
 import com.al3x.housing2.Action.Properties.ItemStackProperty;
 import com.al3x.housing2.Action.Properties.SlotProperty;
@@ -28,7 +25,7 @@ import java.util.List;
 public class GiveItemAction extends Action {
     public GiveItemAction() {
         super(
-                "give_item_action",
+                ActionEnum.GIVE_ITEM,
                 "Give Item",
                 "Gives an item to the player.",
                 Material.CHEST,

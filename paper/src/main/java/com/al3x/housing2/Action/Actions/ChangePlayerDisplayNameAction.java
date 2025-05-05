@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -21,7 +22,7 @@ import java.util.List;
 public class ChangePlayerDisplayNameAction extends HTSLImpl {
     public ChangePlayerDisplayNameAction() {
         super(
-                "change_player_display_name_action",
+                ActionEnum.CHANGE_PLAYER_DISPLAYNAME,
                 "Change Player Display Name",
                 "Changes the display name of the player.",
                 Material.PLAYER_HEAD,

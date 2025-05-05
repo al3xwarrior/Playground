@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -14,7 +15,7 @@ public class ClearEnderChestAction extends HTSLImpl {
 
     public ClearEnderChestAction() {
         super(
-                "clear_enderchest_action",
+                ActionEnum.CLEAR_ENDERCHEST,
                 "Clear Enderchest",
                 "Clears the player's ender chest.",
                 Material.ENDER_CHEST,

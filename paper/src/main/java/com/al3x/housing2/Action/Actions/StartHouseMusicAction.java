@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
@@ -18,7 +19,7 @@ public class StartHouseMusicAction extends HTSLImpl {
 
     public StartHouseMusicAction() {
         super(
-                "start_house_music_action",
+                ActionEnum.START_HOUSE_MUSIC,
                 "Start House Music",
                 "Starts the house music.",
                 Material.MUSIC_DISC_PIGSTEP,

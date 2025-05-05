@@ -38,7 +38,7 @@ public class ParticleAction extends HTSLImpl {
 
     public ParticleAction() {
         super(
-                "particle_action",
+                ActionEnum.PARTICLE,
                 "Display Particle",
                 "Displays a particle effect.",
                 Material.FIREWORK_ROCKET,

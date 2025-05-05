@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -18,7 +19,7 @@ public class ApplyInventoryLayoutAction extends HTSLImpl {
     String layout;
     public ApplyInventoryLayoutAction() {
         super(
-                "apply_inventory_layout_action",
+                ActionEnum.APPLY_INVENTORY_LAYOUT,
                 "Apply Inventory Layout",
                 "Applies an inventory layout to the player.",
                 Material.IRON_AXE,

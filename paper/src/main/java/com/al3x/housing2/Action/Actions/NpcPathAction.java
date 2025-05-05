@@ -34,7 +34,7 @@ import java.util.*;
 public class NpcPathAction extends Action implements NPCAction {
     public NpcPathAction() {
         super(
-                "npc_navigation_action",
+                ActionEnum.CHANGE_NPC_NAVIGATION,
                 "Change Npc Navigation",
                 "Change the navigation of a given NPC.",
                 Material.DIAMOND_AXE,

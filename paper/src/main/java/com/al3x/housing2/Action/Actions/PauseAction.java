@@ -19,7 +19,7 @@ public class PauseAction extends HTSLImpl implements NPCAction {
 
     public PauseAction() {
         super(
-                "pause_action",
+                ActionEnum.PAUSE_EXECUTION,
                 "Pause Action",
                 "Pauses execution of the remaining actions for the specified amount of ticks.",
                 Material.CLOCK,

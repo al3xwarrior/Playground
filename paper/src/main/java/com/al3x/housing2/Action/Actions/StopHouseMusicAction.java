@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -15,7 +16,7 @@ import java.util.List;
 public class StopHouseMusicAction extends HTSLImpl {
     public StopHouseMusicAction() {
         super(
-                "stop_house_music_action",
+                ActionEnum.STOP_HOUSE_MUSIC,
                 "Stop House Music",
                 "Stops the house music.",
                 Material.MUSIC_DISC_11,

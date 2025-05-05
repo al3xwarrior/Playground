@@ -30,7 +30,7 @@ import static com.al3x.housing2.Enums.Locations.*;
 public class TeleportAction extends HTSLImpl implements NPCAction {
     public TeleportAction() {
         super(
-                "teleport_action",
+                ActionEnum.TELEPORT,
                 "Teleport Player",
                 "Teleports the player to a location.",
                 Material.ENDER_PEARL,

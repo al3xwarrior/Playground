@@ -34,7 +34,7 @@ import java.util.function.BiFunction;
 public class ApplyPotionEffectAction extends HTSLImpl implements NPCAction {
     public ApplyPotionEffectAction() {
         super(
-                "apply_potion_effect_action",
+                ActionEnum.APPLY_POTION,
                 "Apply Potion Effect",
                 "Applies a potion effect to the player.",
                 Material.POTION,

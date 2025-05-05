@@ -29,7 +29,7 @@ import java.util.function.BiFunction;
 public class ClearPotionEffectAction extends HTSLImpl implements NPCAction {
     public ClearPotionEffectAction() {
         super(
-                "clear_potion_effect_action",
+                ActionEnum.CLEAR_POTION,
                 "Clear Potion Effect",
                 "Clears a potion effect from the player.",
                 Material.GLASS_BOTTLE,

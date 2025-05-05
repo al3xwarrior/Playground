@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Enums.VoiceGroupTypes;
@@ -25,7 +22,7 @@ import java.util.List;
 public class EditVoiceGroupAction extends HTSLImpl {
     public EditVoiceGroupAction() {
         super(
-                "edit_voice_group_action",
+                ActionEnum.EDIT_VOICE_GROUP,
                 "Edit Voice Group",
                 "Edits a voice group's type.",
                 Material.MUSIC_DISC_WAIT,

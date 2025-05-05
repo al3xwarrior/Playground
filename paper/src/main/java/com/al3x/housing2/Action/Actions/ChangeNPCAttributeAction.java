@@ -27,7 +27,7 @@ import java.util.List;
 public class ChangeNPCAttributeAction extends HTSLImpl implements NPCAction {
     public ChangeNPCAttributeAction() {
         super(
-                "change_npc_attribute_action",
+                ActionEnum.CHANGE_NPC_ATTRIBUTE,
                 "Change NPC Attribute",
                 "Changes the NPC's attribute.",
                 Material.HOPPER,

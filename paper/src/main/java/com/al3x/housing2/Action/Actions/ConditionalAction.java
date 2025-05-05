@@ -33,7 +33,7 @@ public class ConditionalAction extends HTSLImpl implements NPCAction {
 
     public ConditionalAction() {
         super(
-                "conditional_action",
+                ActionEnum.CONDITIONAL,
                 "Conditional",
                 "Executes actions based on certain conditions.",
                 Material.REDSTONE,

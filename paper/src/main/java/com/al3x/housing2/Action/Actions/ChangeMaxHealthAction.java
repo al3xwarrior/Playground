@@ -19,7 +19,7 @@ import java.util.List;
 public class ChangeMaxHealthAction extends HTSLImpl implements NPCAction {
     public ChangeMaxHealthAction() {
         super(
-                "change_max_health_action",
+                ActionEnum.CHANGE_MAX_HEALTH,
                 "Change Max Health",
                 "Adjusts the player's maximum health.",
                 Material.DANDELION,

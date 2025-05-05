@@ -22,7 +22,7 @@ import java.util.*;
 public class EditAudibilityAction extends HTSLImpl {
     public EditAudibilityAction() {
         super(
-                "edit_audibility_action",
+                ActionEnum.EDIT_AUDIBILITY,
                 "Edit Audibility",
                 "Edit the audibility of players.",
                 Material.SCULK_SENSOR,

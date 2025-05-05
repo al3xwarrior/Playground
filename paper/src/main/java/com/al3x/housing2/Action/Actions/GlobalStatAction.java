@@ -24,7 +24,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class GlobalStatAction extends HTSLImpl {
     public GlobalStatAction() {
         super(
-                "global_stat_action",
+                ActionEnum.GLOBAL_STAT,
                 "Global Stat",
                 "Modifies a global stat.",
                 Material.PLAYER_HEAD,

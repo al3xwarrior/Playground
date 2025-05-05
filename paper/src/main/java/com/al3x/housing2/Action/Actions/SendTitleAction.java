@@ -31,7 +31,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Setter
 public class SendTitleAction extends HTSLImpl {
     public SendTitleAction() {
-        super("send_title_action",
+        super(ActionEnum.SEND_TITLE,
                 "Send Title",
                 "Sends a title and subtitle to the player.",
                 Material.BOOK,

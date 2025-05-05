@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -21,7 +22,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class ResetInventoryAction extends HTSLImpl {
 
     public ResetInventoryAction() {
-        super("reset_inventory_action",
+        super(ActionEnum.RESET_INVENTORY,
                 "Reset Inventory",
                 "Clears the player's inventory.",
                 Material.STONE,

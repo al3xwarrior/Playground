@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -21,7 +22,7 @@ public class ActionbarAction extends HTSLImpl {
 
     public ActionbarAction() {
         super(
-                "actionbar_action",
+                ActionEnum.ACTIONBAR,
                 "Display Actionbar",
                 "Displays a message in the action bar.",
                 Material.WRITABLE_BOOK,

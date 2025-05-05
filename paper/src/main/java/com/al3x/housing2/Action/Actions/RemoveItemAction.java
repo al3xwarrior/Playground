@@ -23,7 +23,7 @@ import java.util.List;
 @ToString
 public class RemoveItemAction extends Action {
     public RemoveItemAction() {
-        super("remove_item_action",
+        super(ActionEnum.REMOVE_ITEM,
                 "Remove Item",
                 "Removes an item from the player's inventory.",
                 Material.CAULDRON,

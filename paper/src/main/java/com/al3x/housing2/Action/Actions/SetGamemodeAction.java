@@ -25,7 +25,7 @@ import java.util.List;
 public class SetGamemodeAction extends HTSLImpl {
     public SetGamemodeAction() {
         super(
-                "set_gamemode_action",
+                ActionEnum.SET_GAMEMODE,
                 "Set Gamemode",
                 "Sets the gamemode of a player.",
                 Material.DAYLIGHT_DETECTOR,

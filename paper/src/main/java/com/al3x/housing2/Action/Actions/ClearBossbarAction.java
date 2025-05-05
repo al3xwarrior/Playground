@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -16,7 +17,7 @@ public class ClearBossbarAction extends HTSLImpl {
 
     public ClearBossbarAction() {
         super(
-                "clear_bossbar_action",
+                ActionEnum.CLEAR_BOSSBAR,
                 "Clear Bossbars",
                 "Clears all bossbars from the player's screen.",
                 Material.WITHER_SKELETON_SKULL,

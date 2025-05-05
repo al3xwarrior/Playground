@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -19,7 +20,7 @@ import java.util.List;
 public class DisplayMenuAction extends HTSLImpl {
     public DisplayMenuAction() {
         super(
-                "display_menu_action",
+                ActionEnum.DISPLAY_MENU,
                 "Display Menu",
                 "Displays a custom menu to the player.",
                 Material.CHEST,

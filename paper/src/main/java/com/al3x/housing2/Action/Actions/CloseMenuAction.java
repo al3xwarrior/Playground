@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
@@ -15,7 +16,7 @@ public class CloseMenuAction extends HTSLImpl {
 
     public CloseMenuAction() {
         super(
-                "close_menu_action",
+                ActionEnum.CLOSE_MENU,
                 "Close Menu",
                 "Closes the player's currently open menu.",
                 Material.CHEST,

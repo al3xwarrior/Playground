@@ -34,7 +34,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @ToString
 public class PlaySoundAction extends HTSLImpl {
     public PlaySoundAction() {
-        super("play_sound_action",
+        super(ActionEnum.PLAY_SOUND,
                 "Play Sound",
                 "Plays a sound at the specified location.",
                 Material.NOTE_BLOCK,

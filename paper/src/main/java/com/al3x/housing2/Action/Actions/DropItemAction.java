@@ -1,6 +1,7 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.Properties.BooleanProperty;
@@ -39,7 +40,7 @@ import static com.al3x.housing2.Enums.Locations.PLAYER_LOCATION;
 public class DropItemAction extends Action {
     public DropItemAction() {
         super(
-                "drop_item_action",
+                ActionEnum.DROP_ITEM,
                 "Drop Item",
                 "Drops an item at a specified location.",
                 Material.DROPPER,

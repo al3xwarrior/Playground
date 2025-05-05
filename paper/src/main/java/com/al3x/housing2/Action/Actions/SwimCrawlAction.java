@@ -19,7 +19,7 @@ import java.util.List;
 public class SwimCrawlAction extends HTSLImpl implements NPCAction {
     public SwimCrawlAction() {
         super(
-                "swim_crawl_action",
+                ActionEnum.SWIM_CRAWL,
                 "Swim/Crawl Action",
                 "Toggles if the player/npc swim or crawl depending on if they are in water or not.",
                 Material.IRON_BARS,

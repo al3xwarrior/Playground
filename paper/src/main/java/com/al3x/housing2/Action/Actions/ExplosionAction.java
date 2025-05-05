@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.LocationProperty;
 import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.Locations;
@@ -27,7 +24,7 @@ public class ExplosionAction extends HTSLImpl {
 
     public ExplosionAction() {
         super(
-                "explosion_action",
+                ActionEnum.EXPLOSION,
                 "Explosion",
                 "Creates an explosion at a set location.",
                 Material.TNT_MINECART,

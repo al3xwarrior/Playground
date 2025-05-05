@@ -30,7 +30,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 public class PlayerStatAction extends HTSLImpl {
     public PlayerStatAction() {
         super(
-                "player_stat_action",
+                ActionEnum.PLAYER_STAT,
                 "Player Stat",
                 "Changes the stat of a Player.",
                 Material.FEATHER,

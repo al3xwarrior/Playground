@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.StatOperation;
@@ -24,7 +21,7 @@ public class ChangeHungerAction extends HTSLImpl {
 
     public ChangeHungerAction() {
         super(
-                "change_hunger_action",
+                ActionEnum.CHANGE_HUNGER,
                 "Change Hunger Level",
                 "Changes the player's hunger level.",
                 Material.COOKED_BEEF,

@@ -32,7 +32,7 @@ import java.util.*;
 public class AttackEntityAction extends HTSLImpl implements NPCAction {
     public AttackEntityAction() {
         super(
-                "attack_entity_action",
+                ActionEnum.ATTACK_ENTITY,
                 "Attack Entity",
                 "Attacks an entity.",
                 Material.IRON_SWORD,

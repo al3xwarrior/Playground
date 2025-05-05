@@ -24,7 +24,7 @@ import java.util.List;
 public class SetHitDelayAction extends HTSLImpl implements NPCAction {
     public SetHitDelayAction() {
         super(
-                "set_hit_delay_action",
+                ActionEnum.SET_HITDELAY,
                 "Set Hit Delay",
                 "Sets the hit delay for the player.",
                 Material.IRON_SWORD,

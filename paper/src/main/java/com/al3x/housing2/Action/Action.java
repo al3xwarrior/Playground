@@ -41,7 +41,7 @@ public abstract class Action {
     public static Gson gson = new GsonBuilder()
             .create();
 
-    private final String id;
+    private final ActionEnum id;
     private final String name;
     private final String description;
     private final Material icon;
@@ -91,6 +91,13 @@ public abstract class Action {
         if (comment != null && !comment.isEmpty()) builder.extraLore(comment);
 
         return builder;
+    }
+
+    public String getId() {
+        if (this instanceof InternalAction internalAction) {
+            return internalAction.getId();
+        }
+        return id != null ? id.name() : "null";
     }
 
     public void createAddDisplayItem(ItemBuilder builder) {
@@ -206,6 +213,19 @@ public abstract class Action {
         }
         action = actionEnum.getActionInstance(data, this.comment, house);
         return action;
+    }
+
+    public static abstract class InternalAction extends Action {
+        String id;
+        public InternalAction(String id, String name, String description, Material icon, List<String> scriptingKeywords) {
+            super(null, name, description, icon, scriptingKeywords);
+            this.id = id;
+        }
+
+        @Override
+        public String getId() {
+            return this.id;
+        }
     }
 }
 

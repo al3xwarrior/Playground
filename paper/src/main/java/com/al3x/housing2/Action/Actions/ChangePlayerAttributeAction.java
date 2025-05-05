@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.AttributeType;
@@ -30,7 +27,7 @@ public class ChangePlayerAttributeAction extends HTSLImpl {
 
     public ChangePlayerAttributeAction() {
         super(
-                "change_player_attribute_action",
+                ActionEnum.CHANGE_PLAYER_ATTRIBUTE,
                 "Change Player Attribute",
                 "Changes the player's attribute.",
                 Material.HOPPER,

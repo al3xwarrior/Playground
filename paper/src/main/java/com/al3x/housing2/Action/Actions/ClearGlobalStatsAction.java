@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -13,7 +14,7 @@ public class ClearGlobalStatsAction extends HTSLImpl {
 
     public ClearGlobalStatsAction() {
         super(
-                "clear_global_stats_action",
+                ActionEnum.CLEAR_GLOBALSTATS,
                 "Clear Global Stats",
                 "Clears all global stats.",
                 Material.BARRIER,

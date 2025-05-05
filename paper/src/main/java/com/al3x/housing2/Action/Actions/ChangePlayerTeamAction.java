@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.GenericPagination.TeamProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Team;
@@ -18,7 +15,7 @@ import java.util.List;
 public class ChangePlayerTeamAction extends HTSLImpl {
     public ChangePlayerTeamAction() {
         super(
-                "change_player_team_action",
+                ActionEnum.CHANGE_PLAYER_TEAM,
                 "Change Player Team",
                 "Changes the player's team.",
                 Material.PLAYER_HEAD,

@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class HTSLImpl extends Action {
-    public HTSLImpl(String id, String name, String description, Material icon, List<String> scriptingKeywords) {
+    public HTSLImpl(ActionEnum id, String name, String description, Material icon, List<String> scriptingKeywords) {
         super(id, name, description, icon, scriptingKeywords);
     }
 

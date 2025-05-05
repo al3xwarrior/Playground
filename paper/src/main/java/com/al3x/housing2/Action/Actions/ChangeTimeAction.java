@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Action.Properties.StringProperty;
@@ -27,7 +24,7 @@ public class ChangeTimeAction extends HTSLImpl {
 
     public ChangeTimeAction() {
         super(
-                "change_time_action",
+                ActionEnum.CHANGE_TIME,
                 "Change Time",
                 "Changes the time in the house.",
                 Material.CLOCK,

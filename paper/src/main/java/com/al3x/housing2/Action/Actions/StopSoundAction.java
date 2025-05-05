@@ -26,7 +26,7 @@ import java.util.*;
 @Setter
 public class StopSoundAction extends HTSLImpl {
     public StopSoundAction() {
-        super("stop_sound_action",
+        super(ActionEnum.STOP_SOUND,
                 "Stop Sound",
                 "Stops a sound effect.",
                 Material.QUARTZ,

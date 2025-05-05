@@ -34,7 +34,7 @@ public class RunAsNPCAction extends HTSLImpl {
 
     public RunAsNPCAction() {
         super(
-                "run_as_npc_action",
+                ActionEnum.RUN_AS_NPC,
                 "Run As NPC Action",
                 "Executes the action as an NPC.",
                 Material.PLAYER_HEAD,

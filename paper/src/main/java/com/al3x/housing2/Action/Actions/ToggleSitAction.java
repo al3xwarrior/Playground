@@ -13,32 +13,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ToggleSitAction extends HTSLImpl implements NPCAction {
 
     public ToggleSitAction() {
-        super("Toggle Sit Action");
-    }
-
-    @Override
-    public String toString() {
-        return "ToggleSitAction";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.SPRUCE_STAIRS);
-        builder.name("&eToggle Sit Action");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.SPRUCE_STAIRS);
-        builder.name("&aToggle Sit Action");
-        builder.description("Toggles if the sit sitting down.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        super(
+                ActionEnum.TOGGLE_SIT,
+                "Toggle Sit",
+                "Toggles if the player is sitting down.",
+                Material.SPRUCE_STAIRS,
+                List.of("sit")
+        );
     }
 
     @Override
@@ -48,20 +34,9 @@ public class ToggleSitAction extends HTSLImpl implements NPCAction {
 
         return OutputType.SUCCESS;
     }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
-    }
-
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "sit";
     }
 
     @Override

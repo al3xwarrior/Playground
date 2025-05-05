@@ -30,10 +30,10 @@ import static com.al3x.housing2.Action.HTSLImpl.handleArg;
 
 @Getter
 @Setter
-public class StatValue extends Action {
+public class StatValue extends Action.InternalAction {
     public StatValue() {
         super(
-                "stat_value",
+                "STAT_VALUE",
                 //everything below this doesnt matter
                 "Stat Value",
                 "A value for a stat.",

@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import lombok.ToString;
@@ -19,7 +16,7 @@ public class FullHealAction extends HTSLImpl implements NPCAction {
 
     public FullHealAction() {
         super(
-                "full_heal_action",
+                ActionEnum.FULL_HEAL,
                 "Full Heal",
                 "Fully heals the player.",
                 Material.GOLDEN_APPLE,

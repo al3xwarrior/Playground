@@ -32,7 +32,7 @@ import java.util.*;
 public class SetVelocityAction extends HTSLImpl implements NPCAction {
     public SetVelocityAction() {
         super(
-                "set_velocity_action",
+                ActionEnum.SET_VELOCITY,
                 "Set Velocity",
                 "Sets the velocity of the player.",
                 Material.PISTON,

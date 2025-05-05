@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Action.OutputType;
@@ -15,7 +16,7 @@ public class ContinueAction extends HTSLImpl implements NPCAction {
 
     public ContinueAction() {
         super(
-                "continue_action",
+                ActionEnum.CONTINUE,
                 "Continue",
                 "Skips the current remaining actions and continues to the next action.",
                 Material.HAY_BLOCK,

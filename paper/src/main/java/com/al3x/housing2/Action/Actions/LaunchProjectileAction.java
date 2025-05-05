@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Action.Properties.ItemStackProperty;
 import com.al3x.housing2.Action.Properties.NumberProperty;
@@ -35,7 +32,7 @@ import java.util.function.BiFunction;
 public class LaunchProjectileAction extends HTSLImpl {
     public LaunchProjectileAction() {
         super(
-                "launch_projectile_action",
+                ActionEnum.LAUNCH_PROJECTILE,
                 "Launch Projectile",
                 "Launches a projectile in a direction.",
                 Material.ARROW,

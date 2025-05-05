@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public abstract class Condition extends Action {
+public abstract class Condition extends Action.InternalAction {
     public Condition(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
         super(condition.name(), name, description, icon, scriptingKeywords);
     }

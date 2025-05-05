@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -23,7 +20,7 @@ public class CancelAction extends HTSLImpl implements NPCAction {
 
     public CancelAction() {
         super(
-                "cancel_action",
+                ActionEnum.CANCEL,
                 "Cancel",
                 "Cancels the event from running.",
                 Material.TNT,

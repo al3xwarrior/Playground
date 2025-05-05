@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
@@ -23,7 +24,7 @@ public class ChatAction extends HTSLImpl {
 
     public ChatAction() {
         super(
-                "display_chat_action",
+                ActionEnum.CHAT,
                 "Display Chat Message",
                 "Displays a chat message to the player.",
                 Material.PAPER,

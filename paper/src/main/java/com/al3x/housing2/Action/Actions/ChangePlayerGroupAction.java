@@ -17,7 +17,7 @@ import java.util.List;
 public class ChangePlayerGroupAction extends HTSLImpl {
     public ChangePlayerGroupAction() {
         super(
-                "change_player_group_action",
+                ActionEnum.CHANGE_PLAYER_GROUP,
                 "Change Player Group",
                 "Changes the player's group.",
                 Material.PLAYER_HEAD,

@@ -26,7 +26,7 @@ import static com.al3x.housing2.Utils.Color.colorize;
 @Setter
 public class RandomAction extends HTSLImpl implements NPCAction {
     public RandomAction() {
-        super("random_action",
+        super(ActionEnum.RANDOM_ACTION,
                 "Random Action",
                 "Executes a random action from the list of actions.",
                 Material.ENDER_CHEST,

@@ -1,5 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.NPCAction;
 import com.al3x.housing2.Action.OutputType;
@@ -15,7 +16,7 @@ public class ExitAction extends HTSLImpl implements NPCAction {
 
     public ExitAction() {
         super(
-                "exit_action",
+                ActionEnum.EXIT,
                 "Exit",
                 "Stops executing any remaining actions.",
                 Material.BEDROCK,

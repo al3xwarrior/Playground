@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -26,7 +23,7 @@ public class ShowNPCAction extends HTSLImpl implements NPCAction {
 
     public ShowNPCAction() {
         super(
-                "show_npc_action",
+                ActionEnum.SHOW_NPC,
                 "Show NPC",
                 "Shows the NPC from the player who triggered the action.",
                 Material.LIME_DYE,

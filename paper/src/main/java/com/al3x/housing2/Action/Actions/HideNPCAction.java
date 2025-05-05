@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionExecutor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.NPCAction;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
@@ -20,7 +17,7 @@ public class HideNPCAction extends HTSLImpl implements NPCAction {
 
     public HideNPCAction() {
         super(
-                "hide_npc_action",
+                ActionEnum.HIDE_NPC,
                 "Hide NPC",
                 "Hides the NPC from the player that triggered the action.",
                 Material.GRAY_DYE,

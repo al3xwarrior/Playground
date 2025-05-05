@@ -24,7 +24,7 @@ public class FunctionAction extends HTSLImpl {
 
     public FunctionAction() {
         super(
-                "function_action",
+                ActionEnum.FUNCTION,
                 "Function Action",
                 "Executes a function.",
                 Material.ACTIVATOR_RAIL,

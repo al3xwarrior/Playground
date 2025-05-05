@@ -29,7 +29,7 @@ public class NPCStatAction extends HTSLImpl implements NPCAction {
 
     public NPCStatAction() {
         super(
-                "npc_stat_action",
+                ActionEnum.NPC_STAT,
                 "NPC Stat",
                 "Changes the stat of an NPC.",
                 Material.ZOMBIE_SPAWN_EGG,

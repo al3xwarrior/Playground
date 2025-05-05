@@ -37,7 +37,7 @@ public class EditVisibilityAction extends HTSLImpl {
 
     public EditVisibilityAction() {
         super(
-                "edit_visibility_action",
+                ActionEnum.EDIT_VISIBILITY,
                 "Edit Visibility",
                 "Edit the visibility of players.",
                 Material.ENDER_EYE,

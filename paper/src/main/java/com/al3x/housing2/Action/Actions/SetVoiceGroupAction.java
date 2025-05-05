@@ -1,9 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.ActionProperty;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.HandlePlaceholders;
@@ -18,7 +15,7 @@ import java.util.List;
 public class SetVoiceGroupAction extends HTSLImpl {
     public SetVoiceGroupAction() {
         super(
-                "set_voice_group_action",
+                ActionEnum.SET_VOICE_GROUP,
                 "Set Voice Group",
                 "Sets the voice group of a player.",
                 Material.JUKEBOX,

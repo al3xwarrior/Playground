@@ -20,7 +20,7 @@ public class ChangeHealthAction extends HTSLImpl implements NPCAction {
 
     public ChangeHealthAction() {
         super(
-                "change_health_action",
+                ActionEnum.CHANGE_HEALTH,
                 "Change Health",
                 "Changes the player's health.",
                 Material.APPLE,
