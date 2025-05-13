@@ -97,7 +97,7 @@ public abstract class Action {
         if (this instanceof InternalAction internalAction) {
             return internalAction.getId();
         }
-        return id != null ? id.name() : "null";
+        return id != null ? id.getId() : "null";
     }
 
     public void createAddDisplayItem(ItemBuilder builder) {
@@ -172,6 +172,13 @@ public abstract class Action {
                         .findFirst()
                         .orElse(null);
                 if (property != null) {
+                    if (property instanceof ActionProperty.PropertyUpdater<?> updater) {
+                        Object value = updater.update(data, house);
+                        if (value != null) {
+                            property.setValue(value);
+                            continue;
+                        }
+                    }
                     if (property instanceof ActionProperty.PropertySerializer<?, ?> serializer) {
                         Object value = serializer.deserialize(gson.toJsonTree(data.get(key)), house);
                         if (value == null) {

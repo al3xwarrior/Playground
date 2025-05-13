@@ -14,7 +14,6 @@ import com.al3x.housing2.Data.*;
 import com.al3x.housing2.Listeners.TrashCanListener;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -336,7 +335,7 @@ public class HousingWorld {
                         main.getLogger().warning("Action " + action.getAction() + " not found");
                         continue;
                     }
-                    eventActions.get(type).add(e.getActionInstance(action.getProperties(), action.getComment(), this));
+                    eventActions.get(type).add(e.getActionInstance(action.getData(), action.getComment(), this));
                 }
             }
         }

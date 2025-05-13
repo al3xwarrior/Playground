@@ -14,9 +14,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class LocationProperty extends ActionProperty<String> {
+public class LocationProperty extends ActionProperty<String> implements ActionProperty.PropertyUpdater<String> {
     public LocationProperty(String id, String name, String description) {
         super(id, name, description, Material.ENDER_PEARL);
     }
@@ -155,5 +157,22 @@ public class LocationProperty extends ActionProperty<String> {
             return base + value;
         }
         return value;
+    }
+
+    @Override
+    public String update(HashMap<String, Object> properties, HousingWorld house) {
+        if (getId().equals("location")) {
+            if (properties.get("customLocation") != null) {
+                return (String) properties.get("customLocation");
+            }
+            return properties.get("location").toString();
+        }
+        if (getId().equals("location2")) {
+            if (properties.get("customLocation2") != null) {
+                return (String) properties.get("customLocation2");
+            }
+            return properties.get("location2").toString();
+        }
+        return properties.get(getId()).toString();
     }
 }

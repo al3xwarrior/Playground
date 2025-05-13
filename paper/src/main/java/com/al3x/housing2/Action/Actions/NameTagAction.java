@@ -21,7 +21,7 @@ public class NameTagAction extends HTSLImpl {
     public NameTagAction() {
         super(
                 ActionEnum.CHANGE_PLAYER_NAMETAG,
-                "Change Player NameTag",
+                "Change Player Name Tag",
                 "Changes the player's name tag.",
                 Material.NAME_TAG,
                 List.of("nametag")

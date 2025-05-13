@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 @Getter
-public class NumberProperty extends ActionProperty<String> {
+public class NumberProperty extends ActionProperty<String> implements ActionProperty.PropertySerializer<String, String> {
     private final double min;
     private final double max;
 
@@ -51,6 +51,22 @@ public class NumberProperty extends ActionProperty<String> {
             return parsedValue;
         } catch (NumberFormatException e) {
             return 0D;
+        }
+    }
+
+    @Override
+    public String serialize() {
+        return getValue();
+    }
+
+    @Override
+    public String deserialize(Object value, HousingWorld house) {
+        if (value instanceof Double) {
+            return String.valueOf(value);
+        } else if (value instanceof String) {
+            return (String) value;
+        } else {
+            return null;
         }
     }
 }

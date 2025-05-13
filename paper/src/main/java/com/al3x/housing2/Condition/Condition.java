@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Condition extends Action.InternalAction {
     public Condition(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
-        super(condition.name(), name, description, icon, scriptingKeywords);
+        super(condition.getId(), name, description, icon, scriptingKeywords);
 
         getProperties().add(
                 new BooleanProperty(
@@ -31,7 +31,7 @@ public abstract class Condition extends Action.InternalAction {
 
     public Condition clone(HousingWorld house) {
         Condition condition;
-        ConditionEnum conditionEnum = ConditionEnum.getConditionById(getName());
+        ConditionEnum conditionEnum = ConditionEnum.getConditionById(getId());
         if (conditionEnum == null) {
             return null;
         }

@@ -32,6 +32,31 @@ public class StringToBase64 {
         }
     }
 
+    public static String decodeBase64(String data) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            String item;
+            item = (String) dataInput.readObject();
+
+            dataInput.close();
+            return item;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public static ArrayList<Action> fromJson(String json, HousingWorld house) {
+        JsonArray jsonArray = gson.fromJson(json, JsonArray.class);
+        ArrayList<ActionData> actions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            actions.add(gson.fromJson(jsonObject, ActionData.class));
+        }
+        return new ArrayList<>(ActionData.toList(actions, house));
+    }
+
     public static ArrayList<Action> actionsFromBase64(String data, HousingWorld house) {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));

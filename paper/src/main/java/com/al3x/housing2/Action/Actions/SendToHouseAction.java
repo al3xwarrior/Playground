@@ -27,6 +27,14 @@ public class SendToHouseAction extends HTSLImpl {
                 Material.SPRUCE_DOOR,
                 List.of("sendToHouse")
         );
+
+        getProperties().add(
+                new StringProperty(
+                        "housingId",
+                        "Housing ID",
+                        "The ID of the housing to send the player to."
+                )
+        );
     }
 
     @Override

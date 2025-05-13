@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SoundProperty extends ActionProperty<Sound>  {
+public class SoundProperty extends ActionProperty<Sound> implements ActionProperty.PropertySerializer<Sound, String> {
     public SoundProperty(String id, String name, String description) {
         super(id, name, description, Material.NOTE_BLOCK);
     }
@@ -42,5 +42,15 @@ public class SoundProperty extends ActionProperty<Sound>  {
                 menu.open();
             }
         }).open();
+    }
+
+    @Override
+    public String serialize() {
+        return getValue().name();
+    }
+
+    @Override
+    public Sound deserialize(Object value, HousingWorld house) {
+        return Sound.valueOf((String) value);
     }
 }

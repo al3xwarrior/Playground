@@ -107,7 +107,7 @@ public class LaunchProjectileAction extends HTSLImpl {
         }
 
         if (proj instanceof ThrownPotion potion) {
-            potion.setItem(getValue("item", ItemStackProperty.class).getValue());
+            potion.setItem(getProperty("item", ItemStackProperty.class).getValue());
             potion.setVelocity(velocity);
             potion.setShooter(player);
             return OutputType.SUCCESS;

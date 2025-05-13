@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.AddStatInstanceProperty;
 import com.al3x.housing2.Action.Properties.StatInstanceProperty;
 import com.al3x.housing2.Action.Properties.StringProperty;
+import com.al3x.housing2.Action.Properties.VersionProperty;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
@@ -47,7 +48,8 @@ public class PlayerStatAction extends HTSLImpl {
                 ).setValue(new ArrayList<>(List.of(
                         new StatInstance()
                 ))),
-                new AddStatInstanceProperty(32)
+                new AddStatInstanceProperty(32),
+                new VersionProperty().setValue(0)
         ));
 
     }

@@ -5,9 +5,6 @@ import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,16 +18,16 @@ import java.util.stream.Collectors;
 @Setter
 public class ActionData {
     private String action;
-    private HashMap<String, Object> properties;
+    private HashMap<String, Object> data;
     private String comment;
 
     public ActionData() {
         //used for serialization
     }
 
-    public ActionData(String action, HashMap<String, Object> properties, String comment) {
+    public ActionData(String action, HashMap<String, Object> data, String comment) {
         this.action = action;
-        this.properties = properties;
+        this.data = data;
         this.comment = comment;
     }
 
@@ -70,7 +67,7 @@ public class ActionData {
                 Main.getInstance().getLogger().warning("Action " + data.action + " not found");
                 continue; //skip invalid actions, rather than freaking out
             }
-            collect.add(actionEnum.getActionInstance(data.getProperties(), data.getComment(), house));
+            collect.add(actionEnum.getActionInstance(data.getData(), data.getComment(), house));
         }
         return collect;
     }
@@ -91,6 +88,6 @@ public class ActionData {
             Main.getInstance().getLogger().warning("Action " + data.action + " not found");
             return null; //skip invalid actions, rather than freaking out
         }
-        return actionEnum.getActionInstance(data.getProperties(), data.getComment(), house);
+        return actionEnum.getActionInstance(data.getData(), data.getComment(), house);
     }
 }

@@ -17,6 +17,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +33,9 @@ import java.util.stream.Collectors;
 import static com.al3x.housing2.Instances.HousesManager.gson;
 import static com.al3x.housing2.Utils.Color.colorize;
 
+@Slf4j
 @Setter
-public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>> implements ActionProperty.PropertySerializer<List<StatInstance>, List<StatInstance.StatInstanceData>> {
+public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>> implements ActionProperty.PropertySerializer<List<StatInstance>, List<StatInstance.StatInstanceData>>, ActionProperty.PropertyUpdater<List<StatInstance>> {
     boolean showExpression = false;
     public StatInstanceProperty() {
         super("statInstances");
@@ -84,6 +87,66 @@ public class StatInstanceProperty extends ExpandableProperty<List<StatInstance>>
             info.add(new Duple<>(instance.mode.name(), instance.value.toString()));
         }
         return info;
+    }
+
+    @Override
+    public List<StatInstance> update(HashMap<String, Object> properties, HousingWorld house) {
+        if (!properties.containsKey("version")) {
+            List<Object> instancesList = (List<Object>) properties.get("statInstances");
+            List<StatInstance> instances = new ArrayList<>(statInstances(instancesList, house));
+            return instances;
+        }
+        return null;
+    }
+
+    private List<StatInstance> statInstances(List<Object> instances, HousingWorld house) {
+        List<StatInstance> statInstances = new ArrayList<>();
+        for (Object object : instances) {
+            LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) object;
+            StatInstance instance = new StatInstance();
+            instance.mode = StatOperation.valueOf((String) map.get("mode"));
+            map = (LinkedTreeMap<String, Object>) map.get("value");
+
+            Object value = map.get("value");
+            if (value != null) {
+                LinkedTreeMap<String, Object> map2 = (LinkedTreeMap<String, Object>) value;
+                HashMap<String, Object> map3 = new HashMap<>();
+                for (String key : map2.keySet()) {
+                    if (key.equals("statType") || key.equals("comment") || key.equals("name")) continue;
+                    if (key.equals("literalValue") || key.equals("value")) {
+                        HashMap<String, Object> map4 = new HashMap<>();
+                        map4.put("literalValue", map2.get("literalValue"));
+                        map4.put("isExpression", map2.get("isExpression"));
+                        map4.put("expressionValue", map2.get("value"));
+                        map3.put("value", map4);
+                        continue;
+                    }
+                    if (key.equals("statInstances")) {
+                        map3.put("statInstances", map.get("statInstances"));
+                        continue;
+                    }
+                    map3.put(key, map2.get(key));
+                }
+                ActionData actionData = new ActionData(
+                        "StatValue",
+                        map3,
+                        (String) map2.get("comment")
+                );
+                instance.value = new StatValueProperty.StatValueInstance(
+                        (boolean) map.get("isExpression"),
+                        map.get("literalValue") == null ? null : (String) map.get("literalValue"),
+                        StatValue.fromActionData(actionData, house)
+                );
+            } else {
+                instance.value = new StatValueProperty.StatValueInstance(
+                        (boolean) map.get("isExpression"),
+                        map.get("literalValue") == null ? null : (String) map.get("literalValue"),
+                        null
+                );
+            }
+            statInstances.add(instance);
+        }
+        return statInstances;
     }
 
     private class ModeProperty extends ActionProperty<StatOperation> {

@@ -1,7 +1,6 @@
 package com.al3x.housing2.Action.Actions;
 
 import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Action.Properties.*;
 import com.al3x.housing2.Action.Properties.StatValueProperty.StatValueInstance;
@@ -10,30 +9,20 @@ import com.al3x.housing2.Data.ActionData;
 import com.al3x.housing2.Enums.StatOperation;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Stat;
-import com.al3x.housing2.Menus.Actions.ActionEditMenu;
-import com.al3x.housing2.Utils.Duple;
-import com.al3x.housing2.Utils.HandlePlaceholders;
-import com.al3x.housing2.Utils.StringUtilsKt;
-import kotlin.text.MatchResult;
-import kotlin.text.Regex;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static com.al3x.housing2.Action.HTSLImpl.handleArg;
 
 @Getter
 @Setter
 public class StatValue extends Action.InternalAction {
     public StatValue() {
         super(
-                "STAT_VALUE",
+                "StatValue",
                 //everything below this doesnt matter
                 "Stat Value",
                 "A value for a stat.",
@@ -60,8 +49,9 @@ public class StatValue extends Action.InternalAction {
         //Look for a stat in value1 and modify it with value2
         StatValue value1 = statValueInstance.getExpressionValue();
 
-        if (value1 == null) return "0.0";
-        String result = value1.calculate(player, world);
+        String result = value1 == null ?
+                statValueInstance.getLiteralValue() :
+                value1.calculate(player, world);
 
         List<StatInstance> statInstances = getProperty("statInstances", StatInstanceProperty.class).getValue();
         for (StatInstance statInstance : statInstances) {
@@ -126,7 +116,7 @@ public class StatValue extends Action.InternalAction {
     public static StatValue fromActionData(ActionData data, HousingWorld house) {
         if (data == null) return null;
         StatValue value = new StatValue();
-        value.fromData(data.getProperties(), house);
+        value.fromData(data.getData(), house);
         return value;
     }
 }

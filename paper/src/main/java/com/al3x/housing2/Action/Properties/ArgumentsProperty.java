@@ -6,6 +6,7 @@ import com.al3x.housing2.Menus.Actions.ActionEditMenu;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Returnable;
+import com.google.gson.JsonElement;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 
-public class ArgumentsProperty extends ExpandableProperty<List<ArgumentsProperty.Argument>> {
+public class ArgumentsProperty extends ExpandableProperty<List<ArgumentsProperty.Argument>> implements ActionProperty.PropertySerializer<List<ArgumentsProperty.Argument>, List<ArgumentsProperty.Argument>> {
 
     public ArgumentsProperty(String id) {
         super(id);
@@ -93,6 +94,30 @@ public class ArgumentsProperty extends ExpandableProperty<List<ArgumentsProperty
     @Override
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
 
+    }
+
+    @Override
+    public List<Argument> serialize() {
+        return getValue();
+    }
+
+    @Override
+    public List<Argument> deserialize(Object value, HousingWorld house) {
+        if (value instanceof JsonElement element) {
+            return dataToList(element.getAsJsonArray(), Argument.class);
+        }
+        if (value instanceof List<?> list) {
+            List<Argument> arguments = new ArrayList<>();
+            for (Object object : list) {
+                if (object instanceof JsonElement element) {
+                    arguments.add(new Argument(element.getAsJsonObject().get("name").getAsString(), element.getAsJsonObject().get("value").getAsString()));
+                } else if (object instanceof Argument argument) {
+                    arguments.add(argument);
+                }
+            }
+            return arguments;
+        }
+        return null;
     }
 
     @Getter

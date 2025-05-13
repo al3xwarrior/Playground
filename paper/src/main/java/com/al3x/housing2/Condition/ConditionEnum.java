@@ -3,48 +3,48 @@ package com.al3x.housing2.Condition;
 import com.al3x.housing2.Condition.Conditions.*;
 import com.al3x.housing2.Condition.Conditions.IsSneakingCondition;
 import com.al3x.housing2.Instances.HousingWorld;
+import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
+@Getter
 public enum ConditionEnum {
-    CLICKTYPE_REQUIREMENT(ClickTypeCondition.class),
-    DAMAGE_TYPE(DamageTypeCondition.class),
-    DAMAGE_AMOUNT(DamageAmountCondition.class),
-    INTERACTION_TYPE(InteractionTypeCondition.class),
-    BLOCK_TYPE(BlockTypeCondition.class),
-    REQUIRED_GROUP(GroupRequirementCondition.class),
-    STAT_REQUIREMENT(StatRequirementCondition.class),
-    NPC_STAT_REQUIREMENT(NPCStatRequirementCondition.class),
-    GLOBALSTAT_REQUIREMENT(GlobalStatRequirementCondition.class),
-    HAS_PERMISSION(HasPermissionCondition.class),
-    WITHIN_REGION(WithinRegionCondition.class),
-    HAS_ITEM(HasItemCondition.class),
-    HAS_POTION_EFFECT(HasPotionEffectCondition.class),
-    IS_SNEAKING(IsSneakingCondition.class),
-    IS_FLYING(IsFlyingCondition.class),
-    IS_GLIDING(IsGlidingCondition.class),
-    IS_SHIELDING(IsShieldingCondition.class),
-    IS_NPC_HIDDEN(IsNPCHiddenCondition.class),
-    HEALTH_REQUIREMENT(HealthRequirementCondition.class),
-    MAXHEALTH_REQUIREMENT(MaxHealthRequirementCondition.class),
-    HUNGER_REQUIREMENT(HungerRequirementCondition.class),
-    GAMEMODE_REQUIREMENT(GamemodeRequirementCondition.class),
-    PLACEHOLDER_REQUIREMENT( PlaceholderRequirementCondition.class),
-    IS_ATTACK_COOLDOWN(IsAttackCooldownCondition.class),
-    IS_VOICE_CONNECTED(IsVoiceConnectedCondition.class),
-    IS_EATING(IsEatingCondition.class),
-    IS_SPRINTING(IsSprintingCondition.class),
+    CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
+    DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
+    DAMAGE_AMOUNT("Damage Amount", DamageAmountCondition.class),
+    INTERACTION_TYPE("Interaction Type", InteractionTypeCondition.class),
+    BLOCK_TYPE("Block Type Requirement", BlockTypeCondition.class),
+    REQUIRED_GROUP("Required Group", GroupRequirementCondition.class),
+    STAT_REQUIREMENT("Stat Requirement", StatRequirementCondition.class),
+    NPC_STAT_REQUIREMENT("NPC Stat Requirement", NPCStatRequirementCondition.class),
+    GLOBALSTAT_REQUIREMENT("Global Stat Requirement", GlobalStatRequirementCondition.class),
+    HAS_PERMISSION("Has Permission", HasPermissionCondition.class),
+    WITHIN_REGION("Within Region", WithinRegionCondition.class),
+    HAS_ITEM("Has Item", HasItemCondition.class),
+    HAS_POTION_EFFECT("Has Potion Effect", HasPotionEffectCondition.class),
+    IS_SNEAKING("Is Sneaking", IsSneakingCondition.class),
+    IS_FLYING("Is Flying", IsFlyingCondition.class),
+    IS_GLIDING("Is Gliding", IsGlidingCondition.class),
+    IS_SHIELDING("Is Shielding", IsShieldingCondition.class),
+    IS_NPC_HIDDEN("Is NPC Hidden", IsNPCHiddenCondition.class),
+    HEALTH_REQUIREMENT("Health Requirement", HealthRequirementCondition.class),
+    MAXHEALTH_REQUIREMENT("Max Health Requirement", MaxHealthRequirementCondition.class),
+    HUNGER_REQUIREMENT("Hunger Requirement", HungerRequirementCondition.class),
+    GAMEMODE_REQUIREMENT("Gamemode Requirement", GamemodeRequirementCondition.class),
+    PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
+    IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
+    IS_VOICE_CONNECTED("Is Voice Connected", IsVoiceConnectedCondition.class),
+    IS_EATING("Is Eating", IsEatingCondition.class),
+    IS_SPRINTING("Is Sprinting", IsSprintingCondition.class),
     ;
 
     private Class<? extends Condition> condition;
+    private String id;
 
-    ConditionEnum(Class<? extends Condition> condition) {
+    ConditionEnum(String id, Class<? extends Condition> condition) {
+        this.id = id;
         this.condition = condition;
-    }
-
-    public Class<? extends Condition> getCondition() {
-        return condition;
     }
 
     public Condition getConditionInstance(HashMap<String, Object> data, HousingWorld house) {
@@ -69,7 +69,7 @@ public enum ConditionEnum {
 
     public static ConditionEnum getConditionById(String id) {
         for (ConditionEnum condition : ConditionEnum.values()) {
-            if (condition.name().equals(id)) {
+            if (condition.getId().equals(id)) {
                 return condition;
             }
         }

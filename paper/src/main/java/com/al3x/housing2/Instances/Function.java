@@ -69,7 +69,9 @@ public class Function {
 
         for (Player p : players) {
             List<ArgumentsProperty.Argument> args = functionArguments.getOrDefault(p.getUniqueId(), new ArrayList<>());
-            args.addAll(arguments);
+            if (arguments != null && !arguments.isEmpty()) {
+                args.addAll(arguments);
+            }
             functionArguments.put(p.getUniqueId(), args);
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());

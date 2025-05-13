@@ -28,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -139,6 +141,10 @@ public abstract class ActionProperty<V> {
         default T deserialize(JsonElement value, HousingWorld house) {
             return null;
         }
+    }
+
+    public interface PropertyUpdater<V> {
+        V update(HashMap<String, Object> properties, HousingWorld house);
     }
 
     public static class Constant {
