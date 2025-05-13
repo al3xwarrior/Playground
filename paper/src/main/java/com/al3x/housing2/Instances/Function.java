@@ -3,6 +3,7 @@ package com.al3x.housing2.Instances;
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Action.ActionExecutor;
 import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.ArgumentsProperty;
 import com.al3x.housing2.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Function {
-    public static HashMap<UUID, HashMap<String, String>> functionArguments = new HashMap<>();
+    public static HashMap<UUID, List<ArgumentsProperty.Argument>> functionArguments = new HashMap<>();
 
     private String name;
     private UUID id;//probably not needed?
@@ -49,10 +50,10 @@ public class Function {
     }
 
     public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor) {
-        return execute(main, entity, player, house, automatic, await, oldExecutor, new HashMap<>());
+        return execute(main, entity, player, house, automatic, await, oldExecutor, new ArrayList<>());
     }
 
-    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor, HashMap<String, String> arguments) {
+    public OutputType execute(Main main, Entity entity, Player player, HousingWorld house, boolean automatic, boolean await, ActionExecutor oldExecutor, List<ArgumentsProperty.Argument> arguments) {
         if (!loaded) return OutputType.ERROR;
         List<Player> players = new ArrayList<>();
         //I dont fliping know anymore lol
@@ -67,8 +68,10 @@ public class Function {
         }
 
         for (Player p : players) {
-            HashMap<String, String> args = functionArguments.getOrDefault(p.getUniqueId(), new HashMap<>());
-            args.putAll(arguments);
+            List<ArgumentsProperty.Argument> args = functionArguments.getOrDefault(p.getUniqueId(), new ArrayList<>());
+            if (arguments != null && !arguments.isEmpty()) {
+                args.addAll(arguments);
+            }
             functionArguments.put(p.getUniqueId(), args);
             ActionExecutor executor = new ActionExecutor("function");
             executor.setLimits(oldExecutor != null ? oldExecutor.getLimits() : new HashMap<>());
@@ -144,6 +147,11 @@ public class Function {
 
     public int getLastRun() {
         return lastRun;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
 

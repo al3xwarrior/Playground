@@ -1,9 +1,16 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.BooleanProperty;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.StringProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.StatComparator;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.Comparator;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Utils.Color;
@@ -19,162 +26,64 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class PlaceholderRequirementCondition extends CHTSLImpl {
-    private String placeholder;
-    private StatComparator comparator;
-    private String compareValue;
-    private boolean ignoreCase;
-    private boolean ignoreColor;
-
     public PlaceholderRequirementCondition() {
-        super("Placeholder Requirement");
-        this.placeholder = "%stat.player/Kills%";
-        this.comparator = StatComparator.EQUALS;
-        this.compareValue = "1.0";
-        this.ignoreCase = false;
-        this.ignoreColor = false;
+        super(ConditionEnum.PLACEHOLDER_REQUIREMENT,
+                "Placeholder Requirement",
+                "Requires a placeholder to match the provided condition.",
+                Material.OAK_SIGN,
+                List.of("placeholder"));
+
+        getProperties().addAll(List.of(
+                new StringProperty(
+                        "placeholder",
+                        "Placeholder",
+                        "The placeholder to check."
+                ).setValue("Kills"),
+                new EnumProperty<>(
+                        "comparator",
+                        "Comparator",
+                        "The comparator to use for the placeholder.",
+                        StatComparator.class
+                ).setValue(StatComparator.EQUALS),
+                new StringProperty(
+                        "compareValue",
+                        "Compare Value",
+                        "The value to compare the placeholder against."
+                ).setValue("1.0"),
+                new BooleanProperty(
+                        "ignoreCase",
+                        "Ignore Case",
+                        "Whether to ignore case when comparing the placeholder value."
+                ).setValue(false),
+                new BooleanProperty(
+                        "ignoreColor",
+                        "Ignore Color",
+                        "Whether to ignore colors when comparing the placeholder value."
+                ).setValue(false)
+        ));
     }
 
     @Override
-    public String toString() {
-        return "PlaceholderRequirementCondition";
-    }
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        String placeholderValue = getProperty("placeholder", StringProperty.class).parsedValue(house, player);
+        String compareValue = getProperty("compareValue", StringProperty.class).parsedValue(house, player);
 
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.OAK_SIGN);
-        builder.name("&ePlaceholder Requirement");
-        builder.description("Requires a placeholder to match the provided condition.");
-        builder.info("Placeholder", placeholder);
-        builder.info("Comparator", comparator.name());
-        builder.info("Value", compareValue);
-        builder.info("Ignores Case", ignoreCase ? "Yes" : "No");
-        builder.info("Ignores Color", ignoreColor ? "Yes" : "No");
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.OAK_SIGN);
-        builder.name("&ePlaceholder Requirement");
-        builder.description("Requires a placeholder to match the provided condition.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("placeholder",
-                        ItemBuilder.create(Material.OAK_SIGN)
-                                .name("&ePlaceholder")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + placeholder)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("comparator",
-                        ItemBuilder.create(Material.COMPASS)
-                                .name("&eMode")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + comparator)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, StatComparator.values(), null
-                ),
-                new ActionEditor.ActionItem("compareValue",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&eAmount")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + compareValue)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.STRING
-                ),
-                new ActionEditor.ActionItem("ignoreCase",
-                        ItemBuilder.create((ignoreCase ? Material.LIME_DYE : Material.RED_DYE))
-                                .name((ignoreCase ? "&aIgnore Case" : "&cIgnore Case"))
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + ignoreCase)
-                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                ),
-                new ActionEditor.ActionItem("ignoreColor",
-                        ItemBuilder.create((ignoreColor ? Material.LIME_DYE : Material.RED_DYE))
-                                .name((ignoreColor ? "&aIgnore Color" : "&cIgnore Color"))
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + ignoreColor)
-                                .lClick(ItemBuilder.ActionType.TOGGLE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.BOOLEAN
-                )
-        );
-        return new ActionEditor(4, "Placeholder Requirement", items);
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        String placeholderValue = HandlePlaceholders.parsePlaceholders(player, house, placeholder);
-        String compareValue = HandlePlaceholders.parsePlaceholders(player, house, this.compareValue);
-
-        if (ignoreCase) {
+        if (getValue("ignoreCase", Boolean.class)) {
             placeholderValue = placeholderValue.toLowerCase();
             compareValue = compareValue.toLowerCase();
         }
 
-        if (ignoreColor) {
+        if (getValue("ignoreColor", Boolean.class)) {
             placeholderValue = Color.removeColor(placeholderValue);
             compareValue = Color.removeColor(compareValue);
         }
 
-        return Comparator.compare(comparator, placeholderValue, compareValue);
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("placeholder", placeholder);
-        data.put("comparator", comparator.name());
-        data.put("compareValue", compareValue);
-        data.put("ignoreCase", ignoreCase);
-        data.put("ignoreColor", ignoreColor);
-        return data;
+        return Comparator.compare(getValue("comparator", StatComparator.class), placeholderValue, compareValue)
+                ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
     public boolean requiresPlayer() {
         return false;
-    }
-
-    @Override
-    public String keyword() {
-        return "placeholder";
-    }
-
-    @Override
-    public String export() {
-        String compareValue = this.compareValue;
-        if (compareValue.contains(" ")) {
-            compareValue = "\"" + compareValue + "\"";
-        }
-        return keyword() + " " + placeholder + " " + comparator.name() + " " + compareValue + " " + ignoreCase + " " + ignoreColor;
-    }
-
-    @Override
-    public void importCondition(String action, List<String> nextLines) {
-        String[] parts = action.split(" ");
-        Duple<String[], String> placeholderArg = handleArg(parts, 0);
-        this.placeholder = placeholderArg.getSecond();
-        parts = placeholderArg.getFirst();
-        if (parts.length == 0) {
-            return;
-        }
-        this.comparator = StatComparator.getComparator(parts[0]);
-        Duple<String[], String> compareValueArg = handleArg(parts, 1);
-        compareValue = compareValueArg.getSecond();
-        parts = compareValueArg.getFirst();
-        if (parts.length > 0) {
-            ignoreCase = Boolean.parseBoolean(parts[0]);
-        }
-        if (parts.length > 1) {
-            ignoreColor = Boolean.parseBoolean(parts[1]);
-        }
     }
 }

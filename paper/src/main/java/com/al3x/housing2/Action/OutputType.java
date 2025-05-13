@@ -7,5 +7,8 @@ public enum OutputType {
     SUCCESS,
     PAUSE,
     CONTINUE,
-    BREAK
+    BREAK,
+
+    TRUE,
+    FALSE
 }

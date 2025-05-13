@@ -1,45 +1,26 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.List;
 
-import static com.al3x.housing2.Utils.Color.colorize;
-
+@ToString
 public class KillPlayerAction extends HTSLImpl {
 
     public KillPlayerAction() {
-        super("Kill Player Action");
-    }
-
-    @Override
-    public String toString() {
-        return "KillPlayerAction";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_BARS);
-        builder.name("&eKill Player");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_BARS);
-        builder.name("&aKill Player");
-        builder.description("Kills the player");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        super(
+                ActionEnum.KILL_PLAYER,
+                "Kill Player",
+                "Kills the player.",
+                Material.IRON_BARS,
+                List.of("killPlayer")
+        );
     }
 
     @Override
@@ -49,17 +30,7 @@ public class KillPlayerAction extends HTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "kill";
     }
 }

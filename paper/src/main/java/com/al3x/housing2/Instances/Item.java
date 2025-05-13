@@ -2,8 +2,10 @@ package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Migration.MigrationManagerKt;
 import com.al3x.housing2.Utils.NbtItemBuilder;
 import com.al3x.housing2.Utils.StringToBase64;
+import com.google.gson.JsonArray;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,8 +55,35 @@ public class Item {
         return false;
     }
 
+    public static Item fromOldItemStack(ItemStack item, HousingWorld house) {
+        if (item == null || item.getItemMeta() == null) {
+            return null;
+        }
+        Item newItem = new Item(item);
+        HashMap<ClickType, ArrayList<Action>> actions = newItem.getActions();
+        NbtItemBuilder nbtItemBuilder = new NbtItemBuilder(item);
+        NbtItemBuilder actionsBuilder = nbtItemBuilder.getChild("actions");
 
-    public static Item fromItemStack(ItemStack item) {
+        if (actionsBuilder != null) {
+            for (ClickType clickType : actions.keySet()) {
+                String base64 = actionsBuilder.getString(clickType.name().toLowerCase());
+                if (base64 != null) {
+                    String json = StringToBase64.decodeBase64(base64);
+                    json = MigrationManagerKt.main(json);
+                    if (json != null) {
+                        ArrayList<Action> actionList = StringToBase64.fromJson(json, house);
+                        actions.put(clickType, actionList);
+                    } else {
+                        Main.getInstance().getLogger().warning("Item " + item.getType() + " has no actions.");
+                    }
+                }
+            }
+        }
+        return newItem;
+    }
+
+
+    public static Item fromItemStack(ItemStack item, HousingWorld house) {
         if (item == null || item.getItemMeta() == null) {
             return null;
         }
@@ -66,7 +95,7 @@ public class Item {
             for (ClickType clickType : actions.keySet()) {
                 String base64 = actionsBuilder.getString(clickType.name().toLowerCase());
                 if (base64 != null) {
-                    actions.put(clickType, StringToBase64.actionsFromBase64(base64));
+                    actions.put(clickType, StringToBase64.actionsFromBase64(base64, house));
                 }
             }
         }

@@ -1,53 +1,33 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
+import com.al3x.housing2.Action.ActionEnum;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
+@ToString
 public class CloseMenuAction extends HTSLImpl {
 
     public CloseMenuAction() {
-        super("Close Menu Action");
-    }
-
-    @Override
-    public String toString() {
-        return "CloseMenuAction";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&eClose Menu");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&aClose Menu");
-        builder.description("Closes the player's currently open menu.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
+        super(
+                ActionEnum.CLOSE_MENU,
+                "Close Menu",
+                "Closes the player's currently open menu.",
+                Material.CHEST,
+                List.of("closeMenu")
+        );
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         player.closeInventory();
         return OutputType.SUCCESS;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
     }
 
     @Override
@@ -58,10 +38,5 @@ public class CloseMenuAction extends HTSLImpl {
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "closeMenu";
     }
 }

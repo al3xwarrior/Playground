@@ -8,9 +8,11 @@ import com.al3x.housing2.Enums.HouseSize;
 import com.al3x.housing2.Enums.permissions.Permissions;
 import com.al3x.housing2.Instances.HousesManager;
 import com.al3x.housing2.Instances.HousingWorld;
+import com.al3x.housing2.Instances.Item;
 import com.al3x.housing2.Menus.HouseBrowserMenu;
 import com.al3x.housing2.Menus.HousingMenu.HousingMenu;
 import com.al3x.housing2.Network.PlayerNetwork;
+import com.al3x.housing2.Utils.Serialization;
 import com.al3x.housing2.network.payload.clientbound.ClientboundSyntax;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -29,7 +31,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -140,7 +144,7 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
                                 .executes(this::unwhitelist)
                         )
                 )
-                .then(Commands.literal("migrate")
+                .then(Commands.literal("migrateitems")
                         .requires(this::isAdmin)
                         .executes(this::migrate)
                 )
@@ -162,7 +166,47 @@ public class Housing extends AbstractHousingCommand implements HousingPunishment
     }
 
     private int migrate(CommandContext<CommandSourceStack> context) {
-//        housesManager.migrateHouses();
+        Player player = (Player) context.getSource().getSender();
+        HousingWorld house = housesManager.getHouse(player.getWorld());
+        if (house == null) {
+            player.sendMessage(colorize("&cYou are not in a house!"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        house.getPlayersData().forEach((uuid, data) -> {
+            try {
+                List<ItemStack> armor = Serialization.itemStacksFromBase64(data.getArmor());
+                List<ItemStack> inventory = Serialization.itemStacksFromBase64(data.getInventory());
+                List<ItemStack> enderChest = Serialization.itemStacksFromBase64(data.getEnderchest());
+
+                for (int i = 0; i < armor.size(); i++) {
+                    ItemStack item = armor.get(i);
+                    if (item != null) {
+                        item = Item.fromOldItemStack(item, house).build();
+                        armor.set(i, item);
+                    }
+                }
+
+                for (int i = 0; i < inventory.size(); i++) {
+                    ItemStack item = inventory.get(i);
+                    if (item != null) {
+                        item = Item.fromOldItemStack(item, house).build();
+                        inventory.set(i, item);
+                    }
+                }
+
+                for (int i = 0; i < enderChest.size(); i++) {
+                    ItemStack item = enderChest.get(i);
+                    if (item != null) {
+                        item = Item.fromOldItemStack(item, house).build();
+                        enderChest.set(i, item);
+                    }
+                }
+            } catch (IOException e) {
+                player.sendMessage(colorize("&cFailed to migrate items for " + uuid));
+                throw new RuntimeException(e);
+            }
+        });
         return Command.SINGLE_SUCCESS;
     }
 

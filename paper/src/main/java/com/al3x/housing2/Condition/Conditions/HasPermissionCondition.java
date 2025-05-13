@@ -1,9 +1,14 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.permissions.Permissions;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.Menu;
@@ -19,84 +24,29 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class HasPermissionCondition extends CHTSLImpl {
-    private Permissions permission = null;
-
     public HasPermissionCondition() {
-        super("Has Permission");
+        super(ConditionEnum.HAS_PERMISSION,
+                "Required Permission",
+                "Requires the user to have the specified permission.",
+                Material.FILLED_MAP,
+                List.of("hasPermission"));
+
+        getProperties().add(new EnumProperty<>(
+                "permission",
+                "Permission",
+                "The permission to check for.",
+                Permissions.class
+        ).setValue(Permissions.FLY));
     }
 
     @Override
-    public String toString() {
-        return "PermissionRequirementCondition (permission: " + (permission == null ? "&aNot Set" : "&6" + permission) + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FILLED_MAP);
-        builder.name("&aRequired Permission");
-        builder.description("Requires the user to have the specified permission.");
-        builder.info("&eSettings", "");
-        builder.info("Permission", (permission == null ? "&aNot Set" : "&6" + permission));
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.FILLED_MAP);
-        builder.name("&eRequired Permission");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("permission",
-                        ItemBuilder.create(Material.FILLED_MAP)
-                                .name("&ePermission")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (permission == null ? "Not Set" : permission))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        (e, o) -> {
-                            List<Duple<Permissions, ItemBuilder>> permissions = new ArrayList<>();
-                            for (Permissions type : Permissions.values()) {
-                                permissions.add(new Duple<>(type, ItemBuilder.create(Material.PLAYER_HEAD)
-                                        .skullTexture("86f125004a8ffa6e4a4ec7b178606d0670c28a75b9cde59e011e66e91a66cf14")
-                                        .name("&6" + type.getDisplayName())));
-                            }
-                            new PaginationMenu<>(Main.getInstance(),
-                                    "&eSelect a permission", permissions,
-                                    (Player) e.getWhoClicked(), house, backMenu, (permission) -> {
-                                this.permission = permission;
-                                backMenu.open();
-                            }).open();
-                            return true;
-                        }
-                )
-        );
-        return new ActionEditor(4, "Required Permission", items);
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return permission == null || house.hasPermission(player, permission);
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("permission", permission);
-        return data;
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Permissions permission = getValue("permission", Permissions.class);
+        return house.hasPermission(player, permission) ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "hasPermission";
     }
 }

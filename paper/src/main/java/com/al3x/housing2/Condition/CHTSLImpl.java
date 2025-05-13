@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.Action;
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
+import org.bukkit.Material;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -12,11 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public abstract class CHTSLImpl extends Condition {
-    public CHTSLImpl(String name) {
-        super(name);
+    public CHTSLImpl(ConditionEnum condition, String name, String description, Material icon, List<String> scriptingKeywords) {
+        super(condition, name, description, icon, scriptingKeywords);
     }
-
-    public abstract String keyword();
 
     public String syntax() {
         HashMap<String, Object> actionData = data();
@@ -26,7 +25,7 @@ public abstract class CHTSLImpl extends Condition {
             builder.append("<").append(key).append(">");
             if (actionData.get(key) != keys.getLast()) builder.append(" ");
         }
-        return keyword() + (!builder.isEmpty() ? " " + builder : "");
+        return getScriptingKeywords().getFirst() + (!builder.isEmpty() ? " " + builder : "");
     }
 
     public String export() {
@@ -63,7 +62,7 @@ public abstract class CHTSLImpl extends Condition {
         }
         String output = builder.toString();
         if (output.endsWith(" ")) output = output.substring(0, output.length() - 1);
-        return " ".repeat(indent) + keyword() + (!output.isEmpty() ? " " + output: "");
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + (!output.isEmpty() ? " " + output: "");
     }
 
     public void importCondition(String action, List<String> nextLines) {

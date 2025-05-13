@@ -4,27 +4,23 @@ import com.al3x.housing2.Action.Actions.BreakAction;
 import com.al3x.housing2.Action.Actions.ContinueAction;
 import com.al3x.housing2.Action.Actions.ExitAction;
 import com.al3x.housing2.Action.Actions.PauseAction;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Stat;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.NumberUtilsKt;
-import de.maxhenkel.voicechat.api.events.Event;
-import lombok.Setter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static com.al3x.housing2.Action.OutputType.*;
@@ -111,18 +107,14 @@ public class ActionExecutor {
             Action action = queue.removeFirst();
 
             int global = Main.getInstance().getConfig().getInt("globalLimits", 2000);
-            int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.name.replace(" ", "_").toLowerCase(), global);
-            if (limits.containsKey(action.name) && limits.get(action.name) >= actionLimit) {
+            int actionLimit = Main.getInstance().getConfig().getInt("actionLimits." + action.getId().replace(" ", "_").toLowerCase(), global);
+            if (limits.containsKey(action.getName()) && limits.get(action.getName()) >= actionLimit) {
                 return EXIT;
             }
-            limits.put(action.name, limits.getOrDefault(action.name, 0) + 1);
+            limits.put(action.getId(), limits.getOrDefault(action.getId(), 0) + 1);
 
             if (action instanceof PauseAction pauseAction) {
-                String dur = Placeholder.handlePlaceholders(pauseAction.getDuration(), house, player);
-                if (!NumberUtilsKt.isInt(dur)) {
-                    continue;
-                }
-                double duration = Integer.parseInt(dur);
+                double duration = pauseAction.getProperty("duration", NumberProperty.class).parsedValue(house, player);
                 scheduler.runTaskLater(Main.getInstance(), () -> {
                     execute(entity, player, house, event);
                 }, (long) duration);
@@ -170,7 +162,7 @@ public class ActionExecutor {
                     npcAction.npcExecute(player, npc, house, event, this);
                 }
             } catch (Exception e) {
-                player.sendMessage("An error occurred while executing the action: " + action.name + " in the context: " + context);
+                player.sendMessage("An error occurred while executing the action: " + action.getName() + " in the context: " + context);
                 //take error and put it in the hover event
                 e.printStackTrace();
             }

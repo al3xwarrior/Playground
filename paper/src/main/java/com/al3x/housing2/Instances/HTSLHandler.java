@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class HTSLHandler {
-    public static List<Action> importActions(String content, String indent) {
+    public static List<Action> importActions(String content, String indent, HousingWorld house) {
         List<HTSLImpl> defaultActions = List.of(Arrays.stream(ActionEnum.values()).map(ActionEnum::getActionInstance).filter(a -> a instanceof HTSLImpl).map(a -> (HTSLImpl) a).toArray(HTSLImpl[]::new));
 
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(content.split("\n")));
@@ -20,9 +20,9 @@ public class HTSLHandler {
         while (!lines.isEmpty()) {
             String line = lines.removeFirst().replaceFirst(indent, "");
             for (HTSLImpl action : defaultActions) {
-                if (line.startsWith(action.keyword())) {
-                    HTSLImpl a = (HTSLImpl) action.clone();
-                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.keyword() + (line.contains(" ") ? " " : "")), indent, new ArrayList<>(lines));
+                if (line.startsWith(action.getScriptingKeywords().getFirst())) {
+                    HTSLImpl a = (HTSLImpl) action.clone(house);
+                    lines = a.importAction(StringUtilsKt.substringAfter(line, action.getScriptingKeywords().getFirst() + (line.contains(" ") ? " " : "")), indent, new ArrayList<>(lines));
                     actions.add(a);
                     break;
                 }

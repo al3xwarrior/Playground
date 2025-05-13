@@ -1,7 +1,9 @@
 package com.al3x.housing2.Utils;
 
 import com.al3x.housing2.Main;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,6 +15,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-import static org.bukkit.ChatColor.*;
-
+import static com.al3x.housing2.Utils.HypixelLoreFormatter.loreSplitter;
+import static com.al3x.housing2.Utils.HypixelLoreFormatter.splitComponent;
+import static com.al3x.housing2.Utils.StringUtilsKt.housingStringFormatter;
+import static org.bukkit.ChatColor.YELLOW;
 
 /**
  * ItemBuilder class for creating ItemStack objects with customizable properties such as name, description, actions,
@@ -40,6 +46,7 @@ import static org.bukkit.ChatColor.*;
  *     return builder.build();
  * </pre>
  */
+@Getter
 public class ItemBuilder {
     private ItemStack stack;
     private Material material;
@@ -49,13 +56,14 @@ public class ItemBuilder {
     private String name;
     public String description;
     private List<String> extraLore;
-    private HashMap<ClickType, ActionType> actions;
+    private final HashMap<ClickType, ActionType> actions;
     //Key: String, Value: Object (String, Int or Double)
-    private List<Duple<String, Object>> info;
+    private final List<Duple<String, Object>> info;
     private boolean glow;
     private boolean changeOrderLore;
     private boolean punctuation;
     private int textWidth;
+    private PotionType potionType;
 
     public ItemBuilder() {
         this.material = Material.AIR;
@@ -65,10 +73,13 @@ public class ItemBuilder {
         this.description = "";
         this.actions = new HashMap<>();
         this.info = new ArrayList<>();
+        this.extraLore = new ArrayList<>();
         this.glow = false;
         this.changeOrderLore = false;
         this.punctuation = true;
         this.textWidth = 28;
+        this.skullTexture = null;
+        this.potionType = null;
     }
 
     public ItemBuilder material(Material material) {
@@ -246,12 +257,23 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder potionType(PotionType potionType) {
+        this.potionType = potionType;
+        return this;
+    }
+
     public ItemStack build() {
         //Make the skull or item stack
         if (skullTexture != null) {
             stack = SkullTextures.getCustomSkull(skullTexture);
         } else {
             stack = new ItemStack(material, amount);
+        }
+
+        if (potionType != null && material == Material.POTION) {
+            PotionMeta potionMeta = (PotionMeta) stack.getItemMeta();
+            potionMeta.setBasePotionType(potionType);
+            stack.setItemMeta(potionMeta);
         }
 
         ItemMeta itemMeta = stack.getItemMeta();
@@ -261,10 +283,10 @@ public class ItemBuilder {
         }
 
         //Set the item name and lore
-        itemMeta.displayName(StringUtilsKt.housingStringFormatter(name));
+        itemMeta.displayName(housingStringFormatter(name));
         itemMeta.lore(getLore());
 
-        // Hide all item flags cause they are annoying and useless
+        // Hide all item flags because they are annoying and useless
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         itemMeta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey(Main.getInstance(), "dummy"), 0, AttributeModifier.Operation.ADD_NUMBER)); // needed to correctly hide attributes
 
@@ -295,7 +317,7 @@ public class ItemBuilder {
             }
         }
         //Lore formatting
-        List<Component> lore = HypixelLoreFormatter.hypixelLore(description, info, labels, punctuation, textWidth);
+        List<Component> lore = loreSplitter(description, info, labels, punctuation, textWidth);
 
         //Action menu label
         if (changeOrderLore) {
@@ -304,7 +326,9 @@ public class ItemBuilder {
 
         //Extra lore
         if (extraLore != null) {
-            lore.addAll(extraLore.stream().map(StringUtilsKt::housingStringFormatter).toList());
+            lore.addAll(extraLore.stream()
+                    .flatMap(str -> splitComponent(housingStringFormatter("<gray>" + str), HypixelLoreFormatter.MAX_LENGTH).stream())
+                    .toList());
         }
 
         return new ArrayList<>(lore);
@@ -314,53 +338,27 @@ public class ItemBuilder {
         return new ItemBuilder().material(material);
     }
 
-    public ItemStack getStack() {
-        return stack;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public short getData() {
-        return data;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<String> getExtraLore() {
-        return extraLore;
-    }
-
-    public HashMap<ClickType, ActionType> getActions() {
-        return actions;
-    }
-
-    public List<Duple<String, Object>> getInfo() {
-        return info;
-    }
-
-    public boolean isGlow() {
-        return glow;
-    }
-
-    public boolean isChangeOrderLore() {
-        return changeOrderLore;
+    public ItemBuilder clone() {
+        ItemBuilder clone = new ItemBuilder();
+        clone.material = this.material;
+        clone.skullTexture = this.skullTexture;
+        clone.amount = this.amount;
+        clone.data = this.data;
+        clone.name = this.name;
+        clone.description = this.description;
+        clone.extraLore = new ArrayList<>(this.extraLore == null ? new ArrayList<>() : this.extraLore);
+        clone.actions.putAll(this.actions);
+        clone.info.addAll(this.info);
+        clone.glow = this.glow;
+        clone.changeOrderLore = this.changeOrderLore;
+        clone.punctuation = this.punctuation;
+        return clone;
     }
 
     /**
      * Enum representing different types of actions with associated colors.
      */
+    @Getter
     public static enum ActionType {
         EDIT_YELLOW("edit", YELLOW),
         VIEW_YELLOW("view", YELLOW),
@@ -391,6 +389,7 @@ public class ItemBuilder {
         EDIT_LEFT_CLICK_ACTIONS("edit left click actions", YELLOW),
         EDIT_RIGHT_CLICK_ACTIONS("edit right click actions", YELLOW),
         CYCLE_FORWARD("cycle forward", YELLOW),
+        EDIT_KEY("edit key", YELLOW),
         CYCLE_BACKWARD("cycle backwards", YELLOW),
         SAVE_LOCATION("save location", YELLOW),
         TOGGLE_VISIBILITY("toggle visibility", YELLOW),
@@ -400,8 +399,8 @@ public class ItemBuilder {
         USE_SELECTION("use selection", YELLOW),
         ;
 
-        private String action;
-        private ChatColor color;
+        private final String action;
+        private final ChatColor color;
 
         ActionType(String action, ChatColor color) {
             this.action = action;
@@ -412,12 +411,5 @@ public class ItemBuilder {
             return action;
         }
 
-        public ChatColor getColor() {
-            return color;
-        }
-
-        public String getAction() {
-            return action;
-        }
     }
 }

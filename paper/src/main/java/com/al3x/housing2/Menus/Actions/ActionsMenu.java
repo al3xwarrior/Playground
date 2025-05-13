@@ -20,6 +20,8 @@ import com.al3x.housing2.Utils.PaginationList;
 import com.al3x.housing2.network.payload.clientbound.ClientboundExport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundImport;
 import com.al3x.housing2.network.payload.clientbound.ClientboundWebsocket;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,13 +39,24 @@ public class ActionsMenu extends Menu {
     private Main main;
     private Player player;
     private HousingWorld house;
+    @Getter
+    @Setter
     private List<Action> actions;
+    @Setter
     private List<Condition> conditions;
+    @Setter
     private HousingNPC housingNPC;
+    @Setter
     private EventType event;
+    @Setter
     private Function function;
+    @Getter
+    @Setter
     private Menu backMenu;
+    @Setter
     private Runnable update;
+    @Setter
+    @Getter
     private int nestedLevel = 0;
     //If the player accidentally deletes an action, we can cache it here
     private Action cachedAction;
@@ -51,6 +64,8 @@ public class ActionsMenu extends Menu {
     private String varName = null;
     private String search = "";
     //1 is the new 0
+    @Setter
+    @Getter
     private List<Action> parentActions = new ArrayList<>();
     private int currentPage = 1;
 
@@ -131,14 +146,6 @@ public class ActionsMenu extends Menu {
         parentActions.add(action);
     }
 
-    public List<Action> getParentActions() {
-        return parentActions;
-    }
-
-    public void setParentActions(List<Action> parentActions) {
-        this.parentActions = parentActions;
-    }
-
     @Override
     public void open() {
         if (!house.hasPermission(player, Permissions.EDIT_ACTIONS)) {
@@ -211,11 +218,8 @@ public class ActionsMenu extends Menu {
                     try {
                         Condition condition = conditions.get(i);
                         int slot = allowedSlots[i];
-                        ItemBuilder item = new ItemBuilder();
-                        item.description = (condition.inverted ? "&cInverted\n" : "") + item.getDescription();
+                        ItemBuilder item = condition.createDisplayItem();
                         item.mClick(ItemBuilder.ActionType.CLONE);
-                        condition.createDisplayItem(item);
-                        replacePlayerWithNPC(item);
                         int finalI = i;
                         addItem(slot, item.build(), (e) -> {
                             if (e.isShiftClick()) {
@@ -225,12 +229,12 @@ public class ActionsMenu extends Menu {
                             }
 
                             if (e.getClick() == ClickType.MIDDLE) {
-                                this.conditions.add(finalI, condition.clone());
+                                this.conditions.add(finalI, condition.clone(house));
                                 setupItems();
                                 return;
                             }
 
-                            if (e.isLeftClick() && condition.editorMenu(house, player, backMenu) != null) {
+                            if (e.isLeftClick() && condition.editorMenu(house, backMenu, player) != null) {
                                 ActionEditMenu menu = new ActionEditMenu(condition, main, player, house, this);
                                 menu.setEvent(event);
                                 menu.setHousingNPC(housingNPC);
@@ -303,13 +307,11 @@ public class ActionsMenu extends Menu {
                     try {
                         Action action = actions.get(i);
                         int slot = allowedSlots[i];
-                        ItemBuilder item = new ItemBuilder();
+                        ItemBuilder item = action.createDisplayItem();
                         item.mClick(ItemBuilder.ActionType.CLONE);
                         if (!Objects.equals(action.getComment(), "") && action.getComment() != null) {
                             item.description(action.getComment()).punctuation(false);
                         }
-                        action.createDisplayItem(item, house);
-                        replacePlayerWithNPC(item);
                         int finalI = i;
                         addItem(slot, item.build(), (e) -> {
                             if (e.isShiftClick()) {
@@ -323,7 +325,7 @@ public class ActionsMenu extends Menu {
                                     player.sendMessage(colorize("&cYou have reached the limit for this action!"));
                                     return;
                                 }
-                                this.actions.add(finalI, action.clone());
+                                this.actions.add(finalI, action.clone(house));
                                 setupItems();
                                 return;
                             }
@@ -341,6 +343,7 @@ public class ActionsMenu extends Menu {
                             }
                         });
                     } catch (Exception e) {
+                        e.printStackTrace();
                         int finalI1 = i;
                         addItem(allowedSlots[i], ItemBuilder.create(Material.BARRIER).name("&cError!").description("An error occurred whilst adding this action!\n\n&cPlease report this to your nearest admin :).").rClick(ItemBuilder.ActionType.REMOVE_YELLOW).build(), () -> {
 
@@ -494,46 +497,6 @@ public class ActionsMenu extends Menu {
         });
     }
 
-    public void setEvent(EventType event) {
-        this.event = event;
-    }
-
-    public void setFunction(Function function) {
-        this.function = function;
-    }
-
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
-    }
-
-    public void setConditions(List<Condition> conditions) {
-        this.conditions = conditions;
-    }
-
-    public void setBackMenu(Menu backMenu) {
-        this.backMenu = backMenu;
-    }
-
-    public void setHousingNPC(HousingNPC housingNPC) {
-        this.housingNPC = housingNPC;
-    }
-
-    public void setUpdate(Runnable update) {
-        this.update = update;
-    }
-
-    public int getNestedLevel() {
-        return nestedLevel;
-    }
-
-    public void setNestedLevel(int nestedLevel) {
-        this.nestedLevel = nestedLevel;
-    }
-
-    public Menu getBackMenu() {
-        return backMenu;
-    }
-
     private void replacePlayerWithNPC(ItemBuilder itemBuilder) {
         if (parentActions.stream().anyMatch(action -> action instanceof RunAsNPCAction)) {
             itemBuilder.description(itemBuilder.getDescription().replaceAll("(pP)layer", "NPC"));
@@ -571,7 +534,4 @@ public class ActionsMenu extends Menu {
         setupItems();
     }
 
-    public List<Action> getActions() {
-        return actions;
-    }
 }

@@ -2,7 +2,10 @@ package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Enums.DamageTypes;
 import com.al3x.housing2.Enums.EventType;
@@ -22,65 +25,33 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class DamageTypeCondition extends CHTSLImpl implements NPCCondition {
-    private DamageTypes damageType;
-
     public DamageTypeCondition() {
-        super("Damage Type");
-        this.damageType = DamageTypes.PLAYER_ATTACK;
-    }
-
-    @Override
-    public String toString() {
-        return "DamageType{" +
-                "damageType=" + damageType +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(damageType.getMaterial());
-        builder.name("&eDamage Type Requirement");
-        builder.description("Requires the users damage type to match the provided condition.");
-        builder.info("Damage Type", damageType.getTranslation());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.IRON_SWORD);
-        builder.name("&eDamage Type Requirement");
-        builder.description("Requires the users damage type to match the provided condition.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("damageType",
-                        ItemBuilder.create(Material.WOODEN_SWORD)
-                                .name("&eDamage Type")
-                                .info("&7Current Value", "")
-                                .info(null, damageType.getTranslation())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, DamageTypes.values(), null
-                )
+        super(ConditionEnum.DAMAGE_TYPE,
+                "Damage Type Requirement",
+                "Checks if the damage type is the same as the one specified.",
+                Material.IRON_SWORD,
+                List.of("damageType")
         );
-        return new ActionEditor(4, "Damage Type Requirement", items);
+
+        getProperties().add(
+                new EnumProperty<>(
+                        "damageType",
+                        "Damage Type",
+                        "The type of damage to check for.",
+                        DamageTypes.class
+                ).setValue(DamageTypes.FALL)
+        );
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        DamageTypes damageType = getValue("damageType", DamageTypes.class);
         if (event.cancellable() instanceof EntityDamageEvent e) {
-            return e.getDamageSource().getDamageType() == damageType.getDamageType();
+            return e.getDamageSource().getDamageType() == damageType.getDamageType()
+                    ? OutputType.TRUE : OutputType.FALSE;
         }
-        return false;
-    }
 
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
+        return OutputType.FALSE;
     }
 
     @Override
@@ -89,24 +60,13 @@ public class DamageTypeCondition extends CHTSLImpl implements NPCCondition {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("damageType", damageType.name());
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
     }
 
     @Override
-    public String keyword() {
-        return "damageType";
-    }
-
-    @Override
     public boolean npcExecute(Player player, NPC npc, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        DamageTypes damageType = getValue("damageType", DamageTypes.class);
         if (event.cancellable() instanceof EntityDamageEvent e) {
             return e.getDamageSource().getDamageType() == damageType.getDamageType();
         }

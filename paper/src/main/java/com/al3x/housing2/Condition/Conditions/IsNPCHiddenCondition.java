@@ -1,7 +1,9 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Condition.NPCCondition;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -12,53 +14,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class IsNPCHiddenCondition extends CHTSLImpl implements NPCCondition {
-
     public IsNPCHiddenCondition() {
-        super("Is NPC Hidden");
+        super(ConditionEnum.IS_NPC_HIDDEN,
+                "Is NPC Hidden",
+                "Check if the NPC is hidden.",
+                Material.GRAY_DYE,
+                List.of("isNPCHidden"));
     }
 
     @Override
-    public String toString() {
-        return "IsNPCHiddenCondition";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GRAY_DYE);
-        builder.name("&eIs NPC Hidden");
-        builder.description("Check if the NPC is hidden.");
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GRAY_DYE);
-        builder.name("&eIs NPC Hidden");
-        builder.description("Check if the NPC is hidden.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        return new LinkedHashMap<>();
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        return OutputType.FALSE;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "isNPCHidden";
     }
 
     @Override

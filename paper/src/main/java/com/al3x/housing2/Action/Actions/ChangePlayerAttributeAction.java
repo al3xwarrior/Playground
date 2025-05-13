@@ -1,149 +1,76 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
-import com.al3x.housing2.Action.HTSLImpl;
-import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.*;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Enums.AttributeType;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Menu;
 import com.al3x.housing2.Placeholders.custom.Placeholder;
-import com.al3x.housing2.Utils.*;
-import com.google.gson.Gson;
+import com.al3x.housing2.Utils.Color;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Getter
+@ToString
 public class ChangePlayerAttributeAction extends HTSLImpl {
 
-    private AttributeType attribute;
-    private String value;
 
     public ChangePlayerAttributeAction() {
-        super("Change Player Attribute Action");
-        attribute = AttributeType.ARMOR;
-        value = "1";
-    }
+        super(
+                ActionEnum.CHANGE_PLAYER_ATTRIBUTE,
+                "Change Player Attribute",
+                "Changes the player's attribute.",
+                Material.HOPPER,
+                List.of("playerAttribute")
+        );
 
-    @Override
-    public String toString() {
-        return "ChangePlayerAttributeAction (mode: " + attribute + " value: " + value + ")";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.HOPPER);
-        builder.name("&eChange Player Attribute");
-        builder.info("&eSettings", "");
-        builder.info("Mode", attribute.name());
-        builder.info("Value", value);
-
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.HOPPER);
-        builder.name("&aChange Player Attribute");
-        builder.description("Adjust the player's attributes.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu backMenu) {
-        if (backMenu == null) {
-            return new ActionEditor(6, "&eChange Player Attribute Action Settings", new ArrayList<>());
-        }
-        List<ActionEditor.ActionItem> items = new ArrayList<>();
-
-        items.add(new ActionEditor.ActionItem("attribute",
-                ItemBuilder.create(Material.REPEATING_COMMAND_BLOCK)
-                        .name("&eAttribute")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + attribute.name())
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.ENUM, AttributeType.values(), null));
-        items.add(new ActionEditor.ActionItem("value",
-                ItemBuilder.create(Material.HOPPER)
-                        .name("&eValue")
-                        .info("&7Current Value", "")
-                        .info(null, "&a" + value)
-                        .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                ActionEditor.ActionItem.ActionType.STRING
+        getProperties().addAll(List.of(
+                new EnumProperty<>(
+                        "attribute",
+                        "Attribute",
+                        "The attribute to change.",
+                        AttributeType.class
+                ).setValue(AttributeType.ARMOR),
+                new NumberProperty(
+                        "value",
+                        "Value",
+                        "The value to set the attribute to."
+                ).setValue("1")
         ));
-        return new ActionEditor(6, "&eChange Attribute Settings", items);
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
+        Double value = getProperty("value", NumberProperty.class).parsedValue(house, player);
+        AttributeType attribute = getValue("attribute", AttributeType.class);
         try {
             if (attribute.getAttribute().equals(Attribute.FLYING_SPEED)) {
-                player.setFlySpeed(Float.parseFloat(Placeholder.handlePlaceholders(value, house, player)));
+                player.setFlySpeed(value.floatValue());
                 return OutputType.SUCCESS;
             }
 
             AttributeInstance attributeInstance = player.getAttribute(attribute.getAttribute());
             if (attributeInstance == null) return OutputType.SUCCESS;
 
-            attributeInstance.setBaseValue(Double.parseDouble(Placeholder.handlePlaceholders(value, house, player)));
+            attributeInstance.setBaseValue(value.floatValue());
         } catch (Exception e) {
             Bukkit.getLogger().warning("Failed to change player attribute: " + e.getMessage());
         }
         return OutputType.SUCCESS;
     }
 
-    public AttributeType getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(AttributeType attribute) {
-        this.attribute = attribute;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("attribute", attribute == null ? AttributeType.ARMOR.name() : attribute.name());
-        data.put("value", value);
-        return data;
-    }
-
     @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Action> actionClass) {
-        attribute = AttributeType.valueFrom((String) data.get("attribute")) == null ? AttributeType.ARMOR : AttributeType.valueFrom((String) data.get("attribute"));
-        value = (String) data.get("value");
-    }
-
-    @Override
-    public String export(int indent) {
-        return " ".repeat(indent) + keyword() + " " + attribute.name() + " " + Color.removeColor(value);
-    }
-
-    @Override
-    public String keyword() {
-        return "attribute";
     }
 }

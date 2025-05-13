@@ -43,11 +43,11 @@ public class ClipboardManager {
         return clipboard;
     }
 
-    public List<Action> fromClipboard(String uuid) {
+    public List<Action> fromClipboard(String uuid, HousingWorld house) {
         List<Action> actions = new ArrayList<>();
         for (String serialized : addOrLoad(uuid)) {
             try {
-                actions.add(StringToBase64.actionFromBase64(serialized));
+                actions.add(StringToBase64.actionFromBase64(serialized, house));
             } catch (Exception e) {
                 //skip it because of the error, normally just because its a action that was removed or name got changed
             }
@@ -62,8 +62,8 @@ public class ClipboardManager {
         return action;
     }
 
-    public void removeAction(String uuid, Action action) {
-        List<Action> actions = fromClipboard(uuid);
+    public void removeAction(String uuid, Action action, HousingWorld house) {
+        List<Action> actions = fromClipboard(uuid, house);
         actions.remove(action);
         saveActions(uuid, actions);
     }

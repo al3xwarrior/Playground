@@ -1,6 +1,7 @@
 package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Enums.PvpSettings;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.Region;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,21 +55,21 @@ public class RegionData {
             .collect(Collectors.toList());
     }
 
-    public static Region toRegion(RegionData regionData) {
+    public static Region toRegion(RegionData regionData, HousingWorld house) {
         return new Region(
             regionData.isLoaded(),
             regionData.getPosA().toLocation(),
             regionData.getPosB().toLocation(),
             regionData.getName(),
-            ActionData.toList(regionData.getExitActions()),
-            ActionData.toList(regionData.getEnterActions()),
+            ActionData.toList(regionData.getExitActions(), house),
+            ActionData.toList(regionData.getEnterActions(), house),
             new HashMap<>(regionData.getPvpSettings())
         );
     }
 
-    public static List<Region> toList(List<RegionData> regionDataList) {
+    public static List<Region> toList(List<RegionData> regionDataList, HousingWorld house) {
         return regionDataList.stream()
-            .map(RegionData::toRegion)
+            .map((regionData) -> toRegion(regionData, house))
             .collect(Collectors.toList());
     }
 }

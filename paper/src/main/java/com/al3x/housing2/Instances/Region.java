@@ -69,6 +69,11 @@ public class Region extends Duple<Location, Location> {
     public List<UUID> getPlayersInRegion() {
         return playersInRegion;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
 
 

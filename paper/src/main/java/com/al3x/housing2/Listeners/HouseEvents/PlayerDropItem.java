@@ -24,7 +24,7 @@ public class PlayerDropItem implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         ItemStack item = e.getItemDrop().getItemStack();
-        Item customItem = Item.fromItemStack(item);
+        Item customItem = Item.fromItemStack(item, housesManager.getHouse(e.getPlayer().getWorld()));
         if (customItem != null && customItem.hasActions()) {
             ClickType type = (item.getAmount() > 1 ? ClickType.CONTROL_DROP : ClickType.DROP);
             new ActionExecutor("event", customItem.getActions().get(type)).execute(e.getPlayer(), housesManager.getHouse(e.getPlayer().getWorld()), new CancellableEvent(null, e));

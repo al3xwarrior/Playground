@@ -66,7 +66,7 @@ public class HousingItems implements Listener {
         }
 
         ItemStack item = event.getOffHandItem();
-        Item customItem = Item.fromItemStack(item);
+        Item customItem = Item.fromItemStack(item, housesManager.getHouse(player.getWorld()));
         if (customItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
             new ActionExecutor("event", customItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), new CancellableEvent(null, event));
@@ -76,7 +76,7 @@ public class HousingItems implements Listener {
         }
 
         ItemStack mainHandItem = event.getMainHandItem();
-        Item customMainHandItem = Item.fromItemStack(mainHandItem);
+        Item customMainHandItem = Item.fromItemStack(mainHandItem, housesManager.getHouse(player.getWorld()));
         if (customMainHandItem != null) {
             ClickType type = ClickType.SWAP_OFFHAND;
             new ActionExecutor("event", customMainHandItem.getActions().get(type)).execute(player, housesManager.getHouse(player.getWorld()), new CancellableEvent(null, event));
@@ -226,7 +226,7 @@ public class HousingItems implements Listener {
         HousingWorld house = housesManager.getHouse(player.getWorld());
         if (house == null) return;
 
-        Item customItem = Item.fromItemStack(item);
+        Item customItem = Item.fromItemStack(item, house);
 
         if (customItem == null) return;
 

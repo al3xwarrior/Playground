@@ -1,100 +1,56 @@
 package com.al3x.housing2.Action.Actions;
 
-import com.al3x.housing2.Action.Action;
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionEnum;
+import com.al3x.housing2.Action.ActionProperty;
 import com.al3x.housing2.Action.HTSLImpl;
 import com.al3x.housing2.Action.OutputType;
-import com.al3x.housing2.Instances.Function;
+import com.al3x.housing2.Action.Properties.GenericPagination.MenuProperty;
+import com.al3x.housing2.Instances.CustomMenu;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Instances.Layout;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Menus.CustomMenuViewer;
-import com.al3x.housing2.Utils.ItemBuilder;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
+@ToString
 public class DisplayMenuAction extends HTSLImpl {
-    String menu;
     public DisplayMenuAction() {
-        super("Display Menu Action");
-    }
+        super(
+                ActionEnum.DISPLAY_MENU,
+                "Display Menu",
+                "Displays a custom menu to the player.",
+                Material.CHEST,
+                List.of("displayMenu")
+        );
 
-    public DisplayMenuAction(String menu) {
-        super("Display Menu Action");
-        this.menu = menu;
-    }
-
-    @Override
-    public String keyword() {
-        return "displayMenu";
-    }
-
-    @Override
-    public String toString() {
-        return "DisplayMenu Action{" +
-                "layout=" + menu +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&eDisplay Menu");
-        builder.info("&eSettings", "");
-        builder.info("Custom Menu", (menu == null ? "&cNone" : "&6" + menu));
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&aDisplay Menu");
-        builder.description("Displays a menu to the player.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items =  List.of(
-                new ActionEditor.ActionItem("menu", ItemBuilder.create(Material.FILLED_MAP)
-                        .name("&aMenu")
-                        .info("&7Current Value", "")
-                        .info(null, (menu == null ? "&cNone" : "&6" + menu)),
-                        ActionEditor.ActionItem.ActionType.MENU
+        getProperties().add(
+                new MenuProperty(
+                        "menu",
+                        "Menu",
+                        "The menu to display."
                 )
         );
-        return new ActionEditor(4, "&eDisplay Menu Settings", items);
     }
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        if (menu == null) {
-            return OutputType.ERROR;
-        }
-        house.getCustomMenus().stream().filter(customMenu -> customMenu.getTitle().equals(menu)).findFirst().ifPresent(customMenu -> {
-            Bukkit.getScheduler().runTask(Main.getInstance(), () -> { //Make sure it runs on the main thread
-                new CustomMenuViewer(player, customMenu).open();
-            });
-        });
-        return OutputType.SUCCESS;
-    }
+        if (getValue("menu", CustomMenu.class) != null) return OutputType.ERROR;
 
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("menu", menu);
-        return data;
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            // this might cause an error if it doesn't exist?
+            new CustomMenuViewer(player, getValue("menu", CustomMenu.class)).open();
+        });
+
+        return OutputType.SUCCESS;
     }
 
     @Override
     public boolean requiresPlayer() {
         return true;
     }
+
 }

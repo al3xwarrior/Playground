@@ -139,7 +139,7 @@ public class MyHousesMenu extends Menu {
 
 
 
-            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), new ArrayList<>(), new ArrayList<>(), false, 28));
+            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.loreSplitter(house.getDescription(), new ArrayList<>(), new ArrayList<>(), false, 28));
 
             lore.add(Component.empty());
             lore.add(Component.text("§7Created: §a" + formattedDate));

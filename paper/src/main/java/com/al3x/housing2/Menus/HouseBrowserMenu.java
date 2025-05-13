@@ -7,7 +7,6 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -92,7 +91,7 @@ public class HouseBrowserMenu extends Menu {
                 }
             }
 
-            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.hypixelLore(house.getDescription(), icon.getInfo(), labels, false, 28));
+            List<Component> lore = new ArrayList<>(HypixelLoreFormatter.loreSplitter(house.getDescription(), icon.getInfo(), labels, false, 28));
 
             ItemMeta meta = item.getItemMeta();
             meta.displayName(StringUtilsKt.housingStringFormatter("§a" + house.getHouseName()));

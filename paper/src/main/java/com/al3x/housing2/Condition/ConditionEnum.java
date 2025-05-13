@@ -2,10 +2,13 @@ package com.al3x.housing2.Condition;
 
 import com.al3x.housing2.Condition.Conditions.*;
 import com.al3x.housing2.Condition.Conditions.IsSneakingCondition;
+import com.al3x.housing2.Instances.HousingWorld;
+import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
+@Getter
 public enum ConditionEnum {
     CLICKTYPE_REQUIREMENT("Click Type Requirement", ClickTypeCondition.class),
     DAMAGE_TYPE("Damage Type", DamageTypeCondition.class),
@@ -31,34 +34,23 @@ public enum ConditionEnum {
     GAMEMODE_REQUIREMENT("Gamemode Requirement", GamemodeRequirementCondition.class),
     PLACEHOLDER_REQUIREMENT("Placeholder Requirement", PlaceholderRequirementCondition.class),
     IS_ATTACK_COOLDOWN("Is Attack Cooldown", IsAttackCooldownCondition.class),
-    IS_VOICE_CONNECTED("Is Voice Connected", IsVoiceConnected.class),
-    IS_EATING("Is Eating", IsEating.class),
+    IS_VOICE_CONNECTED("Is Voice Connected", IsVoiceConnectedCondition.class),
+    IS_EATING("Is Eating", IsEatingCondition.class),
     IS_SPRINTING("Is Sprinting", IsSprintingCondition.class),
     ;
-    
-    private String name;
+
     private Class<? extends Condition> condition;
+    private String id;
 
-    ConditionEnum(String name, Class<? extends Condition> condition) {
+    ConditionEnum(String id, Class<? extends Condition> condition) {
+        this.id = id;
         this.condition = condition;
-        this.name = name;
     }
 
-    public Class<? extends Condition> getCondition() {
-        return condition;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Condition getConditionInstance(HashMap<String, Object> data) {
+    public Condition getConditionInstance(HashMap<String, Object> data, HousingWorld house) {
         try {
             Condition condition = this.condition.getDeclaredConstructor().newInstance();
-            if (data.get("inverted") != null) {
-                condition.inverted = (boolean) data.get("inverted");
-            }
-            condition.fromData(data, this.condition);
+            condition.fromData(data, house);
             return condition;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
@@ -75,9 +67,9 @@ public enum ConditionEnum {
         return null;
     }
 
-    public static ConditionEnum getConditionByName(String name) {
+    public static ConditionEnum getConditionById(String id) {
         for (ConditionEnum condition : ConditionEnum.values()) {
-            if (condition.name.equals(name)) {
+            if (condition.getId().equals(id)) {
                 return condition;
             }
         }

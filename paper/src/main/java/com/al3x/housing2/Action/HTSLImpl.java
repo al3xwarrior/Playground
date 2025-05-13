@@ -3,17 +3,15 @@ package com.al3x.housing2.Action;
 import com.al3x.housing2.Enums.EnumHTSLAlternative;
 import com.al3x.housing2.Utils.Duple;
 import com.al3x.housing2.Utils.NumberUtilsKt;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.Material;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class HTSLImpl extends Action {
-    public HTSLImpl(String name) {
-        super(name);
+    public HTSLImpl(ActionEnum id, String name, String description, Material icon, List<String> scriptingKeywords) {
+        super(id, name, description, icon, scriptingKeywords);
     }
-
-    public abstract String keyword();
 
     public String syntax() {
         HashMap<String, Object> actionData = data();
@@ -23,7 +21,7 @@ public abstract class HTSLImpl extends Action {
             builder.append("<").append(key).append(">");
             if (actionData.get(key) != keys.getLast()) builder.append(" ");
         }
-        return keyword() + (!builder.isEmpty() ? " " + builder : "");
+        return getScriptingKeywords().getFirst() + (!builder.isEmpty() ? " " + builder : "");
     }
 
     public String export() {
@@ -60,7 +58,7 @@ public abstract class HTSLImpl extends Action {
         }
         String output = builder.toString();
         if (output.endsWith(" ")) output = output.substring(0, output.length() - 1);
-        return " ".repeat(indent) + keyword() + (!output.isEmpty() ? " " + output: "");
+        return " ".repeat(indent) + getScriptingKeywords().getFirst() + (!output.isEmpty() ? " " + output: "");
     }
 
     public ArrayList<String> importAction(String action, String indent, ArrayList<String> nextLines) {

@@ -1,7 +1,11 @@
 package com.al3x.housing2.Condition.Conditions;
 
 import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
 import com.al3x.housing2.Condition.CHTSLImpl;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
@@ -19,68 +23,44 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class BlockTypeCondition extends CHTSLImpl {
-    private Material type;
-
     public BlockTypeCondition() {
-        super("Block Type Requirement");
-        this.type = Material.GRASS_BLOCK;
-    }
-
-    @Override
-    public String toString() {
-        return "BlockTypeCondition{" +
-                "type=" + type +
-                '}';
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GRASS_BLOCK);
-        builder.name("&eBlock Type Requirement");
-        builder.description("Checks the block type is the same as the requirement.");
-        builder.info("Type", type.name());
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.GRASS_BLOCK);
-        builder.name("&eBlock Type Requirement");
-        builder.description("Checks the block type is the same as the requirement.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("type",
-                        ItemBuilder.create(type)
-                                .name("&eType")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + type.name())
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Material.values(), null
-                )
+        super(
+                ConditionEnum.BLOCK_TYPE,
+                "Block Type Requirement",
+                "Checks if the block type is the same as the one specified.",
+                Material.STONE,
+                List.of("blockType")
         );
-        return new ActionEditor(4, "Click Type Requirement", items);
+        getProperties().add(new EnumProperty<>(
+                "type",
+                "Block Type",
+                "The type of block to check for.",
+                Material.class
+        ).setValue(Material.GRASS_BLOCK));
     }
 
-    @Override
-    public boolean execute(Player player, HousingWorld house, CancellableEvent event) {
-        if (event.cancellable() instanceof BlockBreakEvent e) {
-            return e.getBlock().getType() == type;
-        }
-        if (event.cancellable() instanceof BlockPlaceEvent e) {
-            return e.getBlock().getType() == type;
-        }
-        return false;
-    }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        return false;
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        Material eventType = null;
+        if (event.cancellable() instanceof BlockBreakEvent breakEvent) {
+            eventType = breakEvent.getBlock().getType();
+        }
+
+        if (event.cancellable() instanceof BlockPlaceEvent placeEvent) {
+            eventType = placeEvent.getBlock().getType();
+        }
+
+        if (eventType == null) {
+            return OutputType.FALSE;
+        }
+
+        Material blockTypeProperty = getValue("type", Material.class);
+        if (eventType == blockTypeProperty) {
+            return OutputType.TRUE;
+        } else {
+            return OutputType.FALSE;
+        }
     }
 
     @Override
@@ -89,19 +69,7 @@ public class BlockTypeCondition extends CHTSLImpl {
     }
 
     @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("type", type.name());
-        return data;
-    }
-
-    @Override
     public boolean requiresPlayer() {
         return true;
-    }
-
-    @Override
-    public String keyword() {
-        return "blockType";
     }
 }

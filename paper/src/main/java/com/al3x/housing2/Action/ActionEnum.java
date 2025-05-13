@@ -1,10 +1,14 @@
 package com.al3x.housing2.Action;
 
 import com.al3x.housing2.Action.Actions.*;
+import com.al3x.housing2.Action.Actions.AttackEntityAction;
+import com.al3x.housing2.Instances.HousingWorld;
+import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
+@Getter
 public enum ActionEnum {
     CONDITIONAL("Conditional Action", ConditionalAction.class),
     CANCEL("Cancel Action", CancelAction.class),
@@ -43,7 +47,7 @@ public enum ActionEnum {
     PARTICLE("Particle Action", ParticleAction.class),
     CHANGE_NPC_NAVIGATION("Change Npc Navigation Action", NpcPathAction.class),
     CHANGE_PLAYER_DISPLAYNAME("Change Player Display Name Action", ChangePlayerDisplayNameAction.class),
-    CHANGE_NAMETAG("NameTag Action", NameTagAction.class),
+    CHANGE_PLAYER_NAMETAG("NameTag Action", NameTagAction.class),
     REPEAT("Repeat Action", RepeatAction.class),
     CLEAR_BOSSBAR("Clear Bossbars Action", ClearBossbarAction.class),
     CLEAR_PLAYERSTATS("Clear Player Stats Action", ClearPlayerStatsAction.class),
@@ -75,28 +79,19 @@ public enum ActionEnum {
     SPAWN_GHOST_BLOCK("Spawn Ghost Block", SpawnGhostBlock.class),
     SET_PLAYER_SLOT("Set Player Slot Action", SetPlayerSlotAction.class);
     // Add new actions here
-    // Name of the action and the class that has the name of the action need to be the exact same
     ;
-    private String name;
-    private Class<? extends Action> action;
+    private final String id;
+    private final Class<? extends Action> action;
 
-    ActionEnum(String name, Class<? extends Action> action) {
+    ActionEnum(String id, Class<? extends Action> action) {
+        this.id = id;
         this.action = action;
-        this.name = name;
     }
 
-    public Class<? extends Action> getAction() {
-        return action;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Action getActionInstance(HashMap<String, Object> data, String comment) {
+    public Action getActionInstance(HashMap<String, Object> data, String comment, HousingWorld house) {
         try {
             Action action = this.action.getDeclaredConstructor().newInstance();
-            action.fromData(data, this.action);
+            action.fromData(data, house);
             action.setComment(comment);
             return action;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -114,9 +109,9 @@ public enum ActionEnum {
         return null;
     }
 
-    public static ActionEnum getActionByName(String name) {
+    public static ActionEnum getActionById(String id) {
         for (ActionEnum action : ActionEnum.values()) {
-            if (action.name.equals(name)) {
+            if (action.getId().equals(id)) {
                 return action;
             }
         }

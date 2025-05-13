@@ -7,6 +7,7 @@ import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.Color;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PaginationList;
+import com.al3x.housing2.Utils.StringUtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -72,8 +73,9 @@ public class EnumMenu<E extends Enum<E>> extends Menu {
                 if (e instanceof EnumMaterial) material = ((EnumMaterial) e).getMaterial();
                 if (material == null) continue;
                 if (material.equals(Material.AIR)) continue;
+                String name = e.name().replace("minecraft:", "");
                 addItem(i, ItemBuilder.create((material))
-                        .name(colorize("&a" + e.name()))
+                        .name(colorize("&a" + StringUtilsKt.formatCapitalize(name)))
                         .lClick(ItemBuilder.ActionType.SELECT_YELLOW)
                         .build(), () -> {
                     con.accept(e);

@@ -1,6 +1,7 @@
 package com.al3x.housing2.Data;
 
 import com.al3x.housing2.Instances.Function;
+import com.al3x.housing2.Instances.HousingWorld;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -50,7 +51,7 @@ public class FunctionData {
         return functionData;
     }
 
-    public static List<Function> toList(List<FunctionData> list) {
+    public static List<Function> toList(List<FunctionData> list, HousingWorld housingWorld) {
         List<Function> functions = new ArrayList<>();
         for (FunctionData data : list) {
             functions.add(new Function(
@@ -59,7 +60,7 @@ public class FunctionData {
                 data.getTicks(),
                 Material.valueOf(data.getMaterial()),
                 data.getDescription(),
-                ActionData.toList(data.getActions()),
+                ActionData.toList(data.getActions(), housingWorld),
                 data.isGlobal()
             ));
         }

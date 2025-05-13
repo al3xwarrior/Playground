@@ -1,18 +1,17 @@
 package com.al3x.housing2.Condition.Conditions;
 
-import com.al3x.housing2.Action.ActionEditor;
+import com.al3x.housing2.Action.ActionExecutor;
+import com.al3x.housing2.Action.OutputType;
+import com.al3x.housing2.Action.Properties.EnumProperty;
+import com.al3x.housing2.Action.Properties.IntegerProperty;
+import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.SlotProperty;
 import com.al3x.housing2.Condition.Condition;
+import com.al3x.housing2.Condition.ConditionEnum;
 import com.al3x.housing2.Enums.EnumMaterial;
+import com.al3x.housing2.Events.CancellableEvent;
 import com.al3x.housing2.Instances.HousingWorld;
-import com.al3x.housing2.Main;
-import com.al3x.housing2.Menus.Menu;
-import com.al3x.housing2.Menus.SlotSelectMenu;
-import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.Serialization;
-import com.al3x.housing2.Utils.StackUtils;
-import com.al3x.housing2.Utils.StringUtilsKt;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,136 +23,60 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class HasItemCondition extends Condition {
-    private ItemStack item = null;
-    private WhatToCheck whatToCheck = WhatToCheck.METADATA;
-    private WhereToCheck whereToCheck = WhereToCheck.ANYWHERE;
-    private int customSlot = -1;
-    private Amount amountCondition = Amount.ANY_AMOUNT;
-    private int amount = 1;
-
-
     public HasItemCondition() {
-        super("Has Item");
-    }
-
-    @Override
-    public String toString() {
-        return "idk";
-    }
-
-    @Override
-    public void createDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&aHas Item");
-        builder.description("Requires the user to have the specified item.");
-        builder.info("&eSettings", "");
-        builder.info("Item", (item == null ? "&cNone" : "&6" + item.getType().name()));
-        builder.info("What to check", "&6" + StringUtilsKt.formatCapitalize(whatToCheck.name()));
-        builder.info("Where to check", "&6" + StringUtilsKt.formatCapitalize(whereToCheck.name()));
-        builder.info("Amount Condition", "&6" + StringUtilsKt.formatCapitalize(amountCondition.name()));
-        builder.info("Amount", "&6" + amount);
-        builder.lClick(ItemBuilder.ActionType.EDIT_YELLOW);
-        builder.rClick(ItemBuilder.ActionType.REMOVE_YELLOW);
-        builder.shiftClick();
-    }
-
-    @Override
-    public void createAddDisplayItem(ItemBuilder builder) {
-        builder.material(Material.CHEST);
-        builder.name("&eHas Item");
-        builder.description("Requires the user to have the specified item.");
-        builder.lClick(ItemBuilder.ActionType.ADD_YELLOW);
-    }
-
-    @Override
-    public ActionEditor editorMenu(HousingWorld house, Menu editMenu) {
-        List<ActionEditor.ActionItem> items = Arrays.asList(
-                new ActionEditor.ActionItem("item",
-                        ItemBuilder.create(Material.BOOK)
-                                .name("&eItem")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (item == null ? "&aNot Set" : StackUtils.getDisplayName(item)))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ITEM
-                ),
-                new ActionEditor.ActionItem("whatToCheck",
-                        ItemBuilder.create(whatToCheck.getMaterial())
-                                .name("&eWhat to check")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + StringUtilsKt.formatCapitalize(whatToCheck.name()))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, WhatToCheck.values(), null
-                ),
-                new ActionEditor.ActionItem("whereToCheck",
-                        ItemBuilder.create(whereToCheck.getMaterial())
-                                .name("&eWhere to check")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + (whereToCheck == WhereToCheck.CUSTOM ? slotIndexToName(customSlot) : StringUtilsKt.formatCapitalize(whereToCheck.name())))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, WhereToCheck.values(), null, (e, o) -> {
-                    whereToCheck = (WhereToCheck) o;
-                    e.getWhoClicked().sendMessage(Component.text("Set Where to check to " + StringUtilsKt.formatCapitalize(whereToCheck.name())).color(NamedTextColor.YELLOW));
-                    if (o == WhereToCheck.CUSTOM) {
-                        new SlotSelectMenu((Player) e.getWhoClicked(), Main.getInstance(), editMenu, false, (slot) -> {
-                            customSlot = slot;
-                            whereToCheck = WhereToCheck.CUSTOM;
-                            editMenu.open();
-                        }).open();
-                    }
-                    return false;
-                }
-                ),
-                new ActionEditor.ActionItem("amountCondition",
-                        ItemBuilder.create(amountCondition.getMaterial())
-                                .name("&eAmount Condition")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + StringUtilsKt.formatCapitalize(amountCondition.name()))
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.ENUM, Amount.values(), null
-                ),
-                new ActionEditor.ActionItem("amount",
-                        ItemBuilder.create(Material.PAPER)
-                                .name("&eAmount")
-                                .info("&7Current Value", "")
-                                .info(null, "&a" + amount)
-                                .lClick(ItemBuilder.ActionType.CHANGE_YELLOW),
-                        ActionEditor.ActionItem.ActionType.INT, 1, 64
-                )
+        super(ConditionEnum.HAS_ITEM,
+                "Has Item",
+                "Requires the user to have the specified item.",
+                Material.CHEST,
+                List.of("hasItem")
         );
-        return new ActionEditor(4, "Settings", items);
-    }
 
-    private String slotIndexToName(int index) {
-        if (index < 9 && index >= 0) {
-            return "Hotbar Slot " + (index + 1);
-        }
-        if (index < 36 && index >= 9) {
-            return "Inventory Slot " + (index - 8);
-        }
-        if (index == 103) {
-            return "Helmet";
-        }
-        if (index == 102) {
-            return "Chestplate";
-        }
-        if (index == 101) {
-            return "Leggings";
-        }
-        if (index == 100) {
-            return "Boots";
-        }
-        if (index >= 80 && index <= 83) {
-            return "Crafting Slot " + (index - 79);
-        }
-        return "Unknown Slot";
+        getProperties().addAll(Arrays.asList(
+                new ItemStackProperty(
+                        "item",
+                        "Item",
+                        "The item to check for."
+                ),
+                new EnumProperty<>(
+                        "whatToCheck",
+                        "What to check",
+                        "What to check for.",
+                        WhatToCheck.class
+                ).setValue(WhatToCheck.METADATA),
+                new EnumProperty<>(
+                        "whereToCheck",
+                        "Where to check",
+                        "Where to check for the item.",
+                        WhereToCheck.class
+                ).setValue(WhereToCheck.ANYWHERE),
+                new SlotProperty(
+                        "customSlot",
+                        "Slot",
+                        "The slot to check for the item."
+                ).setValue(-1).showIf(() -> getValue("whereToCheck", WhereToCheck.class) == WhereToCheck.CUSTOM),
+                new EnumProperty<>(
+                        "amountCondition",
+                        "Amount Condition",
+                        "The condition for the amount of items.",
+                        Amount.class
+                ).setValue(Amount.ANY_AMOUNT),
+                new IntegerProperty(
+                        "amount",
+                        "Amount",
+                        "The amount of items to check for."
+                ).setValue(1)
+        ));
     }
 
     @Override
-    public boolean execute(Player player, HousingWorld house) {
-        if (item == null) return false;
-        switch (whereToCheck) {
+    public OutputType execute(Player player, HousingWorld house, CancellableEvent event, ActionExecutor executor) {
+        ItemStack item = getProperty("item", ItemStackProperty.class).getValue();
+        if (item == null) return OutputType.FALSE;
+        int amount = getValue("amount", Integer.class);
+        switch (getValue("whereToCheck", WhereToCheck.class)) {
             case CUSTOM: {
-                if (customSlot == -1) return false;
+                int customSlot = getValue("customSlot", Integer.class);
+                if (customSlot == -1) return OutputType.FALSE;
                 if (checkItem(player.getInventory().getItem(customSlot))) {
                     return checkAmount(player.getInventory().getItem(customSlot), amount);
                 }
@@ -220,72 +143,31 @@ public class HasItemCondition extends Condition {
                 break;
             }
         }
-        return false;
+        return OutputType.FALSE;
     }
 
     private boolean checkItem(ItemStack item) {
         if (item == null) return false;
+        WhatToCheck whatToCheck = getValue("whatToCheck", WhatToCheck.class);
+        ItemStack thisItem = getProperty("item", ItemStackProperty.class).getValue();
         if (whatToCheck == WhatToCheck.ITEM_TYPE) {
-            return item.getType() == this.item.getType();
+            return item.getType() == thisItem.getType();
         } else if (whatToCheck == WhatToCheck.METADATA) {
-            return item.isSimilar(this.item);
+            return item.isSimilar(thisItem);
         }
         return false;
     }
 
-    private boolean checkAmount(ItemStack item, int amount) {
-        switch (this.amountCondition) {
-            case ANY_AMOUNT: {
-                return true;
-            }
-            case LESS: {
-                return item.getAmount() < amount;
-            }
-            case GREATER: {
-                return item.getAmount() > amount;
-            }
-            case EQUAL: {
-                return item.getAmount() == amount;
-            }
-            case GREATER_OR_EQUAL: {
-                return item.getAmount() >= amount;
-            }
-            case LESS_OR_EQUAL: {
-                return item.getAmount() <= amount;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public LinkedHashMap<String, Object> data() {
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("item", item == null ? null : Serialization.itemStackToBase64(item));
-        data.put("whatToCheck", whatToCheck);
-        data.put("whereToCheck", whereToCheck);
-        data.put("customSlot", customSlot);
-        data.put("amountCondition", amountCondition);
-        data.put("amount", amount);
-        return data;
-    }
-
-    @Override
-    public void fromData(HashMap<String, Object> data, Class<? extends Condition> condtionClass) {
-        try {
-            item = Serialization.itemStackFromBase64((String) data.get("item"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        whatToCheck = WhatToCheck.valueOf((String) data.get("whatToCheck"));
-        whereToCheck = WhereToCheck.valueOf((String) data.get("whereToCheck"));
-        if (data.get("customSlot") != null) customSlot = ((Double) data.get("customSlot")).intValue();
-        if (data.get("amountCondition") != null) {
-            amountCondition = Amount.valueOf((String) data.get("amountCondition"));
-            amount = ((Double) data.get("amount")).intValue();
-        } else {
-            amountCondition = Amount.valueOf((String) data.get("amount"));
-            amount = 1;
-        }
+    private OutputType checkAmount(ItemStack item, int amount) {
+        boolean output = switch (getValue("amountCondition", Amount.class)) {
+            case ANY_AMOUNT -> true;
+            case LESS -> item.getAmount() < amount;
+            case GREATER -> item.getAmount() > amount;
+            case EQUAL -> item.getAmount() == amount;
+            case GREATER_OR_EQUAL -> item.getAmount() >= amount;
+            case LESS_OR_EQUAL -> item.getAmount() <= amount;
+        };
+        return output ? OutputType.TRUE : OutputType.FALSE;
     }
 
     @Override
@@ -295,10 +177,10 @@ public class HasItemCondition extends Condition {
 
     private enum WhatToCheck implements EnumMaterial {
         ITEM_TYPE(Material.MAP),
-        METADATA(Material.FILLED_MAP)
-        ;
+        METADATA(Material.FILLED_MAP);
 
         private Material material;
+
         WhatToCheck(Material material) {
             this.material = material;
         }
@@ -316,10 +198,10 @@ public class HasItemCondition extends Condition {
         HOTBAR(Material.PAPER),
         INVENTORY(Material.CHEST),
         ANYWHERE(Material.NETHER_STAR),
-        CUSTOM(Material.BOOK)
-        ;
+        CUSTOM(Material.BOOK);
 
         private Material material;
+
         WhereToCheck(Material material) {
             this.material = material;
         }
@@ -336,10 +218,10 @@ public class HasItemCondition extends Condition {
         GREATER(Material.LIME_STAINED_GLASS),
         EQUAL(Material.YELLOW_STAINED_GLASS),
         GREATER_OR_EQUAL(Material.LIME_STAINED_GLASS),
-        LESS_OR_EQUAL(Material.RED_STAINED_GLASS)
-        ;
+        LESS_OR_EQUAL(Material.RED_STAINED_GLASS);
 
         private Material material;
+
         Amount(Material material) {
             this.material = material;
         }
