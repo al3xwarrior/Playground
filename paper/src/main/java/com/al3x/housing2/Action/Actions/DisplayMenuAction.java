@@ -38,12 +38,10 @@ public class DisplayMenuAction extends HTSLImpl {
 
     @Override
     public OutputType execute(Player player, HousingWorld house) {
-        if (getValue("menu", CustomMenu.class) != null) return OutputType.ERROR;
+        if (getValue("menu", CustomMenu.class) == null) return OutputType.ERROR;
 
-        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-            // this might cause an error if it doesn't exist?
-            new CustomMenuViewer(player, getValue("menu", CustomMenu.class)).open();
-        });
+        new CustomMenuViewer(player, getValue("menu", CustomMenu.class)).open();
+
 
         return OutputType.SUCCESS;
     }
