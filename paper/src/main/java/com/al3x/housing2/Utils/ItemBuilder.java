@@ -397,6 +397,7 @@ public class ItemBuilder {
         RESET("reset", YELLOW),
         RESTORE("restore", YELLOW),
         USE_SELECTION("use selection", YELLOW),
+        RANDOM_ID("random id", YELLOW),
         ;
 
         private final String action;

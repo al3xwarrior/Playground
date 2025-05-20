@@ -11,6 +11,8 @@ import com.al3x.housing2.Instances.npc.RespawnTrait;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.MineSkin.BiggerSkinData;
 import com.al3x.housing2.MineSkin.SkinData;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
+import com.al3x.housing2.Utils.NumberUtilsKt;
 import com.al3x.housing2.Utils.Serialization;
 import com.google.gson.Gson;
 import net.citizensnpcs.api.CitizensAPI;
@@ -189,6 +191,7 @@ public class HousingNPC {
         this.npcID = citizensNPC.getId();
         this.npcUUID = citizensNPC.getUniqueId();
 
+        this.hologram.setStartingY("%math.add/2.5 [npc.location.y/" + this.internalID + "]%");
 
         startFollowTask();
     }
@@ -293,7 +296,11 @@ public class HousingNPC {
                 if (citizensNPC.isSpawned()) {
                     if (hologram != null) {
                         Location loc = citizensNPC.getEntity().getLocation().clone();
-                        hologram.setLocation(loc.set(loc.getX(), hologram.getLocation().getY(), loc.getZ()));
+                        String parsed = Placeholder.handlePlaceholders(hologram.getStartingY(), house, null);
+                        if (parsed != null && NumberUtilsKt.isDouble(parsed)) {
+                            loc.setY(Double.parseDouble(parsed));
+                        }
+                        hologram.setLocation(loc);
                     }
                 }
             }

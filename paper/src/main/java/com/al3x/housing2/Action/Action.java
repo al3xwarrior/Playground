@@ -63,7 +63,13 @@ public abstract class Action {
     public abstract OutputType execute(Player player, HousingWorld house);
 
     public ActionEditor editorMenu(HousingWorld house, Menu backMenu, Player player) {
-        return new ActionEditor(4, "§e" + name + " Settings", properties);
+        int rows = 4;
+        if (properties.size() > 14) {
+            rows = 6;
+        } else if (properties.size() > 7) {
+            rows = 5;
+        }
+        return new ActionEditor(rows, name + " Settings", properties);
     }
 
     public ItemBuilder createDisplayItem() {

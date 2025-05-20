@@ -1,6 +1,7 @@
 package com.al3x.housing2.Instances;
 
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.HandlePlaceholders;
 import com.al3x.housing2.Utils.ItemBuilder;
 import com.al3x.housing2.Utils.PlibHologramLine;
@@ -13,6 +14,8 @@ import com.maximde.hologramlib.hologram.RenderMode;
 import com.maximde.hologramlib.hologram.TextHologram;
 import com.maximde.hologramlib.utils.Vector3F;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import lombok.Getter;
+import lombok.Setter;
 import me.tofaa.entitylib.meta.display.BlockDisplayMeta;
 import me.tofaa.entitylib.meta.other.InteractionMeta;
 import me.tofaa.entitylib.wrapper.WrapperEntity;
@@ -43,6 +46,9 @@ public class Hologram {
     private boolean shadow = false;
     private boolean seeThroughBlocks = true;
     private HousingWorld house;
+    @Getter
+    @Setter
+    private String startingY;
     private Location location;
     private Quaternion4f rotation;
     private ConcurrentHashMap<Player, List<TextHologram>> entitys = new ConcurrentHashMap<>();
@@ -65,10 +71,11 @@ public class Hologram {
         this.location = location;
     }
 
-    public Hologram(HousingWorld house, List<String> text, Location location, double spacing, String scale, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
+    public Hologram(HousingWorld house, List<String> text, Location location, String startingY, double spacing, String scale, TextDisplay.TextAlignment alignment, TextDisplay.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
         this.house = house;
         this.text = text;
         this.location = location;
+        this.startingY = startingY;
         this.spacing = spacing;
         this.main = Main.getInstance();
         this.scale = (scale == null || scale.isEmpty()) ? "1,1,1" : scale;
@@ -126,6 +133,14 @@ public class Hologram {
                 meta.setWidth(0.5f);
             });
             entity.addViewer(player.getUniqueId());
+            String parsed = Placeholder.handlePlaceholders(startingY, house, player);
+            if (parsed != null && !parsed.isEmpty()) {
+                try {
+                    double y = Double.parseDouble(parsed);
+                    location.setY(y);
+                } catch (NumberFormatException ignored) {
+                }
+            }
             entity.spawn(new com.github.retrooper.packetevents.protocol.world.Location(location.getX(), location.getY(), location.getZ(), 0, 0));
             interaction.put(player, entity);
 
@@ -173,6 +188,17 @@ public class Hologram {
 
         hologram.setText(getComponent(player, index));
         hologram.update();
+
+        Location location = this.location.clone();
+        String parsed = Placeholder.handlePlaceholders(startingY, house, player);
+        if (parsed != null && !parsed.isEmpty()) {
+            try {
+                double y = Double.parseDouble(parsed);
+                location.setY(y);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        hologram.teleport(location.add(0, spacing * (index - 1), 0));
     }
 
     public void updateHologramEntity() {

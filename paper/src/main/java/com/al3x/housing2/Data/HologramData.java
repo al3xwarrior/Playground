@@ -16,6 +16,7 @@ import java.util.List;
 public class HologramData {
     private List<String> text;
     private LocationData location;
+    private String startingY;
     private double spacing;
     private String scale;
     private TextDisplay.TextAlignment alignment;
@@ -29,9 +30,10 @@ public class HologramData {
 
     }
 
-    public HologramData(List<String> text, LocationData location, double spacing, String scale, TextDisplay.TextAlignment alignment, Display.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
+    public HologramData(List<String> text, LocationData location, String startingY, double spacing, String scale, TextDisplay.TextAlignment alignment, Display.Billboard billboard, Quaternion4f rotation, boolean shadow, boolean seeThroughBlocks, int backgroundColor) {
         this.text = text;
         this.location = location;
+        this.startingY = startingY;
         this.spacing = spacing;
         this.scale = scale;
         this.alignment = alignment;
@@ -49,6 +51,7 @@ public class HologramData {
             hologramDatas.add(new HologramData(
                 hologram.getText(),
                 LocationData.fromLocation(hologram.getLocation()),
+                hologram.getStartingY(),
                 hologram.getSpacing(),
                 hologram.getScale(),
                 hologram.getAlignment(),
@@ -66,6 +69,7 @@ public class HologramData {
         return new HologramData(
             hologram.getText(),
             LocationData.fromLocation(hologram.getLocation()),
+            hologram.getStartingY(),
             hologram.getSpacing(),
             hologram.getScale(),
             hologram.getAlignment(),
@@ -82,6 +86,7 @@ public class HologramData {
             null,
             hologramData.getText(),
             hologramData.getLocation().toLocation(),
+            hologramData.getStartingY(),
             hologramData.getSpacing(),
             hologramData.getScale(),
             hologramData.getAlignment(),
@@ -100,6 +105,7 @@ public class HologramData {
                 house,
                 hologramData.getText(),
                 hologramData.getLocation().toLocation(),
+                hologramData.getStartingY(),
                 hologramData.getSpacing(),
                 hologramData.getScale(),
                 hologramData.getAlignment(),

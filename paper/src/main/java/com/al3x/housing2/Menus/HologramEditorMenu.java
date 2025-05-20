@@ -4,7 +4,9 @@ import com.al3x.housing2.Instances.Command;
 import com.al3x.housing2.Instances.Hologram;
 import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Main;
+import com.al3x.housing2.Placeholders.custom.Placeholder;
 import com.al3x.housing2.Utils.ItemBuilder;
+import com.al3x.housing2.Utils.QuaternionUtils;
 import com.github.retrooper.packetevents.util.Quaternion4f;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
 import static com.al3x.housing2.Utils.ItemBuilder.ActionType.*;
+import static com.al3x.housing2.Utils.QuaternionUtils.calculateFacingRotation;
 
 public class HologramEditorMenu extends Menu {
 
@@ -31,7 +34,7 @@ public class HologramEditorMenu extends Menu {
     private int add;
 
     public HologramEditorMenu(Main main, Player player, Hologram hologram) {
-        super(player, "&7Edit Hologram", (hologram.getText().size() > 7) ? 9*5 : 9*4);
+        super(player, "&7Edit Hologram", (hologram.getText().size() > 7) ? 9 * 5 : 9 * 4);
         this.add = (hologram.getText().size() > 7) ? 9 : 0;
         this.main = main;
         this.player = player;
@@ -40,7 +43,7 @@ public class HologramEditorMenu extends Menu {
     }
 
     public HologramEditorMenu(Main main, Player player, Hologram hologram, Menu menu) {
-        super(player, "&7Edit Hologram", (hologram.getText().size() > 7) ? 9*5 : 9*4);
+        super(player, "&7Edit Hologram", (hologram.getText().size() > 7) ? 9 * 5 : 9 * 4);
         this.add = (hologram.getText().size() > 7) ? 9 : 0;
         this.main = main;
         this.player = player;
@@ -58,56 +61,8 @@ public class HologramEditorMenu extends Menu {
         super.open();
     }
 
-    int[] slots = new int[] {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
+    int[] slots = new int[]{10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
 
-    public static Quaternion4f multiply(Quaternion4f a, Quaternion4f b) {
-        float x = a.getW() * b.getX() + a.getX() * b.getW() + a.getY() * b.getZ() - a.getZ() * b.getY();
-        float y = a.getW() * b.getY() - a.getX() * b.getZ() + a.getY() * b.getW() + a.getZ() * b.getX();
-        float z = a.getW() * b.getZ() + a.getX() * b.getY() - a.getY() * b.getX() + a.getZ() * b.getW();
-        float w = a.getW() * b.getW() - a.getX() * b.getX() - a.getY() * b.getY() - a.getZ() * b.getZ();
-        return new Quaternion4f(x, y, z, w);
-    }
-
-    private static Quaternion4f calculateFacingRotation(Location holoLoc, Location playerLoc) {
-        double dx = playerLoc.getX() - holoLoc.getX();
-        double dy = playerLoc.getY() - holoLoc.getY();
-        double dz = playerLoc.getZ() - holoLoc.getZ();
-
-        // Horizontal distance in the X-Z plane.
-        double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
-
-        // Calculate yaw (Minecraft's yaw formula: arctan2(dz, dx) in degrees, adjusted by -90)
-        double yaw = 90 - Math.toDegrees(Math.atan2(dz, dx));
-
-        // Calculate pitch: negative arctan2(dy, horizontalDistance)
-        double pitch = -Math.toDegrees(Math.atan2(dy, horizontalDistance));
-
-        // Convert angles to radians and compute half angles.
-        float halfYaw = (float) (Math.toRadians(yaw) / 2);
-        float halfPitch = (float) (Math.toRadians(pitch) / 2);
-
-        // Create a quaternion for yaw (rotation about the Y-axis).
-        Quaternion4f yawQuat = new Quaternion4f(
-            0,
-            (float) Math.sin(halfYaw),
-            0,
-            (float) Math.cos(halfYaw)
-        );
-
-        // Create a quaternion for pitch (rotation about the X-axis).
-        Quaternion4f pitchQuat = new Quaternion4f(
-            (float) Math.sin(halfPitch),
-            0,
-            0,
-            (float) Math.cos(halfPitch)
-        );
-
-        // Combine the quaternions: apply yaw first, then pitch.
-        // Since Quaternion multiplication is not commutative, order matters.
-        Quaternion4f facingRotation = multiply(yawQuat, pitchQuat);
-
-        return facingRotation;
-    }
 
     @Override
     public void initItems() {
@@ -132,16 +87,29 @@ public class HologramEditorMenu extends Menu {
             });
         });
 
-        addItem(33 + add, ItemBuilder.create(Material.PISTON).name("&aStart Height").info("&eCurrent Value", "").info(null, hologram.getLocation().getY()).lClick(EDIT_ACTIONS).build(), () -> {
+        addItem(33 + add, ItemBuilder.create(Material.PISTON).name("&aStart Height").info("&eCurrent Value", "")
+                .info(null, (hologram.getStartingY() != null ? hologram.getStartingY() : hologram.getLocation().getY()) + "")
+                .lClick(EDIT_ACTIONS).build(), () -> {
             player.sendMessage("§eEnter the new start height:");
-            openChat(main, hologram.getLocation().getY() + "", message -> {
+            openChat(main, (hologram.getStartingY() != null ? hologram.getStartingY() : hologram.getLocation().getY()) + "", message -> {
                 try {
                     Location loc = hologram.getLocation().clone();
                     loc.setY(Double.parseDouble(message));
+                    hologram.setStartingY(null);
                     hologram.setLocation(loc);
                     Bukkit.getScheduler().runTask(main, () -> new HologramEditorMenu(main, player, hologram).open());
                 } catch (NumberFormatException e) {
-                    player.sendMessage("§cInvalid number!");
+                    String parsed = Placeholder.handlePlaceholders(message, Main.getInstance().getHousesManager().getHouse(player.getWorld()), player);
+                    try {
+                        hologram.setStartingY(message);
+                        double y = Double.parseDouble(parsed);
+                        Location loc = hologram.getLocation().clone();
+                        loc.setY(y);
+                        hologram.setLocation(loc);
+                        Bukkit.getScheduler().runTask(main, () -> new HologramEditorMenu(main, player, hologram).open());
+                    } catch (NumberFormatException ex) {
+                        player.sendMessage("§cInvalid number!");
+                    }
                 }
             });
         });
@@ -206,13 +174,14 @@ public class HologramEditorMenu extends Menu {
         setupItems();
     }
 
-    private static class HologramDisplaySettingsMenu extends Menu{
+    private static class HologramDisplaySettingsMenu extends Menu {
         Main main;
         Player player;
         Hologram hologram;
         HousingWorld house;
+
         public HologramDisplaySettingsMenu(Main main, Player player, Hologram hologram) {
-            super(player, "&7Display Settings", 9*4);
+            super(player, "&7Display Settings", 9 * 4);
             this.main = main;
             this.player = player;
             this.hologram = hologram;
@@ -243,11 +212,11 @@ public class HologramEditorMenu extends Menu {
             });
             addItem(12, ItemBuilder.create(Material.BLUE_BANNER).name("&aBillboard Type").description("How the hologram faces the player.").info("&eCurrent Value", "").info(null, hologram.getBillboard().name()).lClick(EDIT_YELLOW).build(), () -> {
                 EnumMenu<TextDisplay.Billboard> menu = new EnumMenu<>(main, "&7Billboard Type", TextDisplay.Billboard.values(), Material.BLUE_BANNER, player, house, this, (billboardType) -> {
-                    if (billboardType == Display.Billboard.FIXED) {
+                    if (billboardType == Display.Billboard.FIXED || billboardType == Display.Billboard.HORIZONTAL) {
                         Location holoLocation = hologram.getLocation();
                         Location playerLocation = player.getEyeLocation();
 
-                        Quaternion4f rotation = calculateFacingRotation(holoLocation, playerLocation);
+                        Quaternion4f rotation = QuaternionUtils.calculateFacingRotation(holoLocation, playerLocation);
 
                         hologram.setRotationRaw(rotation);
                     } else {

@@ -425,8 +425,8 @@ public class HousingWorld {
         this.spawn = new Location(Bukkit.getWorld(this.houseUUID.toString()), 0.5, 61, 0.5);
 
         // Default Commands
-        createCommand("stuck").setActions(List.of(new TeleportAction(true)));
-        createCommand("spawn").setActions(List.of(new TeleportAction(true)));
+        createCommand("stuck").setActions(new ArrayList<>(List.of(new TeleportAction(true))));
+        createCommand("spawn").setActions(new ArrayList<>(List.of(new TeleportAction(true))));
     }
 
     private void ensureUniqueHouseUUID() {

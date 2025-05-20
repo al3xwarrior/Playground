@@ -21,7 +21,7 @@ public class ItemStackProperty extends ActionProperty<ItemStack> implements Acti
     }
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-        new ItemSelectMenu(player, menu, item -> setValue(item, player));
+        new ItemSelectMenu(player, menu, item -> setValue(item, player)).open();
     }
 
     @Override

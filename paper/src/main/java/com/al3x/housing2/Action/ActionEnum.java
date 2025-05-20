@@ -77,7 +77,11 @@ public enum ActionEnum {
     EDIT_AUDIBILITY("Edit Audibility Action", EditAudibilityAction.class),
     PROTOOLS_ACTION("Protools Action", ProtoolsAction.class),
     SPAWN_GHOST_BLOCK("Spawn Ghost Block", SpawnGhostBlock.class),
-    SET_PLAYER_SLOT("Set Player Slot Action", SetPlayerSlotAction.class);
+    SET_PLAYER_SLOT("Set Player Slot Action", SetPlayerSlotAction.class),
+    SET_GUI_SLOT("Set GUI Slot Action", SetGuiSlotAction.class),
+//    SPAWN_ENTITY("Spawn Entity Action", SpawnEntityAction.class),
+//    ENTITY_META("Entity Meta Action", EntityMetaAction.class),
+    ;
     // Add new actions here
     ;
     private final String id;

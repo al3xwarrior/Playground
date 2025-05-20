@@ -34,3 +34,5 @@ public class ActionSettingProperty extends ActionProperty<Action> implements Act
         return ActionData.fromData(data, housingWorld);
     }
 }
+
+

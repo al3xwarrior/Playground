@@ -3,6 +3,7 @@ package com.al3x.housing2.Menus;
 import com.al3x.housing2.Events.MenuSetupItemsEvent;
 import com.al3x.housing2.Events.OpenActionMenuEvent;
 import com.al3x.housing2.Events.OpenMenuEvent;
+import com.al3x.housing2.Instances.HousingWorld;
 import com.al3x.housing2.Instances.MenuManager;
 import com.al3x.housing2.Main;
 import com.al3x.housing2.Utils.StringUtilsKt;
@@ -39,7 +40,11 @@ public abstract class Menu {
     protected Player player;
 
     public Menu(Player player, String title, int size) {
-        this.inventory = Bukkit.createInventory(null, size, StringUtilsKt.housingStringFormatter(title));
+        HousingWorld house = Main.getInstance().getHousesManager().getHouse(player.getWorld());
+        this.inventory = Bukkit.createInventory(null, size, (house == null ?
+                StringUtilsKt.housingStringFormatter(title) :
+                StringUtilsKt.housingStringFormatter(title, house, player))
+        );
         this.player = player;
         this.title = title;
         this.size = size;

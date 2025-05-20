@@ -48,10 +48,14 @@ public class EnumProperty<E extends Enum<E>> extends ActionProperty<E> implement
                 enumClass.getEnumConstants(),
                 Material.BARRIER, player, house, menu,
                 (enumValue) -> {
-                    setValue(enumValue, player);
-                    menu.open();
+                    onSelect(house, player, menu, enumValue);
                 }
         ).open();
+    }
+
+    public void onSelect(HousingWorld house, Player player, ActionEditMenu menu, E enumValue) {
+        setValue(enumValue, player);
+        menu.open();
     }
 
     @Override
