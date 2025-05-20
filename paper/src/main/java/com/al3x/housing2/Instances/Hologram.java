@@ -198,7 +198,7 @@ public class Hologram {
             } catch (NumberFormatException ignored) {
             }
         }
-        hologram.teleport(location.add(0, spacing * (index - 1), 0));
+        hologram.teleport(location.add(0, spacing * (text.size() - 1 - index), 0));
     }
 
     public void updateHologramEntity() {
