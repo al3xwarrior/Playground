@@ -4,6 +4,7 @@ import com.al3x.housing2.Action.*;
 import com.al3x.housing2.Action.Properties.ActionsProperty;
 import com.al3x.housing2.Action.Properties.GenericPagination.MenuProperty;
 import com.al3x.housing2.Action.Properties.ItemStackProperty;
+import com.al3x.housing2.Action.Properties.NumberProperty;
 import com.al3x.housing2.Action.Properties.SlotProperty;
 import com.al3x.housing2.Enums.EventType;
 import com.al3x.housing2.Instances.CustomMenu;
@@ -30,11 +31,11 @@ public class SetGuiSlotAction extends HTSLImpl {
                         "Menu",
                         "The menu to set the slot in."
                 ),
-                new SlotProperty(
+                new NumberProperty(
                         "slot",
                         "Slot",
                         "The slot to set the item in."
-                ).setValue(0),
+                ).setValue("1"),
                 new ItemStackProperty(
                         "item",
                         "Item",
@@ -56,7 +57,7 @@ public class SetGuiSlotAction extends HTSLImpl {
     @Override
     public OutputType execute(Player player, HousingWorld house) {
         CustomMenu menu = getValue("menu", CustomMenu.class);
-        int slot = getValue("slot", Integer.class);
+        int slot = getProperty("slot", NumberProperty.class).parsedValue(house, player).intValue();
         ItemStack item = getValue("item", ItemStack.class);
         List<Action> actions = getProperty("actions", ActionsProperty.class).getValue();
         if (menu == null) {
