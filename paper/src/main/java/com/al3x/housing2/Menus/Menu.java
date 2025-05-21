@@ -189,6 +189,10 @@ public abstract class Menu {
 
     public void openChat(Main main, String previous, Consumer<String> consumer) {
         player.closeInventory();
+
+        // Fixes a client side disconnect issue which I dont even know why exists... (may be a viaversion issue)
+        previous = previous.replaceAll("§", "&");
+
         TextComponent cancelComp = new TextComponent(" §c[CANCEL]");
         cancelComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cancelinput"));
         cancelComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClick to cancel")));
