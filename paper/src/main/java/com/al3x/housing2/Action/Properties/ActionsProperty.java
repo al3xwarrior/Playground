@@ -29,8 +29,16 @@ public class ActionsProperty extends ActionProperty<List<Action>> implements Act
         }
         return "&a" + getValue().size() + " actions";
     }
+
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-        new ActionsMenu(main, player, house, getValue(), menu, getId()).open();
+        ActionsMenu opening = new ActionsMenu(main, player, house, getValue(), menu, getId());
+        opening.setEvent(menu.getEvent());
+        opening.setHousingNPC(menu.getHousingNPC());
+        opening.setUpdate(menu.getUpdate());
+        opening.setParentActions(menu.getParentActions());
+        opening.addParentAction(menu.getAction());
+        opening.setNestedLevel(menu.getBackMenusNestedLevel() + 1);
+        opening.open();
     }
 
     @Override

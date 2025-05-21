@@ -29,7 +29,14 @@ public class ConditionsProperty extends ActionProperty<List<Condition>> implemen
     }
 
     public void runnable(InventoryClickEvent event, HousingWorld house, Player player, ActionEditMenu menu) {
-        new ActionsMenu(main, player, house, getValue(), menu, true).open();
+        ActionsMenu opening = new ActionsMenu(main, player, house, getValue(), menu, true);
+        opening.setEvent(menu.getEvent());
+        opening.setHousingNPC(menu.getHousingNPC());
+        opening.setUpdate(menu.getUpdate());
+        opening.setParentActions(menu.getParentActions());
+        opening.addParentAction(menu.getAction());
+        opening.setNestedLevel(menu.getBackMenusNestedLevel() + 1);
+        opening.open();
     }
 
     @Override

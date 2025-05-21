@@ -31,11 +31,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.al3x.housing2.Utils.Color.colorize;
-
+@Setter
+@Getter
 public class ActionEditMenu extends Menu {
     private final Main main;
-    @Setter
-    @Getter
     private Action action;
     private Condition condition;
     private final Player player;
