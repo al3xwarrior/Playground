@@ -210,6 +210,9 @@ public class Npc {
             try {
                 int id = Integer.parseInt(arg1);
                 if (house.getNPC(id) != null && house.getNPC(id).getCitizensNPC().getEntity() instanceof LivingEntity le) {
+                    if (le.getMaxHealth() < le.getHealth()) { // To fix a rendering bug I believe
+                        return String.valueOf(le.getMaxHealth());
+                    }
                     return String.valueOf(le.getHealth());
                 }
             } catch (Exception e) {
