@@ -30,7 +30,7 @@ public class Hub extends AbstractCommand {
         Player player = (Player) sender;
         World hub = Bukkit.getWorld("world");
         if (hub == null) return 1;
-        player.teleport(new Location(hub, -6.5, 68, 5.5), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        player.teleport(new Location(hub, 28.5, 14, -15.5, 90, 0), PlayerTeleportEvent.TeleportCause.PLUGIN);
         return 1;
     }
 }
