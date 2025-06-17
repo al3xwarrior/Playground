@@ -272,7 +272,7 @@ public class JoinLeaveHouse implements Listener {
         Player player = e.getPlayer();
         e.setJoinMessage(colorize("&7&o" + player.getName() + " joined the server."));
         resetPlayer(player);
-        player.teleport(new Location(Bukkit.getWorld("world"), -28.5, 14, -15.5));
+        player.teleport(new Location(Bukkit.getWorld("world"), 28.5, 14, -15.5));
         HousingTabList.lobbyTabList(player);
     }
 
