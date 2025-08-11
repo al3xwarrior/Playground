@@ -1,3 +1,6 @@
+# Playground is going through a rewrite!
+Note that this version of Playground is no longer being supported. A rewrite is in progress.
+
 # 🛝 Playground *(Formerly Housing2)*
 Originally created by Al3x with the idea of recreating Hypixel's gamemode Housing due to the fact at the time Housing went over 1 year without an update. The goal was to recreate the gamemode as if it were to constantly get new features and updates.
 
